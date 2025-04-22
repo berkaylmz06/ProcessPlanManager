@@ -42,10 +42,6 @@
             this.btnYapilanKesimleriGor = new System.Windows.Forms.Button();
             this.btnKesimYap = new System.Windows.Forms.Button();
             this.btnKesimPlaniEkle = new System.Windows.Forms.Button();
-            this.panelYardim = new System.Windows.Forms.Panel();
-            this.txtSorun = new System.Windows.Forms.RichTextBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.btnGonder = new System.Windows.Forms.Button();
             this.panelSistem = new System.Windows.Forms.Panel();
             this.panelSistemBilgisi = new System.Windows.Forms.Panel();
             this.lblSistemSaat = new System.Windows.Forms.Label();
@@ -59,7 +55,6 @@
             this.label12 = new System.Windows.Forms.Label();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
-            this.flowLayoutPanel1 = new System.Windows.Forms.FlowLayoutPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -94,20 +89,24 @@
             this.txtKesimPlaniTekrarSayisi = new System.Windows.Forms.TextBox();
             this.btnXmlOlustur = new System.Windows.Forms.Button();
             this.panelKesimPlaniEkle = new System.Windows.Forms.Panel();
-            this.pdfViewer1 = new Spire.PdfViewer.Forms.PdfViewer();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
-            this.btnAdm = new System.Windows.Forms.Button();
-            this.btnAjan = new System.Windows.Forms.Button();
             this.btnBaykal = new System.Windows.Forms.Button();
+            this.btnAjan = new System.Windows.Forms.Button();
+            this.btnAdm = new System.Windows.Forms.Button();
+            this.pdfViewer1 = new Spire.PdfViewer.Forms.PdfViewer();
+            this.panelContainer = new System.Windows.Forms.Panel();
+            this.panelYardim = new System.Windows.Forms.Panel();
+            this.txtSorun = new System.Windows.Forms.RichTextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.btnGonder = new System.Windows.Forms.Button();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
-            this.panelYardim.SuspendLayout();
             this.panelSistem.SuspendLayout();
             this.panelSistemBilgisi.SuspendLayout();
-            this.flowLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panelKesimPlaniEkle.SuspendLayout();
+            this.panelContainer.SuspendLayout();
+            this.panelYardim.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressBar1
@@ -125,10 +124,10 @@
             this.panelYardimCubugu.Controls.Add(this.btnSistem);
             this.panelYardimCubugu.Controls.Add(this.progressBar1);
             this.panelYardimCubugu.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelYardimCubugu.Location = new System.Drawing.Point(0, 791);
+            this.panelYardimCubugu.Location = new System.Drawing.Point(0, 797);
             this.panelYardimCubugu.Margin = new System.Windows.Forms.Padding(2);
             this.panelYardimCubugu.Name = "panelYardimCubugu";
-            this.panelYardimCubugu.Size = new System.Drawing.Size(1528, 49);
+            this.panelYardimCubugu.Size = new System.Drawing.Size(1592, 49);
             this.panelYardimCubugu.TabIndex = 210;
             // 
             // btnYardim
@@ -176,7 +175,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
-            this.menuStrip1.Size = new System.Drawing.Size(1528, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1592, 24);
             this.menuStrip1.TabIndex = 213;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -221,7 +220,7 @@
             this.panelAraYuz.Location = new System.Drawing.Point(0, 24);
             this.panelAraYuz.Margin = new System.Windows.Forms.Padding(2);
             this.panelAraYuz.Name = "panelAraYuz";
-            this.panelAraYuz.Size = new System.Drawing.Size(205, 757);
+            this.panelAraYuz.Size = new System.Drawing.Size(205, 763);
             this.panelAraYuz.TabIndex = 212;
             // 
             // btnYapilanKesimleriGor
@@ -256,50 +255,6 @@
             this.btnKesimPlaniEkle.UseVisualStyleBackColor = true;
             this.btnKesimPlaniEkle.Click += new System.EventHandler(this.btnKesimPlaniEkle_Click);
             // 
-            // panelYardim
-            // 
-            this.panelYardim.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.panelYardim.Controls.Add(this.txtSorun);
-            this.panelYardim.Controls.Add(this.label17);
-            this.panelYardim.Controls.Add(this.btnGonder);
-            this.panelYardim.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelYardim.Location = new System.Drawing.Point(2, 2);
-            this.panelYardim.Margin = new System.Windows.Forms.Padding(2);
-            this.panelYardim.Name = "panelYardim";
-            this.panelYardim.Size = new System.Drawing.Size(1526, 160);
-            this.panelYardim.TabIndex = 129;
-            this.panelYardim.Visible = false;
-            // 
-            // txtSorun
-            // 
-            this.txtSorun.Location = new System.Drawing.Point(27, 23);
-            this.txtSorun.Margin = new System.Windows.Forms.Padding(2);
-            this.txtSorun.Name = "txtSorun";
-            this.txtSorun.Size = new System.Drawing.Size(273, 108);
-            this.txtSorun.TabIndex = 127;
-            this.txtSorun.Text = "";
-            // 
-            // label17
-            // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(24, 8);
-            this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(60, 13);
-            this.label17.TabIndex = 126;
-            this.label17.Text = "Sorun Bildir";
-            // 
-            // btnGonder
-            // 
-            this.btnGonder.Location = new System.Drawing.Point(309, 108);
-            this.btnGonder.Margin = new System.Windows.Forms.Padding(2);
-            this.btnGonder.Name = "btnGonder";
-            this.btnGonder.Size = new System.Drawing.Size(69, 22);
-            this.btnGonder.TabIndex = 128;
-            this.btnGonder.Text = "Gönder";
-            this.btnGonder.UseVisualStyleBackColor = true;
-            this.btnGonder.Click += new System.EventHandler(this.btnGonder_Click);
-            // 
             // panelSistem
             // 
             this.panelSistem.BackColor = System.Drawing.SystemColors.ScrollBar;
@@ -307,11 +262,11 @@
             this.panelSistem.Controls.Add(this.label12);
             this.panelSistem.Controls.Add(this.richTextBox2);
             this.panelSistem.Controls.Add(this.richTextBox1);
-            this.panelSistem.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelSistem.Location = new System.Drawing.Point(2, 166);
+            this.panelSistem.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelSistem.Location = new System.Drawing.Point(0, 0);
             this.panelSistem.Margin = new System.Windows.Forms.Padding(2);
             this.panelSistem.Name = "panelSistem";
-            this.panelSistem.Size = new System.Drawing.Size(1526, 147);
+            this.panelSistem.Size = new System.Drawing.Size(1592, 10);
             this.panelSistem.TabIndex = 150;
             this.panelSistem.Visible = false;
             // 
@@ -440,18 +395,6 @@
             this.richTextBox1.Size = new System.Drawing.Size(289, 118);
             this.richTextBox1.TabIndex = 104;
             this.richTextBox1.Text = "";
-            // 
-            // flowLayoutPanel1
-            // 
-            this.flowLayoutPanel1.Controls.Add(this.panelYardim);
-            this.flowLayoutPanel1.Controls.Add(this.panelSistem);
-            this.flowLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.flowLayoutPanel1.Location = new System.Drawing.Point(0, 781);
-            this.flowLayoutPanel1.Margin = new System.Windows.Forms.Padding(2);
-            this.flowLayoutPanel1.Name = "flowLayoutPanel1";
-            this.flowLayoutPanel1.Size = new System.Drawing.Size(1528, 10);
-            this.flowLayoutPanel1.TabIndex = 211;
-            this.flowLayoutPanel1.Visible = false;
             // 
             // label1
             // 
@@ -768,7 +711,6 @@
             this.panelKesimPlaniEkle.Controls.Add(this.btnBaykal);
             this.panelKesimPlaniEkle.Controls.Add(this.btnAjan);
             this.panelKesimPlaniEkle.Controls.Add(this.btnAdm);
-            this.panelKesimPlaniEkle.Controls.Add(this.checkBox1);
             this.panelKesimPlaniEkle.Controls.Add(this.pdfViewer1);
             this.panelKesimPlaniEkle.Controls.Add(this.btnXmlOlustur);
             this.panelKesimPlaniEkle.Controls.Add(this.txtKesimPlaniTekrarSayisi);
@@ -801,9 +743,42 @@
             this.panelKesimPlaniEkle.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelKesimPlaniEkle.Location = new System.Drawing.Point(0, 24);
             this.panelKesimPlaniEkle.Name = "panelKesimPlaniEkle";
-            this.panelKesimPlaniEkle.Size = new System.Drawing.Size(1528, 757);
+            this.panelKesimPlaniEkle.Size = new System.Drawing.Size(1592, 763);
             this.panelKesimPlaniEkle.TabIndex = 214;
             this.panelKesimPlaniEkle.Visible = false;
+            // 
+            // btnBaykal
+            // 
+            this.btnBaykal.BackColor = System.Drawing.SystemColors.GrayText;
+            this.btnBaykal.Location = new System.Drawing.Point(370, 70);
+            this.btnBaykal.Margin = new System.Windows.Forms.Padding(2);
+            this.btnBaykal.Name = "btnBaykal";
+            this.btnBaykal.Size = new System.Drawing.Size(120, 46);
+            this.btnBaykal.TabIndex = 277;
+            this.btnBaykal.Text = "BAYKAL";
+            this.btnBaykal.UseVisualStyleBackColor = false;
+            // 
+            // btnAjan
+            // 
+            this.btnAjan.BackColor = System.Drawing.SystemColors.GrayText;
+            this.btnAjan.Location = new System.Drawing.Point(220, 70);
+            this.btnAjan.Margin = new System.Windows.Forms.Padding(2);
+            this.btnAjan.Name = "btnAjan";
+            this.btnAjan.Size = new System.Drawing.Size(120, 46);
+            this.btnAjan.TabIndex = 276;
+            this.btnAjan.Text = "AJAN";
+            this.btnAjan.UseVisualStyleBackColor = false;
+            // 
+            // btnAdm
+            // 
+            this.btnAdm.BackColor = System.Drawing.SystemColors.GrayText;
+            this.btnAdm.Location = new System.Drawing.Point(520, 70);
+            this.btnAdm.Margin = new System.Windows.Forms.Padding(2);
+            this.btnAdm.Name = "btnAdm";
+            this.btnAdm.Size = new System.Drawing.Size(120, 46);
+            this.btnAdm.TabIndex = 275;
+            this.btnAdm.Text = "ADM3";
+            this.btnAdm.UseVisualStyleBackColor = false;
             // 
             // pdfViewer1
             // 
@@ -821,61 +796,72 @@
             this.pdfViewer1.Threshold = 60;
             this.pdfViewer1.ViewerBackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(229)))), ((int)(((byte)(229)))));
             // 
-            // checkBox1
+            // panelContainer
             // 
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(218, 21);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(80, 17);
-            this.checkBox1.TabIndex = 274;
-            this.checkBox1.Text = "checkBox1";
-            this.checkBox1.UseVisualStyleBackColor = true;
+            this.panelContainer.BackColor = System.Drawing.SystemColors.Info;
+            this.panelContainer.Controls.Add(this.panelSistem);
+            this.panelContainer.Controls.Add(this.panelYardim);
+            this.panelContainer.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelContainer.Location = new System.Drawing.Point(0, 787);
+            this.panelContainer.Name = "panelContainer";
+            this.panelContainer.Size = new System.Drawing.Size(1592, 10);
+            this.panelContainer.TabIndex = 278;
+            this.panelContainer.Visible = false;
             // 
-            // btnAdm
+            // panelYardim
             // 
-            this.btnAdm.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnAdm.Location = new System.Drawing.Point(365, 73);
-            this.btnAdm.Margin = new System.Windows.Forms.Padding(2);
-            this.btnAdm.Name = "btnAdm";
-            this.btnAdm.Size = new System.Drawing.Size(120, 46);
-            this.btnAdm.TabIndex = 275;
-            this.btnAdm.Text = "ADM3";
-            this.btnAdm.UseVisualStyleBackColor = false;
-            this.btnAdm.Click += new System.EventHandler(this.btnAdm_Click);
+            this.panelYardim.AutoSize = true;
+            this.panelYardim.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.panelYardim.Controls.Add(this.txtSorun);
+            this.panelYardim.Controls.Add(this.label17);
+            this.panelYardim.Controls.Add(this.btnGonder);
+            this.panelYardim.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelYardim.Location = new System.Drawing.Point(0, 0);
+            this.panelYardim.Margin = new System.Windows.Forms.Padding(2);
+            this.panelYardim.Name = "panelYardim";
+            this.panelYardim.Size = new System.Drawing.Size(1592, 10);
+            this.panelYardim.TabIndex = 129;
+            this.panelYardim.Visible = false;
             // 
-            // btnAjan
+            // txtSorun
             // 
-            this.btnAjan.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnAjan.Location = new System.Drawing.Point(218, 73);
-            this.btnAjan.Margin = new System.Windows.Forms.Padding(2);
-            this.btnAjan.Name = "btnAjan";
-            this.btnAjan.Size = new System.Drawing.Size(120, 46);
-            this.btnAjan.TabIndex = 276;
-            this.btnAjan.Text = "AJAN";
-            this.btnAjan.UseVisualStyleBackColor = false;
-            this.btnAjan.Click += new System.EventHandler(this.btnAjan_Click);
+            this.txtSorun.Location = new System.Drawing.Point(27, 23);
+            this.txtSorun.Margin = new System.Windows.Forms.Padding(2);
+            this.txtSorun.Name = "txtSorun";
+            this.txtSorun.Size = new System.Drawing.Size(273, 108);
+            this.txtSorun.TabIndex = 127;
+            this.txtSorun.Text = "";
             // 
-            // btnBaykal
+            // label17
             // 
-            this.btnBaykal.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnBaykal.Location = new System.Drawing.Point(509, 73);
-            this.btnBaykal.Margin = new System.Windows.Forms.Padding(2);
-            this.btnBaykal.Name = "btnBaykal";
-            this.btnBaykal.Size = new System.Drawing.Size(120, 46);
-            this.btnBaykal.TabIndex = 277;
-            this.btnBaykal.Text = "BAYKAL";
-            this.btnBaykal.UseVisualStyleBackColor = false;
-            this.btnBaykal.Click += new System.EventHandler(this.btnBaykal_Click);
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(24, 8);
+            this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(60, 13);
+            this.label17.TabIndex = 126;
+            this.label17.Text = "Sorun Bildir";
+            // 
+            // btnGonder
+            // 
+            this.btnGonder.Location = new System.Drawing.Point(309, 108);
+            this.btnGonder.Margin = new System.Windows.Forms.Padding(2);
+            this.btnGonder.Name = "btnGonder";
+            this.btnGonder.Size = new System.Drawing.Size(69, 22);
+            this.btnGonder.TabIndex = 128;
+            this.btnGonder.Text = "Gönder";
+            this.btnGonder.UseVisualStyleBackColor = true;
+            this.btnGonder.Click += new System.EventHandler(this.btnGonder_Click);
             // 
             // frmAnaSayfa
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(1528, 840);
+            this.ClientSize = new System.Drawing.Size(1592, 846);
             this.Controls.Add(this.panelAraYuz);
             this.Controls.Add(this.panelKesimPlaniEkle);
-            this.Controls.Add(this.flowLayoutPanel1);
+            this.Controls.Add(this.panelContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.panelYardimCubugu);
             this.Margin = new System.Windows.Forms.Padding(2);
@@ -887,16 +873,17 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panelAraYuz.ResumeLayout(false);
-            this.panelYardim.ResumeLayout(false);
-            this.panelYardim.PerformLayout();
             this.panelSistem.ResumeLayout(false);
             this.panelSistem.PerformLayout();
             this.panelSistemBilgisi.ResumeLayout(false);
             this.panelSistemBilgisi.PerformLayout();
-            this.flowLayoutPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panelKesimPlaniEkle.ResumeLayout(false);
             this.panelKesimPlaniEkle.PerformLayout();
+            this.panelContainer.ResumeLayout(false);
+            this.panelContainer.PerformLayout();
+            this.panelYardim.ResumeLayout(false);
+            this.panelYardim.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -917,10 +904,6 @@
         private System.Windows.Forms.Button btnYapilanKesimleriGor;
         private System.Windows.Forms.Button btnKesimYap;
         private System.Windows.Forms.Button btnKesimPlaniEkle;
-        private System.Windows.Forms.Panel panelYardim;
-        private System.Windows.Forms.RichTextBox txtSorun;
-        private System.Windows.Forms.Label label17;
-        private System.Windows.Forms.Button btnGonder;
         private System.Windows.Forms.Panel panelSistem;
         private System.Windows.Forms.Panel panelSistemBilgisi;
         private System.Windows.Forms.Label lblSistemSaat;
@@ -933,7 +916,6 @@
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanel1;
         public System.Windows.Forms.Label lblSistemKullanici;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
@@ -970,9 +952,13 @@
         private System.Windows.Forms.Button btnXmlOlustur;
         private System.Windows.Forms.Panel panelKesimPlaniEkle;
         private Spire.PdfViewer.Forms.PdfViewer pdfViewer1;
-        private System.Windows.Forms.CheckBox checkBox1;
         private System.Windows.Forms.Button btnBaykal;
         private System.Windows.Forms.Button btnAjan;
         private System.Windows.Forms.Button btnAdm;
+        private System.Windows.Forms.Panel panelContainer;
+        private System.Windows.Forms.Panel panelYardim;
+        private System.Windows.Forms.RichTextBox txtSorun;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Button btnGonder;
     }
 }

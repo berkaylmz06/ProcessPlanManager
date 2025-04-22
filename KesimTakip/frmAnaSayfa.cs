@@ -12,13 +12,19 @@ using System.IO;
 using iText.Kernel.Pdf.Canvas.Parser;
 using KesimTakip.Helper;
 using System.Xml;
+using KesimTakip.Business;
+using KesimTakip.Entitys;
 
 namespace KesimTakip
 {
     public partial class frmAnaSayfa : Form
     {
+        private readonly VeriOkuma _veriOkuma;
+        private Button _seciliButon;
+
         private Timer timer;
         private int timerCounter = 0;
+        private List<Button> buttonGroup;
         public frmAnaSayfa(string adSoyad)
         {
             InitializeComponent();
@@ -40,7 +46,7 @@ namespace KesimTakip
             panelYardim.Height = 300;
 
             DataGridViewHelper.StilUygula(dataGridView1);
-
+            _veriOkuma = new VeriOkuma();
         }
         frmAnaSayfa()
         {
@@ -54,13 +60,46 @@ namespace KesimTakip
             lblSistemSaat.Text = currentTime;
         }
 
+        private void frmAnaSayfa_Load(object sender, EventArgs e)
+        {
+            panelContainer.Size = new System.Drawing.Size(1924, 150);
+            buttonGroup = new List<Button> { btnAjan, btnAdm, btnBaykal };
+
+            btnAjan.Click += ExclusiveButton_Click;
+            btnAdm.Click += ExclusiveButton_Click;
+            btnBaykal.Click += ExclusiveButton_Click;
+
+
+            ButonMakinaSecHelper.ButonSekli(btnAdm, buttonGroup);
+            ButonMakinaSecHelper.ButonSekli(btnBaykal, buttonGroup);
+            ButonMakinaSecHelper.ButonSekli(btnAjan, buttonGroup);
+        }
+        private void ExclusiveButton_Click(object sender, EventArgs e)
+        {
+            var clickedButton = sender as Button;
+            if (clickedButton != null)
+            {
+                _seciliButon = clickedButton;
+                ButonMakinaSecHelper.ButonSekli(clickedButton, buttonGroup);
+            }
+        }
+
         private async void btnSec_Click(object sender, EventArgs e)
         {
+            if (_seciliButon == null)
+            {
+                MessageBox.Show("Lütfen önce bir makine seçin (Ajan, Adm, Baykal).");
+                return;
+            }
+
+            // Ortak UI temizleme işlemleri
             richTextBox1.Clear();
             richTextBox2.Clear();
             lblKesimId.Enabled = false;
             txtKesimId.Enabled = false;
             dataGridView1.Rows.Clear();
+
+            // PDF seçme işlemi
             OpenFileDialog open = new OpenFileDialog();
             open.Filter = "PDF File|*.pdf";
             if (open.ShowDialog() == DialogResult.OK)
@@ -74,14 +113,72 @@ namespace KesimTakip
                         progressBar1.Value = 0;
                         progressBar1.Visible = true;
 
+                        // PDF'yi yükle (varsa, mevcut metodunuz)
                         await PdfYukle(filePath);
 
+                        // PDF metnini oku
                         string pdfText = await PdfOku(filePath);
 
-                        progressBar1.Visible = false;
-                        ProcessPdfData(pdfText);
+                        if (string.IsNullOrEmpty(pdfText))
+                        {
+                            MessageBox.Show("PDF metni okunamadı.");
+                            progressBar1.Visible = false;
+                            return;
+                        }
+
+                        // Seçili butona göre ilgili metodu çalıştır
+                        List<MalzemeBilgisi> parsedData = await Task.Run(() =>
+                        {
+                            try
+                            {
+                                if (_seciliButon == btnAjan)
+                                    return _veriOkuma.AjanOku(pdfText); // Ajan için metod
+                                else if (_seciliButon == btnAdm)
+                                    return _veriOkuma.LantekOku(pdfText); // Adm için LantekOku
+                                else if (_seciliButon == btnBaykal)
+                                    return _veriOkuma.BaykalOku(pdfText); // Baykal için metod
+                                else
+                                return null;
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show(ex.Message);
+                                return null;
+                            }
+                        });
+
+                        if (parsedData == null || parsedData.Count == 0)
+                        {
+                            progressBar1.Visible = false;
+                            return;
+                        }
+
+                        // UI'yı güncelle
+                        richTextBox2.Clear();
+                        dataGridView1.Rows.Clear();
+
+                        int totalItems = parsedData.Count;
+                        int currentItem = 0;
+
+                        foreach (var data in parsedData)
+                        {
+                            if (data != null)
+                            {
+                                richTextBox2.AppendText($"{data.Kalite} - {data.Kalınlık} - {data.Kalıp} - {data.Poz} - {data.Adet}\n");
+                                dataGridView1.Rows.Add(data.Kalite, data.Kalınlık, data.Kalıp, data.Poz, data.Adet);
+
+                                // ProgressBar'ı güncelle
+                                currentItem++;
+                                int progressValue = (int)((currentItem / (float)totalItems) * 100);
+                                progressBar1.Value = progressValue;
+                            }
+                        }
+
+                        // Yerleştirme tekrar sayısını hesapla
                         YerlestirmeTekrarSayisi(pdfText);
 
+                        // ProgressBar'ı gizle
+                        progressBar1.Visible = false;
                     }
                     catch (Exception ex)
                     {
@@ -89,9 +186,14 @@ namespace KesimTakip
                         progressBar1.Visible = false;
                     }
                 }
+                else
+                {
+                    MessageBox.Show("Dosya bulunamadı.");
+                    progressBar1.Visible = false;
+                }
             }
         }
-      
+
         public async Task PdfYukle(string filePath)
         {
             try
@@ -147,228 +249,6 @@ namespace KesimTakip
             return pageText.ToString();
         }
 
-        private void ProcessPdfData(string pdfText)
-        {
-            string[] firstFourLines = pdfText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Take(4).ToArray();
-            string firstFourLinesText = string.Join("\n", firstFourLines);
-
-            if (firstFourLinesText.Contains("ProNest"))
-            {
-                try
-                {
-                    string startPattern = @"Numarası\s+Numara";
-                    Regex startRegex = new Regex(startPattern);
-                    Match startMatch = startRegex.Match(pdfText);
-
-                    if (startMatch.Success)
-                    {
-                        string materialPattern = @"(\d+)\s+(\d+)\s+(ST\d+-\d+mm-\d+-\d+-P\d+-\d+)\s+AD";
-                        Regex materialRegex = new Regex(materialPattern);
-                        MatchCollection materialMatches = materialRegex.Matches(pdfText);
-
-                        var extractedData = new StringBuilder();
-
-                        HashSet<string> seenMaterials = new HashSet<string>();
-
-                        foreach (Match match in materialMatches)
-                        {
-                            string numara1 = match.Groups[1].Value;
-                            string numara2 = match.Groups[2].Value;
-                            string malzeme = match.Groups[3].Value;
-
-                            string fullMaterial = $"{malzeme} AD";
-
-                            if (!seenMaterials.Contains(fullMaterial))
-                            {
-                                seenMaterials.Add(fullMaterial);
-                                extractedData.AppendLine(fullMaterial);
-                            }
-                        }
-
-                        Invoke((Action)(() => richTextBox2.AppendText(extractedData.ToString())));
-
-                        ParseAndDisplayData();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Pdf okunamadı.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Hata 1" + ex.Message);
-                }
-
-            }
-            else if (firstFourLinesText.Contains("FirmaAdı"))
-            {
-                try
-                {
-                    string pattern = @"(\d+)\s(ST\d+)-(\d+mm)-(\d+-\d+)-(\w+)-(\w+)\s([\dX]+)\s([\d\.]+)\s([\d\:\.]+)\s(\d+)\s([\d\.]+)|(\d+)\s(ST\d+)-(\d+mm)-(\d+-\d+)-(\w+)-(\w+)\s([\dX]+)\s([\d\.]+)\s([\d\:\.]+)\s(\d+)\s([\d\.]+)\s(\d+-\d+)\s+([\d\.]+)";
-                    Regex regex = new Regex(pattern);
-                    MatchCollection matches = regex.Matches(pdfText);
-
-                    List<string> extractedData = new List<string>();
-
-                    foreach (Match match in matches)
-                    {
-                        if (match.Groups.Count >= 12)
-                        {
-                            string kalite = match.Groups[2].Value;
-                            string mm = match.Groups[3].Value;
-                            string numara = match.Groups[4].Value;
-                            string p1 = match.Groups[5].Value;
-                            string p2 = match.Groups[6].Value;
-
-                            string result = $"{kalite} - {mm} - {numara} - {p1} - {p2}".Trim();
-                            if (!extractedData.Contains(result))
-                            {
-                                extractedData.Add(result);
-                            }
-                        }
-                    }
-
-                    string finalResult = string.Join("\n", extractedData);
-                    richTextBox2.Text = finalResult;
-                    ParseAndDisplayData();
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Hata 2" + ex.Message);
-                }
-            }
-            else if (firstFourLinesText.Contains("ToplamParçaKesmeListesi"))
-            {
-                try
-                {
-                    string desen = @"ToplamParçaKesmeListesi[\s\S]*?Buverilerstandartkesimparametrelerinegörehesaplanmaktadır";
-                    Match aralikMatch = Regex.Match(pdfText, desen, RegexOptions.Singleline);
-
-                    if (aralikMatch.Success)
-                    {
-                        string sadeceKesimListesi = aralikMatch.Value;
-
-                        string pattern = @"ST\d{2}-\d+mm-\d+-\d+-P\d+-\d+";
-                        Regex regex = new Regex(pattern);
-                        MatchCollection matches = regex.Matches(sadeceKesimListesi);
-
-                        HashSet<string> extractedData = new HashSet<string>();
-                        foreach (Match match in matches)
-                        {
-                            string matchValue = match.Value;
-                            if (!matchValue.EndsWith(" AD"))
-                            {
-                                matchValue += " AD";
-                            }
-                            extractedData.Add(matchValue);
-                        }
-
-                        string finalResult = string.Join("\n", extractedData);
-                        richTextBox2.Text = finalResult;
-                        ParseAndDisplayData();
-                    }
-                    else
-                    {
-                        MessageBox.Show("Pdf okunamadı.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Hata 3" + ex.Message);
-                }
-            }
-
-            else
-            {
-                MessageBox.Show("PDF Okunamadı.");
-            }
-        }
-
-        private void ParseAndDisplayData()
-        {
-            dataGridView1.Rows.Clear();
-
-            string[] lines = richTextBox2.Lines;
-
-            foreach (var line in lines)
-            {
-                var match = Regex.Match(line, @"(?<Kalite>[A-Za-z0-9]+)\s*-\s*(?<Kalınlık>[A-Za-z0-9]+)\s*-\s*(?<Kalıp>[A-Za-z0-9-]+)\s*-\s*(?<Poz>[A-Za-z0-9]+)\s*-\s*(?<Adet>[0-9]+)");
-
-                if (match.Success)
-                {
-                    string kalite = match.Groups["Kalite"].Value;
-                    string kalınlık = match.Groups["Kalınlık"].Value;
-                    string kalıp = match.Groups["Kalıp"].Value;
-                    string poz = match.Groups["Poz"].Value;
-                    string adet = match.Groups["Adet"].Value;
-
-                    dataGridView1.Rows.Add(kalite, kalınlık, kalıp, poz, adet);
-                }
-            }
-        }
-        private void lantekYukleme(string pdfText)
-        {
-            string[] lines = pdfText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-            StringBuilder sb = new StringBuilder();
-
-            // Checkbox kontrolü yapılacak
-            if (checkBox1.Checked) // Eğer checkbox işaretliyse
-            {
-                MessageBox.Show("Checkbox işaretli!"); // Debugging için
-
-                for (int i = 0; i < lines.Length; i++)
-                {
-                    if (lines[i].StartsWith("ID"))
-                    {
-                        if (i + 2 < lines.Length)
-                        {
-                            string cncLine = lines[i + 2];
-                            string[] cncParts = cncLine.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                            if (cncParts.Length >= 3 &&
-                                int.TryParse(cncParts[1], out int cncNo) &&        // CNC numarasını al
-                                int.TryParse(cncParts[2], out int quantityUst))   // Üst Quantity'yi al
-                            {
-                                // CNC programı bulundu, devam ediyoruz
-                                for (int j = i + 3; j < lines.Length; j++)
-                                {
-                                    if (lines[j].StartsWith("ID")) break; // Yeni bir CNC programına geçersek çık
-
-                                    if (lines[j].StartsWith("Part"))
-                                    {
-                                        j++; // "Part Quantity..." satırını atla
-                                        while (j < lines.Length && !lines[j].StartsWith("ID") && !string.IsNullOrWhiteSpace(lines[j]))
-                                        {
-                                            string[] partParts = lines[j].Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-
-                                            if (partParts.Length >= 3)
-                                            {
-                                                // Burada malzeme ve quantity değerlerini alıyoruz
-                                                string malzeme = partParts[0];   // Malzeme (örneğin ST1000 gibi)
-                                                if (int.TryParse(partParts[1], out int quantityAlt)) // Alt quantity (part quantity)
-                                                {
-                                                    int carpim = quantityUst * quantityAlt; // Çarpım işlemi
-
-                                                    sb.AppendLine($"{quantityUst} - {malzeme} - {quantityAlt} - {carpim}");
-                                                }
-                                            }
-                                            j++; // Bir sonraki satıra geç
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                MessageBox.Show("Checkbox işaretlenmemiş."); // Debugging için
-            }
-
-            richTextBox2.Text = sb.ToString();
-        }
         private void UpdateTextBoxes()
         {
             HashSet<string> kaliteSet = new HashSet<string>();
@@ -461,13 +341,7 @@ namespace KesimTakip
 
         private void btnSistem_Click(object sender, EventArgs e)
         {
-            if (panelYardim.Visible = true)
-            {
-                panelYardim.Visible = false;
-            }
-
-            panelSistem.Visible = !panelSistem.Visible;
-            flowLayoutPanel1.Visible = !flowLayoutPanel1.Visible;
+            PanelGosterYardimMenu(panelSistem);
         }
         private void YerlestirmeTekrarSayisi(string pdfText)
         {
@@ -520,13 +394,7 @@ namespace KesimTakip
 
         private void btnYardim_Click(object sender, EventArgs e)
         {
-            if (panelSistem.Visible = true)
-            {
-                panelSistem.Visible = false;
-            }
-
-            panelYardim.Visible = !panelYardim.Visible;
-            flowLayoutPanel1.Visible = !flowLayoutPanel1.Visible;
+            PanelGosterYardimMenu(panelYardim);
         }
 
         private void Timer_Tick(object sender, EventArgs e)
@@ -577,10 +445,6 @@ namespace KesimTakip
             kesyap.Show();
         }
 
-        private void frmAnaSayfa_Load(object sender, EventArgs e)
-        {
-            flowLayoutPanel1.Size = new System.Drawing.Size(1924, 150);
-        }
 
         private void yardımCubugunuKaldirToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -604,6 +468,7 @@ namespace KesimTakip
             txtKesimId.Enabled = true;
             ExportToXmlWithDialog(dataGridView1);
         }
+
         public void ExportToXmlWithDialog(DataGridView dgv)
         {
             using (SaveFileDialog sfd = new SaveFileDialog())
@@ -670,69 +535,41 @@ namespace KesimTakip
 
         private void btnKesimPlaniEkle_Click(object sender, EventArgs e)
         {
-            PanelGoster(panelKesimPlaniEkle);
+            PanelGosterAnaPaneller(panelKesimPlaniEkle);
         }
-        private void PanelGoster(Panel target)
+
+        private void PanelGosterAnaPaneller(Panel target)
         {
             panelKesimPlaniEkle.Visible = false;
 
             target.Visible = true;
         }
 
-        private void btnAjan_Click(object sender, EventArgs e)
+        private void PanelGosterYardimMenu(Panel hedefPanel)
         {
-            // Buton tıklandığında seçili durum
-            if (btnAjan.BackColor == System.Drawing.Color.LightBlue)
+            if (hedefPanel.Visible)
             {
-                // Seçili değilse orijinal font boyutu ve renk
-                btnAjan.BackColor = System.Drawing.Color.Gray;
-                btnAjan.Font = new System.Drawing.Font(btnAjan.Font.FontFamily, 8); // Orijinal font boyutu
+                panelContainer.Visible = false;
+                foreach (Control ctrl in panelContainer.Controls)
+                {
+                    if (ctrl is Panel)
+                    {
+                        ctrl.Visible = false;
+                    }
+                }
             }
             else
             {
-                // Seçili yap ve fontu küçült
-                btnAjan.BackColor = System.Drawing.Color.LightBlue;
-                btnAjan.Font = new System.Drawing.Font(btnAjan.Font.FontFamily, 10); // Küçültülmüş font boyutu
-                btnAjan.FlatStyle = FlatStyle.Flat;
-                btnAjan.FlatAppearance.BorderSize = 0;
-            }
-        }
+                panelContainer.Visible = true;
 
-        private void btnAdm_Click(object sender, EventArgs e)
-        {
-            // Buton tıklandığında seçili durum
-            if (btnAdm.BackColor == System.Drawing.Color.LightBlue)
-            {
-                // Seçili değilse orijinal font boyutu ve renk
-                btnAdm.BackColor = System.Drawing.Color.Gray;
-                btnAdm.Font = new System.Drawing.Font(btnAjan.Font.FontFamily, 8); // Orijinal font boyutu
-            }
-            else
-            {
-                // Seçili yap ve fontu küçült
-                btnAdm.BackColor = System.Drawing.Color.LightBlue;
-                btnAdm.Font = new System.Drawing.Font(btnAjan.Font.FontFamily, 10); // Küçültülmüş font boyutu
-                btnAdm.FlatStyle = FlatStyle.Flat;
-                btnAdm.FlatAppearance.BorderSize = 0;
-            }
-        }
-
-        private void btnBaykal_Click(object sender, EventArgs e)
-        {
-            // Buton tıklandığında seçili durum
-            if (btnBaykal.BackColor == System.Drawing.Color.LightBlue)
-            {
-                // Seçili değilse orijinal font boyutu ve renk
-                btnBaykal.BackColor = System.Drawing.Color.Gray;
-                btnBaykal.Font = new System.Drawing.Font(btnAjan.Font.FontFamily, 8); // Orijinal font boyutu
-            }
-            else
-            {
-                // Seçili yap ve fontu küçült
-                btnBaykal.BackColor = System.Drawing.Color.LightBlue;
-                btnBaykal.Font = new System.Drawing.Font(btnAjan.Font.FontFamily, 10); // Küçültülmüş font boyutu
-                btnBaykal.FlatStyle = FlatStyle.Flat;
-                btnBaykal.FlatAppearance.BorderSize = 0;
+                foreach (Control ctrl in panelContainer.Controls)
+                {
+                    if (ctrl is Panel)
+                    {
+                        ctrl.Visible = false;
+                    }
+                }
+                hedefPanel.Visible = true;
             }
         }
     }
