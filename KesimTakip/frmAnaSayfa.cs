@@ -61,15 +61,12 @@ namespace KesimTakip
             lblKesimId.Enabled = false;
             txtKesimId.Enabled = false;
             dataGridView1.Rows.Clear();
-
-            // Dosya Seçme Diyaloğu
             OpenFileDialog open = new OpenFileDialog();
             open.Filter = "PDF File|*.pdf";
             if (open.ShowDialog() == DialogResult.OK)
             {
                 string filePath = open.FileName;
                 txtDosya.Text = filePath;
-
                 if (File.Exists(filePath))
                 {
                     try
@@ -77,25 +74,14 @@ namespace KesimTakip
                         progressBar1.Value = 0;
                         progressBar1.Visible = true;
 
-                        // PDF'yi Yükle
                         await PdfYukle(filePath);
 
-                        // PDF'den metin okuma
                         string pdfText = await PdfOku(filePath);
 
                         progressBar1.Visible = false;
+                        ProcessPdfData(pdfText);
+                        YerlestirmeTekrarSayisi(pdfText);
 
-                        // Eğer checkbox işaretli ise PDF verisini işleyip richTextBox2'ye yazalım
-                        if (checkBox1.Checked)
-                        {
-                            lantekYukleme(pdfText);
-                            richTextBox2.Text = ProcessData(pdfText); // Burada PDF verisini işleyip yazdırıyoruz.
-                        }
-                        else
-                        {
-                            ProcessPdfData(pdfText);
-                            YerlestirmeTekrarSayisi(pdfText);
-                        }
                     }
                     catch (Exception ex)
                     {
@@ -105,48 +91,6 @@ namespace KesimTakip
                 }
             }
         }
-
-        // PDF'den alınan veriyi işleyen fonksiyon
-        private string ProcessData(string input)
-        {
-            string output = "";
-
-            // Program verilerini çekme
-            string programPattern = @"(?<=ID\s)(\d+)\s(\d+)\s([\d,]+)\s([\d,]+)\s([\d,]+)\s([\d,]+)\s([\d,]+)";
-            var programMatches = Regex.Matches(input, programPattern);
-
-            foreach (Match match in programMatches)
-            {
-                string cncId = match.Groups[1].Value;
-                string quantity = match.Groups[2].Value;
-                string length = match.Groups[3].Value;
-                string weight = match.Groups[4].Value;
-                string remnantLength = match.Groups[5].Value;
-                string remnantWeight = match.Groups[6].Value;
-
-                // Program bilgilerini çıktıya ekle
-                output += $"Program {cncId}: Quantity: {quantity}, Length: {length}, Weight: {weight}, Remnant Length: {remnantLength}, Remnant Weight: {remnantWeight}\n";
-            }
-
-            // Part verilerini çekme
-            string partPattern = @"(\d+-\d+-\d+-P-\d+)(?:\s([A-Za-z0-9\-\/]+))?\s(\d+)\s([\d,]+)\s([\d,]+)\s([\d,]+)";
-            var partMatches = Regex.Matches(input, partPattern);
-
-            foreach (Match match in partMatches)
-            {
-                string partNumber = match.Groups[1].Value;
-                string partDescription = match.Groups[2].Value;
-                string partQuantity = match.Groups[3].Value;
-                string partLength = match.Groups[4].Value;
-                string partWeight = match.Groups[5].Value;
-
-                // Part bilgilerini çıktıya ekle
-                output += $"Part: {partNumber} ({partDescription}), Quantity: {partQuantity}, Length: {partLength}, Weight: {partWeight}\n";
-            }
-
-            return output;
-        }
-        
       
         public async Task PdfYukle(string filePath)
         {
