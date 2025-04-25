@@ -62,17 +62,16 @@ namespace KesimTakip
 
         private void frmAnaSayfa_Load(object sender, EventArgs e)
         {
-            panelContainer.Size = new System.Drawing.Size(1924, 150);
+            panelContainer.Size = new System.Drawing.Size(1696, 197);
             buttonGroup = new List<Button> { btnAjan, btnAdm, btnBaykal };
 
             btnAjan.Click += ExclusiveButton_Click;
             btnAdm.Click += ExclusiveButton_Click;
             btnBaykal.Click += ExclusiveButton_Click;
 
+            ButonMakinaSecHelper.NötrStilUygula(buttonGroup);
 
-            ButonMakinaSecHelper.ButonSekli(btnAdm, buttonGroup);
-            ButonMakinaSecHelper.ButonSekli(btnBaykal, buttonGroup);
-            ButonMakinaSecHelper.ButonSekli(btnAjan, buttonGroup);
+            _seciliButon = null; 
         }
         private void ExclusiveButton_Click(object sender, EventArgs e)
         {
@@ -83,18 +82,51 @@ namespace KesimTakip
                 ButonMakinaSecHelper.ButonSekli(clickedButton, buttonGroup);
             }
         }
+        private string TespitEtPdfTuru(string pdfText)
+        {
+            // Büyük-küçük harf duyarsız kontrol için metni küçük harfe çevir
+            string lowerText = pdfText.ToLower();
 
+            // İlk sayfayı kontrol etmek için metni sınırlayalım
+            string firstPageText = pdfText.Substring(0, Math.Min(2000, pdfText.Length)).ToLower();
+
+            if (firstPageText.Contains("pronest"))
+                return "Baykal";
+            if (firstPageText.Contains("toplamparçakesmelistesi"))
+                return "Ajan";
+            if (firstPageText.Contains("firmaadı"))
+                return "Ajan";
+            if (firstPageText.Contains("nestings list"))
+                return "Lantek";
+
+            // Hata ayıklama için
+            MessageBox.Show("PDF türü tespit edilemedi. İlk 500 karakter: " + firstPageText.Substring(0, Math.Min(500, firstPageText.Length)), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            return null; // Tespit edilemedi
+        }
+
+        private bool ButonVePdfUyumluMu(string pdfTuru)
+        {
+            if (pdfTuru == "Ajan" && _seciliButon == btnAjan)
+                return true;
+            if (pdfTuru == "Lantek" && _seciliButon == btnAdm)
+                return true;
+            if (pdfTuru == "Baykal" && _seciliButon == btnBaykal)
+                return true;
+
+            return false;
+        }
         private async void btnSec_Click(object sender, EventArgs e)
         {
             if (_seciliButon == null)
             {
-                MessageBox.Show("Lütfen önce bir makine seçin (Ajan, Adm, Baykal).");
+                MessageBox.Show("Lütfen önce bir makine seçin (Ajan, Adm, Baykal).", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
             // Ortak UI temizleme işlemleri
             richTextBox1.Clear();
             richTextBox2.Clear();
+            richTextBox3.Clear();
             lblKesimId.Enabled = false;
             txtKesimId.Enabled = false;
             dataGridView1.Rows.Clear();
@@ -113,7 +145,7 @@ namespace KesimTakip
                         progressBar1.Value = 0;
                         progressBar1.Visible = true;
 
-                        // PDF'yi yükle (varsa, mevcut metodunuz)
+                        // PDF'yi yükle
                         await PdfYukle(filePath);
 
                         // PDF metnini oku
@@ -121,34 +153,57 @@ namespace KesimTakip
 
                         if (string.IsNullOrEmpty(pdfText))
                         {
-                            MessageBox.Show("PDF metni okunamadı.");
+                            MessageBox.Show("PDF metni okunamadı. PDF dosyasının içeriğini kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            progressBar1.Visible = false;
+                            return;
+                        }
+
+                        // PDF metnini RichTextBox1'e yaz
+                        richTextBox1.Text = pdfText;
+
+                        // İşlenmiş veriyi al ve RichTextBox4'e yaz
+                        string islenmisVeri = IslenmisVeriyiAlAjan();
+
+                        // PDF türünü tespit et
+                        string pdfTuru = TespitEtPdfTuru(pdfText);
+                        if (string.IsNullOrEmpty(pdfTuru))
+                        {
+                            MessageBox.Show("PDF türü tespit edilemedi. Dosya içeriğini kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            progressBar1.Visible = false;
+                            return;
+                        }
+
+                        // Seçili butonla PDF türünü kontrol et
+                        if (!ButonVePdfUyumluMu(pdfTuru))
+                        {
+                            MessageBox.Show($"Hatalı seçim: {pdfTuru} PDF'si yüklendi, ancak {_seciliButon.Text} butonu seçili.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             progressBar1.Visible = false;
                             return;
                         }
 
                         // Seçili butona göre ilgili metodu çalıştır
-                        List<MalzemeBilgisi> parsedData = await Task.Run(() =>
+                        (List<MalzemeBilgisi> parsedData, List<string> invalidData) = await Task.Run(() =>
                         {
                             try
                             {
                                 if (_seciliButon == btnAjan)
-                                    return _veriOkuma.AjanOku(pdfText); // Ajan için metod
+                                    return _veriOkuma.AjanOku(islenmisVeri);
                                 else if (_seciliButon == btnAdm)
-                                    return _veriOkuma.LantekOku(pdfText); // Adm için LantekOku
+                                    return (_veriOkuma.LantekOku(islenmisVeri), new List<string>());
                                 else if (_seciliButon == btnBaykal)
-                                    return _veriOkuma.BaykalOku(pdfText); // Baykal için metod
+                                    return _veriOkuma.BaykalOku(islenmisVeri);
                                 else
-                                return null;
+                                    throw new InvalidOperationException("Geçersiz buton seçimi.");
                             }
                             catch (Exception ex)
                             {
-                                MessageBox.Show(ex.Message);
-                                return null;
+                                return (null, new List<string> { $"Veri işleme hatası: {ex.Message}" });
                             }
                         });
 
-                        if (parsedData == null || parsedData.Count == 0)
+                        if ((parsedData == null || parsedData.Count == 0) && (invalidData == null || invalidData.Count == 0))
                         {
+                            MessageBox.Show("Hiçbir veri işlenemedi. PDF içeriğini richTextBox1 ve richTextBox4'te kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             progressBar1.Visible = false;
                             return;
                         }
@@ -157,43 +212,144 @@ namespace KesimTakip
                         richTextBox2.Clear();
                         dataGridView1.Rows.Clear();
 
-                        int totalItems = parsedData.Count;
+                        int totalItems = parsedData?.Count ?? 0;
                         int currentItem = 0;
 
-                        foreach (var data in parsedData)
+                        if (parsedData != null)
                         {
-                            if (data != null)
+                            foreach (var data in parsedData)
                             {
-                                richTextBox2.AppendText($"{data.Kalite} - {data.Kalınlık} - {data.Kalıp} - {data.Poz} - {data.Adet}\n");
-                                dataGridView1.Rows.Add(data.Kalite, data.Kalınlık, data.Kalıp, data.Poz, data.Adet);
+                                if (data != null)
+                                {
+                                    richTextBox2.AppendText($"{data.Kalite} - {data.Kalınlık} - {data.Kalıp} - {data.Poz} - {data.Adet} - {data.Proje}\n");
+                                    dataGridView1.Rows.Add(data.Kalite, data.Kalınlık, data.Kalıp, data.Poz, data.Adet, data.Proje);
 
-                                // ProgressBar'ı güncelle
-                                currentItem++;
-                                int progressValue = (int)((currentItem / (float)totalItems) * 100);
-                                progressBar1.Value = progressValue;
+                                    currentItem++;
+                                    int progressValue = totalItems > 0 ? (int)((currentItem / (float)totalItems) * 100) : 0;
+                                    progressBar1.Value = progressValue;
+                                }
                             }
                         }
 
-                        // Yerleştirme tekrar sayısını hesapla
-                        YerlestirmeTekrarSayisi(pdfText);
+                        if (invalidData != null && invalidData.Any())
+                        {
+                            foreach (var invalidLine in invalidData)
+                            {
+                                richTextBox3.AppendText($"{invalidLine}\n");
+                            }
+                            MessageBox.Show("Bazı veriler formata uymuyor ve richTextBox3'ye eklendi. Lütfen kontrol edin ve düzenleyin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
 
-                        // ProgressBar'ı gizle
+                        YerlestirmeTekrarSayisi(pdfText);
                         progressBar1.Visible = false;
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Hata oluştu: " + ex.Message);
+                        MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         progressBar1.Visible = false;
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Dosya bulunamadı.");
+                    MessageBox.Show("Dosya bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     progressBar1.Visible = false;
                 }
             }
         }
 
+        private string IslenmisVeriyiAlAjan()
+        {
+            string[] lines = richTextBox1.Lines;
+            StringBuilder output = new StringBuilder();
+            int i = 0;
+
+            while (i < lines.Length)
+            {
+                string line = lines[i].Trim();
+
+                if (string.IsNullOrEmpty(line) || line.StartsWith("-------- Sayfa"))
+                {
+                    output.AppendLine();
+                    i++;
+                    continue;
+                }
+
+                if (line.StartsWith("ST"))
+                {
+                    output.Append(line);
+                    i++;
+
+                    if (i < lines.Length)
+                    {
+                        i++;
+                        if (i < lines.Length)
+                        {
+                            string nextLine = lines[i].Trim();
+                            if (!string.IsNullOrEmpty(nextLine) && !nextLine.StartsWith("-------- Sayfa"))
+                            {
+                                output.Append("").Append(nextLine).AppendLine();
+                            }
+                            else
+                            {
+                                output.AppendLine();
+                            }
+                            i++;
+                        }
+                        else
+                        {
+                            output.AppendLine();
+                        }
+                    }
+                }
+                else
+                {
+                    output.AppendLine(line);
+                    i++;
+                }
+            }
+
+            return output.ToString();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                // richTextBox3'teki verileri satır satır al
+                string[] lines = richTextBox3.Text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+                // richTextBox2'yi ve tabloyu temizle
+                richTextBox2.Clear();
+                dataGridView1.Rows.Clear();
+
+                foreach (string line in lines)
+                {
+                    // '-' ile ayır ve trimle
+                    string[] parts = line.Split('-').Select(p => p.Trim()).ToArray();
+
+                    // Parça sayısı en az 6 ise işleme al
+                    if (parts.Length >= 6)
+                    {
+                        string kalite = parts[0];
+                        string kalinlik = parts[1];
+                        string kalip = parts[2] + "-" + parts[3];
+                        string poz = parts[4];
+                        string adet = parts[5];
+                        string proje = parts[6];
+
+                        // richTextBox2'ye yaz
+                        richTextBox2.AppendText($"{kalite} - {kalinlik} - {kalip} - {poz} - {adet} - {proje}\n");
+
+                        // dataGridView1'e ekle
+                        dataGridView1.Rows.Add(kalite, kalinlik, kalip, poz, adet, proje);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata oluştu: " + ex.Message);
+            }
+        }
         public async Task PdfYukle(string filePath)
         {
             try
@@ -221,33 +377,57 @@ namespace KesimTakip
         public async Task<string> PdfOku(string pdfpath)
         {
             var pageText = new StringBuilder();
+
             try
             {
                 using (iText.Kernel.Pdf.PdfDocument pdfDocument = new iText.Kernel.Pdf.PdfDocument(new PdfReader(pdfpath)))
                 {
                     int pageNumbers = pdfDocument.GetNumberOfPages();
+                    pageText.AppendLine($"Toplam sayfa sayısı: {pageNumbers}");
+
                     for (int i = 1; i <= pageNumbers; i++)
                     {
-                        ITextExtractionStrategy strategy = new LocationTextExtractionStrategy();
-                        string text = PdfTextExtractor.GetTextFromPage(pdfDocument.GetPage(i), strategy);
-                        pageText.AppendLine(text);
+                        try
+                        {
+                            pageText.AppendLine($"-------- Sayfa {i} işleniyor ---------------");
+                            // LocationTextExtractionStrategy kullan
+                            ITextExtractionStrategy strategy = new iText.Kernel.Pdf.Canvas.Parser.Listener.LocationTextExtractionStrategy();
+                            string text = PdfTextExtractor.GetTextFromPage(pdfDocument.GetPage(i), strategy);
 
-                        int progressValue = (int)((i / (float)pageNumbers) * 100);
-                        Invoke((Action)(() => progressBar1.Value = progressValue));
+                            // Sayfa içeriğini ekle
+                            pageText.AppendLine(string.IsNullOrWhiteSpace(text) ? "[Bu sayfada metin yok]" : text);
+                            pageText.AppendLine();
 
-                        await Task.Delay(100);
+                            // ProgressBar güncelleme
+                            int progressValue = (int)((i / (float)pageNumbers) * 100);
+                            BeginInvoke((Action)(() => progressBar1.Value = progressValue));
+
+                            // Task.Delay kaldırıldı, gerekirse ekleyebilirsiniz
+                            // await Task.Delay(100);
+                        }
+                        catch (Exception pageEx)
+                        {
+                            pageText.AppendLine($"-------- Sayfa {i} ---------------");
+                            pageText.AppendLine($"[Sayfa okunamadı: {pageEx.Message}]");
+                            pageText.AppendLine();
+                            // Hata mesajını anında göster
+                            MessageBox.Show($"Sayfa {i} okunamadı: {pageEx.Message}");
+                        }
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Metin okuma hatası: " + ex.Message);
+                pageText.AppendLine($"[PDF genel okuma hatası: {ex.Message}]");
+                MessageBox.Show("PDF genel okuma hatası: " + ex.Message);
             }
 
-            Invoke((Action)(() => richTextBox1.Text = pageText.ToString()));
+            // RichTextBox'a yazdır
+            BeginInvoke((Action)(() => richTextBox1.Text = pageText.ToString()));
 
             return pageText.ToString();
         }
+
 
         private void UpdateTextBoxes()
         {
@@ -410,31 +590,38 @@ namespace KesimTakip
 
         private void btnGonder_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show(
+            if (string.IsNullOrEmpty(txtSorun.Text))
+            {
+                MessageBox.Show("Bildiri göndermeden önce lütfen bildiri metnini doldurunuz!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            else
+            {
+                DialogResult result = MessageBox.Show(
             "Bildiriyi göndermek istediğinize emin misiniz?",
             "Onayla",
             MessageBoxButtons.YesNo,
             MessageBoxIcon.Question
             );
 
-            if (result == DialogResult.Yes)
-            {
-                string olusturan = txtOlusturan.Text;
-                string sorun = txtSorun.Text;
-                string tarih = lblSistemSaat.Text + " " + lblSistemTarih.Text;
-
-                SorunBildirimleriData datas = new SorunBildirimleriData();
-                bool basariliMi = datas.SorunBildirimEkle(olusturan, sorun, tarih);
-
-                if (basariliMi)
+                if (result == DialogResult.Yes)
                 {
-                    MessageBox.Show("Bildiriminiz başarıyla iletildi.");
-                    txtSorun.Clear();
+                    string olusturan = txtOlusturan.Text;
+                    string sorun = txtSorun.Text;
+                    string tarih = lblSistemSaat.Text + " " + lblSistemTarih.Text;
+
+                    SorunBildirimleriData datas = new SorunBildirimleriData();
+                    bool basariliMi = datas.SorunBildirimEkle(olusturan, sorun, tarih);
+
+                    if (basariliMi)
+                    {
+                        MessageBox.Show("Bildiriminiz başarıyla iletildi.");
+                        txtSorun.Clear();
+                    }
                 }
-            }
-            else
-            {
-                MessageBox.Show("Gönderim iptal edildi.");
+                else
+                {
+                    MessageBox.Show("Gönderim iptal edildi.");
+                }
             }
         }
 
@@ -522,6 +709,8 @@ namespace KesimTakip
                     writer.WriteElementString("Poz", pozXmlDegeri);
 
                     writer.WriteElementString("Adet", dgv.Rows[i].Cells[4].Value?.ToString());
+
+                    writer.WriteElementString("Proje", dgv.Rows[i].Cells[5].Value?.ToString());
 
                     writer.WriteEndElement();
                 }

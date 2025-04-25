@@ -13,5 +13,6 @@ namespace KesimTakip.Entitys
         public string Kalıp { get; set; }
         public string Poz { get; set; }
         public string Adet { get; set; }
+        public string Proje { get; set; }
     }
 }

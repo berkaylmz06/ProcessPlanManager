@@ -20,7 +20,6 @@ namespace KesimTakip.Business
             var parsedDataList = new List<MalzemeBilgisi>();
             try
             {
-                // Parça verilerini çekme
                 const string partPattern = @"(\d+-\d+-\d+-P-\d+)(?:\s([A-Za-z0-9\-\/]+))?\s(\d+)\s([\d,]+)\s([\d,]+)\s([\d,]+)";
                 var partRegex = new Regex(partPattern, RegexOptions.Compiled);
                 var partMatches = partRegex.Matches(input);
@@ -34,13 +33,11 @@ namespace KesimTakip.Business
                     string partLength = match.Groups[4].Value;
                     string partWeight = match.Groups[5].Value;
 
-                    // Sayısal değerlerin doğruluğunu kontrol et
                     if (!ValidateNumericValues(partQuantity, partLength, partWeight))
                     {
                         throw new FormatException($"Geçersiz sayısal veri bulundu (Parça: {partNumber}).");
                     }
 
-                    // Parça verilerini MalzemeBilgisi nesnesine dönüştür
                     string partData = $"{partNumber}-{partQuantity}";
                     if (seenMaterials.Add(partData))
                     {
@@ -77,157 +74,164 @@ namespace KesimTakip.Business
             return true;
         }
 
-        public List<MalzemeBilgisi> BaykalOku(string pdfText)
+        public (List<MalzemeBilgisi> ParsedData, List<string> InvalidData) AjanOku(string pdfText)
         {
             var parsedDataList = new List<MalzemeBilgisi>();
-            string[] firstFourLines = pdfText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Take(4).ToArray();
-            string firstFourLinesText = string.Join("\n", firstFourLines);
+            var invalidDataSet = new HashSet<string>(); // Benzersiz geçersiz veriler için HashSet
 
-            if (firstFourLinesText.Contains("ProNest"))
+            try
             {
-                try
+                string generalPattern = @"ST\d{2}[^\n\r]+";
+                Regex generalRegex = new Regex(generalPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                MatchCollection allMatches = generalRegex.Matches(pdfText);
+
+                HashSet<string> extractedData = new HashSet<string>();
+
+                foreach (Match match in allMatches)
                 {
-                    string startPattern = @"Numarası\s+Numara";
-                    Regex startRegex = new Regex(startPattern);
-                    Match startMatch = startRegex.Match(pdfText);
+                    string line = match.Value.Trim();
 
-                    if (startMatch.Success)
+                    int dashCount = line.Count(c => c == '-');
+
+                    if (dashCount < 4)
                     {
-                        string materialPattern = @"(\d+)\s+(\d+)\s+(ST\d+-\d+mm-\d+-\d+-P\d+-\d+)\s+AD";
-                        Regex materialRegex = new Regex(materialPattern);
-                        MatchCollection materialMatches = materialRegex.Matches(pdfText);
+                        invalidDataSet.Add(line); // Benzersiz şekilde ekle
+                        continue;
+                    }
 
-                        HashSet<string> seenMaterials = new HashSet<string>();
-
-                        foreach (Match match in materialMatches)
+                    var parsed = ParseLine(line);
+                    if (parsed != null)
+                    {
+                        if (extractedData.Add(line))
                         {
-                            string malzeme = match.Groups[3].Value;
-                            string fullMaterial = $"{malzeme} AD";
-
-                            if (!seenMaterials.Contains(fullMaterial))
-                            {
-                                seenMaterials.Add(fullMaterial);
-                                parsedDataList.Add(ParseLine(fullMaterial));
-                            }
+                            parsedDataList.Add(parsed);
                         }
                     }
                     else
                     {
-                        throw new Exception("Pdf okunamadı.");
+                        invalidDataSet.Add(line); // Benzersiz şekilde ekle
                     }
                 }
-                catch (Exception ex)
-                {
-                    throw new Exception($"Baykal veri ayrıştırma hatası: {ex.Message}", ex);
 
+                if (!parsedDataList.Any() && !invalidDataSet.Any())
+                {
+                    string debugInfo = $"Yakalanan satır yok. PDF içeriğinin bir kısmını kontrol edin:\n" +
+                                      pdfText.Substring(0, Math.Min(500, pdfText.Length)).Replace("\n", "\\n");
+                    throw new Exception(debugInfo);
+                }
+                else if (!parsedDataList.Any() && invalidDataSet.Any())
+                {
+                    string debugInfo = $"Hiçbir veri formata uymadı. Yakalanan {invalidDataSet.Count} satırdan bir örnek: " +
+                                      $"{invalidDataSet.FirstOrDefault() ?? "Yok"}\n" +
+                                      $"PDF içeriğinin bir kısmını kontrol edin:\n" +
+                                      pdfText.Substring(0, Math.Min(500, pdfText.Length)).Replace("\n", "\\n");
+                    throw new Exception(debugInfo);
                 }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("PDF okunamadı. Lütfen seçilen makinayı gözden geçiriniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"PDF ayrıştırma hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            return parsedDataList;
+
+            return (parsedDataList, invalidDataSet.ToList()); // HashSet'i List'e çevir
         }
-        public List<MalzemeBilgisi> AjanOku(string pdfText)
+
+        public (List<MalzemeBilgisi> ParsedData, List<string> InvalidData) BaykalOku(string pdfText)
         {
-
             var parsedDataList = new List<MalzemeBilgisi>();
-            string[] firstFourLines = pdfText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None).Take(4).ToArray();
-            string firstFourLinesText = string.Join("\n", firstFourLines);
+            var invalidDataSet = new HashSet<string>(); // Benzersiz geçersiz veriler için HashSet
 
-
-            if (firstFourLinesText.Contains("FirmaAdı"))
+            try
             {
-                try
+                string generalPattern = @"ST\d{2}[-\s][^\n\r]+";
+                Regex generalRegex = new Regex(generalPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+                MatchCollection allMatches = generalRegex.Matches(pdfText);
+
+                HashSet<string> extractedData = new HashSet<string>();
+
+                foreach (Match match in allMatches)
                 {
-                    string pattern = @"(\d+)\s(ST\d+)-(\d+mm)-(\d+-\d+)-(\w+)-(\w+)\s([\dX]+)\s([\d\.]+)\s([\d\:\.]+)\s(\d+)\s([\d\.]+)|(\d+)\s(ST\d+)-(\d+mm)-(\d+-\d+)-(\w+)-(\w+)\s([\dX]+)\s([\d\.]+)\s([\d\:\.]+)\s(\d+)\s([\d\.]+)\s(\d+-\d+)\s+([\d\.]+)";
-                    Regex regex = new Regex(pattern);
-                    MatchCollection matches = regex.Matches(pdfText);
+                    string line = match.Value.Trim();
 
-                    HashSet<string> extractedData = new HashSet<string>();
+                    int dashCount = line.Count(c => c == '-');
 
-                    foreach (Match match in matches)
+                    if (dashCount < 4)
                     {
-                        if (match.Groups.Count >= 12)
-                        {
-                            string kalite = match.Groups[2].Value;
-                            string mm = match.Groups[3].Value;
-                            string numara = match.Groups[4].Value;
-                            string p1 = match.Groups[5].Value;
-                            string p2 = match.Groups[6].Value;
+                        invalidDataSet.Add(line); // Benzersiz şekilde ekle
+                        continue;
+                    }
 
-                            string result = $"{kalite} - {mm} - {numara} - {p1} - {p2}".Trim();
-                            if (!extractedData.Contains(result))
+                    if (dashCount >= 4 && dashCount <= 5)
+                    {
+                        var parsed = ParseLine(line);
+                        if (parsed != null)
+                        {
+                            if (extractedData.Add(line))
                             {
-                                extractedData.Add(result);
-                                parsedDataList.Add(ParseLine(result));
+                                parsedDataList.Add(parsed);
                             }
+                        }
+                        else
+                        {
+                            invalidDataSet.Add(line); // Benzersiz şekilde ekle
+                        }
+                    }
+                    else if (dashCount >= 6)
+                    {
+                        var parsed = ParseLine(line);
+                        if (parsed != null)
+                        {
+                            if (extractedData.Add(line))
+                            {
+                                parsedDataList.Add(parsed);
+                            }
+                        }
+                        else
+                        {
+                            invalidDataSet.Add(line); // Benzersiz şekilde ekle
                         }
                     }
                 }
-                catch (Exception ex)
+
+                if (!parsedDataList.Any() && !invalidDataSet.Any())
                 {
-                    throw new Exception($"PDF ayrıştırma hatası (FirmaAdı formatı): {ex.Message}");
+                    string debugInfo = $"Yakalanan satır yok. PDF içeriğinin bir kısmını kontrol edin:\n" +
+                                      pdfText.Substring(0, Math.Min(500, pdfText.Length)).Replace("\n", "\\n");
+                    throw new Exception(debugInfo);
+                }
+                else if (!parsedDataList.Any() && invalidDataSet.Any())
+                {
+                    string debugInfo = $"Hiçbir veri formata uymadı. Yakalanan {invalidDataSet.Count} satırdan bir örnek: " +
+                                      $"{invalidDataSet.FirstOrDefault() ?? "Yok"}\n" +
+                                      $"PDF içeriğinin bir kısmını kontrol edin:\n" +
+                                      pdfText.Substring(0, Math.Min(500, pdfText.Length)).Replace("\n", "\\n");
+                    throw new Exception(debugInfo);
                 }
             }
-            else if (firstFourLinesText.Contains("ToplamParçaKesmeListesi"))
+            catch (Exception ex)
             {
-                try
-                {
-                    string desen = @"ToplamParçaKesmeListesi[\s\S]*?Buverilerstandartkesimparametrelerinegörehesaplanmaktadır";
-                    Match aralikMatch = Regex.Match(pdfText, desen, RegexOptions.Singleline);
-
-                    if (aralikMatch.Success)
-                    {
-                        string sadeceKesimListesi = aralikMatch.Value;
-
-                        string pattern = @"ST\d{2}-\d+mm-\d+-\d+-P\d+-\d+";
-                        Regex regex = new Regex(pattern);
-                        MatchCollection matches = regex.Matches(sadeceKesimListesi);
-
-                        HashSet<string> extractedData = new HashSet<string>();
-                        foreach (Match match in matches)
-                        {
-                            string matchValue = match.Value;
-                            if (!matchValue.EndsWith(" AD"))
-                            {
-                                matchValue += " AD";
-                            }
-                            extractedData.Add(matchValue);
-                            parsedDataList.Add(ParseLine(matchValue));
-                        }
-                    }
-                    else
-                    {
-                        throw new Exception("Pdf okunamadı.");
-                    }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"PDF ayrıştırma hatası (ToplamParçaKesmeListesi formatı): {ex.Message}");
-                }
-            }
-            else
-            {
-                MessageBox.Show("PDF okunamadı. Lütfen seçilen makinayı gözden geçiriniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Baykal veri ayrıştırma hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            return parsedDataList;
+            return (parsedDataList, invalidDataSet.ToList()); // HashSet'i List'e çevir
         }
 
         private MalzemeBilgisi ParseLine(string line)
         {
-            var match = Regex.Match(line, @"(?<Kalite>[A-Za-z0-9]+)\s*-\s*(?<Kalınlık>[A-Za-z0-9]+)\s*-\s*(?<Kalıp>[A-Za-z0-9-]+)\s*-\s*(?<Poz>[A-Za-z0-9]+)\s*-\s*(?<Adet>[0-9]+)");
+            var match = Regex.Match(line,
+                @"ST(?<Kalite>\d{2})[-\s]*(?<Kalınlık>\d+(?:MM|mm))[-\s]*(?<Kalıp>\d{3}-\d{2})[-\s]*(?<Poz>P\d{1,3})[-\s]*(?<Adet>\d+\s?[A-Za-z]{2})(?:[-\s]*(?<Proje>\d{5}.\d{1,2}))?",
+                RegexOptions.IgnoreCase);
 
             if (match.Success)
             {
                 return new MalzemeBilgisi
                 {
-                    Kalite = match.Groups["Kalite"].Value,
+                    Kalite = $"ST{match.Groups["Kalite"].Value}",
                     Kalınlık = match.Groups["Kalınlık"].Value,
                     Kalıp = match.Groups["Kalıp"].Value,
                     Poz = match.Groups["Poz"].Value,
-                    Adet = match.Groups["Adet"].Value
+                    Adet = match.Groups["Adet"].Value,
+                    Proje = match.Groups["Proje"].Value,
                 };
             }
 

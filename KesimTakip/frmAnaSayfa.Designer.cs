@@ -43,6 +43,11 @@
             this.btnKesimYap = new System.Windows.Forms.Button();
             this.btnKesimPlaniEkle = new System.Windows.Forms.Button();
             this.panelSistem = new System.Windows.Forms.Panel();
+            this.btnAktar = new System.Windows.Forms.Button();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label18 = new System.Windows.Forms.Label();
+            this.label10 = new System.Windows.Forms.Label();
+            this.richTextBox3 = new System.Windows.Forms.RichTextBox();
             this.panelSistemBilgisi = new System.Windows.Forms.Panel();
             this.lblSistemSaat = new System.Windows.Forms.Label();
             this.lblSistemTarih = new System.Windows.Forms.Label();
@@ -81,6 +86,7 @@
             this.gridKalip = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.gridPoz = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.gridAdet = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridProje = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnEkle = new System.Windows.Forms.Button();
             this.dtEklemeTarihi = new System.Windows.Forms.DateTimePicker();
             this.btnTumunuEkle = new System.Windows.Forms.Button();
@@ -98,6 +104,7 @@
             this.txtSorun = new System.Windows.Forms.RichTextBox();
             this.label17 = new System.Windows.Forms.Label();
             this.btnGonder = new System.Windows.Forms.Button();
+            this.label20 = new System.Windows.Forms.Label();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
@@ -111,7 +118,7 @@
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(1322, 21);
+            this.progressBar1.Location = new System.Drawing.Point(1490, 21);
             this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(195, 16);
@@ -127,7 +134,7 @@
             this.panelYardimCubugu.Location = new System.Drawing.Point(0, 797);
             this.panelYardimCubugu.Margin = new System.Windows.Forms.Padding(2);
             this.panelYardimCubugu.Name = "panelYardimCubugu";
-            this.panelYardimCubugu.Size = new System.Drawing.Size(1592, 49);
+            this.panelYardimCubugu.Size = new System.Drawing.Size(1696, 49);
             this.panelYardimCubugu.TabIndex = 210;
             // 
             // btnYardim
@@ -175,7 +182,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
-            this.menuStrip1.Size = new System.Drawing.Size(1592, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1696, 24);
             this.menuStrip1.TabIndex = 213;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -220,7 +227,7 @@
             this.panelAraYuz.Location = new System.Drawing.Point(0, 24);
             this.panelAraYuz.Margin = new System.Windows.Forms.Padding(2);
             this.panelAraYuz.Name = "panelAraYuz";
-            this.panelAraYuz.Size = new System.Drawing.Size(205, 763);
+            this.panelAraYuz.Size = new System.Drawing.Size(205, 576);
             this.panelAraYuz.TabIndex = 212;
             // 
             // btnYapilanKesimleriGor
@@ -258,6 +265,12 @@
             // panelSistem
             // 
             this.panelSistem.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.panelSistem.Controls.Add(this.label20);
+            this.panelSistem.Controls.Add(this.btnAktar);
+            this.panelSistem.Controls.Add(this.label19);
+            this.panelSistem.Controls.Add(this.label18);
+            this.panelSistem.Controls.Add(this.label10);
+            this.panelSistem.Controls.Add(this.richTextBox3);
             this.panelSistem.Controls.Add(this.panelSistemBilgisi);
             this.panelSistem.Controls.Add(this.label12);
             this.panelSistem.Controls.Add(this.richTextBox2);
@@ -266,9 +279,58 @@
             this.panelSistem.Location = new System.Drawing.Point(0, 0);
             this.panelSistem.Margin = new System.Windows.Forms.Padding(2);
             this.panelSistem.Name = "panelSistem";
-            this.panelSistem.Size = new System.Drawing.Size(1592, 10);
+            this.panelSistem.Size = new System.Drawing.Size(1696, 197);
             this.panelSistem.TabIndex = 150;
             this.panelSistem.Visible = false;
+            // 
+            // btnAktar
+            // 
+            this.btnAktar.Location = new System.Drawing.Point(895, 85);
+            this.btnAktar.Name = "btnAktar";
+            this.btnAktar.Size = new System.Drawing.Size(95, 32);
+            this.btnAktar.TabIndex = 130;
+            this.btnAktar.Text = "Aktar";
+            this.btnAktar.UseVisualStyleBackColor = true;
+            this.btnAktar.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(1393, 22);
+            this.label19.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(58, 13);
+            this.label19.TabIndex = 129;
+            this.label19.Text = "PDF Çıktısı";
+            // 
+            // label18
+            // 
+            this.label18.AutoSize = true;
+            this.label18.Location = new System.Drawing.Point(992, 22);
+            this.label18.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label18.Name = "label18";
+            this.label18.Size = new System.Drawing.Size(69, 13);
+            this.label18.TabIndex = 128;
+            this.label18.Text = "Hatalı Format";
+            // 
+            // label10
+            // 
+            this.label10.AutoSize = true;
+            this.label10.Location = new System.Drawing.Point(598, 22);
+            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label10.Name = "label10";
+            this.label10.Size = new System.Drawing.Size(71, 13);
+            this.label10.TabIndex = 127;
+            this.label10.Text = "Doğru Format";
+            // 
+            // richTextBox3
+            // 
+            this.richTextBox3.Location = new System.Drawing.Point(995, 36);
+            this.richTextBox3.Margin = new System.Windows.Forms.Padding(2);
+            this.richTextBox3.Name = "richTextBox3";
+            this.richTextBox3.Size = new System.Drawing.Size(289, 118);
+            this.richTextBox3.TabIndex = 126;
+            this.richTextBox3.Text = "";
             // 
             // panelSistemBilgisi
             // 
@@ -282,7 +344,7 @@
             this.panelSistemBilgisi.Controls.Add(this.label16);
             this.panelSistemBilgisi.Controls.Add(this.label13);
             this.panelSistemBilgisi.Controls.Add(this.label14);
-            this.panelSistemBilgisi.Location = new System.Drawing.Point(27, 25);
+            this.panelSistemBilgisi.Location = new System.Drawing.Point(32, 47);
             this.panelSistemBilgisi.Margin = new System.Windows.Forms.Padding(2);
             this.panelSistemBilgisi.Name = "panelSistemBilgisi";
             this.panelSistemBilgisi.Size = new System.Drawing.Size(273, 107);
@@ -371,7 +433,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(24, 10);
+            this.label12.Location = new System.Drawing.Point(29, 32);
             this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(67, 13);
@@ -380,7 +442,7 @@
             // 
             // richTextBox2
             // 
-            this.richTextBox2.Location = new System.Drawing.Point(529, 14);
+            this.richTextBox2.Location = new System.Drawing.Point(601, 36);
             this.richTextBox2.Margin = new System.Windows.Forms.Padding(2);
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.Size = new System.Drawing.Size(289, 118);
@@ -389,7 +451,7 @@
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(821, 14);
+            this.richTextBox1.Location = new System.Drawing.Point(1396, 36);
             this.richTextBox1.Margin = new System.Windows.Forms.Padding(2);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(289, 118);
@@ -399,7 +461,7 @@
             // label1
             // 
             this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(250, 151);
+            this.label1.Location = new System.Drawing.Point(317, 141);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(55, 13);
@@ -409,7 +471,7 @@
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(250, 451);
+            this.label2.Location = new System.Drawing.Point(317, 441);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(74, 13);
@@ -419,7 +481,7 @@
             // label3
             // 
             this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(250, 247);
+            this.label3.Location = new System.Drawing.Point(317, 237);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(51, 13);
@@ -429,7 +491,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(248, 385);
+            this.label4.Location = new System.Drawing.Point(315, 375);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(88, 13);
@@ -439,7 +501,7 @@
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(250, 419);
+            this.label5.Location = new System.Drawing.Point(317, 409);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(85, 13);
@@ -449,7 +511,7 @@
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(250, 347);
+            this.label6.Location = new System.Drawing.Point(317, 337);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(50, 13);
@@ -459,7 +521,7 @@
             // txtOlusturan
             // 
             this.txtOlusturan.Enabled = false;
-            this.txtOlusturan.Location = new System.Drawing.Point(335, 149);
+            this.txtOlusturan.Location = new System.Drawing.Point(402, 139);
             this.txtOlusturan.Margin = new System.Windows.Forms.Padding(2);
             this.txtOlusturan.Name = "txtOlusturan";
             this.txtOlusturan.Size = new System.Drawing.Size(160, 20);
@@ -467,7 +529,7 @@
             // 
             // txtProjeNo
             // 
-            this.txtProjeNo.Location = new System.Drawing.Point(335, 243);
+            this.txtProjeNo.Location = new System.Drawing.Point(402, 233);
             this.txtProjeNo.Margin = new System.Windows.Forms.Padding(2);
             this.txtProjeNo.Name = "txtProjeNo";
             this.txtProjeNo.Size = new System.Drawing.Size(160, 20);
@@ -475,7 +537,7 @@
             // 
             // txtKalipNo
             // 
-            this.txtKalipNo.Location = new System.Drawing.Point(335, 345);
+            this.txtKalipNo.Location = new System.Drawing.Point(402, 335);
             this.txtKalipNo.Margin = new System.Windows.Forms.Padding(2);
             this.txtKalipNo.Name = "txtKalipNo";
             this.txtKalipNo.Size = new System.Drawing.Size(160, 20);
@@ -483,7 +545,7 @@
             // 
             // txtKesilenPozlar
             // 
-            this.txtKesilenPozlar.Location = new System.Drawing.Point(335, 383);
+            this.txtKesilenPozlar.Location = new System.Drawing.Point(402, 373);
             this.txtKesilenPozlar.Margin = new System.Windows.Forms.Padding(2);
             this.txtKesilenPozlar.Name = "txtKesilenPozlar";
             this.txtKesilenPozlar.Size = new System.Drawing.Size(160, 20);
@@ -491,7 +553,7 @@
             // 
             // txtKPAdet
             // 
-            this.txtKPAdet.Location = new System.Drawing.Point(335, 417);
+            this.txtKPAdet.Location = new System.Drawing.Point(402, 407);
             this.txtKPAdet.Margin = new System.Windows.Forms.Padding(2);
             this.txtKPAdet.Name = "txtKPAdet";
             this.txtKPAdet.Size = new System.Drawing.Size(160, 20);
@@ -500,7 +562,7 @@
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(250, 184);
+            this.label7.Location = new System.Drawing.Point(317, 174);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(40, 13);
@@ -509,7 +571,7 @@
             // 
             // txtDosya
             // 
-            this.txtDosya.Location = new System.Drawing.Point(335, 182);
+            this.txtDosya.Location = new System.Drawing.Point(402, 172);
             this.txtDosya.Margin = new System.Windows.Forms.Padding(2);
             this.txtDosya.Name = "txtDosya";
             this.txtDosya.Size = new System.Drawing.Size(93, 20);
@@ -517,7 +579,7 @@
             // 
             // btnSec
             // 
-            this.btnSec.Location = new System.Drawing.Point(433, 176);
+            this.btnSec.Location = new System.Drawing.Point(500, 166);
             this.btnSec.Margin = new System.Windows.Forms.Padding(2);
             this.btnSec.Name = "btnSec";
             this.btnSec.Size = new System.Drawing.Size(62, 28);
@@ -529,7 +591,7 @@
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(250, 281);
+            this.label8.Location = new System.Drawing.Point(317, 271);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(36, 13);
@@ -538,7 +600,7 @@
             // 
             // txtKalite
             // 
-            this.txtKalite.Location = new System.Drawing.Point(335, 277);
+            this.txtKalite.Location = new System.Drawing.Point(402, 267);
             this.txtKalite.Margin = new System.Windows.Forms.Padding(2);
             this.txtKalite.Name = "txtKalite";
             this.txtKalite.Size = new System.Drawing.Size(160, 20);
@@ -547,7 +609,7 @@
             // label9
             // 
             this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(250, 314);
+            this.label9.Location = new System.Drawing.Point(317, 304);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(43, 13);
@@ -556,7 +618,7 @@
             // 
             // txtKalinlik
             // 
-            this.txtKalinlik.Location = new System.Drawing.Point(335, 310);
+            this.txtKalinlik.Location = new System.Drawing.Point(402, 300);
             this.txtKalinlik.Margin = new System.Windows.Forms.Padding(2);
             this.txtKalinlik.Name = "txtKalinlik";
             this.txtKalinlik.Size = new System.Drawing.Size(160, 20);
@@ -566,7 +628,7 @@
             // 
             this.lblKesimId.AutoSize = true;
             this.lblKesimId.Enabled = false;
-            this.lblKesimId.Location = new System.Drawing.Point(250, 215);
+            this.lblKesimId.Location = new System.Drawing.Point(317, 205);
             this.lblKesimId.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblKesimId.Name = "lblKesimId";
             this.lblKesimId.Size = new System.Drawing.Size(49, 13);
@@ -576,7 +638,7 @@
             // txtKesimId
             // 
             this.txtKesimId.Enabled = false;
-            this.txtKesimId.Location = new System.Drawing.Point(335, 214);
+            this.txtKesimId.Location = new System.Drawing.Point(402, 204);
             this.txtKesimId.Margin = new System.Windows.Forms.Padding(2);
             this.txtKesimId.Name = "txtKesimId";
             this.txtKesimId.Size = new System.Drawing.Size(160, 20);
@@ -592,16 +654,17 @@
             this.gridKalinlik,
             this.gridKalip,
             this.gridPoz,
-            this.gridAdet});
+            this.gridAdet,
+            this.gridProje});
             this.dataGridView1.GridColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.dataGridView1.Location = new System.Drawing.Point(253, 509);
+            this.dataGridView1.Location = new System.Drawing.Point(287, 501);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(378, 181);
+            this.dataGridView1.Size = new System.Drawing.Size(438, 210);
             this.dataGridView1.TabIndex = 267;
             // 
             // gridKalite
@@ -634,12 +697,17 @@
             this.gridAdet.MinimumWidth = 8;
             this.gridAdet.Name = "gridAdet";
             // 
+            // gridProje
+            // 
+            this.gridProje.HeaderText = "Proje";
+            this.gridProje.Name = "gridProje";
+            // 
             // btnEkle
             // 
-            this.btnEkle.Location = new System.Drawing.Point(253, 701);
+            this.btnEkle.Location = new System.Drawing.Point(287, 715);
             this.btnEkle.Margin = new System.Windows.Forms.Padding(2);
             this.btnEkle.Name = "btnEkle";
-            this.btnEkle.Size = new System.Drawing.Size(122, 25);
+            this.btnEkle.Size = new System.Drawing.Size(140, 35);
             this.btnEkle.TabIndex = 263;
             this.btnEkle.Text = "Ekle";
             this.btnEkle.UseVisualStyleBackColor = true;
@@ -647,7 +715,7 @@
             // 
             // dtEklemeTarihi
             // 
-            this.dtEklemeTarihi.Location = new System.Drawing.Point(335, 448);
+            this.dtEklemeTarihi.Location = new System.Drawing.Point(402, 438);
             this.dtEklemeTarihi.Margin = new System.Windows.Forms.Padding(2);
             this.dtEklemeTarihi.Name = "dtEklemeTarihi";
             this.dtEklemeTarihi.Size = new System.Drawing.Size(160, 20);
@@ -655,10 +723,10 @@
             // 
             // btnTumunuEkle
             // 
-            this.btnTumunuEkle.Location = new System.Drawing.Point(379, 701);
+            this.btnTumunuEkle.Location = new System.Drawing.Point(437, 715);
             this.btnTumunuEkle.Margin = new System.Windows.Forms.Padding(2);
             this.btnTumunuEkle.Name = "btnTumunuEkle";
-            this.btnTumunuEkle.Size = new System.Drawing.Size(122, 25);
+            this.btnTumunuEkle.Size = new System.Drawing.Size(140, 35);
             this.btnTumunuEkle.TabIndex = 268;
             this.btnTumunuEkle.Text = "Tümünü Ekle";
             this.btnTumunuEkle.UseVisualStyleBackColor = true;
@@ -666,10 +734,10 @@
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(509, 701);
+            this.btnKaydet.Location = new System.Drawing.Point(585, 715);
             this.btnKaydet.Margin = new System.Windows.Forms.Padding(2);
             this.btnKaydet.Name = "btnKaydet";
-            this.btnKaydet.Size = new System.Drawing.Size(122, 25);
+            this.btnKaydet.Size = new System.Drawing.Size(140, 35);
             this.btnKaydet.TabIndex = 254;
             this.btnKaydet.Text = "Kaydet";
             this.btnKaydet.UseVisualStyleBackColor = true;
@@ -679,7 +747,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label11.Location = new System.Drawing.Point(515, 349);
+            this.label11.Location = new System.Drawing.Point(582, 339);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(125, 13);
@@ -689,7 +757,7 @@
             // txtKesimPlaniTekrarSayisi
             // 
             this.txtKesimPlaniTekrarSayisi.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.txtKesimPlaniTekrarSayisi.Location = new System.Drawing.Point(554, 369);
+            this.txtKesimPlaniTekrarSayisi.Location = new System.Drawing.Point(621, 359);
             this.txtKesimPlaniTekrarSayisi.Margin = new System.Windows.Forms.Padding(2);
             this.txtKesimPlaniTekrarSayisi.Name = "txtKesimPlaniTekrarSayisi";
             this.txtKesimPlaniTekrarSayisi.Size = new System.Drawing.Size(41, 38);
@@ -697,7 +765,7 @@
             // 
             // btnXmlOlustur
             // 
-            this.btnXmlOlustur.Location = new System.Drawing.Point(534, 425);
+            this.btnXmlOlustur.Location = new System.Drawing.Point(601, 415);
             this.btnXmlOlustur.Margin = new System.Windows.Forms.Padding(2);
             this.btnXmlOlustur.Name = "btnXmlOlustur";
             this.btnXmlOlustur.Size = new System.Drawing.Size(76, 40);
@@ -743,14 +811,14 @@
             this.panelKesimPlaniEkle.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelKesimPlaniEkle.Location = new System.Drawing.Point(0, 24);
             this.panelKesimPlaniEkle.Name = "panelKesimPlaniEkle";
-            this.panelKesimPlaniEkle.Size = new System.Drawing.Size(1592, 763);
+            this.panelKesimPlaniEkle.Size = new System.Drawing.Size(1696, 576);
             this.panelKesimPlaniEkle.TabIndex = 214;
             this.panelKesimPlaniEkle.Visible = false;
             // 
             // btnBaykal
             // 
             this.btnBaykal.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnBaykal.Location = new System.Drawing.Point(370, 70);
+            this.btnBaykal.Location = new System.Drawing.Point(451, 58);
             this.btnBaykal.Margin = new System.Windows.Forms.Padding(2);
             this.btnBaykal.Name = "btnBaykal";
             this.btnBaykal.Size = new System.Drawing.Size(120, 46);
@@ -761,7 +829,7 @@
             // btnAjan
             // 
             this.btnAjan.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnAjan.Location = new System.Drawing.Point(220, 70);
+            this.btnAjan.Location = new System.Drawing.Point(301, 58);
             this.btnAjan.Margin = new System.Windows.Forms.Padding(2);
             this.btnAjan.Name = "btnAjan";
             this.btnAjan.Size = new System.Drawing.Size(120, 46);
@@ -772,7 +840,7 @@
             // btnAdm
             // 
             this.btnAdm.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnAdm.Location = new System.Drawing.Point(520, 70);
+            this.btnAdm.Location = new System.Drawing.Point(601, 58);
             this.btnAdm.Margin = new System.Windows.Forms.Padding(2);
             this.btnAdm.Name = "btnAdm";
             this.btnAdm.Size = new System.Drawing.Size(120, 46);
@@ -782,15 +850,17 @@
             // 
             // pdfViewer1
             // 
+            this.pdfViewer1.BackColor = System.Drawing.SystemColors.Window;
+            this.pdfViewer1.Dock = System.Windows.Forms.DockStyle.Right;
             this.pdfViewer1.FindTextHighLightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(153)))), ((int)(((byte)(193)))), ((int)(((byte)(218)))));
             this.pdfViewer1.FormFillEnabled = false;
             this.pdfViewer1.IgnoreCase = false;
             this.pdfViewer1.IsToolBarVisible = true;
-            this.pdfViewer1.Location = new System.Drawing.Point(666, 19);
+            this.pdfViewer1.Location = new System.Drawing.Point(755, 0);
             this.pdfViewer1.MultiPagesThreshold = 60;
             this.pdfViewer1.Name = "pdfViewer1";
             this.pdfViewer1.OnRenderPageExceptionEvent = null;
-            this.pdfViewer1.Size = new System.Drawing.Size(850, 733);
+            this.pdfViewer1.Size = new System.Drawing.Size(941, 576);
             this.pdfViewer1.TabIndex = 273;
             this.pdfViewer1.Text = "pdfViewer1";
             this.pdfViewer1.Threshold = 60;
@@ -802,9 +872,9 @@
             this.panelContainer.Controls.Add(this.panelSistem);
             this.panelContainer.Controls.Add(this.panelYardim);
             this.panelContainer.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelContainer.Location = new System.Drawing.Point(0, 787);
+            this.panelContainer.Location = new System.Drawing.Point(0, 600);
             this.panelContainer.Name = "panelContainer";
-            this.panelContainer.Size = new System.Drawing.Size(1592, 10);
+            this.panelContainer.Size = new System.Drawing.Size(1696, 197);
             this.panelContainer.TabIndex = 278;
             this.panelContainer.Visible = false;
             // 
@@ -819,13 +889,13 @@
             this.panelYardim.Location = new System.Drawing.Point(0, 0);
             this.panelYardim.Margin = new System.Windows.Forms.Padding(2);
             this.panelYardim.Name = "panelYardim";
-            this.panelYardim.Size = new System.Drawing.Size(1592, 10);
+            this.panelYardim.Size = new System.Drawing.Size(1696, 197);
             this.panelYardim.TabIndex = 129;
             this.panelYardim.Visible = false;
             // 
             // txtSorun
             // 
-            this.txtSorun.Location = new System.Drawing.Point(27, 23);
+            this.txtSorun.Location = new System.Drawing.Point(28, 42);
             this.txtSorun.Margin = new System.Windows.Forms.Padding(2);
             this.txtSorun.Name = "txtSorun";
             this.txtSorun.Size = new System.Drawing.Size(273, 108);
@@ -835,7 +905,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(24, 8);
+            this.label17.Location = new System.Drawing.Point(25, 27);
             this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(60, 13);
@@ -844,7 +914,7 @@
             // 
             // btnGonder
             // 
-            this.btnGonder.Location = new System.Drawing.Point(309, 108);
+            this.btnGonder.Location = new System.Drawing.Point(310, 127);
             this.btnGonder.Margin = new System.Windows.Forms.Padding(2);
             this.btnGonder.Name = "btnGonder";
             this.btnGonder.Size = new System.Drawing.Size(69, 22);
@@ -853,12 +923,23 @@
             this.btnGonder.UseVisualStyleBackColor = true;
             this.btnGonder.Click += new System.EventHandler(this.btnGonder_Click);
             // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label20.Location = new System.Drawing.Point(923, 63);
+            this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(35, 16);
+            this.label20.TabIndex = 131;
+            this.label20.Text = "<----";
+            // 
             // frmAnaSayfa
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(1592, 846);
+            this.ClientSize = new System.Drawing.Size(1696, 846);
             this.Controls.Add(this.panelAraYuz);
             this.Controls.Add(this.panelKesimPlaniEkle);
             this.Controls.Add(this.panelContainer);
@@ -938,11 +1019,6 @@
         private System.Windows.Forms.Label lblKesimId;
         private System.Windows.Forms.TextBox txtKesimId;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn gridKalite;
-        private System.Windows.Forms.DataGridViewTextBoxColumn gridKalinlik;
-        private System.Windows.Forms.DataGridViewTextBoxColumn gridKalip;
-        private System.Windows.Forms.DataGridViewTextBoxColumn gridPoz;
-        private System.Windows.Forms.DataGridViewTextBoxColumn gridAdet;
         private System.Windows.Forms.Button btnEkle;
         private System.Windows.Forms.DateTimePicker dtEklemeTarihi;
         private System.Windows.Forms.Button btnTumunuEkle;
@@ -960,5 +1036,17 @@
         private System.Windows.Forms.RichTextBox txtSorun;
         private System.Windows.Forms.Label label17;
         private System.Windows.Forms.Button btnGonder;
+        private System.Windows.Forms.RichTextBox richTextBox3;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label18;
+        private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridKalite;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridKalinlik;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridKalip;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridPoz;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridAdet;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridProje;
+        private System.Windows.Forms.Button btnAktar;
+        private System.Windows.Forms.Label label20;
     }
 }
