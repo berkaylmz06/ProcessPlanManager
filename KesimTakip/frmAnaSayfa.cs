@@ -127,6 +127,7 @@ namespace KesimTakip
             richTextBox1.Clear();
             richTextBox2.Clear();
             richTextBox3.Clear();
+            richTextBox4.Clear();
             lblKesimId.Enabled = false;
             txtKesimId.Enabled = false;
             dataGridView1.Rows.Clear();
@@ -163,6 +164,7 @@ namespace KesimTakip
 
                         // İşlenmiş veriyi al ve RichTextBox4'e yaz
                         string islenmisVeri = IslenmisVeriyiAlAjan();
+                        richTextBox4.Text = islenmisVeri;
 
                         // PDF türünü tespit et
                         string pdfTuru = TespitEtPdfTuru(pdfText);
@@ -189,9 +191,9 @@ namespace KesimTakip
                                 if (_seciliButon == btnAjan)
                                     return _veriOkuma.AjanOku(islenmisVeri);
                                 else if (_seciliButon == btnAdm)
-                                    return (_veriOkuma.LantekOku(islenmisVeri), new List<string>());
+                                    return (_veriOkuma.LantekOku(pdfText), new List<string>());
                                 else if (_seciliButon == btnBaykal)
-                                    return _veriOkuma.BaykalOku(islenmisVeri);
+                                    return _veriOkuma.BaykalOku(pdfText);
                                 else
                                     throw new InvalidOperationException("Geçersiz buton seçimi.");
                             }
@@ -207,6 +209,7 @@ namespace KesimTakip
                             progressBar1.Visible = false;
                             return;
                         }
+
 
                         // UI'yı güncelle
                         richTextBox2.Clear();
@@ -259,57 +262,65 @@ namespace KesimTakip
 
         private string IslenmisVeriyiAlAjan()
         {
-            string[] lines = richTextBox1.Lines;
-            StringBuilder output = new StringBuilder();
-            int i = 0;
-
-            while (i < lines.Length)
+            if (_seciliButon == btnAjan)
             {
-                string line = lines[i].Trim();
+                string[] lines = richTextBox1.Lines;
+                StringBuilder output = new StringBuilder();
+                int i = 0;
 
-                if (string.IsNullOrEmpty(line) || line.StartsWith("-------- Sayfa"))
+                while (i < lines.Length)
                 {
-                    output.AppendLine();
-                    i++;
-                    continue;
-                }
+                    string line = lines[i].Trim();
 
-                if (line.StartsWith("ST"))
-                {
-                    output.Append(line);
-                    i++;
-
-                    if (i < lines.Length)
+                    if (string.IsNullOrEmpty(line) || line.StartsWith("-------- Sayfa"))
                     {
+                        output.AppendLine();
                         i++;
+                        continue;
+                    }
+
+                    if (line.StartsWith("ST"))
+                    {
+                        output.Append(line);
+                        i++;
+
                         if (i < lines.Length)
                         {
-                            string nextLine = lines[i].Trim();
-                            if (!string.IsNullOrEmpty(nextLine) && !nextLine.StartsWith("-------- Sayfa"))
+                            i++;
+                            if (i < lines.Length)
                             {
-                                output.Append("").Append(nextLine).AppendLine();
+                                string nextLine = lines[i].Trim();
+                                if (!string.IsNullOrEmpty(nextLine) && !nextLine.StartsWith("-------- Sayfa"))
+                                {
+                                    output.Append("").Append(nextLine).AppendLine();
+                                }
+                                else
+                                {
+                                    output.AppendLine();
+                                }
+                                i++;
                             }
                             else
                             {
                                 output.AppendLine();
                             }
-                            i++;
-                        }
-                        else
-                        {
-                            output.AppendLine();
                         }
                     }
+                    else
+                    {
+                        output.AppendLine(line);
+                        i++;
+                    }
                 }
-                else
-                {
-                    output.AppendLine(line);
-                    i++;
-                }
-            }
 
-            return output.ToString();
+                return output.ToString();
+            }
+            else
+            {
+                return string.Empty; 
+            }
         }
+
 
         private void button1_Click(object sender, EventArgs e)
         {

@@ -76,136 +76,206 @@ namespace KesimTakip.Business
 
         public (List<MalzemeBilgisi> ParsedData, List<string> InvalidData) AjanOku(string pdfText)
         {
+            if (string.IsNullOrWhiteSpace(pdfText))
+            {
+                throw new ArgumentException("PDF metni boş veya null olamaz.", nameof(pdfText));
+            }
+
             var parsedDataList = new List<MalzemeBilgisi>();
-            var invalidDataSet = new HashSet<string>(); // Benzersiz geçersiz veriler için HashSet
+            var invalidDataSet = new HashSet<string>();
 
             try
             {
-                string generalPattern = @"ST\d{2}[^\n\r]+";
-                Regex generalRegex = new Regex(generalPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                MatchCollection allMatches = generalRegex.Matches(pdfText);
+                // PDF satırlarını ayır
+                string[] lines = pdfText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                StringBuilder currentLine = new StringBuilder();
+                int i = 0;
 
-                HashSet<string> extractedData = new HashSet<string>();
-
-                foreach (Match match in allMatches)
+                while (i < lines.Length)
                 {
-                    string line = match.Value.Trim();
+                    string line = lines[i].Trim();
 
-                    int dashCount = line.Count(c => c == '-');
-
-                    if (dashCount < 4)
+                    if (string.IsNullOrEmpty(line) || line.StartsWith("-------- Sayfa"))
                     {
-                        invalidDataSet.Add(line); // Benzersiz şekilde ekle
+                        i++;
                         continue;
                     }
 
-                    var parsed = ParseLine(line);
-                    if (parsed != null)
+                    if (line.StartsWith("ST"))
                     {
-                        if (extractedData.Add(line))
+                        currentLine.Clear();
+                        currentLine.Append(line);
+
+                        // Sonraki satırları kontrol et, 24193.01 veya 24193.01BKM bulana kadar
+                        i++;
+                        bool foundNumber = false;
+                        while (i < lines.Length && !foundNumber)
                         {
-                            parsedDataList.Add(parsed);
+                            string nextLine = lines[i].Trim();
+                            if (string.IsNullOrEmpty(nextLine) || nextLine.StartsWith("-------- Sayfa"))
+                            {
+                                i++;
+                                continue;
+                            }
+
+                            if (Regex.IsMatch(nextLine, @"^\d{5}\.\d{2}$"))
+                            {
+                                currentLine.Append("-").Append(nextLine);
+                                foundNumber = true;
+                            }
+                            i++;
+                        }
+
+                        string processedLine = currentLine.ToString();
+
+                        // generalPattern ile kontrol
+                        string generalPattern = @"ST.*?AD\s*-?\s*(\d{5})\.(\d{2})?";
+                        if (Regex.IsMatch(processedLine, generalPattern, RegexOptions.IgnoreCase))
+                        {
+                            // AD'den sonraki 12 karakter kontrolü
+                            int adIndex = processedLine.IndexOf("AD", StringComparison.OrdinalIgnoreCase);
+                            if (adIndex != -1)
+                            {
+                                string afterAd = processedLine.Substring(adIndex + 2);
+                                if (afterAd.Length >= 12)
+                                {
+                                    string twelveChars = afterAd.Substring(0, 12);
+                                    if (!Regex.IsMatch(twelveChars, @"^\s*-?\s*\d{5}\.\d{2}"))
+                                    {
+                                        continue; // 12 karakter içinde XXXXX.XX veya XXXXX.XXBKM yoksa satırı yok say
+                                    }
+                                }
+                            }
+
+                            // Katı desen kontrolü
+                            if (Regex.IsMatch(processedLine, @"^ST\d{2}\s*-?\s*\d{1,2}MM\s*-?\s*\d{3}\s*-?\s*\d{2}\s*-?\s*P\d{2,3}\s*-?\s*\d{1,3}AD\s*-?\s*\d{5}\.\d{2}$", RegexOptions.IgnoreCase))
+                            {
+                                var parsed = ParseLine(processedLine);
+                                if (parsed != null)
+                                {
+                                    parsedDataList.Add(parsed);
+                                }
+                                else
+                                {
+                                    invalidDataSet.Add(processedLine);
+                                }
+                            }
+                            else
+                            {
+                                invalidDataSet.Add(processedLine);
+                            }
                         }
                     }
                     else
                     {
-                        invalidDataSet.Add(line); // Benzersiz şekilde ekle
+                        i++;
                     }
-                }
-
-                if (!parsedDataList.Any() && !invalidDataSet.Any())
-                {
-                    string debugInfo = $"Yakalanan satır yok. PDF içeriğinin bir kısmını kontrol edin:\n" +
-                                      pdfText.Substring(0, Math.Min(500, pdfText.Length)).Replace("\n", "\\n");
-                    throw new Exception(debugInfo);
-                }
-                else if (!parsedDataList.Any() && invalidDataSet.Any())
-                {
-                    string debugInfo = $"Hiçbir veri formata uymadı. Yakalanan {invalidDataSet.Count} satırdan bir örnek: " +
-                                      $"{invalidDataSet.FirstOrDefault() ?? "Yok"}\n" +
-                                      $"PDF içeriğinin bir kısmını kontrol edin:\n" +
-                                      pdfText.Substring(0, Math.Min(500, pdfText.Length)).Replace("\n", "\\n");
-                    throw new Exception(debugInfo);
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"PDF ayrıştırma hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Ajan veri ayrıştırma hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            return (parsedDataList, invalidDataSet.ToList()); // HashSet'i List'e çevir
+            return (parsedDataList, invalidDataSet.ToList());
         }
 
         public (List<MalzemeBilgisi> ParsedData, List<string> InvalidData) BaykalOku(string pdfText)
         {
+            if (string.IsNullOrWhiteSpace(pdfText))
+            {
+                throw new ArgumentException("PDF metni boş veya null olamaz.", nameof(pdfText));
+            }
+
             var parsedDataList = new List<MalzemeBilgisi>();
-            var invalidDataSet = new HashSet<string>(); // Benzersiz geçersiz veriler için HashSet
+            var invalidDataSet = new HashSet<string>();
 
             try
             {
-                string generalPattern = @"ST\d{2}[-\s][^\n\r]+";
-                Regex generalRegex = new Regex(generalPattern, RegexOptions.Compiled | RegexOptions.IgnoreCase);
-                MatchCollection allMatches = generalRegex.Matches(pdfText);
+                // PDF satırlarını ayır
+                string[] lines = pdfText.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                StringBuilder currentLine = new StringBuilder();
+                int i = 0;
 
-                HashSet<string> extractedData = new HashSet<string>();
-
-                foreach (Match match in allMatches)
+                while (i < lines.Length)
                 {
-                    string line = match.Value.Trim();
+                    string line = lines[i].Trim();
 
-                    int dashCount = line.Count(c => c == '-');
-
-                    if (dashCount < 4)
+                    if (string.IsNullOrEmpty(line) || line.StartsWith("-------- Sayfa"))
                     {
-                        invalidDataSet.Add(line); // Benzersiz şekilde ekle
+                        i++;
                         continue;
                     }
 
-                    if (dashCount >= 4 && dashCount <= 5)
+                    if (line.StartsWith("ST"))
                     {
-                        var parsed = ParseLine(line);
-                        if (parsed != null)
-                        {
-                            if (extractedData.Add(line))
-                            {
-                                parsedDataList.Add(parsed);
-                            }
-                        }
-                        else
-                        {
-                            invalidDataSet.Add(line); // Benzersiz şekilde ekle
-                        }
-                    }
-                    else if (dashCount >= 6)
-                    {
-                        var parsed = ParseLine(line);
-                        if (parsed != null)
-                        {
-                            if (extractedData.Add(line))
-                            {
-                                parsedDataList.Add(parsed);
-                            }
-                        }
-                        else
-                        {
-                            invalidDataSet.Add(line); // Benzersiz şekilde ekle
-                        }
-                    }
-                }
+                        currentLine.Clear();
+                        currentLine.Append(line);
 
-                if (!parsedDataList.Any() && !invalidDataSet.Any())
-                {
-                    string debugInfo = $"Yakalanan satır yok. PDF içeriğinin bir kısmını kontrol edin:\n" +
-                                      pdfText.Substring(0, Math.Min(500, pdfText.Length)).Replace("\n", "\\n");
-                    throw new Exception(debugInfo);
-                }
-                else if (!parsedDataList.Any() && invalidDataSet.Any())
-                {
-                    string debugInfo = $"Hiçbir veri formata uymadı. Yakalanan {invalidDataSet.Count} satırdan bir örnek: " +
-                                      $"{invalidDataSet.FirstOrDefault() ?? "Yok"}\n" +
-                                      $"PDF içeriğinin bir kısmını kontrol edin:\n" +
-                                      pdfText.Substring(0, Math.Min(500, pdfText.Length)).Replace("\n", "\\n");
-                    throw new Exception(debugInfo);
+                        // Sonraki satırları kontrol et, 24193.01 veya 24193.01BKM bulana kadar
+                        i++;
+                        bool foundNumber = false;
+                        while (i < lines.Length && !foundNumber)
+                        {
+                            string nextLine = lines[i].Trim();
+                            if (string.IsNullOrEmpty(nextLine) || nextLine.StartsWith("-------- Sayfa"))
+                            {
+                                i++;
+                                continue;
+                            }
+
+                            if (Regex.IsMatch(nextLine, @"^\d{5}\.\d{2}$"))
+                            {
+                                currentLine.Append("-").Append(nextLine);
+                                foundNumber = true;
+                            }
+                            i++;
+                        }
+
+                        string processedLine = currentLine.ToString();
+
+                        // General pattern kontrolü: ST ile başlar ve 5 sayı . 2 sayı ile biter
+                        if (Regex.IsMatch(processedLine, @"^ST.*\d{5}\.\d{2}$", RegexOptions.IgnoreCase))
+                        {
+                            // AD sonrası 12 karakterde XXXXX.XX kontrolü
+                            int adIndex = processedLine.IndexOf("AD", StringComparison.OrdinalIgnoreCase);
+                            if (adIndex != -1 && processedLine.Length >= adIndex + 2 + 12)
+                            {
+                                string afterAd = processedLine.Substring(adIndex + 2, 12);
+                                if (!Regex.IsMatch(afterAd, @"\d{5}\.\d{2}"))
+                                {
+                                    continue; // 12 karakter içinde XXXXX.XX yoksa tamamen atla
+                                }
+                            }
+                            else
+                            {
+                                continue; // AD bulunamazsa veya 12 karakter yoksa da atla
+                            }
+
+                            // StrictPattern ile detaylı kontrol: PXX-XXXAD-XXXXX.XX formatı
+                            string strictPattern = @"^ST\d{2}-\d{1,2}MM-\d{3}-\d{2}-P\d{2,3}-\d{1,3}AD-\d{5}\.\d{2}$";
+                            if (Regex.IsMatch(processedLine, strictPattern, RegexOptions.IgnoreCase))
+                            {
+                                var parsed = ParseLine(processedLine);
+                                if (parsed != null)
+                                {
+                                    parsedDataList.Add(parsed);
+                                }
+                                else
+                                {
+                                    invalidDataSet.Add(processedLine);
+                                }
+                            }
+                            else
+                            {
+                                invalidDataSet.Add(processedLine);
+                            }
+                        }
+                    }
+                    else
+                    {
+                        i++;
+                    }
                 }
             }
             catch (Exception ex)
@@ -213,13 +283,16 @@ namespace KesimTakip.Business
                 MessageBox.Show($"Baykal veri ayrıştırma hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
 
-            return (parsedDataList, invalidDataSet.ToList()); // HashSet'i List'e çevir
+            return (parsedDataList, invalidDataSet.ToList());
         }
 
+
+
+        // ParseLine metodu, veriyi doğru şekilde parse eder
         private MalzemeBilgisi ParseLine(string line)
         {
             var match = Regex.Match(line,
-                @"ST(?<Kalite>\d{2})[-\s]*(?<Kalınlık>\d+(?:MM|mm))[-\s]*(?<Kalıp>\d{3}-\d{2})[-\s]*(?<Poz>P\d{1,3})[-\s]*(?<Adet>\d+\s?[A-Za-z]{2})(?:[-\s]*(?<Proje>\d{5}.\d{1,2}))?",
+                @"ST(?<Kalite>\d{2})[-\s]*(?<Kalınlık>\d+(?:MM|mm))[-\s]*(?<Kalıp>\d{3}-\d{2})[-\s]*(?<Poz>P\d{1,3})[-\s]*(?<Adet>\d+[A-Za-z]{2})[-\s]*(?<Proje>\d{5}\.\d{2}",
                 RegexOptions.IgnoreCase);
 
             if (match.Success)

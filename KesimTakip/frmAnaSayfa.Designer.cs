@@ -43,6 +43,7 @@
             this.btnKesimYap = new System.Windows.Forms.Button();
             this.btnKesimPlaniEkle = new System.Windows.Forms.Button();
             this.panelSistem = new System.Windows.Forms.Panel();
+            this.label20 = new System.Windows.Forms.Label();
             this.btnAktar = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
             this.label18 = new System.Windows.Forms.Label();
@@ -104,7 +105,7 @@
             this.txtSorun = new System.Windows.Forms.RichTextBox();
             this.label17 = new System.Windows.Forms.Label();
             this.btnGonder = new System.Windows.Forms.Button();
-            this.label20 = new System.Windows.Forms.Label();
+            this.richTextBox4 = new System.Windows.Forms.RichTextBox();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
@@ -265,6 +266,7 @@
             // panelSistem
             // 
             this.panelSistem.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.panelSistem.Controls.Add(this.richTextBox4);
             this.panelSistem.Controls.Add(this.label20);
             this.panelSistem.Controls.Add(this.btnAktar);
             this.panelSistem.Controls.Add(this.label19);
@@ -282,6 +284,17 @@
             this.panelSistem.Size = new System.Drawing.Size(1696, 197);
             this.panelSistem.TabIndex = 150;
             this.panelSistem.Visible = false;
+            // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label20.Location = new System.Drawing.Point(923, 63);
+            this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(35, 16);
+            this.label20.TabIndex = 131;
+            this.label20.Text = "<----";
             // 
             // btnAktar
             // 
@@ -923,16 +936,14 @@
             this.btnGonder.UseVisualStyleBackColor = true;
             this.btnGonder.Click += new System.EventHandler(this.btnGonder_Click);
             // 
-            // label20
+            // richTextBox4
             // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label20.Location = new System.Drawing.Point(923, 63);
-            this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(35, 16);
-            this.label20.TabIndex = 131;
-            this.label20.Text = "<----";
+            this.richTextBox4.Location = new System.Drawing.Point(363, 36);
+            this.richTextBox4.Margin = new System.Windows.Forms.Padding(2);
+            this.richTextBox4.Name = "richTextBox4";
+            this.richTextBox4.Size = new System.Drawing.Size(231, 118);
+            this.richTextBox4.TabIndex = 132;
+            this.richTextBox4.Text = "";
             // 
             // frmAnaSayfa
             // 
@@ -1048,5 +1059,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn gridProje;
         private System.Windows.Forms.Button btnAktar;
         private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.RichTextBox richTextBox4;
     }
 }
