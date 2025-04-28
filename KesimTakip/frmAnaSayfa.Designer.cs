@@ -43,6 +43,7 @@
             this.btnKesimYap = new System.Windows.Forms.Button();
             this.btnKesimPlaniEkle = new System.Windows.Forms.Button();
             this.panelSistem = new System.Windows.Forms.Panel();
+            this.richTextBox4 = new System.Windows.Forms.RichTextBox();
             this.label20 = new System.Windows.Forms.Label();
             this.btnAktar = new System.Windows.Forms.Button();
             this.label19 = new System.Windows.Forms.Label();
@@ -105,7 +106,14 @@
             this.txtSorun = new System.Windows.Forms.RichTextBox();
             this.label17 = new System.Windows.Forms.Label();
             this.btnGonder = new System.Windows.Forms.Button();
-            this.richTextBox4 = new System.Windows.Forms.RichTextBox();
+            this.btnYeni = new System.Windows.Forms.Button();
+            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.txtId = new System.Windows.Forms.TextBox();
+            this.label21 = new System.Windows.Forms.Label();
+            this.panelYeni = new System.Windows.Forms.Panel();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
@@ -115,6 +123,8 @@
             this.panelKesimPlaniEkle.SuspendLayout();
             this.panelContainer.SuspendLayout();
             this.panelYardim.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.panelYeni.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressBar1
@@ -220,15 +230,19 @@
             // panelAraYuz
             // 
             this.panelAraYuz.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.panelAraYuz.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.panelAraYuz.Controls.Add(this.btnYapilanKesimleriGor);
             this.panelAraYuz.Controls.Add(this.btnKesimYap);
             this.panelAraYuz.Controls.Add(this.btnKesimPlaniEkle);
             this.panelAraYuz.Controls.Add(this.btnOturumuKapat);
+            this.panelAraYuz.Controls.Add(this.btnXmlOlustur);
+            this.panelAraYuz.Controls.Add(this.txtKesimPlaniTekrarSayisi);
+            this.panelAraYuz.Controls.Add(this.label11);
             this.panelAraYuz.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelAraYuz.Location = new System.Drawing.Point(0, 24);
             this.panelAraYuz.Margin = new System.Windows.Forms.Padding(2);
             this.panelAraYuz.Name = "panelAraYuz";
-            this.panelAraYuz.Size = new System.Drawing.Size(205, 576);
+            this.panelAraYuz.Size = new System.Drawing.Size(205, 755);
             this.panelAraYuz.TabIndex = 212;
             // 
             // btnYapilanKesimleriGor
@@ -281,9 +295,19 @@
             this.panelSistem.Location = new System.Drawing.Point(0, 0);
             this.panelSistem.Margin = new System.Windows.Forms.Padding(2);
             this.panelSistem.Name = "panelSistem";
-            this.panelSistem.Size = new System.Drawing.Size(1696, 197);
+            this.panelSistem.Size = new System.Drawing.Size(1696, 18);
             this.panelSistem.TabIndex = 150;
             this.panelSistem.Visible = false;
+            // 
+            // richTextBox4
+            // 
+            this.richTextBox4.Location = new System.Drawing.Point(363, 36);
+            this.richTextBox4.Margin = new System.Windows.Forms.Padding(2);
+            this.richTextBox4.Name = "richTextBox4";
+            this.richTextBox4.Size = new System.Drawing.Size(231, 118);
+            this.richTextBox4.TabIndex = 132;
+            this.richTextBox4.Text = "";
+            this.richTextBox4.Visible = false;
             // 
             // label20
             // 
@@ -304,7 +328,7 @@
             this.btnAktar.TabIndex = 130;
             this.btnAktar.Text = "Aktar";
             this.btnAktar.UseVisualStyleBackColor = true;
-            this.btnAktar.Click += new System.EventHandler(this.button1_Click);
+            this.btnAktar.Click += new System.EventHandler(this.btnAktar_Click);
             // 
             // label19
             // 
@@ -650,7 +674,6 @@
             // 
             // txtKesimId
             // 
-            this.txtKesimId.Enabled = false;
             this.txtKesimId.Location = new System.Drawing.Point(402, 204);
             this.txtKesimId.Margin = new System.Windows.Forms.Padding(2);
             this.txtKesimId.Name = "txtKesimId";
@@ -760,7 +783,7 @@
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label11.Location = new System.Drawing.Point(582, 339);
+            this.label11.Location = new System.Drawing.Point(16, 461);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(125, 13);
@@ -770,7 +793,7 @@
             // txtKesimPlaniTekrarSayisi
             // 
             this.txtKesimPlaniTekrarSayisi.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.txtKesimPlaniTekrarSayisi.Location = new System.Drawing.Point(621, 359);
+            this.txtKesimPlaniTekrarSayisi.Location = new System.Drawing.Point(19, 416);
             this.txtKesimPlaniTekrarSayisi.Margin = new System.Windows.Forms.Padding(2);
             this.txtKesimPlaniTekrarSayisi.Name = "txtKesimPlaniTekrarSayisi";
             this.txtKesimPlaniTekrarSayisi.Size = new System.Drawing.Size(41, 38);
@@ -778,7 +801,7 @@
             // 
             // btnXmlOlustur
             // 
-            this.btnXmlOlustur.Location = new System.Drawing.Point(601, 415);
+            this.btnXmlOlustur.Location = new System.Drawing.Point(9, 710);
             this.btnXmlOlustur.Margin = new System.Windows.Forms.Padding(2);
             this.btnXmlOlustur.Name = "btnXmlOlustur";
             this.btnXmlOlustur.Size = new System.Drawing.Size(76, 40);
@@ -789,13 +812,13 @@
             // 
             // panelKesimPlaniEkle
             // 
+            this.panelKesimPlaniEkle.Controls.Add(this.txtId);
+            this.panelKesimPlaniEkle.Controls.Add(this.label21);
+            this.panelKesimPlaniEkle.Controls.Add(this.dataGridView2);
             this.panelKesimPlaniEkle.Controls.Add(this.btnBaykal);
             this.panelKesimPlaniEkle.Controls.Add(this.btnAjan);
             this.panelKesimPlaniEkle.Controls.Add(this.btnAdm);
             this.panelKesimPlaniEkle.Controls.Add(this.pdfViewer1);
-            this.panelKesimPlaniEkle.Controls.Add(this.btnXmlOlustur);
-            this.panelKesimPlaniEkle.Controls.Add(this.txtKesimPlaniTekrarSayisi);
-            this.panelKesimPlaniEkle.Controls.Add(this.label11);
             this.panelKesimPlaniEkle.Controls.Add(this.btnKaydet);
             this.panelKesimPlaniEkle.Controls.Add(this.btnTumunuEkle);
             this.panelKesimPlaniEkle.Controls.Add(this.dtEklemeTarihi);
@@ -824,14 +847,14 @@
             this.panelKesimPlaniEkle.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelKesimPlaniEkle.Location = new System.Drawing.Point(0, 24);
             this.panelKesimPlaniEkle.Name = "panelKesimPlaniEkle";
-            this.panelKesimPlaniEkle.Size = new System.Drawing.Size(1696, 576);
+            this.panelKesimPlaniEkle.Size = new System.Drawing.Size(1696, 755);
             this.panelKesimPlaniEkle.TabIndex = 214;
             this.panelKesimPlaniEkle.Visible = false;
             // 
             // btnBaykal
             // 
             this.btnBaykal.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnBaykal.Location = new System.Drawing.Point(451, 58);
+            this.btnBaykal.Location = new System.Drawing.Point(451, 21);
             this.btnBaykal.Margin = new System.Windows.Forms.Padding(2);
             this.btnBaykal.Name = "btnBaykal";
             this.btnBaykal.Size = new System.Drawing.Size(120, 46);
@@ -842,7 +865,7 @@
             // btnAjan
             // 
             this.btnAjan.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnAjan.Location = new System.Drawing.Point(301, 58);
+            this.btnAjan.Location = new System.Drawing.Point(301, 21);
             this.btnAjan.Margin = new System.Windows.Forms.Padding(2);
             this.btnAjan.Name = "btnAjan";
             this.btnAjan.Size = new System.Drawing.Size(120, 46);
@@ -853,7 +876,7 @@
             // btnAdm
             // 
             this.btnAdm.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnAdm.Location = new System.Drawing.Point(601, 58);
+            this.btnAdm.Location = new System.Drawing.Point(601, 21);
             this.btnAdm.Margin = new System.Windows.Forms.Padding(2);
             this.btnAdm.Name = "btnAdm";
             this.btnAdm.Size = new System.Drawing.Size(120, 46);
@@ -873,7 +896,7 @@
             this.pdfViewer1.MultiPagesThreshold = 60;
             this.pdfViewer1.Name = "pdfViewer1";
             this.pdfViewer1.OnRenderPageExceptionEvent = null;
-            this.pdfViewer1.Size = new System.Drawing.Size(941, 576);
+            this.pdfViewer1.Size = new System.Drawing.Size(941, 755);
             this.pdfViewer1.TabIndex = 273;
             this.pdfViewer1.Text = "pdfViewer1";
             this.pdfViewer1.Threshold = 60;
@@ -885,9 +908,9 @@
             this.panelContainer.Controls.Add(this.panelSistem);
             this.panelContainer.Controls.Add(this.panelYardim);
             this.panelContainer.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelContainer.Location = new System.Drawing.Point(0, 600);
+            this.panelContainer.Location = new System.Drawing.Point(0, 779);
             this.panelContainer.Name = "panelContainer";
-            this.panelContainer.Size = new System.Drawing.Size(1696, 197);
+            this.panelContainer.Size = new System.Drawing.Size(1696, 18);
             this.panelContainer.TabIndex = 278;
             this.panelContainer.Visible = false;
             // 
@@ -902,7 +925,7 @@
             this.panelYardim.Location = new System.Drawing.Point(0, 0);
             this.panelYardim.Margin = new System.Windows.Forms.Padding(2);
             this.panelYardim.Name = "panelYardim";
-            this.panelYardim.Size = new System.Drawing.Size(1696, 197);
+            this.panelYardim.Size = new System.Drawing.Size(1696, 18);
             this.panelYardim.TabIndex = 129;
             this.panelYardim.Visible = false;
             // 
@@ -936,14 +959,79 @@
             this.btnGonder.UseVisualStyleBackColor = true;
             this.btnGonder.Click += new System.EventHandler(this.btnGonder_Click);
             // 
-            // richTextBox4
+            // btnYeni
             // 
-            this.richTextBox4.Location = new System.Drawing.Point(363, 36);
-            this.richTextBox4.Margin = new System.Windows.Forms.Padding(2);
-            this.richTextBox4.Name = "richTextBox4";
-            this.richTextBox4.Size = new System.Drawing.Size(231, 118);
-            this.richTextBox4.TabIndex = 132;
-            this.richTextBox4.Text = "";
+            this.btnYeni.Location = new System.Drawing.Point(3, 20);
+            this.btnYeni.Name = "btnYeni";
+            this.btnYeni.Size = new System.Drawing.Size(32, 33);
+            this.btnYeni.TabIndex = 278;
+            this.btnYeni.Text = "+";
+            this.btnYeni.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView2
+            // 
+            this.dataGridView2.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView2.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column3,
+            this.Column1,
+            this.Column2});
+            this.dataGridView2.GridColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.dataGridView2.Location = new System.Drawing.Point(585, 172);
+            this.dataGridView2.Margin = new System.Windows.Forms.Padding(2);
+            this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.RowHeadersVisible = false;
+            this.dataGridView2.RowHeadersWidth = 62;
+            this.dataGridView2.RowTemplate.Height = 28;
+            this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView2.Size = new System.Drawing.Size(165, 239);
+            this.dataGridView2.TabIndex = 279;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "ID";
+            this.Column3.Name = "Column3";
+            // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "Sayfa Numarası";
+            this.Column1.Name = "Column1";
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Tekrar Sayısı";
+            this.Column2.Name = "Column2";
+            // 
+            // txtId
+            // 
+            this.txtId.Enabled = false;
+            this.txtId.Location = new System.Drawing.Point(402, 104);
+            this.txtId.Margin = new System.Windows.Forms.Padding(2);
+            this.txtId.Name = "txtId";
+            this.txtId.Size = new System.Drawing.Size(160, 20);
+            this.txtId.TabIndex = 280;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(317, 106);
+            this.label21.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(21, 13);
+            this.label21.TabIndex = 281;
+            this.label21.Text = "ID:";
+            // 
+            // panelYeni
+            // 
+            this.panelYeni.BackColor = System.Drawing.Color.LightCyan;
+            this.panelYeni.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelYeni.Controls.Add(this.btnYeni);
+            this.panelYeni.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panelYeni.Location = new System.Drawing.Point(205, 24);
+            this.panelYeni.Name = "panelYeni";
+            this.panelYeni.Size = new System.Drawing.Size(41, 755);
+            this.panelYeni.TabIndex = 282;
             // 
             // frmAnaSayfa
             // 
@@ -951,6 +1039,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(1696, 846);
+            this.Controls.Add(this.panelYeni);
             this.Controls.Add(this.panelAraYuz);
             this.Controls.Add(this.panelKesimPlaniEkle);
             this.Controls.Add(this.panelContainer);
@@ -965,6 +1054,7 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panelAraYuz.ResumeLayout(false);
+            this.panelAraYuz.PerformLayout();
             this.panelSistem.ResumeLayout(false);
             this.panelSistem.PerformLayout();
             this.panelSistemBilgisi.ResumeLayout(false);
@@ -976,6 +1066,8 @@
             this.panelContainer.PerformLayout();
             this.panelYardim.ResumeLayout(false);
             this.panelYardim.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.panelYeni.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1060,5 +1152,13 @@
         private System.Windows.Forms.Button btnAktar;
         private System.Windows.Forms.Label label20;
         private System.Windows.Forms.RichTextBox richTextBox4;
+        private System.Windows.Forms.Button btnYeni;
+        private System.Windows.Forms.DataGridView dataGridView2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.TextBox txtId;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Panel panelYeni;
     }
 }
