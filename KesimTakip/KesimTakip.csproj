@@ -181,6 +181,7 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Business\sa.cs" />
     <Compile Include="Business\VeriOkuma.cs" />
     <Compile Include="DataBase\DataBaseHelper.cs" />
     <Compile Include="DataBase\KesimListesiPaketData.cs" />
@@ -191,9 +192,11 @@
     <Compile Include="Entitys\KesimListesiPaket.cs" />
     <Compile Include="Entitys\KesimTamamlanmisPaket.cs" />
     <Compile Include="Entitys\MalzemeBilgisi.cs" />
+    <Compile Include="Entitys\SayfaBilgisi.cs" />
     <Compile Include="Entitys\SorunBildirimleri.cs" />
     <Compile Include="Entitys\KesimListesi.cs" />
     <Compile Include="DataBase\KesimListesiData.cs" />
+    <Compile Include="Entitys\TekYerlesimParcaBilgileri.cs" />
     <Compile Include="frmAnaSayfa.cs">
       <SubType>Form</SubType>
     </Compile>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace KesimTakip.Helper
 {
@@ -12,6 +13,8 @@ namespace KesimTakip.Helper
     {
         public static void StilUygula(DataGridView dgv)
         {
+            dgv.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgv.ScrollBars = ScrollBars.Both;
             dgv.AllowUserToResizeRows = false;
             dgv.BorderStyle = BorderStyle.None;

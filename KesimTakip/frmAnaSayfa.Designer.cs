@@ -42,6 +42,9 @@
             this.btnYapilanKesimleriGor = new System.Windows.Forms.Button();
             this.btnKesimYap = new System.Windows.Forms.Button();
             this.btnKesimPlaniEkle = new System.Windows.Forms.Button();
+            this.btnXmlOlustur = new System.Windows.Forms.Button();
+            this.txtKesimPlaniTekrarSayisi = new System.Windows.Forms.TextBox();
+            this.label11 = new System.Windows.Forms.Label();
             this.panelSistem = new System.Windows.Forms.Panel();
             this.richTextBox4 = new System.Windows.Forms.RichTextBox();
             this.label20 = new System.Windows.Forms.Label();
@@ -93,10 +96,23 @@
             this.dtEklemeTarihi = new System.Windows.Forms.DateTimePicker();
             this.btnTumunuEkle = new System.Windows.Forms.Button();
             this.btnKaydet = new System.Windows.Forms.Button();
-            this.label11 = new System.Windows.Forms.Label();
-            this.txtKesimPlaniTekrarSayisi = new System.Windows.Forms.TextBox();
-            this.btnXmlOlustur = new System.Windows.Forms.Button();
             this.panelKesimPlaniEkle = new System.Windows.Forms.Panel();
+            this.button3 = new System.Windows.Forms.Button();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.dataGridView3 = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button1 = new System.Windows.Forms.Button();
+            this.txtId = new System.Windows.Forms.TextBox();
+            this.label21 = new System.Windows.Forms.Label();
             this.btnBaykal = new System.Windows.Forms.Button();
             this.btnAjan = new System.Windows.Forms.Button();
             this.btnAdm = new System.Windows.Forms.Button();
@@ -107,13 +123,10 @@
             this.label17 = new System.Windows.Forms.Label();
             this.btnGonder = new System.Windows.Forms.Button();
             this.btnYeni = new System.Windows.Forms.Button();
-            this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.txtId = new System.Windows.Forms.TextBox();
-            this.label21 = new System.Windows.Forms.Label();
             this.panelYeni = new System.Windows.Forms.Panel();
+            this.richTextBox5 = new System.Windows.Forms.RichTextBox();
+            this.button2 = new System.Windows.Forms.Button();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
@@ -121,9 +134,14 @@
             this.panelSistemBilgisi.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panelKesimPlaniEkle.SuspendLayout();
+            this.tabControl1.SuspendLayout();
+            this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
             this.panelContainer.SuspendLayout();
             this.panelYardim.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             this.panelYeni.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -142,10 +160,10 @@
             this.panelYardimCubugu.Controls.Add(this.btnSistem);
             this.panelYardimCubugu.Controls.Add(this.progressBar1);
             this.panelYardimCubugu.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelYardimCubugu.Location = new System.Drawing.Point(0, 797);
+            this.panelYardimCubugu.Location = new System.Drawing.Point(0, 981);
             this.panelYardimCubugu.Margin = new System.Windows.Forms.Padding(2);
             this.panelYardimCubugu.Name = "panelYardimCubugu";
-            this.panelYardimCubugu.Size = new System.Drawing.Size(1696, 49);
+            this.panelYardimCubugu.Size = new System.Drawing.Size(1814, 49);
             this.panelYardimCubugu.TabIndex = 210;
             // 
             // btnYardim
@@ -193,7 +211,7 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
-            this.menuStrip1.Size = new System.Drawing.Size(1696, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(1814, 24);
             this.menuStrip1.TabIndex = 213;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -242,7 +260,7 @@
             this.panelAraYuz.Location = new System.Drawing.Point(0, 24);
             this.panelAraYuz.Margin = new System.Windows.Forms.Padding(2);
             this.panelAraYuz.Name = "panelAraYuz";
-            this.panelAraYuz.Size = new System.Drawing.Size(205, 755);
+            this.panelAraYuz.Size = new System.Drawing.Size(205, 774);
             this.panelAraYuz.TabIndex = 212;
             // 
             // btnYapilanKesimleriGor
@@ -277,6 +295,37 @@
             this.btnKesimPlaniEkle.UseVisualStyleBackColor = true;
             this.btnKesimPlaniEkle.Click += new System.EventHandler(this.btnKesimPlaniEkle_Click);
             // 
+            // btnXmlOlustur
+            // 
+            this.btnXmlOlustur.Location = new System.Drawing.Point(9, 710);
+            this.btnXmlOlustur.Margin = new System.Windows.Forms.Padding(2);
+            this.btnXmlOlustur.Name = "btnXmlOlustur";
+            this.btnXmlOlustur.Size = new System.Drawing.Size(76, 40);
+            this.btnXmlOlustur.TabIndex = 272;
+            this.btnXmlOlustur.Text = "Xml Dosyası Oluştur";
+            this.btnXmlOlustur.UseVisualStyleBackColor = true;
+            this.btnXmlOlustur.Click += new System.EventHandler(this.btnXmlOlustur_Click);
+            // 
+            // txtKesimPlaniTekrarSayisi
+            // 
+            this.txtKesimPlaniTekrarSayisi.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.txtKesimPlaniTekrarSayisi.Location = new System.Drawing.Point(19, 416);
+            this.txtKesimPlaniTekrarSayisi.Margin = new System.Windows.Forms.Padding(2);
+            this.txtKesimPlaniTekrarSayisi.Name = "txtKesimPlaniTekrarSayisi";
+            this.txtKesimPlaniTekrarSayisi.Size = new System.Drawing.Size(41, 38);
+            this.txtKesimPlaniTekrarSayisi.TabIndex = 271;
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label11.Location = new System.Drawing.Point(16, 461);
+            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(125, 13);
+            this.label11.TabIndex = 270;
+            this.label11.Text = "Kesim Planı Tekrar Sayısı";
+            // 
             // panelSistem
             // 
             this.panelSistem.BackColor = System.Drawing.SystemColors.ScrollBar;
@@ -295,19 +344,18 @@
             this.panelSistem.Location = new System.Drawing.Point(0, 0);
             this.panelSistem.Margin = new System.Windows.Forms.Padding(2);
             this.panelSistem.Name = "panelSistem";
-            this.panelSistem.Size = new System.Drawing.Size(1696, 18);
+            this.panelSistem.Size = new System.Drawing.Size(1814, 183);
             this.panelSistem.TabIndex = 150;
             this.panelSistem.Visible = false;
             // 
             // richTextBox4
             // 
-            this.richTextBox4.Location = new System.Drawing.Point(363, 36);
+            this.richTextBox4.Location = new System.Drawing.Point(318, 36);
             this.richTextBox4.Margin = new System.Windows.Forms.Padding(2);
             this.richTextBox4.Name = "richTextBox4";
-            this.richTextBox4.Size = new System.Drawing.Size(231, 118);
+            this.richTextBox4.Size = new System.Drawing.Size(276, 118);
             this.richTextBox4.TabIndex = 132;
             this.richTextBox4.Text = "";
-            this.richTextBox4.Visible = false;
             // 
             // label20
             // 
@@ -616,6 +664,7 @@
             // 
             // btnSec
             // 
+            this.btnSec.Enabled = false;
             this.btnSec.Location = new System.Drawing.Point(500, 166);
             this.btnSec.Margin = new System.Windows.Forms.Padding(2);
             this.btnSec.Name = "btnSec";
@@ -692,15 +741,16 @@
             this.gridPoz,
             this.gridAdet,
             this.gridProje});
+            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView1.GridColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.dataGridView1.Location = new System.Drawing.Point(287, 501);
+            this.dataGridView1.Location = new System.Drawing.Point(3, 3);
             this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(438, 210);
+            this.dataGridView1.Size = new System.Drawing.Size(537, 246);
             this.dataGridView1.TabIndex = 267;
             // 
             // gridKalite
@@ -740,7 +790,7 @@
             // 
             // btnEkle
             // 
-            this.btnEkle.Location = new System.Drawing.Point(287, 715);
+            this.btnEkle.Location = new System.Drawing.Point(281, 749);
             this.btnEkle.Margin = new System.Windows.Forms.Padding(2);
             this.btnEkle.Name = "btnEkle";
             this.btnEkle.Size = new System.Drawing.Size(140, 35);
@@ -759,7 +809,7 @@
             // 
             // btnTumunuEkle
             // 
-            this.btnTumunuEkle.Location = new System.Drawing.Point(437, 715);
+            this.btnTumunuEkle.Location = new System.Drawing.Point(431, 749);
             this.btnTumunuEkle.Margin = new System.Windows.Forms.Padding(2);
             this.btnTumunuEkle.Name = "btnTumunuEkle";
             this.btnTumunuEkle.Size = new System.Drawing.Size(140, 35);
@@ -770,7 +820,7 @@
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(585, 715);
+            this.btnKaydet.Location = new System.Drawing.Point(579, 749);
             this.btnKaydet.Margin = new System.Windows.Forms.Padding(2);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(140, 35);
@@ -779,42 +829,15 @@
             this.btnKaydet.UseVisualStyleBackColor = true;
             this.btnKaydet.Click += new System.EventHandler(this.btnKaydet_Click);
             // 
-            // label11
-            // 
-            this.label11.AutoSize = true;
-            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label11.Location = new System.Drawing.Point(16, 461);
-            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(125, 13);
-            this.label11.TabIndex = 270;
-            this.label11.Text = "Kesim Planı Tekrar Sayısı";
-            // 
-            // txtKesimPlaniTekrarSayisi
-            // 
-            this.txtKesimPlaniTekrarSayisi.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.txtKesimPlaniTekrarSayisi.Location = new System.Drawing.Point(19, 416);
-            this.txtKesimPlaniTekrarSayisi.Margin = new System.Windows.Forms.Padding(2);
-            this.txtKesimPlaniTekrarSayisi.Name = "txtKesimPlaniTekrarSayisi";
-            this.txtKesimPlaniTekrarSayisi.Size = new System.Drawing.Size(41, 38);
-            this.txtKesimPlaniTekrarSayisi.TabIndex = 271;
-            // 
-            // btnXmlOlustur
-            // 
-            this.btnXmlOlustur.Location = new System.Drawing.Point(9, 710);
-            this.btnXmlOlustur.Margin = new System.Windows.Forms.Padding(2);
-            this.btnXmlOlustur.Name = "btnXmlOlustur";
-            this.btnXmlOlustur.Size = new System.Drawing.Size(76, 40);
-            this.btnXmlOlustur.TabIndex = 272;
-            this.btnXmlOlustur.Text = "Xml Dosyası Oluştur";
-            this.btnXmlOlustur.UseVisualStyleBackColor = true;
-            this.btnXmlOlustur.Click += new System.EventHandler(this.btnXmlOlustur_Click);
-            // 
             // panelKesimPlaniEkle
             // 
+            this.panelKesimPlaniEkle.Controls.Add(this.richTextBox5);
+            this.panelKesimPlaniEkle.Controls.Add(this.button2);
+            this.panelKesimPlaniEkle.Controls.Add(this.button3);
+            this.panelKesimPlaniEkle.Controls.Add(this.tabControl1);
+            this.panelKesimPlaniEkle.Controls.Add(this.button1);
             this.panelKesimPlaniEkle.Controls.Add(this.txtId);
             this.panelKesimPlaniEkle.Controls.Add(this.label21);
-            this.panelKesimPlaniEkle.Controls.Add(this.dataGridView2);
             this.panelKesimPlaniEkle.Controls.Add(this.btnBaykal);
             this.panelKesimPlaniEkle.Controls.Add(this.btnAjan);
             this.panelKesimPlaniEkle.Controls.Add(this.btnAdm);
@@ -823,7 +846,6 @@
             this.panelKesimPlaniEkle.Controls.Add(this.btnTumunuEkle);
             this.panelKesimPlaniEkle.Controls.Add(this.dtEklemeTarihi);
             this.panelKesimPlaniEkle.Controls.Add(this.btnEkle);
-            this.panelKesimPlaniEkle.Controls.Add(this.dataGridView1);
             this.panelKesimPlaniEkle.Controls.Add(this.txtKesimId);
             this.panelKesimPlaniEkle.Controls.Add(this.lblKesimId);
             this.panelKesimPlaniEkle.Controls.Add(this.txtKalinlik);
@@ -847,9 +869,163 @@
             this.panelKesimPlaniEkle.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelKesimPlaniEkle.Location = new System.Drawing.Point(0, 24);
             this.panelKesimPlaniEkle.Name = "panelKesimPlaniEkle";
-            this.panelKesimPlaniEkle.Size = new System.Drawing.Size(1696, 755);
+            this.panelKesimPlaniEkle.Size = new System.Drawing.Size(1814, 774);
             this.panelKesimPlaniEkle.TabIndex = 214;
             this.panelKesimPlaniEkle.Visible = false;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(600, 237);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(75, 23);
+            this.button3.TabIndex = 285;
+            this.button3.Text = "Ajan";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Location = new System.Drawing.Point(252, 470);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(551, 278);
+            this.tabControl1.TabIndex = 283;
+            // 
+            // tabPage1
+            // 
+            this.tabPage1.Controls.Add(this.dataGridView1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(543, 252);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Toplam Pozlar";
+            this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.dataGridView2);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(543, 252);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Pozların Sayfalara Göre Dağılımı";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView2
+            // 
+            this.dataGridView2.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView2.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column3,
+            this.Column1,
+            this.Column2});
+            this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView2.GridColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.dataGridView2.Location = new System.Drawing.Point(3, 3);
+            this.dataGridView2.Margin = new System.Windows.Forms.Padding(2);
+            this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.RowHeadersVisible = false;
+            this.dataGridView2.RowHeadersWidth = 62;
+            this.dataGridView2.RowTemplate.Height = 28;
+            this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView2.Size = new System.Drawing.Size(537, 246);
+            this.dataGridView2.TabIndex = 279;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "Poz";
+            this.Column3.Name = "Column3";
+            // 
+            // Column1
+            // 
+            this.Column1.HeaderText = "Yerleşim Planı";
+            this.Column1.Name = "Column1";
+            // 
+            // Column2
+            // 
+            this.Column2.HeaderText = "Poz Tekrar Sayısı";
+            this.Column2.Name = "Column2";
+            // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.dataGridView3);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(543, 252);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Sayfa ID leri";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView3
+            // 
+            this.dataGridView3.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView3.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView3.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn1,
+            this.dataGridViewTextBoxColumn2,
+            this.dataGridViewTextBoxColumn3});
+            this.dataGridView3.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView3.GridColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.dataGridView3.Location = new System.Drawing.Point(3, 3);
+            this.dataGridView3.Margin = new System.Windows.Forms.Padding(2);
+            this.dataGridView3.Name = "dataGridView3";
+            this.dataGridView3.RowHeadersVisible = false;
+            this.dataGridView3.RowHeadersWidth = 62;
+            this.dataGridView3.RowTemplate.Height = 28;
+            this.dataGridView3.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView3.Size = new System.Drawing.Size(537, 246);
+            this.dataGridView3.TabIndex = 280;
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.HeaderText = "ID";
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.HeaderText = "Yerleşim Planı Sayfa Numarası";
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.HeaderText = "Yerleşim Planı Tekrar Sayısı";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(601, 365);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(75, 23);
+            this.button1.TabIndex = 282;
+            this.button1.Text = "Baykal";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // txtId
+            // 
+            this.txtId.Location = new System.Drawing.Point(402, 104);
+            this.txtId.Margin = new System.Windows.Forms.Padding(2);
+            this.txtId.Name = "txtId";
+            this.txtId.Size = new System.Drawing.Size(160, 20);
+            this.txtId.TabIndex = 280;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(317, 106);
+            this.label21.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(21, 13);
+            this.label21.TabIndex = 281;
+            this.label21.Text = "ID:";
             // 
             // btnBaykal
             // 
@@ -892,11 +1068,11 @@
             this.pdfViewer1.FormFillEnabled = false;
             this.pdfViewer1.IgnoreCase = false;
             this.pdfViewer1.IsToolBarVisible = true;
-            this.pdfViewer1.Location = new System.Drawing.Point(755, 0);
+            this.pdfViewer1.Location = new System.Drawing.Point(873, 0);
             this.pdfViewer1.MultiPagesThreshold = 60;
             this.pdfViewer1.Name = "pdfViewer1";
             this.pdfViewer1.OnRenderPageExceptionEvent = null;
-            this.pdfViewer1.Size = new System.Drawing.Size(941, 755);
+            this.pdfViewer1.Size = new System.Drawing.Size(941, 774);
             this.pdfViewer1.TabIndex = 273;
             this.pdfViewer1.Text = "pdfViewer1";
             this.pdfViewer1.Threshold = 60;
@@ -908,9 +1084,9 @@
             this.panelContainer.Controls.Add(this.panelSistem);
             this.panelContainer.Controls.Add(this.panelYardim);
             this.panelContainer.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelContainer.Location = new System.Drawing.Point(0, 779);
+            this.panelContainer.Location = new System.Drawing.Point(0, 798);
             this.panelContainer.Name = "panelContainer";
-            this.panelContainer.Size = new System.Drawing.Size(1696, 18);
+            this.panelContainer.Size = new System.Drawing.Size(1814, 183);
             this.panelContainer.TabIndex = 278;
             this.panelContainer.Visible = false;
             // 
@@ -925,7 +1101,7 @@
             this.panelYardim.Location = new System.Drawing.Point(0, 0);
             this.panelYardim.Margin = new System.Windows.Forms.Padding(2);
             this.panelYardim.Name = "panelYardim";
-            this.panelYardim.Size = new System.Drawing.Size(1696, 18);
+            this.panelYardim.Size = new System.Drawing.Size(1814, 183);
             this.panelYardim.TabIndex = 129;
             this.panelYardim.Visible = false;
             // 
@@ -967,60 +1143,7 @@
             this.btnYeni.TabIndex = 278;
             this.btnYeni.Text = "+";
             this.btnYeni.UseVisualStyleBackColor = true;
-            // 
-            // dataGridView2
-            // 
-            this.dataGridView2.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView2.BackgroundColor = System.Drawing.Color.White;
-            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column3,
-            this.Column1,
-            this.Column2});
-            this.dataGridView2.GridColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.dataGridView2.Location = new System.Drawing.Point(585, 172);
-            this.dataGridView2.Margin = new System.Windows.Forms.Padding(2);
-            this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.RowHeadersVisible = false;
-            this.dataGridView2.RowHeadersWidth = 62;
-            this.dataGridView2.RowTemplate.Height = 28;
-            this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView2.Size = new System.Drawing.Size(165, 239);
-            this.dataGridView2.TabIndex = 279;
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "ID";
-            this.Column3.Name = "Column3";
-            // 
-            // Column1
-            // 
-            this.Column1.HeaderText = "Sayfa Numarası";
-            this.Column1.Name = "Column1";
-            // 
-            // Column2
-            // 
-            this.Column2.HeaderText = "Tekrar Sayısı";
-            this.Column2.Name = "Column2";
-            // 
-            // txtId
-            // 
-            this.txtId.Enabled = false;
-            this.txtId.Location = new System.Drawing.Point(402, 104);
-            this.txtId.Margin = new System.Windows.Forms.Padding(2);
-            this.txtId.Name = "txtId";
-            this.txtId.Size = new System.Drawing.Size(160, 20);
-            this.txtId.TabIndex = 280;
-            // 
-            // label21
-            // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(317, 106);
-            this.label21.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(21, 13);
-            this.label21.TabIndex = 281;
-            this.label21.Text = "ID:";
+            this.btnYeni.Click += new System.EventHandler(this.btnYeni_Click);
             // 
             // panelYeni
             // 
@@ -1030,15 +1153,37 @@
             this.panelYeni.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelYeni.Location = new System.Drawing.Point(205, 24);
             this.panelYeni.Name = "panelYeni";
-            this.panelYeni.Size = new System.Drawing.Size(41, 755);
+            this.panelYeni.Size = new System.Drawing.Size(41, 774);
             this.panelYeni.TabIndex = 282;
+            // 
+            // richTextBox5
+            // 
+            this.richTextBox5.Location = new System.Drawing.Point(943, 138);
+            this.richTextBox5.Name = "richTextBox5";
+            this.richTextBox5.Size = new System.Drawing.Size(610, 316);
+            this.richTextBox5.TabIndex = 286;
+            this.richTextBox5.Text = "";
+            // 
+            // button2
+            // 
+            this.button2.Location = new System.Drawing.Point(645, 163);
+            this.button2.Name = "button2";
+            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.TabIndex = 286;
+            this.button2.Text = "button2";
+            this.button2.UseVisualStyleBackColor = true;
+            this.button2.Click += new System.EventHandler(this.button2_Click);
+            // 
+            // openFileDialog1
+            // 
+            this.openFileDialog1.FileName = "openFileDialog1";
             // 
             // frmAnaSayfa
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(1696, 846);
+            this.ClientSize = new System.Drawing.Size(1814, 1030);
             this.Controls.Add(this.panelYeni);
             this.Controls.Add(this.panelAraYuz);
             this.Controls.Add(this.panelKesimPlaniEkle);
@@ -1062,11 +1207,16 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panelKesimPlaniEkle.ResumeLayout(false);
             this.panelKesimPlaniEkle.PerformLayout();
+            this.tabControl1.ResumeLayout(false);
+            this.tabPage1.ResumeLayout(false);
+            this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.tabPage3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).EndInit();
             this.panelContainer.ResumeLayout(false);
             this.panelContainer.PerformLayout();
             this.panelYardim.ResumeLayout(false);
             this.panelYardim.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.panelYeni.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
@@ -1154,11 +1304,24 @@
         private System.Windows.Forms.RichTextBox richTextBox4;
         private System.Windows.Forms.Button btnYeni;
         private System.Windows.Forms.DataGridView dataGridView2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.TextBox txtId;
         private System.Windows.Forms.Label label21;
         private System.Windows.Forms.Panel panelYeni;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.DataGridView dataGridView3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.RichTextBox richTextBox5;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
     }
 }
