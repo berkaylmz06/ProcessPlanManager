@@ -197,7 +197,8 @@ namespace KesimTakip
                         await PdfYukle(filePath);
 
                         richTextBox1.Text = pdfText;
-                        richTextBox4.Text = pdfTextYeni;
+                        richTextBox5.Text = pdfTextYeni;
+                     
 
                         (List<MalzemeBilgisi> validData, List<string> InvalidData) = await Task.Run(() =>
                         {
@@ -279,98 +280,93 @@ namespace KesimTakip
             }
         }
 
-        private string IslenmisVeriyiAlAjan()
+        public void IslenmisVeri(RichTextBox richTextBox5, RichTextBox richTextBox4)
         {
-            if (_seciliButon != btnAjan)
-                return string.Empty;
-
-            string[] lines = richTextBox1.Lines;
-            StringBuilder output = new StringBuilder();
-            bool isPartSection = false; // Parça bölümünde miyiz?
-
-            for (int i = 0; i < lines.Length; i++)
+            // richTextBox5'in boş olup olmadığını kontrol et
+            if (string.IsNullOrWhiteSpace(richTextBox5.Text))
             {
-                string line = lines[i].Trim();
-
-                // Parça bölümü başlıyor
-                if (line == "Parça")
-                {
-                    isPartSection = true;
-                    output.AppendLine(line);
-                    continue;
-                }
-
-                // Parça bölümü bitti
-                if (isPartSection && line.StartsWith("Toplam"))
-                {
-                    isPartSection = false;
-                    output.AppendLine(line);
-                    continue;
-                }
-
-                // Boş satır, sayfa ayırıcı veya diğer satırları olduğu gibi ekle
-                if (!isPartSection || string.IsNullOrEmpty(line) || line.StartsWith("-------- Sayfa") || line.StartsWith("Sayfa:") || line == "Poz" || line == "No" || line == "(Kg)")
-                {
-                    output.AppendLine(line);
-                    continue;
-                }
-
-                // ST ile başlayan satır (Parça bölümü içindeyiz)
-                if (isPartSection && line.StartsWith("ST"))
-                {
-                    string partName = line; // Parça adı (örneğin, ST37-2MM-178-20-P30-)
-
-                    // Sonraki satırları kontrol et, Not1 satırını bul
-                    i++;
-                    bool foundNot1 = false;
-                    string extraInfo = string.Empty; // Ø14 gibi ek bilgiler
-
-                    while (i < lines.Length && !foundNot1)
-                    {
-                        string nextLine = lines[i].Trim();
-
-                        // Ölçü satırı (sayısal veri içerir, örneğin, 1 1945X412 ...)
-                        if (Regex.IsMatch(nextLine, @"^\d+\s+\d+X\d+"))
-                        {
-                            i++; // Ölçü satırını atla
-                            continue;
-                        }
-
-                        // Not1 satırı: AD- içerir veya BKM ile biter
-                        if (nextLine.Contains("AD-") || nextLine.EndsWith("BKM"))
-                        {
-                            string not1Value = nextLine;
-
-                            // Ø14 gibi ek bilgi varsa, ayır
-                            if (not1Value.Contains("Ø"))
-                            {
-                                var parts = not1Value.Split(new[] { "Ø" }, StringSplitOptions.None);
-                                not1Value = parts[0].Trim();
-                                extraInfo = "Ø" + parts[1].Trim();
-                            }
-
-                            // ST ve Not1 satırlarını birleştir
-                            output.AppendLine($"{partName}{not1Value}");
-                            if (!string.IsNullOrEmpty(extraInfo))
-                            {
-                                output.AppendLine(extraInfo);
-                            }
-                            foundNot1 = true;
-                        }
-
-                        i++;
-                    }
-
-                    // Not1 satırı bulunamadıysa, geri sar
-                    if (!foundNot1)
-                    {
-                        i--;
-                    }
-                }
+                MessageBox.Show("richTextBox5 boş. Lütfen veri girin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
 
-            return output.ToString();
+            // richTextBox4'ü temizle
+            richTextBox4.Clear();
+
+            // Satır sonlarını normalize et ve satırlara böl
+            string[] satirlar = richTextBox5.Text
+                .Replace("\r\n", "\n")
+                .Split(new[] { '\n' }, StringSplitOptions.RemoveEmptyEntries);
+
+            // Hata ayıklamak için satır sayısını göster
+            MessageBox.Show($"Toplam satır sayısı: {satirlar.Length}\nİlk satır: {satirlar[0]}", "Debug Bilgi");
+
+            bool veriIslendi = false;
+            for (int i = 0; i < satirlar.Length - 1; i++) // Son satırı kontrol etmek için -1
+            {
+                string satir = satirlar[i].Trim();
+
+                // Gereksiz satırları atla (başlıklar, alt bilgiler vb.)
+                if (string.IsNullOrWhiteSpace(satir) ||
+                    satir.StartsWith("--------") ||
+                    satir.StartsWith("02Mayıs2025") ||
+                    satir.StartsWith("FirmaAdı") ||
+                    satir.StartsWith("ToplamParçaKesmeListesi") ||
+                    satir.StartsWith("Parça") ||
+                    satir.StartsWith("Not:") ||
+                    satir.StartsWith("Sayfa:") ||
+                    satir.StartsWith("EkstraKesim") ||
+                    satir.StartsWith("Toplam"))
+                    continue;
+
+                // Satır ST ile başlıyorsa ve parça adı formatına uyuyorsa
+                if (!satir.StartsWith("ST"))
+                    continue;
+
+                // Satırı tab veya birden fazla boşluk ile böl
+                string[] sutunlar = Regex.Split(satir, @"\t+|\s{2,}")
+                    .Select(s => s.Trim())
+                    .Where(s => !string.IsNullOrEmpty(s))
+                    .ToArray();
+
+                // İlk sütun parça adı olmalı
+                string parcaAdi = sutunlar[0].Trim();
+                if (!Regex.IsMatch(parcaAdi, @"^ST\d*-.*-.*-.*-.*-$")) // Örneğin: ST37-2MM-178-20-P77-2AD-
+                {
+                    MessageBox.Show($"Parça adı formatı yanlış: {parcaAdi}\nSatır: {satir}", "Debug Bilgi");
+                    continue;
+                }
+
+                // Bir sonraki satırı kontrol et
+                string sonrakiSatir = satirlar[i + 1].Trim();
+                string[] sonrakiSutunlar = Regex.Split(sonrakiSatir, @"\t+|\s{2,}")
+                    .Select(s => s.Trim())
+                    .Where(s => !string.IsNullOrEmpty(s))
+                    .ToArray();
+
+                // Sonraki satırda 24255.01BKM var mı?
+                bool bkmVar = sonrakiSutunlar.Any(s => s.Contains("24255.01BKM"));
+                if (!bkmVar)
+                {
+                    MessageBox.Show($"Sonraki satırda 24255.01BKM bulunamadı: {sonrakiSatir}", "Debug Bilgi");
+                    continue;
+                }
+
+                // Parça adı ve 24255.01BKM'yi birleştir
+                string birlesikVeri = $"{parcaAdi}24255.01BKM";
+
+                // richTextBox4'e yaz
+                richTextBox4.AppendText(birlesikVeri + Environment.NewLine);
+                veriIslendi = true;
+            }
+
+            // Hiçbir veri işlenmediyse uyarı göster
+            if (!veriIslendi)
+            {
+                MessageBox.Show("Hiçbir veri işlenmedi. Veri formatını kontrol edin. Satırların ST ile başladığından ve bir sonraki satırda 24255.01BKM olduğundan emin olun.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
+
+
         private void btnAktar_Click(object sender, EventArgs e)
         {
             try
@@ -967,6 +963,18 @@ namespace KesimTakip
 
                     richTextBox5.AppendText("\n");
                 }
+            }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                IslenmisVeri(richTextBox5, richTextBox4);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata oluştu: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
