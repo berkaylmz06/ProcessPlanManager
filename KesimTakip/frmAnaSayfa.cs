@@ -166,6 +166,7 @@ namespace KesimTakip
                         progressBar1.Visible = true;
 
                         string pdfText = await PdfOku(filePath);
+                        string pdfTextYeni = await PdfOkuAjan(filePath);
 
 
                         if (string.IsNullOrEmpty(pdfText))
@@ -196,16 +197,14 @@ namespace KesimTakip
                         await PdfYukle(filePath);
 
                         richTextBox1.Text = pdfText;
-
-                        string islenmisVeri = IslenmisVeriyiAlAjan();
-                        richTextBox4.Text = islenmisVeri;
+                        richTextBox4.Text = pdfTextYeni;
 
                         (List<MalzemeBilgisi> validData, List<string> InvalidData) = await Task.Run(() =>
                         {
                             try
                             {
                                 if (_seciliButon == btnAjan)
-                                    return _veriOkuma.AjanOku(islenmisVeri);
+                                    return _veriOkuma.AjanOku(pdfTextYeni);
                                 else if (_seciliButon == btnAdm)
                                     return (_veriOkuma.LantekOku(pdfText), new List<string>());
                                 else if (_seciliButon == btnBaykal)
@@ -287,48 +286,86 @@ namespace KesimTakip
 
             string[] lines = richTextBox1.Lines;
             StringBuilder output = new StringBuilder();
+            bool isPartSection = false; // Parça bölümünde miyiz?
 
             for (int i = 0; i < lines.Length; i++)
             {
                 string line = lines[i].Trim();
 
-                // Boş satır veya sayfa ayırıcı
-                if (string.IsNullOrEmpty(line) || line.StartsWith("-------- Sayfa"))
+                // Parça bölümü başlıyor
+                if (line == "Parça")
+                {
+                    isPartSection = true;
+                    output.AppendLine(line);
+                    continue;
+                }
+
+                // Parça bölümü bitti
+                if (isPartSection && line.StartsWith("Toplam"))
+                {
+                    isPartSection = false;
+                    output.AppendLine(line);
+                    continue;
+                }
+
+                // Boş satır, sayfa ayırıcı veya diğer satırları olduğu gibi ekle
+                if (!isPartSection || string.IsNullOrEmpty(line) || line.StartsWith("-------- Sayfa") || line.StartsWith("Sayfa:") || line == "Poz" || line == "No" || line == "(Kg)")
                 {
                     output.AppendLine(line);
                     continue;
                 }
 
-                // ST ile başlayan satır
-                if (line.StartsWith("ST"))
+                // ST ile başlayan satır (Parça bölümü içindeyiz)
+                if (isPartSection && line.StartsWith("ST"))
                 {
-                    string partName = line; // Parça adı (örneğin, ST37-2MM-178-20-P70-2AD-)
-                    output.Append(partName);
+                    string partName = line; // Parça adı (örneğin, ST37-2MM-178-20-P30-)
 
-                    // Sonraki satırları kontrol et, Not1 satırına ulaşana kadar atla
+                    // Sonraki satırları kontrol et, Not1 satırını bul
                     i++;
-                    while (i < lines.Length)
+                    bool foundNot1 = false;
+                    string extraInfo = string.Empty; // Ø14 gibi ek bilgiler
+
+                    while (i < lines.Length && !foundNot1)
                     {
                         string nextLine = lines[i].Trim();
 
-                        // Not1 satırı genellikle sayısal bir değer içerir veya AD-/BKM içerir
-                        if (nextLine.Contains("24255.01") || nextLine.Contains("AD-") || nextLine.Contains("BKM"))
+                        // Ölçü satırı (sayısal veri içerir, örneğin, 1 1945X412 ...)
+                        if (Regex.IsMatch(nextLine, @"^\d+\s+\d+X\d+"))
                         {
-                            // Not1 satırındaki değeri al (örneğin, 24255.01BKM veya 152AD-24255.01BKM)
-                            string not1Value = nextLine.Split(' ').Last().StartsWith("24255.01")
-                                ? nextLine
-                                : nextLine.Split(' ').Last();
-                            output.Append("-").Append(not1Value).AppendLine();
-                            break; // Not1 satırına ulaşıldı, döngüden çık
+                            i++; // Ölçü satırını atla
+                            continue;
                         }
-                        // Ara satırları atla (ölçü, kesim bilgileri)
+
+                        // Not1 satırı: AD- içerir veya BKM ile biter
+                        if (nextLine.Contains("AD-") || nextLine.EndsWith("BKM"))
+                        {
+                            string not1Value = nextLine;
+
+                            // Ø14 gibi ek bilgi varsa, ayır
+                            if (not1Value.Contains("Ø"))
+                            {
+                                var parts = not1Value.Split(new[] { "Ø" }, StringSplitOptions.None);
+                                not1Value = parts[0].Trim();
+                                extraInfo = "Ø" + parts[1].Trim();
+                            }
+
+                            // ST ve Not1 satırlarını birleştir
+                            output.AppendLine($"{partName}{not1Value}");
+                            if (!string.IsNullOrEmpty(extraInfo))
+                            {
+                                output.AppendLine(extraInfo);
+                            }
+                            foundNot1 = true;
+                        }
+
                         i++;
                     }
-                }
-                else
-                {
-                    // Diğer satırları olduğu gibi ekle
-                    output.AppendLine(line);
+
+                    // Not1 satırı bulunamadıysa, geri sar
+                    if (!foundNot1)
+                    {
+                        i--;
+                    }
                 }
             }
 
@@ -390,7 +427,7 @@ namespace KesimTakip
                 progressBar1.Visible = false;
             }
         }
-
+       
         public async Task<string> PdfOku(string pdfpath)
         {
             var pageText = new StringBuilder();
@@ -438,6 +475,89 @@ namespace KesimTakip
 
             return pageText.ToString();
         }
+
+        public async Task<string> PdfOkuAjan(string pdfpath)
+        {
+            var pageText = new StringBuilder();
+
+            try
+            {
+                using (var reader = new PdfReader(pdfpath))
+                using (var pdfDoc = new PdfDocument(reader))
+                {
+                    pageText.AppendLine($"===== {Path.GetFileName(pdfpath)} =====");
+                    int pageCount = pdfDoc.GetNumberOfPages();
+                    pageText.AppendLine($"Toplam sayfa sayısı: {pageCount}");
+
+                    for (int i = 1; i <= pageCount; i++)
+                    {
+                        pageText.AppendLine($"\n-------- Sayfa {i} --------");
+
+                        try
+                        {
+                            var strategy = new LocationTextExtractionStrategy();
+                            var text = PdfTextExtractor.GetTextFromPage(pdfDoc.GetPage(i), strategy);
+
+                            if (string.IsNullOrWhiteSpace(text))
+                            {
+                                pageText.AppendLine("[Bu sayfada metin yok]");
+                                continue;
+                            }
+
+                            var lines = text.Split('\n').Where(l => !string.IsNullOrWhiteSpace(l)).ToList();
+                            string bufferLine = null;
+
+                            for (int j = 0; j < lines.Count; j++)
+                            {
+                                var currentLine = Regex.Replace(lines[j].Trim(), @"\s{2,}", " ");
+
+                                if (bufferLine == null)
+                                {
+                                    bufferLine = currentLine;
+                                    continue;
+                                }
+
+                                // Eğer önceki satır ürün kodu gibi alfanumerikse ve bu satır sayılarla başlıyorsa, birleştir
+                                if (Regex.IsMatch(currentLine, @"^\d") && Regex.IsMatch(bufferLine, @"[A-Z0-9\-]{5,}$"))
+                                {
+                                    var combined = bufferLine + " " + currentLine;
+                                    var columns = combined.Split(' ');
+                                    pageText.AppendLine(string.Join("\t", columns));
+                                    bufferLine = null;
+                                }
+                                else
+                                {
+                                    // Önceki satırı yazdır, bunu sonraya al
+                                    var prevColumns = bufferLine.Split(' ');
+                                    pageText.AppendLine(string.Join("\t", prevColumns));
+                                    bufferLine = currentLine;
+                                }
+                            }
+
+                            // Son satır kaldıysa ekle
+                            if (!string.IsNullOrEmpty(bufferLine))
+                            {
+                                var lastColumns = bufferLine.Split(' ');
+                                pageText.AppendLine(string.Join("\t", lastColumns));
+                            }
+
+                            await Task.Delay(30);
+                        }
+                        catch (Exception exPage)
+                        {
+                            pageText.AppendLine($"[Sayfa {i} okunamadı: {exPage.Message}]");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                pageText.AppendLine($"[PDF genel okuma hatası: {ex.Message}]");
+            }
+
+            return pageText.ToString();
+        }
+
 
 
         private void UpdateTextBoxes()

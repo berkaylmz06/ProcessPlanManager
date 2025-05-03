@@ -65,6 +65,15 @@
             this.label12 = new System.Windows.Forms.Label();
             this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.panelKesimPlaniEkle = new System.Windows.Forms.Panel();
+            this.panelContainer = new System.Windows.Forms.Panel();
+            this.panelYardim = new System.Windows.Forms.Panel();
+            this.txtSorun = new System.Windows.Forms.RichTextBox();
+            this.label17 = new System.Windows.Forms.Label();
+            this.btnGonder = new System.Windows.Forms.Button();
+            this.btnYeni = new System.Windows.Forms.Button();
+            this.panelYeni = new System.Windows.Forms.Panel();
+            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -85,72 +94,63 @@
             this.txtKalinlik = new System.Windows.Forms.TextBox();
             this.lblKesimId = new System.Windows.Forms.Label();
             this.txtKesimId = new System.Windows.Forms.TextBox();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.gridKalite = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridKalinlik = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridKalip = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridPoz = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridAdet = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridProje = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.btnEkle = new System.Windows.Forms.Button();
             this.dtEklemeTarihi = new System.Windows.Forms.DateTimePicker();
             this.btnTumunuEkle = new System.Windows.Forms.Button();
             this.btnKaydet = new System.Windows.Forms.Button();
-            this.panelKesimPlaniEkle = new System.Windows.Forms.Panel();
-            this.button3 = new System.Windows.Forms.Button();
-            this.tabControl1 = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.dataGridView2 = new System.Windows.Forms.DataGridView();
-            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.pdfViewer1 = new Spire.PdfViewer.Forms.PdfViewer();
+            this.btnAdm = new System.Windows.Forms.Button();
+            this.btnAjan = new System.Windows.Forms.Button();
+            this.btnBaykal = new System.Windows.Forms.Button();
+            this.label21 = new System.Windows.Forms.Label();
+            this.txtId = new System.Windows.Forms.TextBox();
+            this.button1 = new System.Windows.Forms.Button();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.button1 = new System.Windows.Forms.Button();
-            this.txtId = new System.Windows.Forms.TextBox();
-            this.label21 = new System.Windows.Forms.Label();
-            this.btnBaykal = new System.Windows.Forms.Button();
-            this.btnAjan = new System.Windows.Forms.Button();
-            this.btnAdm = new System.Windows.Forms.Button();
-            this.pdfViewer1 = new Spire.PdfViewer.Forms.PdfViewer();
-            this.panelContainer = new System.Windows.Forms.Panel();
-            this.panelYardim = new System.Windows.Forms.Panel();
-            this.txtSorun = new System.Windows.Forms.RichTextBox();
-            this.label17 = new System.Windows.Forms.Label();
-            this.btnGonder = new System.Windows.Forms.Button();
-            this.btnYeni = new System.Windows.Forms.Button();
-            this.panelYeni = new System.Windows.Forms.Panel();
-            this.richTextBox5 = new System.Windows.Forms.RichTextBox();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.Column2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.gridProje = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridAdet = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridPoz = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridKalip = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridKalinlik = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridKalite = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.tabControl1 = new System.Windows.Forms.TabControl();
+            this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+            this.richTextBox5 = new System.Windows.Forms.RichTextBox();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
             this.panelSistem.SuspendLayout();
             this.panelSistemBilgisi.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             this.panelKesimPlaniEkle.SuspendLayout();
-            this.tabControl1.SuspendLayout();
-            this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
-            this.tabPage3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
             this.panelContainer.SuspendLayout();
             this.panelYardim.SuspendLayout();
             this.panelYeni.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
+            this.tabPage2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            this.tabPage1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.tabControl1.SuspendLayout();
             this.SuspendLayout();
             // 
             // progressBar1
             // 
-            this.progressBar1.Location = new System.Drawing.Point(1490, 21);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
+            this.progressBar1.Location = new System.Drawing.Point(1719, 17);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(195, 16);
+            this.progressBar1.Size = new System.Drawing.Size(240, 24);
             this.progressBar1.TabIndex = 101;
             // 
             // panelYardimCubugu
@@ -160,19 +160,19 @@
             this.panelYardimCubugu.Controls.Add(this.btnSistem);
             this.panelYardimCubugu.Controls.Add(this.progressBar1);
             this.panelYardimCubugu.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelYardimCubugu.Location = new System.Drawing.Point(0, 981);
-            this.panelYardimCubugu.Margin = new System.Windows.Forms.Padding(2);
+            this.panelYardimCubugu.Location = new System.Drawing.Point(0, 970);
+            this.panelYardimCubugu.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panelYardimCubugu.Name = "panelYardimCubugu";
-            this.panelYardimCubugu.Size = new System.Drawing.Size(1814, 49);
+            this.panelYardimCubugu.Size = new System.Drawing.Size(1971, 60);
             this.panelYardimCubugu.TabIndex = 210;
             // 
             // btnYardim
             // 
             this.btnYardim.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.btnYardim.Location = new System.Drawing.Point(123, 8);
-            this.btnYardim.Margin = new System.Windows.Forms.Padding(2);
+            this.btnYardim.Location = new System.Drawing.Point(164, 10);
+            this.btnYardim.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnYardim.Name = "btnYardim";
-            this.btnYardim.Size = new System.Drawing.Size(101, 29);
+            this.btnYardim.Size = new System.Drawing.Size(135, 36);
             this.btnYardim.TabIndex = 118;
             this.btnYardim.Text = "Yardım";
             this.btnYardim.UseVisualStyleBackColor = false;
@@ -181,10 +181,10 @@
             // btnSistem
             // 
             this.btnSistem.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.btnSistem.Location = new System.Drawing.Point(11, 8);
-            this.btnSistem.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSistem.Location = new System.Drawing.Point(15, 10);
+            this.btnSistem.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnSistem.Name = "btnSistem";
-            this.btnSistem.Size = new System.Drawing.Size(101, 29);
+            this.btnSistem.Size = new System.Drawing.Size(135, 36);
             this.btnSistem.TabIndex = 117;
             this.btnSistem.Text = "Sistem";
             this.btnSistem.UseVisualStyleBackColor = false;
@@ -192,10 +192,10 @@
             // 
             // btnOturumuKapat
             // 
-            this.btnOturumuKapat.Location = new System.Drawing.Point(19, 177);
-            this.btnOturumuKapat.Margin = new System.Windows.Forms.Padding(2);
+            this.btnOturumuKapat.Location = new System.Drawing.Point(25, 218);
+            this.btnOturumuKapat.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnOturumuKapat.Name = "btnOturumuKapat";
-            this.btnOturumuKapat.Size = new System.Drawing.Size(120, 46);
+            this.btnOturumuKapat.Size = new System.Drawing.Size(160, 57);
             this.btnOturumuKapat.TabIndex = 118;
             this.btnOturumuKapat.Text = "Oturumu Kapat";
             this.btnOturumuKapat.UseVisualStyleBackColor = true;
@@ -210,8 +210,8 @@
             this.editToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 1, 0, 1);
-            this.menuStrip1.Size = new System.Drawing.Size(1814, 24);
+            this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 1, 0, 1);
+            this.menuStrip1.Size = new System.Drawing.Size(1971, 26);
             this.menuStrip1.TabIndex = 213;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -220,13 +220,13 @@
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.exitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
-            this.fileToolStripMenuItem.Size = new System.Drawing.Size(37, 22);
+            this.fileToolStripMenuItem.Size = new System.Drawing.Size(46, 24);
             this.fileToolStripMenuItem.Text = "File";
             // 
             // exitToolStripMenuItem
             // 
             this.exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            this.exitToolStripMenuItem.Size = new System.Drawing.Size(93, 22);
+            this.exitToolStripMenuItem.Size = new System.Drawing.Size(116, 26);
             this.exitToolStripMenuItem.Text = "Exit";
             this.exitToolStripMenuItem.Click += new System.EventHandler(this.exitToolStripMenuItem_Click);
             // 
@@ -235,13 +235,13 @@
             this.editToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.yardımCubugunuKaldirToolStripMenuItem});
             this.editToolStripMenuItem.Name = "editToolStripMenuItem";
-            this.editToolStripMenuItem.Size = new System.Drawing.Size(39, 22);
+            this.editToolStripMenuItem.Size = new System.Drawing.Size(49, 24);
             this.editToolStripMenuItem.Text = "Edit";
             // 
             // yardımCubugunuKaldirToolStripMenuItem
             // 
             this.yardımCubugunuKaldirToolStripMenuItem.Name = "yardımCubugunuKaldirToolStripMenuItem";
-            this.yardımCubugunuKaldirToolStripMenuItem.Size = new System.Drawing.Size(201, 22);
+            this.yardımCubugunuKaldirToolStripMenuItem.Size = new System.Drawing.Size(248, 26);
             this.yardımCubugunuKaldirToolStripMenuItem.Text = "Yardım çubuğunu kaldır";
             this.yardımCubugunuKaldirToolStripMenuItem.Click += new System.EventHandler(this.yardımCubugunuKaldirToolStripMenuItem_Click);
             // 
@@ -257,28 +257,28 @@
             this.panelAraYuz.Controls.Add(this.txtKesimPlaniTekrarSayisi);
             this.panelAraYuz.Controls.Add(this.label11);
             this.panelAraYuz.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelAraYuz.Location = new System.Drawing.Point(0, 24);
-            this.panelAraYuz.Margin = new System.Windows.Forms.Padding(2);
+            this.panelAraYuz.Location = new System.Drawing.Point(0, 26);
+            this.panelAraYuz.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panelAraYuz.Name = "panelAraYuz";
-            this.panelAraYuz.Size = new System.Drawing.Size(205, 774);
+            this.panelAraYuz.Size = new System.Drawing.Size(215, 934);
             this.panelAraYuz.TabIndex = 212;
             // 
             // btnYapilanKesimleriGor
             // 
-            this.btnYapilanKesimleriGor.Location = new System.Drawing.Point(19, 125);
-            this.btnYapilanKesimleriGor.Margin = new System.Windows.Forms.Padding(2);
+            this.btnYapilanKesimleriGor.Location = new System.Drawing.Point(25, 154);
+            this.btnYapilanKesimleriGor.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnYapilanKesimleriGor.Name = "btnYapilanKesimleriGor";
-            this.btnYapilanKesimleriGor.Size = new System.Drawing.Size(120, 46);
+            this.btnYapilanKesimleriGor.Size = new System.Drawing.Size(160, 57);
             this.btnYapilanKesimleriGor.TabIndex = 2;
             this.btnYapilanKesimleriGor.Text = "Yapılan Kesimleri Gör\r\n";
             this.btnYapilanKesimleriGor.UseVisualStyleBackColor = true;
             // 
             // btnKesimYap
             // 
-            this.btnKesimYap.Location = new System.Drawing.Point(19, 73);
-            this.btnKesimYap.Margin = new System.Windows.Forms.Padding(2);
+            this.btnKesimYap.Location = new System.Drawing.Point(25, 90);
+            this.btnKesimYap.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnKesimYap.Name = "btnKesimYap";
-            this.btnKesimYap.Size = new System.Drawing.Size(120, 46);
+            this.btnKesimYap.Size = new System.Drawing.Size(160, 57);
             this.btnKesimYap.TabIndex = 1;
             this.btnKesimYap.Text = "Kesim Yap";
             this.btnKesimYap.UseVisualStyleBackColor = true;
@@ -286,10 +286,10 @@
             // 
             // btnKesimPlaniEkle
             // 
-            this.btnKesimPlaniEkle.Location = new System.Drawing.Point(19, 21);
-            this.btnKesimPlaniEkle.Margin = new System.Windows.Forms.Padding(2);
+            this.btnKesimPlaniEkle.Location = new System.Drawing.Point(25, 26);
+            this.btnKesimPlaniEkle.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnKesimPlaniEkle.Name = "btnKesimPlaniEkle";
-            this.btnKesimPlaniEkle.Size = new System.Drawing.Size(120, 46);
+            this.btnKesimPlaniEkle.Size = new System.Drawing.Size(160, 57);
             this.btnKesimPlaniEkle.TabIndex = 0;
             this.btnKesimPlaniEkle.Text = "Kesim Planı Ekle";
             this.btnKesimPlaniEkle.UseVisualStyleBackColor = true;
@@ -297,10 +297,10 @@
             // 
             // btnXmlOlustur
             // 
-            this.btnXmlOlustur.Location = new System.Drawing.Point(9, 710);
-            this.btnXmlOlustur.Margin = new System.Windows.Forms.Padding(2);
+            this.btnXmlOlustur.Location = new System.Drawing.Point(-1, 821);
+            this.btnXmlOlustur.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnXmlOlustur.Name = "btnXmlOlustur";
-            this.btnXmlOlustur.Size = new System.Drawing.Size(76, 40);
+            this.btnXmlOlustur.Size = new System.Drawing.Size(101, 49);
             this.btnXmlOlustur.TabIndex = 272;
             this.btnXmlOlustur.Text = "Xml Dosyası Oluştur";
             this.btnXmlOlustur.UseVisualStyleBackColor = true;
@@ -309,20 +309,19 @@
             // txtKesimPlaniTekrarSayisi
             // 
             this.txtKesimPlaniTekrarSayisi.Font = new System.Drawing.Font("Microsoft Sans Serif", 20F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.txtKesimPlaniTekrarSayisi.Location = new System.Drawing.Point(19, 416);
-            this.txtKesimPlaniTekrarSayisi.Margin = new System.Windows.Forms.Padding(2);
+            this.txtKesimPlaniTekrarSayisi.Location = new System.Drawing.Point(25, 512);
+            this.txtKesimPlaniTekrarSayisi.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.txtKesimPlaniTekrarSayisi.Name = "txtKesimPlaniTekrarSayisi";
-            this.txtKesimPlaniTekrarSayisi.Size = new System.Drawing.Size(41, 38);
+            this.txtKesimPlaniTekrarSayisi.Size = new System.Drawing.Size(53, 45);
             this.txtKesimPlaniTekrarSayisi.TabIndex = 271;
             // 
             // label11
             // 
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label11.Location = new System.Drawing.Point(16, 461);
-            this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label11.Location = new System.Drawing.Point(21, 567);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(125, 13);
+            this.label11.Size = new System.Drawing.Size(168, 17);
             this.label11.TabIndex = 270;
             this.label11.Text = "Kesim Planı Tekrar Sayısı";
             // 
@@ -342,18 +341,18 @@
             this.panelSistem.Controls.Add(this.richTextBox1);
             this.panelSistem.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelSistem.Location = new System.Drawing.Point(0, 0);
-            this.panelSistem.Margin = new System.Windows.Forms.Padding(2);
+            this.panelSistem.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panelSistem.Name = "panelSistem";
-            this.panelSistem.Size = new System.Drawing.Size(1814, 183);
+            this.panelSistem.Size = new System.Drawing.Size(1971, 10);
             this.panelSistem.TabIndex = 150;
             this.panelSistem.Visible = false;
             // 
             // richTextBox4
             // 
-            this.richTextBox4.Location = new System.Drawing.Point(318, 36);
-            this.richTextBox4.Margin = new System.Windows.Forms.Padding(2);
+            this.richTextBox4.Location = new System.Drawing.Point(424, 44);
+            this.richTextBox4.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.richTextBox4.Name = "richTextBox4";
-            this.richTextBox4.Size = new System.Drawing.Size(276, 118);
+            this.richTextBox4.Size = new System.Drawing.Size(367, 144);
             this.richTextBox4.TabIndex = 132;
             this.richTextBox4.Text = "";
             // 
@@ -361,18 +360,18 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label20.Location = new System.Drawing.Point(923, 63);
-            this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label20.Location = new System.Drawing.Point(1183, 78);
             this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(35, 16);
+            this.label20.Size = new System.Drawing.Size(48, 20);
             this.label20.TabIndex = 131;
             this.label20.Text = "<----";
             // 
             // btnAktar
             // 
-            this.btnAktar.Location = new System.Drawing.Point(895, 85);
+            this.btnAktar.Location = new System.Drawing.Point(1145, 105);
+            this.btnAktar.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnAktar.Name = "btnAktar";
-            this.btnAktar.Size = new System.Drawing.Size(95, 32);
+            this.btnAktar.Size = new System.Drawing.Size(127, 39);
             this.btnAktar.TabIndex = 130;
             this.btnAktar.Text = "Aktar";
             this.btnAktar.UseVisualStyleBackColor = true;
@@ -381,39 +380,36 @@
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(1393, 22);
-            this.label19.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label19.Location = new System.Drawing.Point(1602, 27);
             this.label19.Name = "label19";
-            this.label19.Size = new System.Drawing.Size(58, 13);
+            this.label19.Size = new System.Drawing.Size(72, 16);
             this.label19.TabIndex = 129;
             this.label19.Text = "PDF Çıktısı";
             // 
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(992, 22);
-            this.label18.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label18.Location = new System.Drawing.Point(1275, 27);
             this.label18.Name = "label18";
-            this.label18.Size = new System.Drawing.Size(69, 13);
+            this.label18.Size = new System.Drawing.Size(87, 16);
             this.label18.TabIndex = 128;
             this.label18.Text = "Hatalı Format";
             // 
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(598, 22);
-            this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label10.Location = new System.Drawing.Point(797, 27);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(71, 13);
+            this.label10.Size = new System.Drawing.Size(89, 16);
             this.label10.TabIndex = 127;
             this.label10.Text = "Doğru Format";
             // 
             // richTextBox3
             // 
-            this.richTextBox3.Location = new System.Drawing.Point(995, 36);
-            this.richTextBox3.Margin = new System.Windows.Forms.Padding(2);
+            this.richTextBox3.Location = new System.Drawing.Point(1279, 44);
+            this.richTextBox3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.richTextBox3.Name = "richTextBox3";
-            this.richTextBox3.Size = new System.Drawing.Size(289, 118);
+            this.richTextBox3.Size = new System.Drawing.Size(290, 144);
             this.richTextBox3.TabIndex = 126;
             this.richTextBox3.Text = "";
             // 
@@ -429,405 +425,110 @@
             this.panelSistemBilgisi.Controls.Add(this.label16);
             this.panelSistemBilgisi.Controls.Add(this.label13);
             this.panelSistemBilgisi.Controls.Add(this.label14);
-            this.panelSistemBilgisi.Location = new System.Drawing.Point(32, 47);
-            this.panelSistemBilgisi.Margin = new System.Windows.Forms.Padding(2);
+            this.panelSistemBilgisi.Location = new System.Drawing.Point(43, 58);
+            this.panelSistemBilgisi.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panelSistemBilgisi.Name = "panelSistemBilgisi";
-            this.panelSistemBilgisi.Size = new System.Drawing.Size(273, 107);
+            this.panelSistemBilgisi.Size = new System.Drawing.Size(363, 131);
             this.panelSistemBilgisi.TabIndex = 125;
             // 
             // lblSistemSaat
             // 
             this.lblSistemSaat.AutoSize = true;
-            this.lblSistemSaat.Location = new System.Drawing.Point(131, 79);
-            this.lblSistemSaat.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblSistemSaat.Location = new System.Drawing.Point(175, 97);
             this.lblSistemSaat.Name = "lblSistemSaat";
-            this.lblSistemSaat.Size = new System.Drawing.Size(43, 13);
+            this.lblSistemSaat.Size = new System.Drawing.Size(43, 16);
             this.lblSistemSaat.TabIndex = 128;
             this.lblSistemSaat.Text = "            ";
             // 
             // lblSistemTarih
             // 
             this.lblSistemTarih.AutoSize = true;
-            this.lblSistemTarih.Location = new System.Drawing.Point(131, 57);
-            this.lblSistemTarih.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblSistemTarih.Location = new System.Drawing.Point(175, 70);
             this.lblSistemTarih.Name = "lblSistemTarih";
-            this.lblSistemTarih.Size = new System.Drawing.Size(43, 13);
+            this.lblSistemTarih.Size = new System.Drawing.Size(43, 16);
             this.lblSistemTarih.TabIndex = 127;
             this.lblSistemTarih.Text = "            ";
             // 
             // lblSistemKullanici
             // 
             this.lblSistemKullanici.AutoSize = true;
-            this.lblSistemKullanici.Location = new System.Drawing.Point(131, 36);
-            this.lblSistemKullanici.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblSistemKullanici.Location = new System.Drawing.Point(175, 44);
             this.lblSistemKullanici.Name = "lblSistemKullanici";
-            this.lblSistemKullanici.Size = new System.Drawing.Size(52, 13);
+            this.lblSistemKullanici.Size = new System.Drawing.Size(52, 16);
             this.lblSistemKullanici.TabIndex = 126;
             this.lblSistemKullanici.Text = "               ";
             // 
             // lblTimer
             // 
             this.lblTimer.AutoSize = true;
-            this.lblTimer.Location = new System.Drawing.Point(131, 16);
-            this.lblTimer.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblTimer.Location = new System.Drawing.Point(175, 20);
             this.lblTimer.Name = "lblTimer";
-            this.lblTimer.Size = new System.Drawing.Size(46, 13);
+            this.lblTimer.Size = new System.Drawing.Size(46, 16);
             this.lblTimer.TabIndex = 125;
             this.lblTimer.Text = "             ";
             // 
             // label15
             // 
             this.label15.AutoSize = true;
-            this.label15.Location = new System.Drawing.Point(17, 57);
-            this.label15.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label15.Location = new System.Drawing.Point(23, 70);
             this.label15.Name = "label15";
-            this.label15.Size = new System.Drawing.Size(34, 13);
+            this.label15.Size = new System.Drawing.Size(41, 16);
             this.label15.TabIndex = 123;
             this.label15.Text = "Tarih:";
             // 
             // label16
             // 
             this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(17, 79);
-            this.label16.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label16.Location = new System.Drawing.Point(23, 97);
             this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(35, 13);
+            this.label16.Size = new System.Drawing.Size(41, 16);
             this.label16.TabIndex = 124;
             this.label16.Text = "Saat: ";
             // 
             // label13
             // 
             this.label13.AutoSize = true;
-            this.label13.Location = new System.Drawing.Point(17, 16);
-            this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label13.Location = new System.Drawing.Point(23, 20);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(111, 13);
+            this.label13.Size = new System.Drawing.Size(136, 16);
             this.label13.TabIndex = 121;
             this.label13.Text = "Şu anki oturum süresi:";
             // 
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(17, 36);
-            this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label14.Location = new System.Drawing.Point(23, 44);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(49, 13);
+            this.label14.Size = new System.Drawing.Size(59, 16);
             this.label14.TabIndex = 122;
             this.label14.Text = "Kullanıcı:";
             // 
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(29, 32);
-            this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label12.Location = new System.Drawing.Point(39, 39);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(67, 13);
+            this.label12.Size = new System.Drawing.Size(87, 16);
             this.label12.TabIndex = 120;
             this.label12.Text = "Sistem Bilgisi";
             // 
             // richTextBox2
             // 
-            this.richTextBox2.Location = new System.Drawing.Point(601, 36);
-            this.richTextBox2.Margin = new System.Windows.Forms.Padding(2);
+            this.richTextBox2.Location = new System.Drawing.Point(801, 44);
+            this.richTextBox2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(289, 118);
+            this.richTextBox2.Size = new System.Drawing.Size(335, 144);
             this.richTextBox2.TabIndex = 109;
             this.richTextBox2.Text = "";
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(1396, 36);
-            this.richTextBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.richTextBox1.Location = new System.Drawing.Point(1606, 44);
+            this.richTextBox1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(289, 118);
+            this.richTextBox1.Size = new System.Drawing.Size(324, 144);
             this.richTextBox1.TabIndex = 104;
             this.richTextBox1.Text = "";
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(317, 141);
-            this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(55, 13);
-            this.label1.TabIndex = 255;
-            this.label1.Text = "Oluşturan:";
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(317, 441);
-            this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(74, 13);
-            this.label2.TabIndex = 256;
-            this.label2.Text = "Ekleme Tarihi:";
-            // 
-            // label3
-            // 
-            this.label3.AutoSize = true;
-            this.label3.Location = new System.Drawing.Point(317, 237);
-            this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(51, 13);
-            this.label3.TabIndex = 257;
-            this.label3.Text = "Proje No:";
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(315, 375);
-            this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(88, 13);
-            this.label4.TabIndex = 258;
-            this.label4.Text = "Kesilecek Pozlar:";
-            // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(317, 409);
-            this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(85, 13);
-            this.label5.TabIndex = 259;
-            this.label5.Text = "KP Adet Sayıları:";
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(317, 337);
-            this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(50, 13);
-            this.label6.TabIndex = 260;
-            this.label6.Text = "Kalıp No:";
-            // 
-            // txtOlusturan
-            // 
-            this.txtOlusturan.Enabled = false;
-            this.txtOlusturan.Location = new System.Drawing.Point(402, 139);
-            this.txtOlusturan.Margin = new System.Windows.Forms.Padding(2);
-            this.txtOlusturan.Name = "txtOlusturan";
-            this.txtOlusturan.Size = new System.Drawing.Size(160, 20);
-            this.txtOlusturan.TabIndex = 246;
-            // 
-            // txtProjeNo
-            // 
-            this.txtProjeNo.Location = new System.Drawing.Point(402, 233);
-            this.txtProjeNo.Margin = new System.Windows.Forms.Padding(2);
-            this.txtProjeNo.Name = "txtProjeNo";
-            this.txtProjeNo.Size = new System.Drawing.Size(160, 20);
-            this.txtProjeNo.TabIndex = 248;
-            // 
-            // txtKalipNo
-            // 
-            this.txtKalipNo.Location = new System.Drawing.Point(402, 335);
-            this.txtKalipNo.Margin = new System.Windows.Forms.Padding(2);
-            this.txtKalipNo.Name = "txtKalipNo";
-            this.txtKalipNo.Size = new System.Drawing.Size(160, 20);
-            this.txtKalipNo.TabIndex = 251;
-            // 
-            // txtKesilenPozlar
-            // 
-            this.txtKesilenPozlar.Location = new System.Drawing.Point(402, 373);
-            this.txtKesilenPozlar.Margin = new System.Windows.Forms.Padding(2);
-            this.txtKesilenPozlar.Name = "txtKesilenPozlar";
-            this.txtKesilenPozlar.Size = new System.Drawing.Size(160, 20);
-            this.txtKesilenPozlar.TabIndex = 252;
-            // 
-            // txtKPAdet
-            // 
-            this.txtKPAdet.Location = new System.Drawing.Point(402, 407);
-            this.txtKPAdet.Margin = new System.Windows.Forms.Padding(2);
-            this.txtKPAdet.Name = "txtKPAdet";
-            this.txtKPAdet.Size = new System.Drawing.Size(160, 20);
-            this.txtKPAdet.TabIndex = 253;
-            // 
-            // label7
-            // 
-            this.label7.AutoSize = true;
-            this.label7.Location = new System.Drawing.Point(317, 174);
-            this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(40, 13);
-            this.label7.TabIndex = 261;
-            this.label7.Text = "Dosya:";
-            // 
-            // txtDosya
-            // 
-            this.txtDosya.Location = new System.Drawing.Point(402, 172);
-            this.txtDosya.Margin = new System.Windows.Forms.Padding(2);
-            this.txtDosya.Name = "txtDosya";
-            this.txtDosya.Size = new System.Drawing.Size(93, 20);
-            this.txtDosya.TabIndex = 262;
-            // 
-            // btnSec
-            // 
-            this.btnSec.Enabled = false;
-            this.btnSec.Location = new System.Drawing.Point(500, 166);
-            this.btnSec.Margin = new System.Windows.Forms.Padding(2);
-            this.btnSec.Name = "btnSec";
-            this.btnSec.Size = new System.Drawing.Size(62, 28);
-            this.btnSec.TabIndex = 245;
-            this.btnSec.Text = "Seç";
-            this.btnSec.UseVisualStyleBackColor = true;
-            this.btnSec.Click += new System.EventHandler(this.btnSec_Click);
-            // 
-            // label8
-            // 
-            this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(317, 271);
-            this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(36, 13);
-            this.label8.TabIndex = 264;
-            this.label8.Text = "Kalite:";
-            // 
-            // txtKalite
-            // 
-            this.txtKalite.Location = new System.Drawing.Point(402, 267);
-            this.txtKalite.Margin = new System.Windows.Forms.Padding(2);
-            this.txtKalite.Name = "txtKalite";
-            this.txtKalite.Size = new System.Drawing.Size(160, 20);
-            this.txtKalite.TabIndex = 249;
-            // 
-            // label9
-            // 
-            this.label9.AutoSize = true;
-            this.label9.Location = new System.Drawing.Point(317, 304);
-            this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(43, 13);
-            this.label9.TabIndex = 265;
-            this.label9.Text = "Kalınlık:";
-            // 
-            // txtKalinlik
-            // 
-            this.txtKalinlik.Location = new System.Drawing.Point(402, 300);
-            this.txtKalinlik.Margin = new System.Windows.Forms.Padding(2);
-            this.txtKalinlik.Name = "txtKalinlik";
-            this.txtKalinlik.Size = new System.Drawing.Size(160, 20);
-            this.txtKalinlik.TabIndex = 250;
-            // 
-            // lblKesimId
-            // 
-            this.lblKesimId.AutoSize = true;
-            this.lblKesimId.Enabled = false;
-            this.lblKesimId.Location = new System.Drawing.Point(317, 205);
-            this.lblKesimId.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblKesimId.Name = "lblKesimId";
-            this.lblKesimId.Size = new System.Drawing.Size(49, 13);
-            this.lblKesimId.TabIndex = 266;
-            this.lblKesimId.Text = "Kesim ID";
-            // 
-            // txtKesimId
-            // 
-            this.txtKesimId.Location = new System.Drawing.Point(402, 204);
-            this.txtKesimId.Margin = new System.Windows.Forms.Padding(2);
-            this.txtKesimId.Name = "txtKesimId";
-            this.txtKesimId.Size = new System.Drawing.Size(160, 20);
-            this.txtKesimId.TabIndex = 247;
-            // 
-            // dataGridView1
-            // 
-            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.gridKalite,
-            this.gridKalinlik,
-            this.gridKalip,
-            this.gridPoz,
-            this.gridAdet,
-            this.gridProje});
-            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView1.GridColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.dataGridView1.Location = new System.Drawing.Point(3, 3);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.RowHeadersVisible = false;
-            this.dataGridView1.RowHeadersWidth = 62;
-            this.dataGridView1.RowTemplate.Height = 28;
-            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(537, 246);
-            this.dataGridView1.TabIndex = 267;
-            // 
-            // gridKalite
-            // 
-            this.gridKalite.HeaderText = "Kalite";
-            this.gridKalite.MinimumWidth = 8;
-            this.gridKalite.Name = "gridKalite";
-            // 
-            // gridKalinlik
-            // 
-            this.gridKalinlik.HeaderText = "Kalınlık";
-            this.gridKalinlik.MinimumWidth = 8;
-            this.gridKalinlik.Name = "gridKalinlik";
-            // 
-            // gridKalip
-            // 
-            this.gridKalip.HeaderText = "Kalıp";
-            this.gridKalip.MinimumWidth = 8;
-            this.gridKalip.Name = "gridKalip";
-            // 
-            // gridPoz
-            // 
-            this.gridPoz.HeaderText = "Poz";
-            this.gridPoz.MinimumWidth = 8;
-            this.gridPoz.Name = "gridPoz";
-            // 
-            // gridAdet
-            // 
-            this.gridAdet.HeaderText = "Adet";
-            this.gridAdet.MinimumWidth = 8;
-            this.gridAdet.Name = "gridAdet";
-            // 
-            // gridProje
-            // 
-            this.gridProje.HeaderText = "Proje";
-            this.gridProje.Name = "gridProje";
-            // 
-            // btnEkle
-            // 
-            this.btnEkle.Location = new System.Drawing.Point(281, 749);
-            this.btnEkle.Margin = new System.Windows.Forms.Padding(2);
-            this.btnEkle.Name = "btnEkle";
-            this.btnEkle.Size = new System.Drawing.Size(140, 35);
-            this.btnEkle.TabIndex = 263;
-            this.btnEkle.Text = "Ekle";
-            this.btnEkle.UseVisualStyleBackColor = true;
-            this.btnEkle.Click += new System.EventHandler(this.btnEkle_Click);
-            // 
-            // dtEklemeTarihi
-            // 
-            this.dtEklemeTarihi.Location = new System.Drawing.Point(402, 438);
-            this.dtEklemeTarihi.Margin = new System.Windows.Forms.Padding(2);
-            this.dtEklemeTarihi.Name = "dtEklemeTarihi";
-            this.dtEklemeTarihi.Size = new System.Drawing.Size(160, 20);
-            this.dtEklemeTarihi.TabIndex = 269;
-            // 
-            // btnTumunuEkle
-            // 
-            this.btnTumunuEkle.Location = new System.Drawing.Point(431, 749);
-            this.btnTumunuEkle.Margin = new System.Windows.Forms.Padding(2);
-            this.btnTumunuEkle.Name = "btnTumunuEkle";
-            this.btnTumunuEkle.Size = new System.Drawing.Size(140, 35);
-            this.btnTumunuEkle.TabIndex = 268;
-            this.btnTumunuEkle.Text = "Tümünü Ekle";
-            this.btnTumunuEkle.UseVisualStyleBackColor = true;
-            this.btnTumunuEkle.Click += new System.EventHandler(this.btnTumunuEkle_Click);
-            // 
-            // btnKaydet
-            // 
-            this.btnKaydet.Location = new System.Drawing.Point(579, 749);
-            this.btnKaydet.Margin = new System.Windows.Forms.Padding(2);
-            this.btnKaydet.Name = "btnKaydet";
-            this.btnKaydet.Size = new System.Drawing.Size(140, 35);
-            this.btnKaydet.TabIndex = 254;
-            this.btnKaydet.Text = "Kaydet";
-            this.btnKaydet.UseVisualStyleBackColor = true;
-            this.btnKaydet.Click += new System.EventHandler(this.btnKaydet_Click);
             // 
             // panelKesimPlaniEkle
             // 
@@ -867,98 +568,402 @@
             this.panelKesimPlaniEkle.Controls.Add(this.label2);
             this.panelKesimPlaniEkle.Controls.Add(this.label1);
             this.panelKesimPlaniEkle.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelKesimPlaniEkle.Location = new System.Drawing.Point(0, 24);
+            this.panelKesimPlaniEkle.Location = new System.Drawing.Point(0, 26);
+            this.panelKesimPlaniEkle.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.panelKesimPlaniEkle.Name = "panelKesimPlaniEkle";
-            this.panelKesimPlaniEkle.Size = new System.Drawing.Size(1814, 774);
+            this.panelKesimPlaniEkle.Size = new System.Drawing.Size(1971, 934);
             this.panelKesimPlaniEkle.TabIndex = 214;
             this.panelKesimPlaniEkle.Visible = false;
             // 
-            // button3
+            // panelContainer
             // 
-            this.button3.Location = new System.Drawing.Point(600, 237);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(75, 23);
-            this.button3.TabIndex = 285;
-            this.button3.Text = "Ajan";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
+            this.panelContainer.BackColor = System.Drawing.SystemColors.Info;
+            this.panelContainer.Controls.Add(this.panelSistem);
+            this.panelContainer.Controls.Add(this.panelYardim);
+            this.panelContainer.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelContainer.Location = new System.Drawing.Point(0, 960);
+            this.panelContainer.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelContainer.Name = "panelContainer";
+            this.panelContainer.Size = new System.Drawing.Size(1971, 10);
+            this.panelContainer.TabIndex = 278;
+            this.panelContainer.Visible = false;
             // 
-            // tabControl1
+            // panelYardim
             // 
-            this.tabControl1.Controls.Add(this.tabPage1);
-            this.tabControl1.Controls.Add(this.tabPage2);
-            this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(252, 470);
-            this.tabControl1.Name = "tabControl1";
-            this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(551, 278);
-            this.tabControl1.TabIndex = 283;
+            this.panelYardim.AutoSize = true;
+            this.panelYardim.BackColor = System.Drawing.SystemColors.ScrollBar;
+            this.panelYardim.Controls.Add(this.txtSorun);
+            this.panelYardim.Controls.Add(this.label17);
+            this.panelYardim.Controls.Add(this.btnGonder);
+            this.panelYardim.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelYardim.Location = new System.Drawing.Point(0, 0);
+            this.panelYardim.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.panelYardim.Name = "panelYardim";
+            this.panelYardim.Size = new System.Drawing.Size(1971, 10);
+            this.panelYardim.TabIndex = 129;
+            this.panelYardim.Visible = false;
             // 
-            // tabPage1
+            // txtSorun
             // 
-            this.tabPage1.Controls.Add(this.dataGridView1);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(543, 252);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Toplam Pozlar";
-            this.tabPage1.UseVisualStyleBackColor = true;
+            this.txtSorun.Location = new System.Drawing.Point(37, 52);
+            this.txtSorun.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtSorun.Name = "txtSorun";
+            this.txtSorun.Size = new System.Drawing.Size(363, 132);
+            this.txtSorun.TabIndex = 127;
+            this.txtSorun.Text = "";
             // 
-            // tabPage2
+            // label17
             // 
-            this.tabPage2.Controls.Add(this.dataGridView2);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(543, 252);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Pozların Sayfalara Göre Dağılımı";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(33, 33);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(75, 16);
+            this.label17.TabIndex = 126;
+            this.label17.Text = "Sorun Bildir";
             // 
-            // dataGridView2
+            // btnGonder
             // 
-            this.dataGridView2.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
-            this.dataGridView2.BackgroundColor = System.Drawing.Color.White;
-            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.Column3,
-            this.Column1,
-            this.Column2});
-            this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridView2.GridColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.dataGridView2.Location = new System.Drawing.Point(3, 3);
-            this.dataGridView2.Margin = new System.Windows.Forms.Padding(2);
-            this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.RowHeadersVisible = false;
-            this.dataGridView2.RowHeadersWidth = 62;
-            this.dataGridView2.RowTemplate.Height = 28;
-            this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView2.Size = new System.Drawing.Size(537, 246);
-            this.dataGridView2.TabIndex = 279;
+            this.btnGonder.Location = new System.Drawing.Point(413, 156);
+            this.btnGonder.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnGonder.Name = "btnGonder";
+            this.btnGonder.Size = new System.Drawing.Size(92, 27);
+            this.btnGonder.TabIndex = 128;
+            this.btnGonder.Text = "Gönder";
+            this.btnGonder.UseVisualStyleBackColor = true;
+            this.btnGonder.Click += new System.EventHandler(this.btnGonder_Click);
             // 
-            // Column3
+            // btnYeni
             // 
-            this.Column3.HeaderText = "Poz";
-            this.Column3.Name = "Column3";
+            this.btnYeni.Location = new System.Drawing.Point(4, 25);
+            this.btnYeni.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.btnYeni.Name = "btnYeni";
+            this.btnYeni.Size = new System.Drawing.Size(43, 41);
+            this.btnYeni.TabIndex = 278;
+            this.btnYeni.Text = "+";
+            this.btnYeni.UseVisualStyleBackColor = true;
+            this.btnYeni.Click += new System.EventHandler(this.btnYeni_Click);
             // 
-            // Column1
+            // panelYeni
             // 
-            this.Column1.HeaderText = "Yerleşim Planı";
-            this.Column1.Name = "Column1";
+            this.panelYeni.BackColor = System.Drawing.Color.LightCyan;
+            this.panelYeni.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelYeni.Controls.Add(this.btnYeni);
+            this.panelYeni.Dock = System.Windows.Forms.DockStyle.Left;
+            this.panelYeni.Location = new System.Drawing.Point(215, 26);
+            this.panelYeni.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.panelYeni.Name = "panelYeni";
+            this.panelYeni.Size = new System.Drawing.Size(57, 934);
+            this.panelYeni.TabIndex = 282;
             // 
-            // Column2
+            // openFileDialog1
             // 
-            this.Column2.HeaderText = "Poz Tekrar Sayısı";
-            this.Column2.Name = "Column2";
+            this.openFileDialog1.FileName = "openFileDialog1";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(434, 129);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(66, 16);
+            this.label1.TabIndex = 255;
+            this.label1.Text = "Oluşturan:";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(434, 498);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(93, 16);
+            this.label2.TabIndex = 256;
+            this.label2.Text = "Ekleme Tarihi:";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(434, 247);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(63, 16);
+            this.label3.TabIndex = 257;
+            this.label3.Text = "Proje No:";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(431, 417);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(110, 16);
+            this.label4.TabIndex = 258;
+            this.label4.Text = "Kesilecek Pozlar:";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(434, 458);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(106, 16);
+            this.label5.TabIndex = 259;
+            this.label5.Text = "KP Adet Sayıları:";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(434, 370);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(61, 16);
+            this.label6.TabIndex = 260;
+            this.label6.Text = "Kalıp No:";
+            // 
+            // txtOlusturan
+            // 
+            this.txtOlusturan.Enabled = false;
+            this.txtOlusturan.Location = new System.Drawing.Point(547, 126);
+            this.txtOlusturan.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtOlusturan.Name = "txtOlusturan";
+            this.txtOlusturan.Size = new System.Drawing.Size(212, 22);
+            this.txtOlusturan.TabIndex = 246;
+            // 
+            // txtProjeNo
+            // 
+            this.txtProjeNo.Location = new System.Drawing.Point(547, 242);
+            this.txtProjeNo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtProjeNo.Name = "txtProjeNo";
+            this.txtProjeNo.Size = new System.Drawing.Size(212, 22);
+            this.txtProjeNo.TabIndex = 248;
+            // 
+            // txtKalipNo
+            // 
+            this.txtKalipNo.Location = new System.Drawing.Point(547, 367);
+            this.txtKalipNo.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtKalipNo.Name = "txtKalipNo";
+            this.txtKalipNo.Size = new System.Drawing.Size(212, 22);
+            this.txtKalipNo.TabIndex = 251;
+            // 
+            // txtKesilenPozlar
+            // 
+            this.txtKesilenPozlar.Location = new System.Drawing.Point(547, 414);
+            this.txtKesilenPozlar.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtKesilenPozlar.Name = "txtKesilenPozlar";
+            this.txtKesilenPozlar.Size = new System.Drawing.Size(212, 22);
+            this.txtKesilenPozlar.TabIndex = 252;
+            // 
+            // txtKPAdet
+            // 
+            this.txtKPAdet.Location = new System.Drawing.Point(547, 456);
+            this.txtKPAdet.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtKPAdet.Name = "txtKPAdet";
+            this.txtKPAdet.Size = new System.Drawing.Size(212, 22);
+            this.txtKPAdet.TabIndex = 253;
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(434, 169);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(50, 16);
+            this.label7.TabIndex = 261;
+            this.label7.Text = "Dosya:";
+            // 
+            // txtDosya
+            // 
+            this.txtDosya.Location = new System.Drawing.Point(547, 167);
+            this.txtDosya.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtDosya.Name = "txtDosya";
+            this.txtDosya.Size = new System.Drawing.Size(123, 22);
+            this.txtDosya.TabIndex = 262;
+            // 
+            // btnSec
+            // 
+            this.btnSec.Enabled = false;
+            this.btnSec.Location = new System.Drawing.Point(678, 159);
+            this.btnSec.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnSec.Name = "btnSec";
+            this.btnSec.Size = new System.Drawing.Size(83, 34);
+            this.btnSec.TabIndex = 245;
+            this.btnSec.Text = "Seç";
+            this.btnSec.UseVisualStyleBackColor = true;
+            this.btnSec.Click += new System.EventHandler(this.btnSec_Click);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(434, 289);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(43, 16);
+            this.label8.TabIndex = 264;
+            this.label8.Text = "Kalite:";
+            // 
+            // txtKalite
+            // 
+            this.txtKalite.Location = new System.Drawing.Point(547, 284);
+            this.txtKalite.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtKalite.Name = "txtKalite";
+            this.txtKalite.Size = new System.Drawing.Size(212, 22);
+            this.txtKalite.TabIndex = 249;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(434, 329);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(52, 16);
+            this.label9.TabIndex = 265;
+            this.label9.Text = "Kalınlık:";
+            // 
+            // txtKalinlik
+            // 
+            this.txtKalinlik.Location = new System.Drawing.Point(547, 324);
+            this.txtKalinlik.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtKalinlik.Name = "txtKalinlik";
+            this.txtKalinlik.Size = new System.Drawing.Size(212, 22);
+            this.txtKalinlik.TabIndex = 250;
+            // 
+            // lblKesimId
+            // 
+            this.lblKesimId.AutoSize = true;
+            this.lblKesimId.Enabled = false;
+            this.lblKesimId.Location = new System.Drawing.Point(434, 207);
+            this.lblKesimId.Name = "lblKesimId";
+            this.lblKesimId.Size = new System.Drawing.Size(60, 16);
+            this.lblKesimId.TabIndex = 266;
+            this.lblKesimId.Text = "Kesim ID";
+            // 
+            // txtKesimId
+            // 
+            this.txtKesimId.Location = new System.Drawing.Point(547, 206);
+            this.txtKesimId.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtKesimId.Name = "txtKesimId";
+            this.txtKesimId.Size = new System.Drawing.Size(212, 22);
+            this.txtKesimId.TabIndex = 247;
+            // 
+            // btnEkle
+            // 
+            this.btnEkle.Location = new System.Drawing.Point(386, 877);
+            this.btnEkle.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnEkle.Name = "btnEkle";
+            this.btnEkle.Size = new System.Drawing.Size(187, 43);
+            this.btnEkle.TabIndex = 263;
+            this.btnEkle.Text = "Ekle";
+            this.btnEkle.UseVisualStyleBackColor = true;
+            this.btnEkle.Click += new System.EventHandler(this.btnEkle_Click);
+            // 
+            // dtEklemeTarihi
+            // 
+            this.dtEklemeTarihi.Location = new System.Drawing.Point(547, 494);
+            this.dtEklemeTarihi.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.dtEklemeTarihi.Name = "dtEklemeTarihi";
+            this.dtEklemeTarihi.Size = new System.Drawing.Size(212, 22);
+            this.dtEklemeTarihi.TabIndex = 269;
+            // 
+            // btnTumunuEkle
+            // 
+            this.btnTumunuEkle.Location = new System.Drawing.Point(586, 877);
+            this.btnTumunuEkle.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnTumunuEkle.Name = "btnTumunuEkle";
+            this.btnTumunuEkle.Size = new System.Drawing.Size(187, 43);
+            this.btnTumunuEkle.TabIndex = 268;
+            this.btnTumunuEkle.Text = "Tümünü Ekle";
+            this.btnTumunuEkle.UseVisualStyleBackColor = true;
+            this.btnTumunuEkle.Click += new System.EventHandler(this.btnTumunuEkle_Click);
+            // 
+            // btnKaydet
+            // 
+            this.btnKaydet.Location = new System.Drawing.Point(783, 877);
+            this.btnKaydet.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnKaydet.Name = "btnKaydet";
+            this.btnKaydet.Size = new System.Drawing.Size(187, 43);
+            this.btnKaydet.TabIndex = 254;
+            this.btnKaydet.Text = "Kaydet";
+            this.btnKaydet.UseVisualStyleBackColor = true;
+            this.btnKaydet.Click += new System.EventHandler(this.btnKaydet_Click);
+            // 
+            // pdfViewer1
+            // 
+            this.pdfViewer1.BackColor = System.Drawing.SystemColors.Window;
+            this.pdfViewer1.Dock = System.Windows.Forms.DockStyle.Right;
+            this.pdfViewer1.FindTextHighLightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(153)))), ((int)(((byte)(193)))), ((int)(((byte)(218)))));
+            this.pdfViewer1.FormFillEnabled = false;
+            this.pdfViewer1.IgnoreCase = false;
+            this.pdfViewer1.IsToolBarVisible = true;
+            this.pdfViewer1.Location = new System.Drawing.Point(1123, 0);
+            this.pdfViewer1.Margin = new System.Windows.Forms.Padding(4);
+            this.pdfViewer1.MultiPagesThreshold = 60;
+            this.pdfViewer1.Name = "pdfViewer1";
+            this.pdfViewer1.OnRenderPageExceptionEvent = null;
+            this.pdfViewer1.Size = new System.Drawing.Size(848, 934);
+            this.pdfViewer1.TabIndex = 273;
+            this.pdfViewer1.Text = "pdfViewer1";
+            this.pdfViewer1.Threshold = 60;
+            this.pdfViewer1.ViewerBackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(229)))), ((int)(((byte)(229)))));
+            // 
+            // btnAdm
+            // 
+            this.btnAdm.BackColor = System.Drawing.SystemColors.GrayText;
+            this.btnAdm.Location = new System.Drawing.Point(765, 10);
+            this.btnAdm.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnAdm.Name = "btnAdm";
+            this.btnAdm.Size = new System.Drawing.Size(160, 57);
+            this.btnAdm.TabIndex = 275;
+            this.btnAdm.Text = "ADM3";
+            this.btnAdm.UseVisualStyleBackColor = false;
+            // 
+            // btnAjan
+            // 
+            this.btnAjan.BackColor = System.Drawing.SystemColors.GrayText;
+            this.btnAjan.Location = new System.Drawing.Point(365, 10);
+            this.btnAjan.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnAjan.Name = "btnAjan";
+            this.btnAjan.Size = new System.Drawing.Size(160, 57);
+            this.btnAjan.TabIndex = 276;
+            this.btnAjan.Text = "AJAN";
+            this.btnAjan.UseVisualStyleBackColor = false;
+            // 
+            // btnBaykal
+            // 
+            this.btnBaykal.BackColor = System.Drawing.SystemColors.GrayText;
+            this.btnBaykal.Location = new System.Drawing.Point(565, 10);
+            this.btnBaykal.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnBaykal.Name = "btnBaykal";
+            this.btnBaykal.Size = new System.Drawing.Size(160, 57);
+            this.btnBaykal.TabIndex = 277;
+            this.btnBaykal.Text = "BAYKAL";
+            this.btnBaykal.UseVisualStyleBackColor = false;
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(434, 85);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(23, 16);
+            this.label21.TabIndex = 281;
+            this.label21.Text = "ID:";
+            // 
+            // txtId
+            // 
+            this.txtId.Location = new System.Drawing.Point(547, 83);
+            this.txtId.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.txtId.Name = "txtId";
+            this.txtId.Size = new System.Drawing.Size(212, 22);
+            this.txtId.TabIndex = 280;
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(812, 404);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(100, 28);
+            this.button1.TabIndex = 282;
+            this.button1.Text = "Baykal";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // tabPage3
             // 
             this.tabPage3.Controls.Add(this.dataGridView3);
-            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Location = new System.Drawing.Point(4, 25);
+            this.tabPage3.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage3.Name = "tabPage3";
-            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage3.Size = new System.Drawing.Size(543, 252);
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPage3.Size = new System.Drawing.Size(909, 391);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Sayfa ID leri";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -974,223 +979,213 @@
             this.dataGridViewTextBoxColumn3});
             this.dataGridView3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView3.GridColor = System.Drawing.SystemColors.ButtonHighlight;
-            this.dataGridView3.Location = new System.Drawing.Point(3, 3);
-            this.dataGridView3.Margin = new System.Windows.Forms.Padding(2);
+            this.dataGridView3.Location = new System.Drawing.Point(4, 4);
+            this.dataGridView3.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridView3.Name = "dataGridView3";
             this.dataGridView3.RowHeadersVisible = false;
             this.dataGridView3.RowHeadersWidth = 62;
             this.dataGridView3.RowTemplate.Height = 28;
             this.dataGridView3.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView3.Size = new System.Drawing.Size(537, 246);
+            this.dataGridView3.Size = new System.Drawing.Size(901, 383);
             this.dataGridView3.TabIndex = 280;
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.HeaderText = "ID";
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            this.dataGridViewTextBoxColumn2.HeaderText = "Yerleşim Planı Sayfa Numarası";
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
             // 
             // dataGridViewTextBoxColumn3
             // 
             this.dataGridViewTextBoxColumn3.HeaderText = "Yerleşim Planı Tekrar Sayısı";
+            this.dataGridViewTextBoxColumn3.MinimumWidth = 6;
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             // 
-            // button1
+            // dataGridViewTextBoxColumn2
             // 
-            this.button1.Location = new System.Drawing.Point(601, 365);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 282;
-            this.button1.Text = "Baykal";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.dataGridViewTextBoxColumn2.HeaderText = "Yerleşim Planı Sayfa Numarası";
+            this.dataGridViewTextBoxColumn2.MinimumWidth = 6;
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
             // 
-            // txtId
+            // dataGridViewTextBoxColumn1
             // 
-            this.txtId.Location = new System.Drawing.Point(402, 104);
-            this.txtId.Margin = new System.Windows.Forms.Padding(2);
-            this.txtId.Name = "txtId";
-            this.txtId.Size = new System.Drawing.Size(160, 20);
-            this.txtId.TabIndex = 280;
+            this.dataGridViewTextBoxColumn1.HeaderText = "ID";
+            this.dataGridViewTextBoxColumn1.MinimumWidth = 6;
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
             // 
-            // label21
+            // tabPage2
             // 
-            this.label21.AutoSize = true;
-            this.label21.Location = new System.Drawing.Point(317, 106);
-            this.label21.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label21.Name = "label21";
-            this.label21.Size = new System.Drawing.Size(21, 13);
-            this.label21.TabIndex = 281;
-            this.label21.Text = "ID:";
+            this.tabPage2.Controls.Add(this.dataGridView2);
+            this.tabPage2.Location = new System.Drawing.Point(4, 25);
+            this.tabPage2.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPage2.Size = new System.Drawing.Size(909, 391);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Pozların Sayfalara Göre Dağılımı";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
-            // btnBaykal
+            // dataGridView2
             // 
-            this.btnBaykal.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnBaykal.Location = new System.Drawing.Point(451, 21);
-            this.btnBaykal.Margin = new System.Windows.Forms.Padding(2);
-            this.btnBaykal.Name = "btnBaykal";
-            this.btnBaykal.Size = new System.Drawing.Size(120, 46);
-            this.btnBaykal.TabIndex = 277;
-            this.btnBaykal.Text = "BAYKAL";
-            this.btnBaykal.UseVisualStyleBackColor = false;
+            this.dataGridView2.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView2.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column3,
+            this.Column1,
+            this.Column2});
+            this.dataGridView2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView2.GridColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.dataGridView2.Location = new System.Drawing.Point(4, 4);
+            this.dataGridView2.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.dataGridView2.Name = "dataGridView2";
+            this.dataGridView2.RowHeadersVisible = false;
+            this.dataGridView2.RowHeadersWidth = 62;
+            this.dataGridView2.RowTemplate.Height = 28;
+            this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView2.Size = new System.Drawing.Size(901, 383);
+            this.dataGridView2.TabIndex = 279;
             // 
-            // btnAjan
+            // Column2
             // 
-            this.btnAjan.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnAjan.Location = new System.Drawing.Point(301, 21);
-            this.btnAjan.Margin = new System.Windows.Forms.Padding(2);
-            this.btnAjan.Name = "btnAjan";
-            this.btnAjan.Size = new System.Drawing.Size(120, 46);
-            this.btnAjan.TabIndex = 276;
-            this.btnAjan.Text = "AJAN";
-            this.btnAjan.UseVisualStyleBackColor = false;
+            this.Column2.HeaderText = "Poz Tekrar Sayısı";
+            this.Column2.MinimumWidth = 6;
+            this.Column2.Name = "Column2";
             // 
-            // btnAdm
+            // Column1
             // 
-            this.btnAdm.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnAdm.Location = new System.Drawing.Point(601, 21);
-            this.btnAdm.Margin = new System.Windows.Forms.Padding(2);
-            this.btnAdm.Name = "btnAdm";
-            this.btnAdm.Size = new System.Drawing.Size(120, 46);
-            this.btnAdm.TabIndex = 275;
-            this.btnAdm.Text = "ADM3";
-            this.btnAdm.UseVisualStyleBackColor = false;
+            this.Column1.HeaderText = "Yerleşim Planı";
+            this.Column1.MinimumWidth = 6;
+            this.Column1.Name = "Column1";
             // 
-            // pdfViewer1
+            // Column3
             // 
-            this.pdfViewer1.BackColor = System.Drawing.SystemColors.Window;
-            this.pdfViewer1.Dock = System.Windows.Forms.DockStyle.Right;
-            this.pdfViewer1.FindTextHighLightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(153)))), ((int)(((byte)(193)))), ((int)(((byte)(218)))));
-            this.pdfViewer1.FormFillEnabled = false;
-            this.pdfViewer1.IgnoreCase = false;
-            this.pdfViewer1.IsToolBarVisible = true;
-            this.pdfViewer1.Location = new System.Drawing.Point(873, 0);
-            this.pdfViewer1.MultiPagesThreshold = 60;
-            this.pdfViewer1.Name = "pdfViewer1";
-            this.pdfViewer1.OnRenderPageExceptionEvent = null;
-            this.pdfViewer1.Size = new System.Drawing.Size(941, 774);
-            this.pdfViewer1.TabIndex = 273;
-            this.pdfViewer1.Text = "pdfViewer1";
-            this.pdfViewer1.Threshold = 60;
-            this.pdfViewer1.ViewerBackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(229)))), ((int)(((byte)(229)))), ((int)(((byte)(229)))));
+            this.Column3.HeaderText = "Poz";
+            this.Column3.MinimumWidth = 6;
+            this.Column3.Name = "Column3";
             // 
-            // panelContainer
+            // tabPage1
             // 
-            this.panelContainer.BackColor = System.Drawing.SystemColors.Info;
-            this.panelContainer.Controls.Add(this.panelSistem);
-            this.panelContainer.Controls.Add(this.panelYardim);
-            this.panelContainer.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelContainer.Location = new System.Drawing.Point(0, 798);
-            this.panelContainer.Name = "panelContainer";
-            this.panelContainer.Size = new System.Drawing.Size(1814, 183);
-            this.panelContainer.TabIndex = 278;
-            this.panelContainer.Visible = false;
+            this.tabPage1.Controls.Add(this.dataGridView1);
+            this.tabPage1.Location = new System.Drawing.Point(4, 25);
+            this.tabPage1.Margin = new System.Windows.Forms.Padding(4);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(4);
+            this.tabPage1.Size = new System.Drawing.Size(727, 313);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Toplam Pozlar";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // panelYardim
+            // dataGridView1
             // 
-            this.panelYardim.AutoSize = true;
-            this.panelYardim.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.panelYardim.Controls.Add(this.txtSorun);
-            this.panelYardim.Controls.Add(this.label17);
-            this.panelYardim.Controls.Add(this.btnGonder);
-            this.panelYardim.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelYardim.Location = new System.Drawing.Point(0, 0);
-            this.panelYardim.Margin = new System.Windows.Forms.Padding(2);
-            this.panelYardim.Name = "panelYardim";
-            this.panelYardim.Size = new System.Drawing.Size(1814, 183);
-            this.panelYardim.TabIndex = 129;
-            this.panelYardim.Visible = false;
+            this.dataGridView1.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.Fill;
+            this.dataGridView1.BackgroundColor = System.Drawing.Color.White;
+            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.gridKalite,
+            this.gridKalinlik,
+            this.gridKalip,
+            this.gridPoz,
+            this.gridAdet,
+            this.gridProje});
+            this.dataGridView1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridView1.GridColor = System.Drawing.SystemColors.ButtonHighlight;
+            this.dataGridView1.Location = new System.Drawing.Point(4, 4);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowHeadersVisible = false;
+            this.dataGridView1.RowHeadersWidth = 62;
+            this.dataGridView1.RowTemplate.Height = 28;
+            this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridView1.Size = new System.Drawing.Size(719, 305);
+            this.dataGridView1.TabIndex = 267;
             // 
-            // txtSorun
+            // gridProje
             // 
-            this.txtSorun.Location = new System.Drawing.Point(28, 42);
-            this.txtSorun.Margin = new System.Windows.Forms.Padding(2);
-            this.txtSorun.Name = "txtSorun";
-            this.txtSorun.Size = new System.Drawing.Size(273, 108);
-            this.txtSorun.TabIndex = 127;
-            this.txtSorun.Text = "";
+            this.gridProje.HeaderText = "Proje";
+            this.gridProje.MinimumWidth = 6;
+            this.gridProje.Name = "gridProje";
             // 
-            // label17
+            // gridAdet
             // 
-            this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(25, 27);
-            this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label17.Name = "label17";
-            this.label17.Size = new System.Drawing.Size(60, 13);
-            this.label17.TabIndex = 126;
-            this.label17.Text = "Sorun Bildir";
+            this.gridAdet.HeaderText = "Adet";
+            this.gridAdet.MinimumWidth = 8;
+            this.gridAdet.Name = "gridAdet";
             // 
-            // btnGonder
+            // gridPoz
             // 
-            this.btnGonder.Location = new System.Drawing.Point(310, 127);
-            this.btnGonder.Margin = new System.Windows.Forms.Padding(2);
-            this.btnGonder.Name = "btnGonder";
-            this.btnGonder.Size = new System.Drawing.Size(69, 22);
-            this.btnGonder.TabIndex = 128;
-            this.btnGonder.Text = "Gönder";
-            this.btnGonder.UseVisualStyleBackColor = true;
-            this.btnGonder.Click += new System.EventHandler(this.btnGonder_Click);
+            this.gridPoz.HeaderText = "Poz";
+            this.gridPoz.MinimumWidth = 8;
+            this.gridPoz.Name = "gridPoz";
             // 
-            // btnYeni
+            // gridKalip
             // 
-            this.btnYeni.Location = new System.Drawing.Point(3, 20);
-            this.btnYeni.Name = "btnYeni";
-            this.btnYeni.Size = new System.Drawing.Size(32, 33);
-            this.btnYeni.TabIndex = 278;
-            this.btnYeni.Text = "+";
-            this.btnYeni.UseVisualStyleBackColor = true;
-            this.btnYeni.Click += new System.EventHandler(this.btnYeni_Click);
+            this.gridKalip.HeaderText = "Kalıp";
+            this.gridKalip.MinimumWidth = 8;
+            this.gridKalip.Name = "gridKalip";
             // 
-            // panelYeni
+            // gridKalinlik
             // 
-            this.panelYeni.BackColor = System.Drawing.Color.LightCyan;
-            this.panelYeni.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelYeni.Controls.Add(this.btnYeni);
-            this.panelYeni.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelYeni.Location = new System.Drawing.Point(205, 24);
-            this.panelYeni.Name = "panelYeni";
-            this.panelYeni.Size = new System.Drawing.Size(41, 774);
-            this.panelYeni.TabIndex = 282;
+            this.gridKalinlik.HeaderText = "Kalınlık";
+            this.gridKalinlik.MinimumWidth = 8;
+            this.gridKalinlik.Name = "gridKalinlik";
             // 
-            // richTextBox5
+            // gridKalite
             // 
-            this.richTextBox5.Location = new System.Drawing.Point(943, 138);
-            this.richTextBox5.Name = "richTextBox5";
-            this.richTextBox5.Size = new System.Drawing.Size(610, 316);
-            this.richTextBox5.TabIndex = 286;
-            this.richTextBox5.Text = "";
+            this.gridKalite.HeaderText = "Kalite";
+            this.gridKalite.MinimumWidth = 8;
+            this.gridKalite.Name = "gridKalite";
+            // 
+            // tabControl1
+            // 
+            this.tabControl1.Controls.Add(this.tabPage1);
+            this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
+            this.tabControl1.Location = new System.Drawing.Point(347, 533);
+            this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
+            this.tabControl1.Name = "tabControl1";
+            this.tabControl1.SelectedIndex = 0;
+            this.tabControl1.Size = new System.Drawing.Size(735, 342);
+            this.tabControl1.TabIndex = 283;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(811, 247);
+            this.button3.Margin = new System.Windows.Forms.Padding(4);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(100, 28);
+            this.button3.TabIndex = 285;
+            this.button3.Text = "Ajan";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(645, 163);
+            this.button2.Location = new System.Drawing.Point(812, 145);
+            this.button2.Margin = new System.Windows.Forms.Padding(4);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.Size = new System.Drawing.Size(100, 28);
             this.button2.TabIndex = 286;
             this.button2.Text = "button2";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // openFileDialog1
+            // richTextBox5
             // 
-            this.openFileDialog1.FileName = "openFileDialog1";
+            this.richTextBox5.Location = new System.Drawing.Point(1257, 170);
+            this.richTextBox5.Margin = new System.Windows.Forms.Padding(4);
+            this.richTextBox5.Name = "richTextBox5";
+            this.richTextBox5.Size = new System.Drawing.Size(812, 388);
+            this.richTextBox5.TabIndex = 286;
+            this.richTextBox5.Text = "";
             // 
             // frmAnaSayfa
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(1814, 1030);
+            this.ClientSize = new System.Drawing.Size(1971, 1030);
             this.Controls.Add(this.panelYeni);
             this.Controls.Add(this.panelAraYuz);
             this.Controls.Add(this.panelKesimPlaniEkle);
             this.Controls.Add(this.panelContainer);
             this.Controls.Add(this.menuStrip1);
             this.Controls.Add(this.panelYardimCubugu);
-            this.Margin = new System.Windows.Forms.Padding(2);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "frmAnaSayfa";
             this.Text = "CEKA";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
@@ -1204,20 +1199,20 @@
             this.panelSistem.PerformLayout();
             this.panelSistemBilgisi.ResumeLayout(false);
             this.panelSistemBilgisi.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
             this.panelKesimPlaniEkle.ResumeLayout(false);
             this.panelKesimPlaniEkle.PerformLayout();
-            this.tabControl1.ResumeLayout(false);
-            this.tabPage1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
-            this.tabPage3.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).EndInit();
             this.panelContainer.ResumeLayout(false);
             this.panelContainer.PerformLayout();
             this.panelYardim.ResumeLayout(false);
             this.panelYardim.PerformLayout();
             this.panelYeni.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).EndInit();
+            this.tabPage2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            this.tabPage1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.tabControl1.ResumeLayout(false);
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -1251,39 +1246,10 @@
         private System.Windows.Forms.RichTextBox richTextBox2;
         private System.Windows.Forms.RichTextBox richTextBox1;
         public System.Windows.Forms.Label lblSistemKullanici;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.TextBox txtOlusturan;
-        private System.Windows.Forms.TextBox txtProjeNo;
-        private System.Windows.Forms.TextBox txtKalipNo;
-        private System.Windows.Forms.TextBox txtKesilenPozlar;
-        private System.Windows.Forms.TextBox txtKPAdet;
-        private System.Windows.Forms.Label label7;
-        private System.Windows.Forms.TextBox txtDosya;
-        private System.Windows.Forms.Button btnSec;
-        private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.TextBox txtKalite;
-        private System.Windows.Forms.Label label9;
-        private System.Windows.Forms.TextBox txtKalinlik;
-        private System.Windows.Forms.Label lblKesimId;
-        private System.Windows.Forms.TextBox txtKesimId;
-        private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.Button btnEkle;
-        private System.Windows.Forms.DateTimePicker dtEklemeTarihi;
-        private System.Windows.Forms.Button btnTumunuEkle;
-        private System.Windows.Forms.Button btnKaydet;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.TextBox txtKesimPlaniTekrarSayisi;
         private System.Windows.Forms.Button btnXmlOlustur;
         private System.Windows.Forms.Panel panelKesimPlaniEkle;
-        private Spire.PdfViewer.Forms.PdfViewer pdfViewer1;
-        private System.Windows.Forms.Button btnBaykal;
-        private System.Windows.Forms.Button btnAjan;
-        private System.Windows.Forms.Button btnAdm;
         private System.Windows.Forms.Panel panelContainer;
         private System.Windows.Forms.Panel panelYardim;
         private System.Windows.Forms.RichTextBox txtSorun;
@@ -1293,35 +1259,64 @@
         private System.Windows.Forms.Label label19;
         private System.Windows.Forms.Label label18;
         private System.Windows.Forms.Label label10;
+        private System.Windows.Forms.Button btnAktar;
+        private System.Windows.Forms.Label label20;
+        private System.Windows.Forms.RichTextBox richTextBox4;
+        private System.Windows.Forms.Button btnYeni;
+        private System.Windows.Forms.Panel panelYeni;
+        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.RichTextBox richTextBox5;
+        private System.Windows.Forms.Button button2;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.TabControl tabControl1;
+        private System.Windows.Forms.TabPage tabPage1;
+        private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridKalite;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridKalinlik;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridKalip;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridPoz;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridAdet;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridProje;
-        private System.Windows.Forms.Button btnAktar;
-        private System.Windows.Forms.Label label20;
-        private System.Windows.Forms.RichTextBox richTextBox4;
-        private System.Windows.Forms.Button btnYeni;
-        private System.Windows.Forms.DataGridView dataGridView2;
-        private System.Windows.Forms.TextBox txtId;
-        private System.Windows.Forms.Label label21;
-        private System.Windows.Forms.Panel panelYeni;
-        private System.Windows.Forms.Button button1;
-        private System.Windows.Forms.TabControl tabControl1;
-        private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
-        private System.Windows.Forms.TabPage tabPage3;
-        private System.Windows.Forms.DataGridView dataGridView3;
+        private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.DataGridView dataGridView3;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private System.Windows.Forms.Button button3;
-        private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.RichTextBox richTextBox5;
-        private System.Windows.Forms.OpenFileDialog openFileDialog1;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.TextBox txtId;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Button btnBaykal;
+        private System.Windows.Forms.Button btnAjan;
+        private System.Windows.Forms.Button btnAdm;
+        private Spire.PdfViewer.Forms.PdfViewer pdfViewer1;
+        private System.Windows.Forms.Button btnKaydet;
+        private System.Windows.Forms.Button btnTumunuEkle;
+        private System.Windows.Forms.DateTimePicker dtEklemeTarihi;
+        private System.Windows.Forms.Button btnEkle;
+        private System.Windows.Forms.TextBox txtKesimId;
+        private System.Windows.Forms.Label lblKesimId;
+        private System.Windows.Forms.TextBox txtKalinlik;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.TextBox txtKalite;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Button btnSec;
+        private System.Windows.Forms.TextBox txtDosya;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.TextBox txtKPAdet;
+        private System.Windows.Forms.TextBox txtKesilenPozlar;
+        private System.Windows.Forms.TextBox txtKalipNo;
+        private System.Windows.Forms.TextBox txtProjeNo;
+        private System.Windows.Forms.TextBox txtOlusturan;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label1;
     }
 }
