@@ -1,9 +1,6 @@
-﻿using Npgsql;
+﻿using KesimTakip.Entitys;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SqlClient;
 
 namespace KesimTakip.DataBase
 {
@@ -13,17 +10,15 @@ namespace KesimTakip.DataBase
         {
             Yoneticiler yonetici = null;
 
-
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
 
-
-                string sql = "SELECT adsoyad FROM \"Yoneticiler\" WHERE kullaniciadi = @kullaniciadi AND sifre = @sifre";
-                using (var cmd = new NpgsqlCommand(sql, connection))
+                string sql = "SELECT adSoyad FROM [Yoneticiler] WHERE kullaniciAdi = @kullaniciAdi AND sifre = @sifre";
+                using (var cmd = new SqlCommand(sql, connection))
                 {
-                    cmd.Parameters.AddWithValue("kullaniciadi", kullaniciAdi);
-                    cmd.Parameters.AddWithValue("sifre", sifre);
+                    cmd.Parameters.AddWithValue("@kullaniciAdi", kullaniciAdi);
+                    cmd.Parameters.AddWithValue("@sifre", sifre);
 
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -42,6 +37,5 @@ namespace KesimTakip.DataBase
 
             return yonetici;
         }
-
     }
 }

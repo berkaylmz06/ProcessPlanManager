@@ -1,19 +1,15 @@
-﻿using Npgsql;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.Data.SqlClient;
 
 namespace KesimTakip.DataBase
 {
     class DataBaseHelper
     {
-        private static readonly string connectionString = "Host=localhost;Port=5432;Username=postgres;Password=123;Database=KesimTakip";
+        private static readonly string connectionString = "Server=IFS-DEVELOPER\\SQLEXPRESS;Database=KesimTakip;Integrated Security=True;";
 
-        public static NpgsqlConnection GetConnection()
+        public static SqlConnection GetConnection()
         {
-            return new NpgsqlConnection(connectionString);
+            return new SqlConnection(connectionString);
         }
     }
 }

@@ -1,5 +1,6 @@
-﻿using Npgsql;
-using System;
+﻿using System;
+using System.Data;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace KesimTakip.DataBase
@@ -12,10 +13,10 @@ namespace KesimTakip.DataBase
             {
                 connection.Open();
 
-                string insertQuery = "INSERT INTO \"KesimTamamlanmisPaket\" (\"kesimYapan\", \"kesimId\", \"kesilmisPlanSayisi\", \"kesimTarihi\", \"kesimSaati\") " +
+                string insertQuery = "INSERT INTO [KesimTamamlanmisPaket] ([kesimYapan], [kesimId], [kesilmisPlanSayisi], [kesimTarihi], [kesimSaati]) " +
                                      "VALUES (@kesimYapan, @kesimId, @kesilmisPlanSayisi, @kesimTarihi, @kesimSaati)";
 
-                using (var insertCommand = new NpgsqlCommand(insertQuery, connection))
+                using (var insertCommand = new SqlCommand(insertQuery, connection))
                 {
                     insertCommand.Parameters.AddWithValue("@kesimYapan", kesimYapan);
                     insertCommand.Parameters.AddWithValue("@kesimId", kesimId);

@@ -1,10 +1,7 @@
-﻿using Npgsql;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace KesimTakip.DataBase
@@ -17,10 +14,10 @@ namespace KesimTakip.DataBase
             {
                 conn.Open();
 
-                string query = "INSERT INTO \"KesimListesiPaket\" (\"olusturan\", \"kesimId\", \"kesilecekPlanSayisi\", \"toplamPlanTekrari\", \"eklemeTarihi\")" +
+                string query = "INSERT INTO [KesimListesiPaket] ([olusturan], [kesimId], [kesilecekPlanSayisi], [toplamPlanTekrari], [eklemeTarihi])" +
                                "VALUES (@olusturan, @kesimId, @kesilecekPlanSayisi, @toplamPlanTekrari, @eklemeTarihi)";
 
-                using (var cmd = new NpgsqlCommand(query, conn))
+                using (var cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@olusturan", olusturan);
                     cmd.Parameters.AddWithValue("@kesimId", kesimId);
@@ -32,13 +29,14 @@ namespace KesimTakip.DataBase
                 }
             }
         }
+
         public DataTable GetKesimListesiPaket()
         {
-            string query = "SELECT \"olusturan\", \"kesimId\", \"kesilecekPlanSayisi\", \"kesilmisPlanSayisi\", \"toplamPlanTekrari\", \"eklemeTarihi\" FROM \"KesimListesiPaket\"";
+            string query = "SELECT [olusturan], [kesimId], [kesilecekPlanSayisi], [kesilmisPlanSayisi], [toplamPlanTekrari], [eklemeTarihi] FROM [KesimListesiPaket]";
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
-                using (var adapter = new NpgsqlDataAdapter(query, connection))
+                using (var adapter = new SqlDataAdapter(query, connection))
                 {
                     DataTable dt = new DataTable();
                     adapter.Fill(dt);
@@ -46,13 +44,14 @@ namespace KesimTakip.DataBase
                 }
             }
         }
+
         public static bool KesimListesiPaketKesimIdVarsa(int kesimId)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
-                string query = "SELECT COUNT(1) FROM \"KesimListesiPaket\" WHERE \"kesimId\" = @kesimId";
-                using (var command = new NpgsqlCommand(query, connection))
+                string query = "SELECT COUNT(1) FROM [KesimListesiPaket] WHERE [kesimId] = @kesimId";
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@kesimId", kesimId);
                     int count = Convert.ToInt32(command.ExecuteScalar());
@@ -60,6 +59,7 @@ namespace KesimTakip.DataBase
                 }
             }
         }
+
         public static bool KesimListesiPaketKontrolluDusme(int kesimId, int kesilenMiktar, out string hataMesaji)
         {
             hataMesaji = "";
@@ -68,8 +68,8 @@ namespace KesimTakip.DataBase
             {
                 conn.Open();
 
-                string selectQuery = "SELECT \"kesilecekPlanSayisi\" FROM \"KesimListesiPaket\" WHERE \"kesimId\" = @id";
-                using (var selectCommand = new NpgsqlCommand(selectQuery, conn))
+                string selectQuery = "SELECT [kesilecekPlanSayisi] FROM [KesimListesiPaket] WHERE [kesimId] = @id";
+                using (var selectCommand = new SqlCommand(selectQuery, conn))
                 {
                     selectCommand.Parameters.AddWithValue("@id", kesimId);
                     var mevcutDegerObj = selectCommand.ExecuteScalar();
@@ -82,12 +82,12 @@ namespace KesimTakip.DataBase
                             return false;
                         }
 
-                        string updateQuery = "UPDATE \"KesimListesiPaket\" " +
-                                             "SET \"kesilecekPlanSayisi\" = \"kesilecekPlanSayisi\" - @azalt, " +
-                                             "\"kesilmisPlanSayisi\" = \"kesilmisPlanSayisi\" + @arttir " +
-                                             "WHERE \"kesimId\" = @id";
+                        string updateQuery = "UPDATE [KesimListesiPaket] " +
+                                             "SET [kesilecekPlanSayisi] = [kesilecekPlanSayisi] - @azalt, " +
+                                             "[kesilmisPlanSayisi] = [kesilmisPlanSayisi] + @arttir " +
+                                             "WHERE [kesimId] = @id";
 
-                        using (var updateCommand = new NpgsqlCommand(updateQuery, conn))
+                        using (var updateCommand = new SqlCommand(updateQuery, conn))
                         {
                             updateCommand.Parameters.AddWithValue("@azalt", kesilenMiktar);
                             updateCommand.Parameters.AddWithValue("@arttir", kesilenMiktar);
@@ -106,21 +106,23 @@ namespace KesimTakip.DataBase
                 }
             }
         }
+
         public static void VerileriYenile(DataGridView data)
         {
-            string query = "SELECT * FROM \"KesimListesiPaket\"";
+            string query = "SELECT * FROM [KesimListesiPaket]";
             using (var conn = DataBaseHelper.GetConnection())
             {
                 conn.Open();
-                using (var cmd = new NpgsqlCommand(query, conn))
+                using (var cmd = new SqlCommand(query, conn))
                 {
-                    NpgsqlDataAdapter adapter = new NpgsqlDataAdapter(cmd);
+                    SqlDataAdapter adapter = new SqlDataAdapter(cmd);
                     DataTable dataTable = new DataTable();
                     adapter.Fill(dataTable);
                     data.DataSource = dataTable;
                 }
             }
         }
+
         public static DataTable KesimListesiniPaketFiltrele(Dictionary<string, TextBox> filtreKutulari)
         {
             var dt = new DataTable();
@@ -128,11 +130,11 @@ namespace KesimTakip.DataBase
             Dictionary<string, (string dbColumn, string dataType)> labelToDbColumn = new Dictionary<string, (string, string)>
             {
                  { "Planı Oluşturan", ("olusturan", "text") },
-                 { "Kesim ID", ("\"kesimId\"", "int") },
-                 { "Kesilecek Plan Sayısı",("\"kesilecekPlanSayisi\"", "int") },
-                 { "Kesilmiş Plan Sayısı",("\"kesilmisPlanSayisi\"", "int") },
-                 { "Toplam Plan Tekrarı",("\"toplamPlanTekrari\"", "int") },
-                 { "Ekleme Tarihi", ("\"eklemeTarihi\"", "text") }
+                 { "Kesim ID", ("[kesimId]", "int") },
+                 { "Kesilecek Plan Sayısı",("[kesilecekPlanSayisi]", "int") },
+                 { "Kesilmiş Plan Sayısı",("[kesilmisPlanSayisi]", "int") },
+                 { "Toplam Plan Tekrarı",("[toplamPlanTekrari]", "int") },
+                 { "Ekleme Tarihi", ("[eklemeTarihi]", "text") }
             };
 
             List<string> kosullar = new List<string>();
@@ -151,7 +153,7 @@ namespace KesimTakip.DataBase
                 {
                     if (veriTuru == "text")
                     {
-                        kosullar.Add($"{dbKolon} ILIKE '%{deger.Replace("'", "''")}%'");
+                        kosullar.Add($"{dbKolon} LIKE '%{deger.Replace("'", "''")}%'");
                     }
                     else if (veriTuru == "int" && int.TryParse(deger, out int sayi))
                     {
@@ -160,7 +162,7 @@ namespace KesimTakip.DataBase
                 }
             }
 
-            string query = "SELECT * FROM \"KesimListesiPaket\"";
+            string query = "SELECT * FROM [KesimListesiPaket]";
 
             if (kosullar.Count > 0)
             {
@@ -170,7 +172,7 @@ namespace KesimTakip.DataBase
             using (var conn = DataBaseHelper.GetConnection())
             {
                 conn.Open();
-                using (var da = new Npgsql.NpgsqlDataAdapter(query, conn))
+                using (var da = new SqlDataAdapter(query, conn))
                 {
                     da.Fill(dt);
                 }
@@ -178,7 +180,5 @@ namespace KesimTakip.DataBase
 
             return dt;
         }
-
-
     }
 }

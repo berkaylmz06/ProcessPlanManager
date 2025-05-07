@@ -1,10 +1,7 @@
 ﻿using KesimTakip.Entitys;
-using Npgsql;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace KesimTakip.DataBase
@@ -19,9 +16,9 @@ namespace KesimTakip.DataBase
                 {
                     connection.Open();
 
-                    string sql = "INSERT INTO \"SorunBildirimleri\" (kullanici, bildiri, bildirizamani) VALUES (@kullanici, @bildiri, @bildirizamani)";
+                    string sql = "INSERT INTO [SorunBildirimleri] (kullanici, bildiri, bildirizamani) VALUES (@kullanici, @bildiri, @bildirizamani)";
 
-                    using (NpgsqlCommand command = new NpgsqlCommand(sql, connection))
+                    using (SqlCommand command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@kullanici", olusturan);
                         command.Parameters.AddWithValue("@bildiri", sorun);
@@ -39,15 +36,16 @@ namespace KesimTakip.DataBase
                 }
             }
         }
+
         public static List<SorunBildirimleri> GetSorunlar()
         {
             var sorunlar = new List<SorunBildirimleri>();
-            string query = "SELECT id, kullanici, bildiri, bildirizamani, okundu FROM \"SorunBildirimleri\"";
+            string query = "SELECT id, kullanici, bildiri, bildirizamani, okundu FROM [SorunBildirimleri]";
 
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
-                using (var command = new NpgsqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     using (var reader = command.ExecuteReader())
                     {
@@ -67,15 +65,16 @@ namespace KesimTakip.DataBase
             }
             return sorunlar;
         }
+
         public static void UpdateOkunduDurumu(int id)
         {
-            string query = "SELECT okundu FROM \"SorunBildirimleri\" WHERE id = @id";
+            string query = "SELECT okundu FROM [SorunBildirimleri] WHERE id = @id";
             string okunduDurumu = "";
 
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
-                using (var command = new NpgsqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@id", id);
                     okunduDurumu = command.ExecuteScalar()?.ToString();
@@ -84,11 +83,11 @@ namespace KesimTakip.DataBase
 
             if (okunduDurumu != "okundu")
             {
-                string updateQuery = "UPDATE \"SorunBildirimleri\" SET okundu = 'okundu' WHERE id = @id";
+                string updateQuery = "UPDATE [SorunBildirimleri] SET okundu = 'okundu' WHERE id = @id";
                 using (var connection = DataBaseHelper.GetConnection())
                 {
                     connection.Open();
-                    using (var command = new NpgsqlCommand(updateQuery, connection))
+                    using (var command = new SqlCommand(updateQuery, connection))
                     {
                         command.Parameters.AddWithValue("@id", id);
                         command.ExecuteNonQuery();

@@ -1,12 +1,9 @@
-﻿using iText.StyledXmlParser.Jsoup.Select;
-using KesimTakip.Entitys;
-using Npgsql;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
+using KesimTakip.Entitys;
 
 namespace KesimTakip.DataBase
 {
@@ -31,10 +28,10 @@ namespace KesimTakip.DataBase
 
                     if (!string.IsNullOrEmpty(temizPoz) && !string.IsNullOrEmpty(temizKalip) && !string.IsNullOrEmpty(temizAdet))
                     {
-                        string query = "INSERT INTO \"KesimListesi\" (\"id\",\"olusturan\", \"kesimId\", \"projeNo\", \"kalinlik\", \"kalite\", \"kalipNo\", \"kesilecekPozlar\", \"kpAdetSayilari\", \"eklemeTarihi\") " +
+                        string query = "INSERT INTO KesimListesi (id, olusturan, kesimId, projeNo, kalinlik, kalite, kalipNo, kesilecekPozlar, kpAdetSayilari, eklemeTarihi) " +
                                        "VALUES (@id, @olusturan, @kesimId, @projeNo, @kalinlik, @kalite, @kalipNo, @kesilecekPozlar, @kpAdetSayilari, @eklemeTarihi)";
 
-                        using (var cmd = new NpgsqlCommand(query, conn))
+                        using (var cmd = new SqlCommand(query, conn))
                         {
                             cmd.Parameters.AddWithValue("@id", id);
                             cmd.Parameters.AddWithValue("@olusturan", olusturan);
@@ -53,15 +50,16 @@ namespace KesimTakip.DataBase
                 }
             }
         }
+
         public static List<KesimListesi> GetKesimListesi()
         {
             var veriler = new List<KesimListesi>();
-            string query = "SELECT olusturan, \"kesimId\", \"projeNo\", kalite, kalinlik, \"kalipNo\", \"kesilecekPozlar\", \"kpAdetSayilari\", \"eklemeTarihi\" FROM \"KesimListesi\"";
+            string query = "SELECT olusturan, kesimId, projeNo, kalite, kalinlik, kalipNo, kesilecekPozlar, kpAdetSayilari, eklemeTarihi FROM KesimListesi";
 
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
-                using (var command = new NpgsqlCommand(query, connection))
+                using (var command = new SqlCommand(query, connection))
                 {
                     using (var reader = command.ExecuteReader())
                     {
@@ -86,23 +84,6 @@ namespace KesimTakip.DataBase
             return veriler;
         }
 
-        public DataTable GetKesimVerileri()
-        {
-            string query = "SELECT \"kesimId\", olusturan, \"kesimPlaniTekrarSayisi\", \"toplamKesimSayisi\", \"eklemeTarihi\" FROM \"KesimListesi\"";
-            using (var connection = DataBaseHelper.GetConnection())
-            {
-                connection.Open();
-                using (var adapter = new NpgsqlDataAdapter(query, connection))
-                {
-                    DataTable dt = new DataTable();
-                    adapter.Fill(dt);
-                    return dt;
-                }
-            }
-        }
-
- 
-       
         public static DataTable GetirKesimListesi(int kesimId)
         {
             DataTable dt = new DataTable();
@@ -113,9 +94,9 @@ namespace KesimTakip.DataBase
                 {
                     conn.Open();
 
-                    string query = "SELECT * FROM \"KesimListesi\" WHERE \"kesimId\" = @kesimId";
+                    string query = "SELECT * FROM KesimListesi WHERE kesimId = @kesimId";
 
-                    using (var da = new NpgsqlDataAdapter(query, conn))
+                    using (var da = new SqlDataAdapter(query, conn))
                     {
                         da.SelectCommand.Parameters.AddWithValue("@kesimId", kesimId);
                         da.Fill(dt);
@@ -129,18 +110,19 @@ namespace KesimTakip.DataBase
 
             return dt;
         }
+
         public static int GetSiradakiId()
         {
             try
             {
-                using (NpgsqlConnection conn = DataBaseHelper.GetConnection())
+                using (SqlConnection conn = DataBaseHelper.GetConnection())
                 {
                     conn.Open();
                     string query = @"
-                        SELECT COALESCE(""SonId"", 0) + 1 
-                        FROM ""IdUretici"" 
-                        WHERE ""TabloAdi"" = 'KesimListesi'";
-                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
+                        SELECT COALESCE(SonId, 0) + 1 
+                        FROM IdUretici 
+                        WHERE TabloAdi = 'KesimListesi'";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
                         object result = cmd.ExecuteScalar();
                         return Convert.ToInt32(result);
@@ -157,17 +139,21 @@ namespace KesimTakip.DataBase
         {
             try
             {
-                using (NpgsqlConnection conn = DataBaseHelper.GetConnection())
+                using (SqlConnection conn = DataBaseHelper.GetConnection())
                 {
                     conn.Open();
                     string query = @"
-                        INSERT INTO ""IdUretici"" (""TabloAdi"", ""SonId"") 
-                        VALUES ('KesimListesi', @id)
-                        ON CONFLICT (""TabloAdi"") 
-                        DO UPDATE SET ""SonId"" = @id";
-                    using (NpgsqlCommand cmd = new NpgsqlCommand(query, conn))
+                IF EXISTS (SELECT 1 FROM IdUretici WHERE TabloAdi = 'KesimListesi')
+                BEGIN
+                    UPDATE IdUretici SET SonId = @id WHERE TabloAdi = 'KesimListesi'
+                END
+                ELSE
+                BEGIN
+                    INSERT INTO IdUretici (TabloAdi, SonId) VALUES ('KesimListesi', @id)
+                END";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("id", id);
+                        cmd.Parameters.AddWithValue("@id", id);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -180,6 +166,3 @@ namespace KesimTakip.DataBase
 
     }
 }
-
-
-
