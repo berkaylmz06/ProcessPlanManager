@@ -111,9 +111,6 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=8.0.7.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.8.0.7\lib\netstandard2.0\Npgsql.dll</HintPath>
-    </Reference>
     <Reference Include="Spire.Pdf, Version=10.7.21.0, Culture=neutral, PublicKeyToken=663f351905198cb3, processorArchitecture=MSIL">
       <HintPath>..\packages\Spire.PDF.10.7.21\lib\net48\Spire.Pdf.dll</HintPath>
     </Reference>
@@ -190,6 +187,7 @@
     <Compile Include="DataBase\YoneticiData.cs" />
     <Compile Include="Entitys\KesimListesiPaket.cs" />
     <Compile Include="Entitys\KesimTamamlanmisPaket.cs" />
+    <Compile Include="Entitys\KullaniciRenkAyarlari.cs" />
     <Compile Include="Entitys\MalzemeBilgisi.cs" />
     <Compile Include="Entitys\SayfaBilgisi.cs" />
     <Compile Include="Entitys\SorunBildirimleri.cs" />
@@ -227,14 +225,10 @@
       <DependentUpon>frmKullaniciEkle.cs</DependentUpon>
     </Compile>
     <Compile Include="Entitys\Kullanicilar.cs" />
+    <Compile Include="Helper\ButonGenelHelper.cs" />
     <Compile Include="Helper\ButonMakinaSecHelper.cs" />
     <Compile Include="Helper\DataGridViewHelper.cs" />
-    <Compile Include="PdfTOXml.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="PdfTOXml.Designer.cs">
-      <DependentUpon>PdfTOXml.cs</DependentUpon>
-    </Compile>
+    <Compile Include="Helper\MenuStripGenelHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="frmYoneticiEkrani.cs">
@@ -258,9 +252,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmKullaniciEkle.resx">
       <DependentUpon>frmKullaniciEkle.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="PdfTOXml.resx">
-      <DependentUpon>PdfTOXml.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -290,6 +281,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="image\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="UsrControl\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

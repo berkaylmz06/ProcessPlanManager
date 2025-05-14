@@ -36,7 +36,7 @@ namespace KesimTakip
                 var satir = dataGridKesimListesi.Rows[e.RowIndex];
                 if (satir.Cells["kesimId"].Value != null)
                 {
-                    int kesimId = Convert.ToInt32(satir.Cells["kesimId"].Value);
+                    string kesimId = satir.Cells["kesimId"].Value.ToString();
 
 
                     try
@@ -128,7 +128,7 @@ namespace KesimTakip
                 try
                 {
                     var olusturan = selectedRow.Cells["olusturan"].Value?.ToString();
-                    int kesimId = int.Parse(selectedRow.Cells["kesimId"].Value?.ToString() ?? "0");
+                    string kesimId = selectedRow.Cells["kesimId"].Value?.ToString() ?? "0";
 
                     if (string.IsNullOrEmpty(txtKesilecekPlanSayisi.Text) || !int.TryParse(txtKesilecekPlanSayisi.Text, out int kesilmisPlanSayisi) || kesilmisPlanSayisi <= 0)
                     {

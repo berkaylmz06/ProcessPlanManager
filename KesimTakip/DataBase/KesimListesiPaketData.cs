@@ -8,25 +8,32 @@ namespace KesimTakip.DataBase
 {
     class KesimListesiPaketData
     {
-        public static void SaveKesimDataPaket(string olusturan, int kesimId, int kesilecekPlanSayisi, int toplamPlanTekrari, string eklemeTarihi)
+        public static void SaveKesimDataPaket(string olusturan, string kesimId, int kesilecekPlanSayisi, int toplamPlanTekrari, string eklemeTarihi)
         {
-            using (var conn = DataBaseHelper.GetConnection())
+            try
             {
-                conn.Open();
-
-                string query = "INSERT INTO [KesimListesiPaket] ([olusturan], [kesimId], [kesilecekPlanSayisi], [toplamPlanTekrari], [eklemeTarihi])" +
-                               "VALUES (@olusturan, @kesimId, @kesilecekPlanSayisi, @toplamPlanTekrari, @eklemeTarihi)";
-
-                using (var cmd = new SqlCommand(query, conn))
+                using (var conn = DataBaseHelper.GetConnection())
                 {
-                    cmd.Parameters.AddWithValue("@olusturan", olusturan);
-                    cmd.Parameters.AddWithValue("@kesimId", kesimId);
-                    cmd.Parameters.AddWithValue("@kesilecekPlanSayisi", kesilecekPlanSayisi);
-                    cmd.Parameters.AddWithValue("@toplamPlanTekrari", toplamPlanTekrari);
-                    cmd.Parameters.AddWithValue("@eklemeTarihi", eklemeTarihi);
+                    conn.Open();
 
-                    cmd.ExecuteNonQuery();
+                    string query = "INSERT INTO [KesimListesiPaket] ([olusturan], [kesimId], [kesilecekPlanSayisi], [toplamPlanTekrari], [eklemeTarihi])" +
+                                   "VALUES (@olusturan, @kesimId, @kesilecekPlanSayisi, @toplamPlanTekrari, @eklemeTarihi)";
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@olusturan", olusturan);
+                        cmd.Parameters.AddWithValue("@kesimId", kesimId);
+                        cmd.Parameters.AddWithValue("@kesilecekPlanSayisi", kesilecekPlanSayisi);
+                        cmd.Parameters.AddWithValue("@toplamPlanTekrari", toplamPlanTekrari);
+                        cmd.Parameters.AddWithValue("@eklemeTarihi", eklemeTarihi);
+
+                        cmd.ExecuteNonQuery();
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata: " + ex.Message);
             }
         }
 
@@ -60,7 +67,7 @@ namespace KesimTakip.DataBase
             }
         }
 
-        public static bool KesimListesiPaketKontrolluDusme(int kesimId, int kesilenMiktar, out string hataMesaji)
+        public static bool KesimListesiPaketKontrolluDusme(string kesimId, int kesilenMiktar, out string hataMesaji)
         {
             hataMesaji = "";
 

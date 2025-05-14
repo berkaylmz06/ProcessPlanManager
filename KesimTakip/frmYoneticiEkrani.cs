@@ -30,6 +30,7 @@ namespace KesimTakip
             panelAnaSayfa.Visible = false;
             panelKullaniciAyar.Visible = false;
             panelSorunBildirimleri.Visible = false;
+            panelKesimDetaylari.Visible = false;
 
             target.Visible = true;
         }

@@ -10,7 +10,7 @@ namespace KesimTakip.Entitys
     {
         public int id { get; set; }
         public string olusturan { get; set; }
-        public int kesimId { get; set; }
+        public string kesimId { get; set; }
         public string projeNo { get; set; }
         public string kalite { get; set; }
         public string kalinlik { get; set; }

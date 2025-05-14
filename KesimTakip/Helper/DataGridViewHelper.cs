@@ -5,7 +5,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static Npgsql.Replication.PgOutput.Messages.RelationMessage;
 
 namespace KesimTakip.Helper
 {
@@ -15,22 +14,36 @@ namespace KesimTakip.Helper
         {
             dgv.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
             dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+
             dgv.ScrollBars = ScrollBars.Both;
             dgv.AllowUserToResizeRows = false;
+
             dgv.BorderStyle = BorderStyle.None;
-            dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
             dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
-            dgv.DefaultCellStyle.SelectionBackColor = Color.FromArgb(51, 153, 255);
+
+            dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
+
+            dgv.DefaultCellStyle.SelectionBackColor = ColorTranslator.FromHtml("#51A3FF"); 
             dgv.DefaultCellStyle.SelectionForeColor = Color.WhiteSmoke;
+
             dgv.BackgroundColor = Color.White;
+
             dgv.EnableHeadersVisualStyles = false;
             dgv.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
-            dgv.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(0, 122, 204);
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = ColorTranslator.FromHtml("#2C3E50");
             dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
-            dgv.RowHeadersVisible = false;
-            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
-            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10);
             dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 11, FontStyle.Bold);
+
+            dgv.RowHeadersVisible = false;
+
+            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.AllCells;
+
+            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 10);
+
+            dgv.DefaultCellStyle.SelectionBackColor = ColorTranslator.FromHtml("#51A3FF");
+            dgv.DefaultCellStyle.SelectionForeColor = Color.WhiteSmoke;
+
+            dgv.RowTemplate.DefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
         }
     }
 }

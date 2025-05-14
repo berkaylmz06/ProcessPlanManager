@@ -12,60 +12,44 @@ namespace KesimTakip.Helper
         {
             foreach (var button in allButtons)
             {
-                ApplyNeutralStyle(button);
+                ButonNormal(button);
             }
 
-            // Seçili butonun stilini ayarla
-            clickedButton.BackColor = System.Drawing.Color.LightSkyBlue;
+            clickedButton.BackColor = ColorTranslator.FromHtml("#E67E22");
             clickedButton.Font = new System.Drawing.Font(clickedButton.Font.FontFamily, 12);
-            clickedButton.ForeColor = System.Drawing.Color.White;
+            clickedButton.ForeColor = ColorTranslator.FromHtml("#FFFFFF");
             clickedButton.FlatStyle = FlatStyle.Flat;
-            clickedButton.FlatAppearance.BorderSize = 0;
+            clickedButton.FlatAppearance.BorderSize = 1;
             clickedButton.Tag = true;
 
-            clickedButton.FlatAppearance.BorderColor = System.Drawing.Color.LightBlue;
-            clickedButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.SkyBlue;
-            clickedButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.DeepSkyBlue;
+            clickedButton.FlatAppearance.BorderColor = ColorTranslator.FromHtml("#2C3E50");
+            clickedButton.FlatAppearance.MouseOverBackColor = ColorTranslator.FromHtml("#34495E");
+            clickedButton.FlatAppearance.MouseDownBackColor = ColorTranslator.FromHtml("#2C3E50");
 
-            SetRoundedCorners(clickedButton, 10);
         }
 
         public static void NötrStilUygula(List<Button> allButtons)
         {
             foreach (var button in allButtons)
             {
-                ApplyNeutralStyle(button);
+                ButonNormal(button);
             }
         }
 
-        private static void ApplyNeutralStyle(Button button)
+        private static void ButonNormal(Button button)
         {
-            button.BackColor = System.Drawing.Color.FromArgb(224, 224, 224);
+            button.BackColor = ColorTranslator.FromHtml("#BDC3C7");
             button.Font = new System.Drawing.Font(button.Font.FontFamily, 10);
-            button.ForeColor = System.Drawing.Color.Black;
+            button.ForeColor = Color.Black;
             button.Tag = false;
-            button.FlatStyle = FlatStyle.Standard;
+            button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = 1;
-            button.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(180, 180, 180);
-            button.FlatAppearance.MouseOverBackColor = System.Drawing.Color.LightGray;
-            button.FlatAppearance.MouseDownBackColor = System.Drawing.Color.LightSkyBlue;
+            button.FlatAppearance.BorderColor = ColorTranslator.FromHtml("#BDC3C7");
+            button.FlatAppearance.MouseOverBackColor = ColorTranslator.FromHtml("#AAB7B8");
+            button.FlatAppearance.MouseDownBackColor = ColorTranslator.FromHtml("#D5D8DC");
 
-            SetRoundedCorners(button, 10);
         }
 
-        public static void SetRoundedCorners(Button button, int cornerRadius)
-        {
-            var path = new GraphicsPath();
-            path.StartFigure();
-
-            path.AddArc(0, 0, cornerRadius, cornerRadius, 180, 90);
-            path.AddArc(button.Width - cornerRadius - 1, 0, cornerRadius, cornerRadius, 270, 90);
-            path.AddArc(button.Width - cornerRadius - 1, button.Height - cornerRadius - 1, cornerRadius, cornerRadius, 0, 90);
-            path.AddArc(0, button.Height - cornerRadius - 1, cornerRadius, cornerRadius, 90, 90);
-
-            path.CloseFigure();
-
-            button.Region = new Region(path);
-        }
+        
     }
 }

@@ -12,5 +12,6 @@ namespace KesimTakip
         public string adSoyad { get; set; }
         public string kullaniciAdi { get; set; }
         public string  sifre { get; set; }
+        public string gorev { get; set; }
     }
 }

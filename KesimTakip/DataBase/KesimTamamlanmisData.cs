@@ -7,7 +7,7 @@ namespace KesimTakip.DataBase
 {
     class KesimTamamlanmisData
     {
-        public static void TablodanKesimTamamlanmisEkleme(string kesimYapan, int kesimId, int kesilmisPlanSayisi, string kesimTarihi, string kesimSaati)
+        public static void TablodanKesimTamamlanmisEkleme(string kesimYapan, string kesimId, int kesilmisPlanSayisi, string kesimTarihi, string kesimSaati)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {

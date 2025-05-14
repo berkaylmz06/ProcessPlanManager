@@ -9,82 +9,96 @@ namespace KesimTakip.DataBase
 {
     class KesimListesiData
     {
-        public static void SaveKesimData(int id, string olusturan, int kesimId, string projeno, string kalinlik, string kalite, string[] kaliplar, string[] pozlar, string[] adetler, string eklemeTarihi)
+        public static void SaveKesimData(int id, string olusturan, string kesimId, string projeno, string kalinlik, string kalite, string[] kaliplar, string[] pozlar, string[] adetler, string eklemeTarihi)
         {
-            using (var conn = DataBaseHelper.GetConnection())
+            try
             {
-                conn.Open();
-
-                if (pozlar.Length != adetler.Length || pozlar.Length != kaliplar.Length)
+                using (var conn = DataBaseHelper.GetConnection())
                 {
-                    throw new ArgumentException("Pozlar, kalıp numaraları ve adet sayıları eşleşmiyor!");
-                }
+                    conn.Open();
 
-                for (int i = 0; i < pozlar.Length; i++)
-                {
-                    string temizPoz = pozlar[i].Trim();
-                    string temizKalip = kaliplar[i].Trim();
-                    string temizAdet = adetler[i].Trim();
-
-                    if (!string.IsNullOrEmpty(temizPoz) && !string.IsNullOrEmpty(temizKalip) && !string.IsNullOrEmpty(temizAdet))
+                    if (pozlar.Length != adetler.Length || pozlar.Length != kaliplar.Length)
                     {
-                        string query = "INSERT INTO KesimListesi (id, olusturan, kesimId, projeNo, kalinlik, kalite, kalipNo, kesilecekPozlar, kpAdetSayilari, eklemeTarihi) " +
-                                       "VALUES (@id, @olusturan, @kesimId, @projeNo, @kalinlik, @kalite, @kalipNo, @kesilecekPozlar, @kpAdetSayilari, @eklemeTarihi)";
+                        throw new ArgumentException("Pozlar, kalıp numaraları ve adet sayıları eşleşmiyor!");
+                    }
 
-                        using (var cmd = new SqlCommand(query, conn))
+                    for (int i = 0; i < pozlar.Length; i++)
+                    {
+                        string temizPoz = pozlar[i].Trim();
+                        string temizKalip = kaliplar[i].Trim();
+                        string temizAdet = adetler[i].Trim();
+
+                        if (!string.IsNullOrEmpty(temizPoz) && !string.IsNullOrEmpty(temizKalip) && !string.IsNullOrEmpty(temizAdet))
                         {
-                            cmd.Parameters.AddWithValue("@id", id);
-                            cmd.Parameters.AddWithValue("@olusturan", olusturan);
-                            cmd.Parameters.AddWithValue("@kesimId", kesimId);
-                            cmd.Parameters.AddWithValue("@projeNo", projeno);
-                            cmd.Parameters.AddWithValue("@kalinlik", kalinlik);
-                            cmd.Parameters.AddWithValue("@kalite", kalite);
-                            cmd.Parameters.AddWithValue("@kalipNo", temizKalip);
-                            cmd.Parameters.AddWithValue("@kesilecekPozlar", temizPoz);
-                            cmd.Parameters.AddWithValue("@kpAdetSayilari", temizAdet);
-                            cmd.Parameters.AddWithValue("@eklemeTarihi", eklemeTarihi);
+                            string query = "INSERT INTO KesimListesi (id, olusturan, kesimId, projeNo, kalinlik, kalite, kalipNo, kesilecekPozlar, kpAdetSayilari, eklemeTarihi) " +
+                                           "VALUES (@id, @olusturan, @kesimId, @projeNo, @kalinlik, @kalite, @kalipNo, @kesilecekPozlar, @kpAdetSayilari, @eklemeTarihi)";
 
-                            cmd.ExecuteNonQuery();
+                            using (var cmd = new SqlCommand(query, conn))
+                            {
+                                cmd.Parameters.AddWithValue("@id", id);
+                                cmd.Parameters.AddWithValue("@olusturan", olusturan);
+                                cmd.Parameters.AddWithValue("@kesimId", kesimId);
+                                cmd.Parameters.AddWithValue("@projeNo", projeno);
+                                cmd.Parameters.AddWithValue("@kalinlik", kalinlik);
+                                cmd.Parameters.AddWithValue("@kalite", kalite);
+                                cmd.Parameters.AddWithValue("@kalipNo", temizKalip);
+                                cmd.Parameters.AddWithValue("@kesilecekPozlar", temizPoz);
+                                cmd.Parameters.AddWithValue("@kpAdetSayilari", temizAdet);
+                                cmd.Parameters.AddWithValue("@eklemeTarihi", eklemeTarihi);
+
+                                cmd.ExecuteNonQuery();
+                            }
                         }
                     }
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Hata: " + ex.Message);
             }
         }
 
         public static List<KesimListesi> GetKesimListesi()
         {
-            var veriler = new List<KesimListesi>();
-            string query = "SELECT olusturan, kesimId, projeNo, kalite, kalinlik, kalipNo, kesilecekPozlar, kpAdetSayilari, eklemeTarihi FROM KesimListesi";
-
-            using (var connection = DataBaseHelper.GetConnection())
+            try
             {
-                connection.Open();
-                using (var command = new SqlCommand(query, connection))
+                var veriler = new List<KesimListesi>();
+                string query = "SELECT olusturan, kesimId, projeNo, kalite, kalinlik, kalipNo, kesilecekPozlar, kpAdetSayilari, eklemeTarihi FROM KesimListesi";
+
+                using (var connection = DataBaseHelper.GetConnection())
                 {
-                    using (var reader = command.ExecuteReader())
+                    connection.Open();
+                    using (var command = new SqlCommand(query, connection))
                     {
-                        while (reader.Read())
+                        using (var reader = command.ExecuteReader())
                         {
-                            veriler.Add(new KesimListesi
+                            while (reader.Read())
                             {
-                                olusturan = reader.GetString(0),
-                                kesimId = reader.GetInt32(1),
-                                projeNo = reader.GetString(2),
-                                kalite = reader.GetString(3),
-                                kalinlik = reader.GetString(4),
-                                kalipNo = reader.GetString(5),
-                                kesilecekPozlar = reader.GetString(6),
-                                kpAdetSayilari = reader.GetString(7),
-                                eklemeTarihi = reader.GetString(8)
-                            });
+                                veriler.Add(new KesimListesi
+                                {
+                                    olusturan = reader.GetString(0),
+                                    kesimId = reader.GetString(1),
+                                    projeNo = reader.GetString(2),
+                                    kalite = reader.GetString(3),
+                                    kalinlik = reader.GetString(4),
+                                    kalipNo = reader.GetString(5),
+                                    kesilecekPozlar = reader.GetString(6),
+                                    kpAdetSayilari = reader.GetString(7),
+                                    eklemeTarihi = reader.GetString(8)
+                                });
+                            }
                         }
                     }
                 }
+                return veriler;
             }
-            return veriler;
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
-        public static DataTable GetirKesimListesi(int kesimId)
+        public static DataTable GetirKesimListesi(string kesimId)
         {
             DataTable dt = new DataTable();
 
