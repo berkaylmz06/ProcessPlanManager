@@ -30,12 +30,11 @@
         {
             this.panelVeriYonetim = new System.Windows.Forms.Panel();
             this.groupBoxVeriYonetim = new System.Windows.Forms.GroupBox();
-            this.button4 = new System.Windows.Forms.Button();
+            this.btnYeni = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.dtEklemeTarihi = new System.Windows.Forms.DateTimePicker();
             this.btnAjan = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.txtOlusturan = new System.Windows.Forms.TextBox();
             this.lblKalinlik = new System.Windows.Forms.Label();
             this.btnAdm = new System.Windows.Forms.Button();
             this.txtSite = new System.Windows.Forms.TextBox();
@@ -73,7 +72,6 @@
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button3 = new System.Windows.Forms.Button();
             this.btnSec = new System.Windows.Forms.Button();
-            this.lblOlusturan = new System.Windows.Forms.Label();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.pdfViewer1 = new Spire.PdfViewer.Forms.PdfViewer();
             this.panelVeriYonetim.SuspendLayout();
@@ -95,17 +93,16 @@
             this.panelVeriYonetim.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelVeriYonetim.Location = new System.Drawing.Point(0, 0);
             this.panelVeriYonetim.Name = "panelVeriYonetim";
-            this.panelVeriYonetim.Size = new System.Drawing.Size(670, 885);
+            this.panelVeriYonetim.Size = new System.Drawing.Size(672, 896);
             this.panelVeriYonetim.TabIndex = 326;
             // 
             // groupBoxVeriYonetim
             // 
-            this.groupBoxVeriYonetim.Controls.Add(this.button4);
+            this.groupBoxVeriYonetim.Controls.Add(this.btnYeni);
             this.groupBoxVeriYonetim.Controls.Add(this.button1);
             this.groupBoxVeriYonetim.Controls.Add(this.dtEklemeTarihi);
             this.groupBoxVeriYonetim.Controls.Add(this.btnAjan);
             this.groupBoxVeriYonetim.Controls.Add(this.button2);
-            this.groupBoxVeriYonetim.Controls.Add(this.txtOlusturan);
             this.groupBoxVeriYonetim.Controls.Add(this.lblKalinlik);
             this.groupBoxVeriYonetim.Controls.Add(this.btnAdm);
             this.groupBoxVeriYonetim.Controls.Add(this.txtSite);
@@ -124,26 +121,25 @@
             this.groupBoxVeriYonetim.Controls.Add(this.tabControl1);
             this.groupBoxVeriYonetim.Controls.Add(this.button3);
             this.groupBoxVeriYonetim.Controls.Add(this.btnSec);
-            this.groupBoxVeriYonetim.Controls.Add(this.lblOlusturan);
             this.groupBoxVeriYonetim.Location = new System.Drawing.Point(20, 15);
             this.groupBoxVeriYonetim.Name = "groupBoxVeriYonetim";
             this.groupBoxVeriYonetim.Size = new System.Drawing.Size(627, 853);
             this.groupBoxVeriYonetim.TabIndex = 325;
             this.groupBoxVeriYonetim.TabStop = false;
             // 
-            // button4
+            // btnYeni
             // 
-            this.button4.Location = new System.Drawing.Point(499, 138);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(92, 48);
-            this.button4.TabIndex = 324;
-            this.button4.Text = "button4";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
+            this.btnYeni.Location = new System.Drawing.Point(30, 123);
+            this.btnYeni.Name = "btnYeni";
+            this.btnYeni.Size = new System.Drawing.Size(560, 38);
+            this.btnYeni.TabIndex = 324;
+            this.btnYeni.Text = "+";
+            this.btnYeni.UseVisualStyleBackColor = true;
+            this.btnYeni.Click += new System.EventHandler(this.button4_Click);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(435, 419);
+            this.button1.Location = new System.Drawing.Point(473, 299);
             this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(100, 28);
@@ -154,7 +150,7 @@
             // 
             // dtEklemeTarihi
             // 
-            this.dtEklemeTarihi.Location = new System.Drawing.Point(161, 379);
+            this.dtEklemeTarihi.Location = new System.Drawing.Point(160, 400);
             this.dtEklemeTarihi.Margin = new System.Windows.Forms.Padding(2);
             this.dtEklemeTarihi.Name = "dtEklemeTarihi";
             this.dtEklemeTarihi.Size = new System.Drawing.Size(212, 22);
@@ -163,7 +159,7 @@
             // btnAjan
             // 
             this.btnAjan.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnAjan.Location = new System.Drawing.Point(35, 24);
+            this.btnAjan.Location = new System.Drawing.Point(30, 43);
             this.btnAjan.Margin = new System.Windows.Forms.Padding(2);
             this.btnAjan.Name = "btnAjan";
             this.btnAjan.Size = new System.Drawing.Size(160, 58);
@@ -173,27 +169,18 @@
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(435, 389);
+            this.button2.Location = new System.Drawing.Point(474, 263);
             this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
+            this.button2.Size = new System.Drawing.Size(99, 28);
             this.button2.TabIndex = 323;
-            this.button2.Text = "button2";
+            this.button2.Text = "Tekrar Okut";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
-            // 
-            // txtOlusturan
-            // 
-            this.txtOlusturan.Enabled = false;
-            this.txtOlusturan.Location = new System.Drawing.Point(161, 261);
-            this.txtOlusturan.Margin = new System.Windows.Forms.Padding(2);
-            this.txtOlusturan.Name = "txtOlusturan";
-            this.txtOlusturan.Size = new System.Drawing.Size(212, 22);
-            this.txtOlusturan.TabIndex = 290;
             // 
             // lblKalinlik
             // 
             this.lblKalinlik.AutoSize = true;
-            this.lblKalinlik.Location = new System.Drawing.Point(48, 341);
+            this.lblKalinlik.Location = new System.Drawing.Point(47, 362);
             this.lblKalinlik.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblKalinlik.Name = "lblKalinlik";
             this.lblKalinlik.Size = new System.Drawing.Size(52, 16);
@@ -203,7 +190,7 @@
             // btnAdm
             // 
             this.btnAdm.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnAdm.Location = new System.Drawing.Point(435, 24);
+            this.btnAdm.Location = new System.Drawing.Point(430, 43);
             this.btnAdm.Margin = new System.Windows.Forms.Padding(2);
             this.btnAdm.Name = "btnAdm";
             this.btnAdm.Size = new System.Drawing.Size(160, 58);
@@ -214,7 +201,7 @@
             // txtSite
             // 
             this.txtSite.Enabled = false;
-            this.txtSite.Location = new System.Drawing.Point(161, 184);
+            this.txtSite.Location = new System.Drawing.Point(159, 239);
             this.txtSite.Margin = new System.Windows.Forms.Padding(2);
             this.txtSite.Name = "txtSite";
             this.txtSite.Size = new System.Drawing.Size(212, 22);
@@ -224,7 +211,7 @@
             // btnBaykal
             // 
             this.btnBaykal.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnBaykal.Location = new System.Drawing.Point(235, 24);
+            this.btnBaykal.Location = new System.Drawing.Point(230, 43);
             this.btnBaykal.Margin = new System.Windows.Forms.Padding(2);
             this.btnBaykal.Name = "btnBaykal";
             this.btnBaykal.Size = new System.Drawing.Size(160, 58);
@@ -234,7 +221,7 @@
             // 
             // txtKalite
             // 
-            this.txtKalite.Location = new System.Drawing.Point(161, 297);
+            this.txtKalite.Location = new System.Drawing.Point(160, 318);
             this.txtKalite.Margin = new System.Windows.Forms.Padding(2);
             this.txtKalite.Name = "txtKalite";
             this.txtKalite.Size = new System.Drawing.Size(212, 22);
@@ -243,7 +230,7 @@
             // lblId
             // 
             this.lblId.AutoSize = true;
-            this.lblId.Location = new System.Drawing.Point(48, 224);
+            this.lblId.Location = new System.Drawing.Point(46, 279);
             this.lblId.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblId.Name = "lblId";
             this.lblId.Size = new System.Drawing.Size(23, 16);
@@ -252,10 +239,10 @@
             // 
             // btnXmlOlustur
             // 
-            this.btnXmlOlustur.Location = new System.Drawing.Point(434, 263);
+            this.btnXmlOlustur.Location = new System.Drawing.Point(329, 769);
             this.btnXmlOlustur.Margin = new System.Windows.Forms.Padding(2);
             this.btnXmlOlustur.Name = "btnXmlOlustur";
-            this.btnXmlOlustur.Size = new System.Drawing.Size(123, 61);
+            this.btnXmlOlustur.Size = new System.Drawing.Size(243, 42);
             this.btnXmlOlustur.TabIndex = 272;
             this.btnXmlOlustur.Text = "Xml Dosyası Oluştur";
             this.btnXmlOlustur.UseVisualStyleBackColor = true;
@@ -263,7 +250,8 @@
             // 
             // txtId
             // 
-            this.txtId.Location = new System.Drawing.Point(161, 223);
+            this.txtId.Enabled = false;
+            this.txtId.Location = new System.Drawing.Point(159, 278);
             this.txtId.Margin = new System.Windows.Forms.Padding(2);
             this.txtId.Name = "txtId";
             this.txtId.Size = new System.Drawing.Size(212, 22);
@@ -272,7 +260,7 @@
             // lblSite
             // 
             this.lblSite.AutoSize = true;
-            this.lblSite.Location = new System.Drawing.Point(48, 185);
+            this.lblSite.Location = new System.Drawing.Point(46, 240);
             this.lblSite.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSite.Name = "lblSite";
             this.lblSite.Size = new System.Drawing.Size(33, 16);
@@ -282,7 +270,7 @@
             // lblDosya
             // 
             this.lblDosya.AutoSize = true;
-            this.lblDosya.Location = new System.Drawing.Point(48, 148);
+            this.lblDosya.Location = new System.Drawing.Point(46, 203);
             this.lblDosya.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblDosya.Name = "lblDosya";
             this.lblDosya.Size = new System.Drawing.Size(50, 16);
@@ -291,7 +279,7 @@
             // 
             // txtKalinlik
             // 
-            this.txtKalinlik.Location = new System.Drawing.Point(161, 337);
+            this.txtKalinlik.Location = new System.Drawing.Point(160, 358);
             this.txtKalinlik.Margin = new System.Windows.Forms.Padding(2);
             this.txtKalinlik.Name = "txtKalinlik";
             this.txtKalinlik.Size = new System.Drawing.Size(212, 22);
@@ -299,7 +287,7 @@
             // 
             // txtDosya
             // 
-            this.txtDosya.Location = new System.Drawing.Point(161, 147);
+            this.txtDosya.Location = new System.Drawing.Point(159, 202);
             this.txtDosya.Margin = new System.Windows.Forms.Padding(2);
             this.txtDosya.Name = "txtDosya";
             this.txtDosya.Size = new System.Drawing.Size(123, 22);
@@ -307,10 +295,10 @@
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(161, 790);
+            this.btnKaydet.Location = new System.Drawing.Point(46, 769);
             this.btnKaydet.Margin = new System.Windows.Forms.Padding(2);
             this.btnKaydet.Name = "btnKaydet";
-            this.btnKaydet.Size = new System.Drawing.Size(300, 42);
+            this.btnKaydet.Size = new System.Drawing.Size(243, 42);
             this.btnKaydet.TabIndex = 298;
             this.btnKaydet.Text = "Kaydet";
             this.btnKaydet.UseVisualStyleBackColor = true;
@@ -319,7 +307,7 @@
             // lblEklemeTarihi
             // 
             this.lblEklemeTarihi.AutoSize = true;
-            this.lblEklemeTarihi.Location = new System.Drawing.Point(48, 383);
+            this.lblEklemeTarihi.Location = new System.Drawing.Point(47, 404);
             this.lblEklemeTarihi.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblEklemeTarihi.Name = "lblEklemeTarihi";
             this.lblEklemeTarihi.Size = new System.Drawing.Size(93, 16);
@@ -329,7 +317,7 @@
             // lblKalite
             // 
             this.lblKalite.AutoSize = true;
-            this.lblKalite.Location = new System.Drawing.Point(48, 301);
+            this.lblKalite.Location = new System.Drawing.Point(47, 322);
             this.lblKalite.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblKalite.Name = "lblKalite";
             this.lblKalite.Size = new System.Drawing.Size(43, 16);
@@ -341,7 +329,7 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(35, 488);
+            this.tabControl1.Location = new System.Drawing.Point(30, 466);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
@@ -531,7 +519,7 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(434, 452);
+            this.button3.Location = new System.Drawing.Point(472, 332);
             this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(100, 28);
@@ -542,7 +530,7 @@
             // 
             // btnSec
             // 
-            this.btnSec.Location = new System.Drawing.Point(292, 138);
+            this.btnSec.Location = new System.Drawing.Point(290, 196);
             this.btnSec.Margin = new System.Windows.Forms.Padding(2);
             this.btnSec.Name = "btnSec";
             this.btnSec.Size = new System.Drawing.Size(82, 34);
@@ -551,23 +539,13 @@
             this.btnSec.UseVisualStyleBackColor = true;
             this.btnSec.Click += new System.EventHandler(this.btnSec_Click);
             // 
-            // lblOlusturan
-            // 
-            this.lblOlusturan.AutoSize = true;
-            this.lblOlusturan.Location = new System.Drawing.Point(48, 263);
-            this.lblOlusturan.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblOlusturan.Name = "lblOlusturan";
-            this.lblOlusturan.Size = new System.Drawing.Size(66, 16);
-            this.lblOlusturan.TabIndex = 299;
-            this.lblOlusturan.Text = "Oluşturan:";
-            // 
             // progressBar1
             // 
             this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.progressBar1.Location = new System.Drawing.Point(0, 872);
+            this.progressBar1.Location = new System.Drawing.Point(0, 883);
             this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(670, 13);
+            this.progressBar1.Size = new System.Drawing.Size(672, 13);
             this.progressBar1.TabIndex = 101;
             this.progressBar1.Visible = false;
             // 
@@ -579,12 +557,12 @@
             this.pdfViewer1.FormFillEnabled = false;
             this.pdfViewer1.IgnoreCase = false;
             this.pdfViewer1.IsToolBarVisible = true;
-            this.pdfViewer1.Location = new System.Drawing.Point(670, 0);
+            this.pdfViewer1.Location = new System.Drawing.Point(672, 0);
             this.pdfViewer1.Margin = new System.Windows.Forms.Padding(4);
             this.pdfViewer1.MultiPagesThreshold = 60;
             this.pdfViewer1.Name = "pdfViewer1";
             this.pdfViewer1.OnRenderPageExceptionEvent = null;
-            this.pdfViewer1.Size = new System.Drawing.Size(793, 885);
+            this.pdfViewer1.Size = new System.Drawing.Size(858, 896);
             this.pdfViewer1.TabIndex = 325;
             this.pdfViewer1.Text = "pdfViewer1";
             this.pdfViewer1.Threshold = 60;
@@ -597,7 +575,7 @@
             this.Controls.Add(this.pdfViewer1);
             this.Controls.Add(this.panelVeriYonetim);
             this.Name = "ctlKesimPlaniEkle";
-            this.Size = new System.Drawing.Size(1463, 885);
+            this.Size = new System.Drawing.Size(1530, 896);
             this.Load += new System.EventHandler(this.ctlKesimPlaniEkle_Load);
             this.panelVeriYonetim.ResumeLayout(false);
             this.groupBoxVeriYonetim.ResumeLayout(false);
@@ -621,7 +599,6 @@
         private System.Windows.Forms.DateTimePicker dtEklemeTarihi;
         private System.Windows.Forms.Button btnAjan;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.TextBox txtOlusturan;
         private System.Windows.Forms.Label lblKalinlik;
         private System.Windows.Forms.Button btnAdm;
         private System.Windows.Forms.TextBox txtSite;
@@ -659,9 +636,8 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button btnSec;
-        private System.Windows.Forms.Label lblOlusturan;
         private System.Windows.Forms.ProgressBar progressBar1;
         private Spire.PdfViewer.Forms.PdfViewer pdfViewer1;
-        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button btnYeni;
     }
 }

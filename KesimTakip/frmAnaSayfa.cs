@@ -8,6 +8,7 @@ using KesimTakip.Abstracts;
 using KesimTakip.Concretes;
 using KesimTakip.DataBase;
 using KesimTakip.Helper;
+using KesimTakip.UsrControl;
 
 namespace KesimTakip
 {
@@ -21,9 +22,7 @@ namespace KesimTakip
             InitializeComponent();
 
             FormArayuzuInterface = new FormArayuzu(this);
-            ctlKesimPlaniEkle1.FormArayuzuAyarla(FormArayuzuInterface);
 
-            txtOlusturan.Text = adSoyad;
             lblSistemKullanici.Text = adSoyad;
 
             timer = new Timer();
@@ -123,7 +122,7 @@ namespace KesimTakip
 
                 if (result == DialogResult.Yes)
                 {
-                    string olusturan = txtOlusturan.Text;
+                    string olusturan = lblSistemKullanici.Text;
                     string sorun = txtSorun.Text;
                     string tarih = lblSistemSaat.Text + " " + lblSistemTarih.Text;
 
@@ -145,18 +144,10 @@ namespace KesimTakip
 
         private void btnKesimYap_Click(object sender, EventArgs e)
         {
-            string kesimYapanKullanici = lblSistemKullanici?.Text;
-            foreach (Form form in Application.OpenForms)
-            {
-                if (form is frmKesimYap)
-                {
-                    form.Focus();
-                    return;
-                }
-            }
-
-            frmKesimYap kesimYapForm = new frmKesimYap(kesimYapanKullanici);
-            kesimYapForm.Show();
+            panelAnaSayfaContainer.Controls.Clear(); // Önceki kontrolü kaldır
+            var kesimYap = new ctlKesimYap();
+            kesimYap.Dock = DockStyle.Fill;
+            panelAnaSayfaContainer.Controls.Add(kesimYap);
         }
 
 
@@ -177,6 +168,11 @@ namespace KesimTakip
         }
         private void btnKesimPlaniEkle_Click(object sender, EventArgs e)
         {
+            panelAnaSayfaContainer.Controls.Clear(); // Önceki kontrolü kaldır
+            var kesimPlaniEkle = new ctlKesimPlaniEkle();
+            kesimPlaniEkle.FormArayuzuAyarla(FormArayuzuInterface);
+            kesimPlaniEkle.Dock = DockStyle.Fill;
+            panelAnaSayfaContainer.Controls.Add(kesimPlaniEkle);
         }
 
 

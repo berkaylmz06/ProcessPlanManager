@@ -30,5 +30,6 @@ namespace KesimTakip.Abstracts
 
         string[] RichTextBox4SatirlariAl();
         string[] RichTextBox1SatirlariAl();
+        string lblSistemKullaniciMetinAl();
     }
 }

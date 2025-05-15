@@ -38,7 +38,6 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.yardımCubugunuKaldirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelAraYuz = new System.Windows.Forms.Panel();
-            this.txtOlusturan = new System.Windows.Forms.TextBox();
             this.btnYapilanKesimleriGor = new System.Windows.Forms.Button();
             this.btnKesimYap = new System.Windows.Forms.Button();
             this.btnKesimPlaniEkle = new System.Windows.Forms.Button();
@@ -68,7 +67,7 @@
             this.label17 = new System.Windows.Forms.Label();
             this.btnGonder = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.ctlKesimPlaniEkle1 = new KesimTakip.UsrControl.ctlKesimPlaniEkle();
+            this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
@@ -173,7 +172,6 @@
             // 
             this.panelAraYuz.BackColor = System.Drawing.SystemColors.HotTrack;
             this.panelAraYuz.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.panelAraYuz.Controls.Add(this.txtOlusturan);
             this.panelAraYuz.Controls.Add(this.btnYapilanKesimleriGor);
             this.panelAraYuz.Controls.Add(this.btnKesimYap);
             this.panelAraYuz.Controls.Add(this.btnKesimPlaniEkle);
@@ -182,15 +180,8 @@
             this.panelAraYuz.Location = new System.Drawing.Point(0, 26);
             this.panelAraYuz.Margin = new System.Windows.Forms.Padding(2);
             this.panelAraYuz.Name = "panelAraYuz";
-            this.panelAraYuz.Size = new System.Drawing.Size(187, 994);
+            this.panelAraYuz.Size = new System.Drawing.Size(186, 787);
             this.panelAraYuz.TabIndex = 212;
-            // 
-            // txtOlusturan
-            // 
-            this.txtOlusturan.Location = new System.Drawing.Point(3, 494);
-            this.txtOlusturan.Name = "txtOlusturan";
-            this.txtOlusturan.Size = new System.Drawing.Size(100, 22);
-            this.txtOlusturan.TabIndex = 283;
             // 
             // btnYapilanKesimleriGor
             // 
@@ -230,10 +221,10 @@
             this.panelContainer.Controls.Add(this.panelSistem);
             this.panelContainer.Controls.Add(this.panelYardim);
             this.panelContainer.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelContainer.Location = new System.Drawing.Point(0, 1020);
+            this.panelContainer.Location = new System.Drawing.Point(0, 813);
             this.panelContainer.Margin = new System.Windows.Forms.Padding(4);
             this.panelContainer.Name = "panelContainer";
-            this.panelContainer.Size = new System.Drawing.Size(1950, 21);
+            this.panelContainer.Size = new System.Drawing.Size(1950, 228);
             this.panelContainer.TabIndex = 278;
             this.panelContainer.Visible = false;
             // 
@@ -255,7 +246,7 @@
             this.panelSistem.Location = new System.Drawing.Point(0, 0);
             this.panelSistem.Margin = new System.Windows.Forms.Padding(2);
             this.panelSistem.Name = "panelSistem";
-            this.panelSistem.Size = new System.Drawing.Size(1950, 21);
+            this.panelSistem.Size = new System.Drawing.Size(1950, 228);
             this.panelSistem.TabIndex = 151;
             this.panelSistem.Visible = false;
             // 
@@ -469,7 +460,7 @@
             this.panelYardim.Location = new System.Drawing.Point(0, 0);
             this.panelYardim.Margin = new System.Windows.Forms.Padding(2);
             this.panelYardim.Name = "panelYardim";
-            this.panelYardim.Size = new System.Drawing.Size(1950, 21);
+            this.panelYardim.Size = new System.Drawing.Size(1950, 228);
             this.panelYardim.TabIndex = 129;
             this.panelYardim.Visible = false;
             // 
@@ -507,13 +498,14 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // ctlKesimPlaniEkle1
+            // panelAnaSayfaContainer
             // 
-            this.ctlKesimPlaniEkle1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ctlKesimPlaniEkle1.Location = new System.Drawing.Point(187, 26);
-            this.ctlKesimPlaniEkle1.Name = "ctlKesimPlaniEkle1";
-            this.ctlKesimPlaniEkle1.Size = new System.Drawing.Size(1763, 994);
-            this.ctlKesimPlaniEkle1.TabIndex = 279;
+            this.panelAnaSayfaContainer.BackColor = System.Drawing.SystemColors.Window;
+            this.panelAnaSayfaContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelAnaSayfaContainer.Location = new System.Drawing.Point(186, 26);
+            this.panelAnaSayfaContainer.Name = "panelAnaSayfaContainer";
+            this.panelAnaSayfaContainer.Size = new System.Drawing.Size(1764, 787);
+            this.panelAnaSayfaContainer.TabIndex = 279;
             // 
             // frmAnaSayfa
             // 
@@ -521,7 +513,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(1950, 1100);
-            this.Controls.Add(this.ctlKesimPlaniEkle1);
+            this.Controls.Add(this.panelAnaSayfaContainer);
             this.Controls.Add(this.panelAraYuz);
             this.Controls.Add(this.panelContainer);
             this.Controls.Add(this.menuStrip1);
@@ -535,7 +527,6 @@
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panelAraYuz.ResumeLayout(false);
-            this.panelAraYuz.PerformLayout();
             this.panelContainer.ResumeLayout(false);
             this.panelContainer.PerformLayout();
             this.panelSistem.ResumeLayout(false);
@@ -589,7 +580,6 @@
         public System.Windows.Forms.RichTextBox richTextBox3;
         public System.Windows.Forms.RichTextBox richTextBox2;
         public System.Windows.Forms.RichTextBox richTextBox1;
-        private System.Windows.Forms.TextBox txtOlusturan;
-        private UsrControl.ctlKesimPlaniEkle ctlKesimPlaniEkle1;
+        private System.Windows.Forms.Panel panelAnaSayfaContainer;
     }
 }

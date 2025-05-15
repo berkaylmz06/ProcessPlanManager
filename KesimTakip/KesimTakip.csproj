@@ -208,12 +208,6 @@
     <Compile Include="frmAra.Designer.cs">
       <DependentUpon>frmAra.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmKesimYap.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="frmKesimYap.Designer.cs">
-      <DependentUpon>frmKesimYap.cs</DependentUpon>
-    </Compile>
     <Compile Include="frmKullaniciGirisi.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -257,9 +251,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmAra.resx">
       <DependentUpon>frmAra.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="frmKesimYap.resx">
-      <DependentUpon>frmKesimYap.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmKullaniciGirisi.resx">
       <DependentUpon>frmKullaniciGirisi.cs</DependentUpon>

@@ -1,8 +1,10 @@
 ﻿using KesimTakip.DataBase;
+using KesimTakip.UsrControl;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace KesimTakip
@@ -65,23 +67,27 @@ namespace KesimTakip
                 row["Detay"] = "Detay Görmek İçin Tıklayınız.";
             }
 
-            var frm = Application.OpenForms["frmKesimYap"] as frmKesimYap;
-            if (frm != null)
-            {
-                frm.dataGridKesimListesi.DataSource = sonucTablo;
+            var ctl = Application.OpenForms["frmAnaSayfa"]
+                            ?.Controls.Find("panelAnaSayfaContainer", true)
+                            .FirstOrDefault()
+                            ?.Controls
+                            .OfType<ctlKesimYap>()
+                            .FirstOrDefault();
 
-                if (frm.dataGridKesimListesi.Columns.Contains("id"))
+            if (ctl != null)
+            {
+                ctl.dataGridKesimListesi.DataSource = sonucTablo;
+
+                if (ctl.dataGridKesimListesi.Columns.Contains("id"))
                 {
-                    frm.dataGridKesimListesi.Columns["id"].Visible = false;
+                    ctl.dataGridKesimListesi.Columns["id"].Visible = false;
                 }
 
-                frm.tabloDuzenle();
+                ctl.tabloDuzenle();
             }
 
             this.Close();
-
         }
-       
     }
 }
 

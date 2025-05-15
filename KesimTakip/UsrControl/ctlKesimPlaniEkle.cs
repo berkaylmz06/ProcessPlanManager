@@ -481,7 +481,7 @@ namespace KesimTakip.UsrControl
                 return;
             }
 
-            string olusturan = txtOlusturan.Text;
+            string olusturan = _formArayuzu.lblSistemKullaniciMetinAl();
             string kalinlik = txtKalinlik.Text;
             string kalite = txtKalite.Text;
             string eklemeTarihi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");

@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using KesimTakip.Abstracts;
 using KesimTakip.DataBase;
 using KesimTakip.Helper;
 
@@ -14,13 +15,12 @@ namespace KesimTakip.UsrControl
 {
     public partial class ctlKesimYap : UserControl
     {
-        public static string kesimYapanKullanici;
         public DataGridView AssociatedDataGridView { get; set; }
-        public ctlKesimYap(string kesimYapan)
+        public ctlKesimYap()
         {
             InitializeComponent();
 
-            kesimYapanKullanici = kesimYapan;
+           
             KesimListesiPaketData kesimdatas = new KesimListesiPaketData();
             DataTable dt = kesimdatas.GetKesimListesiPaket();
 
@@ -32,7 +32,6 @@ namespace KesimTakip.UsrControl
 
             VerileriYukle();
         }
-
         private void dataGridKesimListesi_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)

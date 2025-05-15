@@ -97,5 +97,10 @@ namespace KesimTakip.Concretes
         {
             return _form.richTextBox1.Lines;
         }
+
+        public string lblSistemKullaniciMetinAl()
+        {
+            return _form.lblSistemKullanici.Text;
+        }
     }
 }
