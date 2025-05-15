@@ -178,7 +178,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstracts\IFormArayuzu.cs" />
     <Compile Include="Business\VeriOkuma.cs" />
+    <Compile Include="Concretes\FormArayuzu.cs" />
     <Compile Include="DataBase\DataBaseHelper.cs" />
     <Compile Include="DataBase\KesimListesiPaketData.cs" />
     <Compile Include="DataBase\KesimTamamlanmisData.cs" />
@@ -238,6 +240,18 @@
       <DependentUpon>frmYoneticiEkrani.cs</DependentUpon>
     </Compile>
     <Compile Include="Entitys\Yoneticiler.cs" />
+    <Compile Include="UsrControl\ctlKesimPlaniEkle.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlKesimPlaniEkle.Designer.cs">
+      <DependentUpon>ctlKesimPlaniEkle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UsrControl\ctlKesimYap.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlKesimYap.Designer.cs">
+      <DependentUpon>ctlKesimYap.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="frmAnaSayfa.resx">
       <DependentUpon>frmAnaSayfa.cs</DependentUpon>
     </EmbeddedResource>
@@ -265,6 +279,12 @@
     <EmbeddedResource Include="frmYoneticiEkrani.resx">
       <DependentUpon>frmYoneticiEkrani.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlKesimPlaniEkle.resx">
+      <DependentUpon>ctlKesimPlaniEkle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlKesimYap.resx">
+      <DependentUpon>ctlKesimYap.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -283,7 +303,7 @@
     <Content Include="image\logo.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="UsrControl\" />
+    <Folder Include="Forms\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
