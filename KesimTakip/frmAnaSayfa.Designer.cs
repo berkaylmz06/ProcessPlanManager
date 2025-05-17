@@ -68,6 +68,9 @@
             this.btnGonder = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
+            this.btnKesimDetaylari = new System.Windows.Forms.Button();
+            this.btnKullaniciAyarlari = new System.Windows.Forms.Button();
+            this.btnIletilenSorunlar = new System.Windows.Forms.Button();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
@@ -115,7 +118,7 @@
             // 
             // btnOturumuKapat
             // 
-            this.btnOturumuKapat.Location = new System.Drawing.Point(14, 217);
+            this.btnOturumuKapat.Location = new System.Drawing.Point(10, 647);
             this.btnOturumuKapat.Margin = new System.Windows.Forms.Padding(2);
             this.btnOturumuKapat.Name = "btnOturumuKapat";
             this.btnOturumuKapat.Size = new System.Drawing.Size(160, 58);
@@ -172,6 +175,9 @@
             // 
             this.panelAraYuz.BackColor = System.Drawing.SystemColors.HotTrack;
             this.panelAraYuz.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelAraYuz.Controls.Add(this.btnIletilenSorunlar);
+            this.panelAraYuz.Controls.Add(this.btnKullaniciAyarlari);
+            this.panelAraYuz.Controls.Add(this.btnKesimDetaylari);
             this.panelAraYuz.Controls.Add(this.btnYapilanKesimleriGor);
             this.panelAraYuz.Controls.Add(this.btnKesimYap);
             this.panelAraYuz.Controls.Add(this.btnKesimPlaniEkle);
@@ -192,6 +198,7 @@
             this.btnYapilanKesimleriGor.TabIndex = 2;
             this.btnYapilanKesimleriGor.Text = "Yapılan Kesimleri Gör\r\n";
             this.btnYapilanKesimleriGor.UseVisualStyleBackColor = true;
+            this.btnYapilanKesimleriGor.Click += new System.EventHandler(this.btnYapilanKesimleriGor_Click);
             // 
             // btnKesimYap
             // 
@@ -280,6 +287,7 @@
             this.btnAktar.TabIndex = 130;
             this.btnAktar.Text = "Aktar";
             this.btnAktar.UseVisualStyleBackColor = true;
+            this.btnAktar.Click += new System.EventHandler(this.btnAktar_Click);
             // 
             // label19
             // 
@@ -507,6 +515,37 @@
             this.panelAnaSayfaContainer.Size = new System.Drawing.Size(1764, 787);
             this.panelAnaSayfaContainer.TabIndex = 279;
             // 
+            // btnKesimDetaylari
+            // 
+            this.btnKesimDetaylari.Location = new System.Drawing.Point(14, 215);
+            this.btnKesimDetaylari.Margin = new System.Windows.Forms.Padding(2);
+            this.btnKesimDetaylari.Name = "btnKesimDetaylari";
+            this.btnKesimDetaylari.Size = new System.Drawing.Size(160, 58);
+            this.btnKesimDetaylari.TabIndex = 3;
+            this.btnKesimDetaylari.Text = "Kesim Detayları";
+            this.btnKesimDetaylari.UseVisualStyleBackColor = true;
+            this.btnKesimDetaylari.Click += new System.EventHandler(this.bntKesimDetaylari_Click);
+            // 
+            // btnKullaniciAyarlari
+            // 
+            this.btnKullaniciAyarlari.Location = new System.Drawing.Point(14, 277);
+            this.btnKullaniciAyarlari.Margin = new System.Windows.Forms.Padding(2);
+            this.btnKullaniciAyarlari.Name = "btnKullaniciAyarlari";
+            this.btnKullaniciAyarlari.Size = new System.Drawing.Size(160, 58);
+            this.btnKullaniciAyarlari.TabIndex = 4;
+            this.btnKullaniciAyarlari.Text = "Kullanıcı Ayarları";
+            this.btnKullaniciAyarlari.UseVisualStyleBackColor = true;
+            // 
+            // btnIletilenSorunlar
+            // 
+            this.btnIletilenSorunlar.Location = new System.Drawing.Point(14, 339);
+            this.btnIletilenSorunlar.Margin = new System.Windows.Forms.Padding(2);
+            this.btnIletilenSorunlar.Name = "btnIletilenSorunlar";
+            this.btnIletilenSorunlar.Size = new System.Drawing.Size(160, 58);
+            this.btnIletilenSorunlar.TabIndex = 119;
+            this.btnIletilenSorunlar.Text = "İletilen Sorunlar";
+            this.btnIletilenSorunlar.UseVisualStyleBackColor = true;
+            // 
             // frmAnaSayfa
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
@@ -581,5 +620,8 @@
         public System.Windows.Forms.RichTextBox richTextBox2;
         public System.Windows.Forms.RichTextBox richTextBox1;
         private System.Windows.Forms.Panel panelAnaSayfaContainer;
+        private System.Windows.Forms.Button btnKullaniciAyarlari;
+        private System.Windows.Forms.Button btnKesimDetaylari;
+        private System.Windows.Forms.Button btnIletilenSorunlar;
     }
 }

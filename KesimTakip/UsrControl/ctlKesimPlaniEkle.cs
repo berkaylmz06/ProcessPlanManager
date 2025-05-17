@@ -524,23 +524,32 @@ namespace KesimTakip.UsrControl
 
                 if (!islenmisPaketIdSet.Contains(dKesimId)) continue;
 
+                string[] parcalar = orijinalKod.Split('-');
+
+                int adet = 0;
                 string proje = "", kalip = "", poz = "";
 
-                var parcalar = orijinalKod.Split('-');
                 if (parcalar.Length >= 4)
                 {
                     kalip = $"{parcalar[0]}-{parcalar[1]}";
                     poz = parcalar[2];
-                    if (orijinalKod.Contains("."))
+
+                    string adetToplam = parcalar.LastOrDefault(p => p.Contains("AD"));
+
+                    if (!string.IsNullOrEmpty(adetToplam))
                     {
-                        string[] parcalar2 = orijinalKod.Split('-');
-                        string sonParca = parcalar2.LastOrDefault(p => p.Contains("."));
-                        if (!string.IsNullOrEmpty(sonParca))
+                        adetToplam = adetToplam.Replace("AD", "");
+                        if (!int.TryParse(adetToplam, out adet))
                         {
-                            proje = sonParca;
+                            adet = 0;
                         }
                     }
-
+                    
+                    string sonParca = parcalar.LastOrDefault(p => p.Contains("."));
+                    if (!string.IsNullOrEmpty(sonParca))
+                    {
+                        proje = sonParca;
+                    }
                 }
 
                 KesimListesiData.SiradakiIdKaydet(currentId.Value);
@@ -556,6 +565,8 @@ namespace KesimTakip.UsrControl
                     new string[] { adetStr },
                     eklemeTarihi
                 );
+                string kesimDetaylari = kalip + "-" + poz+ "-" + proje;
+                KesimDetaylariData.SaveKesimDetaylariData(kesimDetaylari,dKesimId,adet,adet);
 
                 kayitYapildi = true;
             }

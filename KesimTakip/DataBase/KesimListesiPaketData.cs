@@ -137,7 +137,7 @@ namespace KesimTakip.DataBase
             Dictionary<string, (string dbColumn, string dataType)> labelToDbColumn = new Dictionary<string, (string, string)>
             {
                  { "Planı Oluşturan", ("olusturan", "text") },
-                 { "Kesim ID", ("[kesimId]", "int") },
+                 { "Kesim ID", ("[kesimId]", "text") },
                  { "Kesilecek Plan Sayısı",("[kesilecekPlanSayisi]", "int") },
                  { "Kesilmiş Plan Sayısı",("[kesilmisPlanSayisi]", "int") },
                  { "Toplam Plan Tekrarı",("[toplamPlanTekrari]", "int") },

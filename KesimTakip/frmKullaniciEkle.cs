@@ -16,5 +16,10 @@ namespace KesimTakip
         {
             InitializeComponent();
         }
+
+        private void btnKaydet_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

@@ -15,12 +15,10 @@ namespace KesimTakip.UsrControl
 {
     public partial class ctlKesimYap : UserControl
     {
-        public DataGridView AssociatedDataGridView { get; set; }
         public ctlKesimYap()
         {
             InitializeComponent();
 
-           
             KesimListesiPaketData kesimdatas = new KesimListesiPaketData();
             DataTable dt = kesimdatas.GetKesimListesiPaket();
 
@@ -110,11 +108,25 @@ namespace KesimTakip.UsrControl
 
         private void btnAra_Click(object sender, EventArgs e)
         {
-            AssociatedDataGridView = dataGridKesimListesi;
-            frmAra araForm = new frmAra(AssociatedDataGridView.Columns);
-            araForm.ShowDialog();
-        }
+            frmAra frm = new frmAra(
+    dataGridKesimListesi.Columns,
+    KesimListesiFiltrele,
+    AramaSonucuGeldi,true);
 
+            frm.ShowDialog();
+        }
+        private DataTable KesimListesiFiltrele(Dictionary<string, TextBox> filtreler)
+        {
+            return KesimListesiPaketData.KesimListesiniPaketFiltrele(filtreler);
+        }
+        private void AramaSonucuGeldi(DataTable tablo)
+        {
+            dataGridKesimListesi.DataSource = tablo;
+            if (dataGridKesimListesi.Columns.Contains("id"))
+                dataGridKesimListesi.Columns["id"].Visible = false;
+
+            tabloDuzenle(); 
+        }
         private void btnPaketKes_Click(object sender, EventArgs e)
         {
             DateTime currentDateTime = DateTime.Now;
@@ -132,7 +144,7 @@ namespace KesimTakip.UsrControl
 
                     if (string.IsNullOrEmpty(txtKesilecekPlanSayisi.Text) || !int.TryParse(txtKesilecekPlanSayisi.Text, out int kesilmisPlanSayisi) || kesilmisPlanSayisi <= 0)
                     {
-                        MessageBox.Show("Kesilecek Plan Sayısını geçerli bir değer ile doldurun.");
+                        MessageBox.Show("Kesilecek Plan Sayısını geçerli bir değer ile doldurun.", "Dikkat!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return;
                     }
 

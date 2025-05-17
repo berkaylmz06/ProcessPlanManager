@@ -1,5 +1,6 @@
 ﻿using KesimTakip.DataBase;
 using KesimTakip.UsrControl;
+using Spire.Additions.Xps.Schema.Mc;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -11,9 +12,15 @@ namespace KesimTakip
 {
     public partial class frmAra : Form
     {
-        public frmAra(DataGridViewColumnCollection columns)
+        private Func<Dictionary<string, TextBox>, DataTable> filtrelemeFonksiyonu;
+        private Action<DataTable> aramaSonucuCallback;
+        private readonly bool detayEklenecekMi;
+        public frmAra(DataGridViewColumnCollection columns, Func<Dictionary<string, TextBox>, DataTable> filtreFonksiyonu, Action<DataTable> callback, bool detayEkle = false)
         {
             InitializeComponent();
+            this.filtrelemeFonksiyonu = filtreFonksiyonu;
+            this.aramaSonucuCallback = callback;
+            this.detayEklenecekMi = detayEkle;
             AraFormDinamikLabel(columns);
         }
 
@@ -55,37 +62,19 @@ namespace KesimTakip
 
         private void btnAra_Click(object sender, EventArgs e)
         {
-            DataTable sonucTablo = KesimListesiPaketData.KesimListesiniPaketFiltrele(filtreKutulari);
+            DataTable sonucTablo = filtrelemeFonksiyonu?.Invoke(filtreKutulari);
 
-            if (!sonucTablo.Columns.Contains("Detay"))
+            if (sonucTablo == null)
+                return;
+
+            if (detayEklenecekMi && !sonucTablo.Columns.Contains("Detay"))
             {
                 sonucTablo.Columns.Add("Detay", typeof(string));
+                foreach (DataRow row in sonucTablo.Rows)
+                    row["Detay"] = "Detay Görmek İçin Tıklayınız.";
             }
 
-            foreach (DataRow row in sonucTablo.Rows)
-            {
-                row["Detay"] = "Detay Görmek İçin Tıklayınız.";
-            }
-
-            var ctl = Application.OpenForms["frmAnaSayfa"]
-                            ?.Controls.Find("panelAnaSayfaContainer", true)
-                            .FirstOrDefault()
-                            ?.Controls
-                            .OfType<ctlKesimYap>()
-                            .FirstOrDefault();
-
-            if (ctl != null)
-            {
-                ctl.dataGridKesimListesi.DataSource = sonucTablo;
-
-                if (ctl.dataGridKesimListesi.Columns.Contains("id"))
-                {
-                    ctl.dataGridKesimListesi.Columns["id"].Visible = false;
-                }
-
-                ctl.tabloDuzenle();
-            }
-
+            aramaSonucuCallback?.Invoke(sonucTablo);
             this.Close();
         }
     }

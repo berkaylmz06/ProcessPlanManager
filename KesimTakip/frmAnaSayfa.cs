@@ -61,6 +61,9 @@ namespace KesimTakip
             ButonGenelHelper.StilUygula(btnKesimPlaniEkle);  
             ButonGenelHelper.StilUygula(btnKesimYap);
             ButonGenelHelper.StilUygula(btnYapilanKesimleriGor);
+            ButonGenelHelper.StilUygula(btnKesimDetaylari);
+            ButonGenelHelper.StilUygula(btnKullaniciAyarlari);
+            ButonGenelHelper.StilUygula(btnIletilenSorunlar);
             ButonGenelHelper.StilUygula(btnOturumuKapat);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnSistem);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
@@ -475,6 +478,27 @@ namespace KesimTakip
             }
 
             return sonucListesi;
+        }
+
+        private void btnAktar_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnYapilanKesimleriGor_Click(object sender, EventArgs e)
+        {
+            panelAnaSayfaContainer.Controls.Clear();
+            var YapilanKesimleriGor = new ctlYapilanKesimleriGor();
+            YapilanKesimleriGor.Dock = DockStyle.Fill;
+            panelAnaSayfaContainer.Controls.Add(YapilanKesimleriGor);
+        }
+
+        private void bntKesimDetaylari_Click(object sender, EventArgs e)
+        {
+            panelAnaSayfaContainer.Controls.Clear();
+            var kesmDetaylari = new ctlKesimDetaylari();
+            kesmDetaylari.Dock = DockStyle.Fill;
+            panelAnaSayfaContainer.Controls.Add(kesmDetaylari);
         }
         //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 

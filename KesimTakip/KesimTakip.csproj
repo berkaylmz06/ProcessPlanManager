@@ -163,6 +163,7 @@
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
     <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -182,11 +183,13 @@
     <Compile Include="Business\VeriOkuma.cs" />
     <Compile Include="Concretes\FormArayuzu.cs" />
     <Compile Include="DataBase\DataBaseHelper.cs" />
+    <Compile Include="DataBase\KesimDetaylariData.cs" />
     <Compile Include="DataBase\KesimListesiPaketData.cs" />
     <Compile Include="DataBase\KesimTamamlanmisData.cs" />
     <Compile Include="DataBase\KullanicilarData.cs" />
     <Compile Include="DataBase\SorunBildirimleriData.cs" />
     <Compile Include="DataBase\YoneticiData.cs" />
+    <Compile Include="Entitys\KesimDetaylari.cs" />
     <Compile Include="Entitys\KesimListesiPaket.cs" />
     <Compile Include="Entitys\KesimTamamlanmisPaket.cs" />
     <Compile Include="Entitys\KullaniciRenkAyarlari.cs" />
@@ -224,6 +227,7 @@
     <Compile Include="Helper\ButonGenelHelper.cs" />
     <Compile Include="Helper\ButonMakinaSecHelper.cs" />
     <Compile Include="Helper\DataGridViewHelper.cs" />
+    <Compile Include="Helper\ListBoxHelper.cs" />
     <Compile Include="Helper\MenuStripGenelHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -234,6 +238,12 @@
       <DependentUpon>frmYoneticiEkrani.cs</DependentUpon>
     </Compile>
     <Compile Include="Entitys\Yoneticiler.cs" />
+    <Compile Include="UsrControl\ctlKesimDetaylari.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlKesimDetaylari.Designer.cs">
+      <DependentUpon>ctlKesimDetaylari.cs</DependentUpon>
+    </Compile>
     <Compile Include="UsrControl\ctlKesimPlaniEkle.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -245,6 +255,12 @@
     </Compile>
     <Compile Include="UsrControl\ctlKesimYap.Designer.cs">
       <DependentUpon>ctlKesimYap.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UsrControl\ctlYapilanKesimleriGor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlYapilanKesimleriGor.Designer.cs">
+      <DependentUpon>ctlYapilanKesimleriGor.cs</DependentUpon>
     </Compile>
     <EmbeddedResource Include="frmAnaSayfa.resx">
       <DependentUpon>frmAnaSayfa.cs</DependentUpon>
@@ -270,11 +286,17 @@
     <EmbeddedResource Include="frmYoneticiEkrani.resx">
       <DependentUpon>frmYoneticiEkrani.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlKesimDetaylari.resx">
+      <DependentUpon>ctlKesimDetaylari.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlKesimPlaniEkle.resx">
       <DependentUpon>ctlKesimPlaniEkle.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlKesimYap.resx">
       <DependentUpon>ctlKesimYap.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlYapilanKesimleriGor.resx">
+      <DependentUpon>ctlYapilanKesimleriGor.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

@@ -40,25 +40,27 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(665, 100);
+            this.panel1.Size = new System.Drawing.Size(591, 80);
             this.panel1.TabIndex = 0;
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label1.Location = new System.Drawing.Point(73, 33);
+            this.label1.Location = new System.Drawing.Point(65, 26);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(58, 32);
+            this.label1.Size = new System.Drawing.Size(49, 29);
             this.label1.TabIndex = 1;
             this.label1.Text = "Ara";
             // 
             // btnAra
             // 
-            this.btnAra.Location = new System.Drawing.Point(539, 117);
+            this.btnAra.Location = new System.Drawing.Point(479, 94);
+            this.btnAra.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnAra.Name = "btnAra";
-            this.btnAra.Size = new System.Drawing.Size(114, 47);
+            this.btnAra.Size = new System.Drawing.Size(101, 38);
             this.btnAra.TabIndex = 2;
             this.btnAra.Text = "Ara";
             this.btnAra.UseVisualStyleBackColor = true;
@@ -66,12 +68,14 @@
             // 
             // frmAra
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(665, 797);
+            this.ClientSize = new System.Drawing.Size(591, 638);
             this.Controls.Add(this.btnAra);
             this.Controls.Add(this.panel1);
+            this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.Name = "frmAra";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Ara";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
