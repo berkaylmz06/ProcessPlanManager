@@ -147,7 +147,7 @@
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.label4.Location = new System.Drawing.Point(31, 80);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(143, 25);
+            this.label4.Size = new System.Drawing.Size(114, 20);
             this.label4.TabIndex = 134;
             this.label4.Text = "Kesim Paket";
             // 
@@ -157,7 +157,7 @@
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.label5.Location = new System.Drawing.Point(31, 432);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(211, 25);
+            this.label5.Size = new System.Drawing.Size(169, 20);
             this.label5.TabIndex = 135;
             this.label5.Text = "Kesim Paket Detay";
             // 
@@ -165,7 +165,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label6.Location = new System.Drawing.Point(3, 10);
+            this.label6.Location = new System.Drawing.Point(3, 13);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(139, 29);
             this.label6.TabIndex = 136;

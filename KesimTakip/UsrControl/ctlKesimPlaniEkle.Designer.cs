@@ -53,6 +53,12 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
+            this.gridKalite = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridMalzeme = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridKalip = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridPoz = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridAdet = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridProje = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -68,12 +74,6 @@
             this.btnSec = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.pdfViewer1 = new Spire.PdfViewer.Forms.PdfViewer();
-            this.gridKalite = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridMalzeme = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridKalip = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridPoz = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridAdet = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridProje = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panelVeriYonetim.SuspendLayout();
             this.groupBoxVeriYonetim.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -183,7 +183,7 @@
             this.lblMalzeme.Location = new System.Drawing.Point(47, 362);
             this.lblMalzeme.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblMalzeme.Name = "lblMalzeme";
-            this.lblMalzeme.Size = new System.Drawing.Size(81, 20);
+            this.lblMalzeme.Size = new System.Drawing.Size(65, 16);
             this.lblMalzeme.TabIndex = 309;
             this.lblMalzeme.Text = "Malzeme:";
             // 
@@ -372,6 +372,42 @@
             this.dataGridView1.Size = new System.Drawing.Size(544, 250);
             this.dataGridView1.TabIndex = 267;
             // 
+            // gridKalite
+            // 
+            this.gridKalite.HeaderText = "Kalite";
+            this.gridKalite.MinimumWidth = 8;
+            this.gridKalite.Name = "gridKalite";
+            // 
+            // gridMalzeme
+            // 
+            this.gridMalzeme.HeaderText = "Malzeme";
+            this.gridMalzeme.MinimumWidth = 8;
+            this.gridMalzeme.Name = "gridMalzeme";
+            // 
+            // gridKalip
+            // 
+            this.gridKalip.HeaderText = "Kalıp";
+            this.gridKalip.MinimumWidth = 8;
+            this.gridKalip.Name = "gridKalip";
+            // 
+            // gridPoz
+            // 
+            this.gridPoz.HeaderText = "Poz";
+            this.gridPoz.MinimumWidth = 8;
+            this.gridPoz.Name = "gridPoz";
+            // 
+            // gridAdet
+            // 
+            this.gridAdet.HeaderText = "Adet";
+            this.gridAdet.MinimumWidth = 8;
+            this.gridAdet.Name = "gridAdet";
+            // 
+            // gridProje
+            // 
+            this.gridProje.HeaderText = "Proje";
+            this.gridProje.MinimumWidth = 6;
+            this.gridProje.Name = "gridProje";
+            // 
             // tabPage2
             // 
             this.tabPage2.Controls.Add(this.dataGridView2);
@@ -531,42 +567,6 @@
             this.pdfViewer1.Text = "pdfViewer1";
             this.pdfViewer1.Threshold = 60;
             this.pdfViewer1.ViewerBackgroundColor = System.Drawing.SystemColors.Window;
-            // 
-            // gridKalite
-            // 
-            this.gridKalite.HeaderText = "Kalite";
-            this.gridKalite.MinimumWidth = 8;
-            this.gridKalite.Name = "gridKalite";
-            // 
-            // gridMalzeme
-            // 
-            this.gridMalzeme.HeaderText = "Malzeme";
-            this.gridMalzeme.MinimumWidth = 8;
-            this.gridMalzeme.Name = "gridMalzeme";
-            // 
-            // gridKalip
-            // 
-            this.gridKalip.HeaderText = "Kalıp";
-            this.gridKalip.MinimumWidth = 8;
-            this.gridKalip.Name = "gridKalip";
-            // 
-            // gridPoz
-            // 
-            this.gridPoz.HeaderText = "Poz";
-            this.gridPoz.MinimumWidth = 8;
-            this.gridPoz.Name = "gridPoz";
-            // 
-            // gridAdet
-            // 
-            this.gridAdet.HeaderText = "Adet";
-            this.gridAdet.MinimumWidth = 8;
-            this.gridAdet.Name = "gridAdet";
-            // 
-            // gridProje
-            // 
-            this.gridProje.HeaderText = "Proje";
-            this.gridProje.MinimumWidth = 6;
-            this.gridProje.Name = "gridProje";
             // 
             // ctlKesimPlaniEkle
             // 

@@ -35,9 +35,12 @@
             this.dataGridTamamlanmisDetay = new System.Windows.Forms.DataGridView();
             this.label4 = new System.Windows.Forms.Label();
             this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.dataGridViewTamamlanmisHareket = new System.Windows.Forms.DataGridView();
             this.panelBaslik.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTamamlanmisKesimListesi)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridTamamlanmisDetay)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTamamlanmisHareket)).BeginInit();
             this.SuspendLayout();
             // 
             // panelBaslik
@@ -62,7 +65,7 @@
             // 
             // btnAra
             // 
-            this.btnAra.Location = new System.Drawing.Point(1202, 123);
+            this.btnAra.Location = new System.Drawing.Point(557, 80);
             this.btnAra.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnAra.Name = "btnAra";
             this.btnAra.Size = new System.Drawing.Size(157, 36);
@@ -87,7 +90,7 @@
             this.dataGridViewTamamlanmisKesimListesi.RowHeadersWidth = 62;
             this.dataGridViewTamamlanmisKesimListesi.RowTemplate.Height = 28;
             this.dataGridViewTamamlanmisKesimListesi.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewTamamlanmisKesimListesi.Size = new System.Drawing.Size(1166, 294);
+            this.dataGridViewTamamlanmisKesimListesi.Size = new System.Drawing.Size(684, 294);
             this.dataGridViewTamamlanmisKesimListesi.TabIndex = 140;
             this.dataGridViewTamamlanmisKesimListesi.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridViewTamamlanmisKesimListesi_CellClick);
             // 
@@ -98,7 +101,7 @@
             this.dataGridTamamlanmisDetay.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader;
             this.dataGridTamamlanmisDetay.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dataGridTamamlanmisDetay.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridTamamlanmisDetay.Location = new System.Drawing.Point(30, 489);
+            this.dataGridTamamlanmisDetay.Location = new System.Drawing.Point(30, 457);
             this.dataGridTamamlanmisDetay.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.dataGridTamamlanmisDetay.MultiSelect = false;
             this.dataGridTamamlanmisDetay.Name = "dataGridTamamlanmisDetay";
@@ -124,16 +127,47 @@
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label1.Location = new System.Drawing.Point(37, 462);
+            this.label1.Location = new System.Drawing.Point(37, 430);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(238, 20);
             this.label1.TabIndex = 143;
             this.label1.Text = "Tamamlanmış Kesim Detay";
             // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label2.Location = new System.Drawing.Point(813, 96);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(399, 25);
+            this.label2.TabIndex = 145;
+            this.label2.Text = "Tamamlanmış Kesimlerin Hareketleri";
+            // 
+            // dataGridViewTamamlanmisHareket
+            // 
+            this.dataGridViewTamamlanmisHareket.AllowUserToAddRows = false;
+            this.dataGridViewTamamlanmisHareket.AllowUserToDeleteRows = false;
+            this.dataGridViewTamamlanmisHareket.AutoSizeColumnsMode = System.Windows.Forms.DataGridViewAutoSizeColumnsMode.ColumnHeader;
+            this.dataGridViewTamamlanmisHareket.BackgroundColor = System.Drawing.SystemColors.Window;
+            this.dataGridViewTamamlanmisHareket.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridViewTamamlanmisHareket.Location = new System.Drawing.Point(806, 123);
+            this.dataGridViewTamamlanmisHareket.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.dataGridViewTamamlanmisHareket.MultiSelect = false;
+            this.dataGridViewTamamlanmisHareket.Name = "dataGridViewTamamlanmisHareket";
+            this.dataGridViewTamamlanmisHareket.ReadOnly = true;
+            this.dataGridViewTamamlanmisHareket.RowHeadersVisible = false;
+            this.dataGridViewTamamlanmisHareket.RowHeadersWidth = 62;
+            this.dataGridViewTamamlanmisHareket.RowTemplate.Height = 28;
+            this.dataGridViewTamamlanmisHareket.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridViewTamamlanmisHareket.Size = new System.Drawing.Size(684, 294);
+            this.dataGridViewTamamlanmisHareket.TabIndex = 144;
+            // 
             // ctlYapilanKesimleriGor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.dataGridViewTamamlanmisHareket);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.dataGridTamamlanmisDetay);
@@ -146,6 +180,7 @@
             this.panelBaslik.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTamamlanmisKesimListesi)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridTamamlanmisDetay)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTamamlanmisHareket)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -159,5 +194,7 @@
         private System.Windows.Forms.DataGridView dataGridTamamlanmisDetay;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        public System.Windows.Forms.DataGridView dataGridViewTamamlanmisHareket;
     }
 }

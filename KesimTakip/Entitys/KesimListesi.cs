@@ -17,6 +17,6 @@ namespace KesimTakip.Entitys
         public string kalipNo { get; set; }
         public string kesilecekPozlar { get; set; }
         public string kpAdetSayilari { get; set; }
-        public string eklemeTarihi { get; set; }
+        public DateTime eklemeTarihi { get; set; }
     }
 }

@@ -67,5 +67,57 @@ namespace KesimTakip.DataBase
                 }
             }
         }
+        public static bool PozExists(string poz)
+        {
+            using (SqlConnection connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    string query = "SELECT COUNT(*) FROM KesimDetaylari WHERE poz = @poz";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@poz", poz);
+                        int count = (int)command.ExecuteScalar();
+                        return count > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"PozExists Hata: {ex.Message}");
+                    return false;
+                }
+            }
+        }
+
+        public static bool UpdateKesilmisAdet(string poz, int sondurum)
+        {
+            using (SqlConnection connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    string query = @"
+                    UPDATE KesimDetaylari 
+                    SET kesilmisAdet = kesilmisAdet + @sondurum, 
+                        kesilecekAdet = kesilecekAdet - @sondurum 
+                    WHERE poz = @poz AND kesilecekAdet >= @sondurum";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@sondurum", sondurum);
+                        command.Parameters.AddWithValue("@poz", poz);
+                        int rowsAffected = command.ExecuteNonQuery();
+
+                        Console.WriteLine($"Poz: {poz}, Sondurum: {sondurum}, RowsAffected: {rowsAffected}");
+                        return rowsAffected > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"UpdateKesilmisAdet Hata: {ex.Message}");
+                    return false;
+                }
+            }
+        }
     }
 }

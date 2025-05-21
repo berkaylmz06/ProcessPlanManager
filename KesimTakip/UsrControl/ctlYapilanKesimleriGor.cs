@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using KesimTakip.Abstracts;
 using KesimTakip.DataBase;
 using KesimTakip.Helper;
 
@@ -14,7 +15,7 @@ namespace KesimTakip.UsrControl
 {
     public partial class ctlYapilanKesimleriGor : UserControl
     {
-
+        private IKullaniciAdiOgren _kullaniciAdi;
         public ctlYapilanKesimleriGor()
         {
             InitializeComponent();
@@ -25,8 +26,13 @@ namespace KesimTakip.UsrControl
 
             DataGridViewHelper.StilUygula(dataGridViewTamamlanmisKesimListesi);
             DataGridViewHelper.StilUygula(dataGridTamamlanmisDetay);
+            DataGridViewHelper.StilUygula(dataGridViewTamamlanmisHareket);
 
             tabloDuzenle();
+        }
+        public void FormKullaniciAdiGetir(IKullaniciAdiOgren kullaniciAdi)
+        {
+            _kullaniciAdi = kullaniciAdi;
         }
         public void tabloDuzenle()
         {
@@ -92,6 +98,17 @@ namespace KesimTakip.UsrControl
                         dataGridTamamlanmisDetay.Columns[7].HeaderText = "Kesilen Pozlar";
                         dataGridTamamlanmisDetay.Columns[8].HeaderText = "Kesilen Pozların Adet Sayıları";
                         dataGridTamamlanmisDetay.Columns[9].HeaderText = "Ekleme Tarihi";
+
+                        var dt1 = KesimTamamlanmisHareket.GetirKesimTamamlanmisHareket(kesimId);
+
+                        dataGridViewTamamlanmisHareket.DataSource = dt1;
+                        dataGridViewTamamlanmisHareket.Columns[0].Visible = false;
+                        dataGridViewTamamlanmisHareket.Columns[1].HeaderText = "Kesim Yapan";
+                        dataGridViewTamamlanmisHareket.Columns[2].HeaderText = "Kesim ID";
+                        dataGridViewTamamlanmisHareket.Columns[3].HeaderText = "Kesilen Adet";
+                        dataGridViewTamamlanmisHareket.Columns[4].HeaderText = "Kesim Tarihi";
+                        dataGridViewTamamlanmisHareket.Columns[5].HeaderText = "Kesim Saati";
+
                     }
                     catch (Exception ex)
                     {

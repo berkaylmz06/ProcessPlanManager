@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using KesimTakip.Abstracts;
+using KesimTakip.Concretes;
 using KesimTakip.DataBase;
 using KesimTakip.Helper;
 
@@ -15,6 +16,7 @@ namespace KesimTakip.UsrControl
 {
     public partial class ctlKesimYap : UserControl
     {
+        private IKullaniciAdiOgren _kullaniciAdi;
         public ctlKesimYap()
         {
             InitializeComponent();
@@ -29,6 +31,10 @@ namespace KesimTakip.UsrControl
             tabloDuzenle();
 
             VerileriYukle();
+        }
+        public void FormKullaniciAdiGetir(IKullaniciAdiOgren kullaniciAdi)
+        {
+            _kullaniciAdi = kullaniciAdi;
         }
         private void dataGridKesimListesi_CellClick(object sender, DataGridViewCellEventArgs e)
         {
@@ -78,7 +84,6 @@ namespace KesimTakip.UsrControl
             dataGridKesimListesi.DataSource = dt;
         }
 
-
         public void tabloDuzenle()
         {
             if (dataGridKesimListesi.Columns.Contains("id"))
@@ -108,6 +113,10 @@ namespace KesimTakip.UsrControl
 
         private void btnAra_Click(object sender, EventArgs e)
         {
+            var userController = new UserController(_kullaniciAdi.lblSistemKullaniciMetinAl());
+            userController.LogYap("Tabloda Arama", "Kesim Yap", "Kullanıcı Tabloda Arama Yaptı.");
+
+
             frmAra frm = new frmAra(
     dataGridKesimListesi.Columns,
     KesimListesiFiltrele,
@@ -129,57 +138,113 @@ namespace KesimTakip.UsrControl
         }
         private void btnPaketKes_Click(object sender, EventArgs e)
         {
-            DateTime currentDateTime = DateTime.Now;
-            string tarih = currentDateTime.ToString("dd.MM.yyyy");
-            string saat = currentDateTime.ToString("HH:mm:ss");
+            DateTime currentDateTime = DateTime.Now; 
+            DateTime tarih = currentDateTime.Date;
+            TimeSpan saat = currentDateTime.TimeOfDay;
 
-            if (dataGridKesimListesi.SelectedRows.Count > 0)
+
+            if (dataGridKesimListesi.SelectedRows.Count == 0)
             {
-                DataGridViewRow selectedRow = dataGridKesimListesi.SelectedRows[0];
-
-                try
-                {
-                    var olusturan = selectedRow.Cells["olusturan"].Value?.ToString();
-                    string kesimId = selectedRow.Cells["kesimId"].Value?.ToString() ?? "0";
-
-                    if (string.IsNullOrEmpty(txtKesilecekPlanSayisi.Text) || !int.TryParse(txtKesilecekPlanSayisi.Text, out int kesilmisPlanSayisi) || kesilmisPlanSayisi <= 0)
-                    {
-                        MessageBox.Show("Kesilecek Plan Sayısını geçerli bir değer ile doldurun.", "Dikkat!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return;
-                    }
-
-                    if (string.IsNullOrEmpty(olusturan) || kesilmisPlanSayisi <= 0)
-                    {
-                        MessageBox.Show("Eksik veri. Lütfen tüm gerekli alanları doldurun.");
-                        return;
-                    }
-
-                    string hata;
-                    bool sonuc = KesimListesiPaketData.KesimListesiPaketKontrolluDusme(kesimId, kesilmisPlanSayisi, out hata);
-
-                    if (!sonuc)
-                    {
-                        MessageBox.Show(hata);
-                    }
-                    else
-                    {
-                        KesimTamamlanmisData.TablodanKesimTamamlanmisEkleme(olusturan, kesimId, kesilmisPlanSayisi, tarih, saat);
-                        MessageBox.Show("Kesim başarıyla tamamlandı.");
-                        KesimListesiPaketData.VerileriYenile(dataGridKesimListesi);
-                    }
-                }
-                catch (FormatException)
-                {
-                    MessageBox.Show("Kesim ID'si geçersiz.");
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show("Bir hata oluştu: " + ex.Message);
-                }
+                MessageBox.Show("Lütfen bir satır seçin.", "Dikkat!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            else
+
+            DataGridViewRow selectedRow = dataGridKesimListesi.SelectedRows[0];
+
+            try
             {
-                MessageBox.Show("Lütfen bir satır seçin.");
+                string kesimId = selectedRow.Cells["kesimId"].Value?.ToString() ?? "0";
+                string olusturan = selectedRow.Cells["olusturan"].Value?.ToString();
+
+                if (!int.TryParse(txtKesilecekPlanSayisi.Text, out int carpan) || carpan <= 0)
+                {
+                    MessageBox.Show("Kesilecek Plan Sayısını geçerli bir pozitif sayı ile doldurun.", "Dikkat!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                if (string.IsNullOrEmpty(olusturan))
+                {
+                    MessageBox.Show("Oluşturan bilgisi eksik. Lütfen gerekli alanları doldurun.", "Dikkat!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                string hata;
+                bool paketSonuc = KesimListesiPaketData.KesimListesiPaketKontrolluDusme(kesimId, carpan, out hata);
+                if (!paketSonuc)
+                {
+                    MessageBox.Show(hata, "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                bool sonuc1 = KesimTamamlanmisData.TablodanKesimTamamlanmisEkleme(olusturan, kesimId, carpan, tarih, saat);
+                bool sonuc2 = KesimTamamlanmisHareket.TablodanKesimTamamlanmisHareketEkleme(olusturan, kesimId, carpan, tarih, saat);
+
+                if (sonuc1 && sonuc2)
+                {
+                    var userController = new UserController(_kullaniciAdi.lblSistemKullaniciMetinAl());
+                    userController.LogYap("\"Seçili Paketi Kes\" Butonuna Tıklandı", "Kesim Yap", $"Kullanıcı {kesimId} numaralı kesim planından {txtKesilecekPlanSayisi.Text} adet kesimini tamamladı.");
+                }
+                else
+                {
+                    MessageBox.Show("Kayıt işlemi sırasında hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+
+
+                var dt = KesimListesiData.GetirKesimListesi(kesimId);
+                if (dt.Rows.Count == 0)
+                {
+                    MessageBox.Show("KesimListesi tablosunda ilgili kesimId bulunamadı.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                StringBuilder pozVeSondurumMesaj = new StringBuilder();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    string kalite = row["kalite"].ToString();
+                    string malzeme = row["malzeme"].ToString();
+                    string kalipNo = row["kalipNo"].ToString();
+                    string poz = row["kesilecekPozlar"].ToString();
+                    string proje = row["projeNo"].ToString();
+                    string adetSatır = row["kpAdetSayilari"].ToString();
+
+                    if (!int.TryParse(adetSatır, out int kpAdet))
+                    {
+                        MessageBox.Show("Veritabanındaki bazı adet değerleri geçerli değil.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    int sondurum = kpAdet * carpan;
+                    string pozbilgileri = $"{kalite}-{malzeme}-{kalipNo}-{poz}-{proje}";
+                    pozVeSondurumMesaj.AppendLine($"Poz: {pozbilgileri}, Sondurum: {sondurum}");
+
+                    if (!KesimDetaylariData.PozExists(pozbilgileri))
+                    {
+                        MessageBox.Show($"Poz: {pozbilgileri} KesimDetaylari tablosunda bulunamadı.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    bool updateSuccess = KesimDetaylariData.UpdateKesilmisAdet(pozbilgileri, sondurum);
+                    if (!updateSuccess)
+                    {
+                        MessageBox.Show($"Poz: {pozbilgileri} için kesilmisAdet veya kesilecekAdet güncellenemedi. Kesilecek adet yetersiz olabilir.\nSondurum: {sondurum}",
+                            "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
+
+                MessageBox.Show("Kesim başarıyla tamamlandı.",
+                    "Başarılı!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                KesimListesiPaketData.VerileriYenile(dataGridKesimListesi);
+                tabloDuzenle();
+            }
+            catch (FormatException)
+            {
+                MessageBox.Show("Kesim ID'si geçersiz.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Bir hata oluştu: {ex.Message}", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

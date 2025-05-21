@@ -8,7 +8,7 @@ namespace KesimTakip.DataBase
 {
     class KesimListesiPaketData
     {
-        public static void SaveKesimDataPaket(string olusturan, string kesimId, int kesilecekPlanSayisi, int toplamPlanTekrari, string eklemeTarihi)
+        public static void SaveKesimDataPaket(string olusturan, string kesimId, int kesilecekPlanSayisi, int toplamPlanTekrari, DateTime eklemeTarihi)
         {
             try
             {
@@ -48,21 +48,6 @@ namespace KesimTakip.DataBase
                     DataTable dt = new DataTable();
                     adapter.Fill(dt);
                     return dt;
-                }
-            }
-        }
-
-        public static bool KesimListesiPaketKesimIdVarsa(int kesimId)
-        {
-            using (var connection = DataBaseHelper.GetConnection())
-            {
-                connection.Open();
-                string query = "SELECT COUNT(1) FROM [KesimListesiPaket] WHERE [kesimId] = @kesimId";
-                using (var command = new SqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@kesimId", kesimId);
-                    int count = Convert.ToInt32(command.ExecuteScalar());
-                    return count > 0;
                 }
             }
         }

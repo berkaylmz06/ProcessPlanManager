@@ -14,6 +14,6 @@ namespace KesimTakip.Entitys
         public int kesilecekPlanSayisi { get; set; }
         public int kesilmisPlanSayisi { get; set; }
         public int  toplamPlanTekrari { get; set; }
-        public string eklemeTarihi { get; set; }
+        public DateTime eklemeTarihi { get; set; }
     }
 }

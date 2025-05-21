@@ -9,7 +9,7 @@ namespace KesimTakip.DataBase
 {
     class KesimListesiData
     {
-        public static void SaveKesimData(int id, string olusturan, string kesimId, string projeno, string malzeme, string kalite, string[] kaliplar, string[] pozlar, string[] adetler, string eklemeTarihi)
+        public static void SaveKesimData(int id, string olusturan, string kesimId, string projeno, string malzeme, string kalite, string[] kaliplar, string[] pozlar, string[] adetler, DateTime eklemeTarihi)
         {
             try
             {
@@ -84,7 +84,7 @@ namespace KesimTakip.DataBase
                                     kalipNo = reader.GetString(5),
                                     kesilecekPozlar = reader.GetString(6),
                                     kpAdetSayilari = reader.GetString(7),
-                                    eklemeTarihi = reader.GetString(8)
+                                    eklemeTarihi = reader.GetDateTime(8)
                                 });
                             }
                         }

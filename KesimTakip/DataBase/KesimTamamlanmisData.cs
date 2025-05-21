@@ -8,27 +8,53 @@ namespace KesimTakip.DataBase
 {
     class KesimTamamlanmisData
     {
-        public static void TablodanKesimTamamlanmisEkleme(string kesimYapan, string kesimId, int kesilmisPlanSayisi, string kesimTarihi, string kesimSaati)
+        public static bool TablodanKesimTamamlanmisEkleme(string kesimYapan, string kesimId, int kesilmisPlanSayisi, DateTime kesimTarihi, TimeSpan kesimSaati)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            try
             {
-                connection.Open();
-
-                string insertQuery = "INSERT INTO [KesimTamamlanmisPaket] ([kesimYapan], [kesimId], [kesilmisPlanSayisi], [kesimTarihi], [kesimSaati]) " +
-                                     "VALUES (@kesimYapan, @kesimId, @kesilmisPlanSayisi, @kesimTarihi, @kesimSaati)";
-
-                using (var insertCommand = new SqlCommand(insertQuery, connection))
+                using (var connection = DataBaseHelper.GetConnection())
                 {
-                    insertCommand.Parameters.AddWithValue("@kesimYapan", kesimYapan);
-                    insertCommand.Parameters.AddWithValue("@kesimId", kesimId);
-                    insertCommand.Parameters.AddWithValue("@kesilmisPlanSayisi", kesilmisPlanSayisi);
-                    insertCommand.Parameters.AddWithValue("@kesimTarihi", kesimTarihi);
-                    insertCommand.Parameters.AddWithValue("@kesimSaati", kesimSaati);
+                    connection.Open();
 
-                    insertCommand.ExecuteNonQuery();
+                    string query = @"
+            IF EXISTS (SELECT 1 FROM [KesimTamamlanmisPaket] WHERE [kesimId] = @kesimId)
+            BEGIN
+                UPDATE [KesimTamamlanmisPaket]
+                SET 
+                    [kesilmisPlanSayisi] = [kesilmisPlanSayisi] + @kesilmisPlanSayisi,
+                    [kesimYapan] = @kesimYapan,
+                    [kesimTarihi] = @kesimTarihi,
+                    [kesimSaati] = @kesimSaati
+                WHERE [kesimId] = @kesimId
+            END
+            ELSE
+            BEGIN
+                INSERT INTO [KesimTamamlanmisPaket] 
+                    ([kesimYapan], [kesimId], [kesilmisPlanSayisi], [kesimTarihi], [kesimSaati])
+                VALUES 
+                    (@kesimYapan, @kesimId, @kesilmisPlanSayisi, @kesimTarihi, @kesimSaati)
+            END";
+
+                    using (var command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@kesimYapan", kesimYapan);
+                        command.Parameters.AddWithValue("@kesimId", kesimId);
+                        command.Parameters.AddWithValue("@kesilmisPlanSayisi", kesilmisPlanSayisi);
+                        command.Parameters.AddWithValue("@kesimTarihi", kesimTarihi);
+                        command.Parameters.AddWithValue("@kesimSaati", kesimSaati);
+
+                        command.ExecuteNonQuery();
+                    }
                 }
+                return true;
+            }
+            catch (Exception)
+            {
+
+                return false;
             }
         }
+
         public DataTable GetKesimListesTamamlanmis()
         {
             string query = "SELECT [kesimYapan], [kesimId], [kesilmisPlanSayisi], [kesimTarihi], [kesimSaati] FROM [KesimTamamlanmisPaket]";

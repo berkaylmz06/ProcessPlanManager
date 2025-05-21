@@ -38,15 +38,15 @@ namespace KesimTakip.Helper
 
         private static void ButonNormal(Button button)
         {
-            button.BackColor = ColorTranslator.FromHtml("#BDC3C7");
+            button.BackColor = ColorTranslator.FromHtml("#2C3E50");
             button.Font = new System.Drawing.Font(button.Font.FontFamily, 10);
-            button.ForeColor = Color.Black;
+            button.ForeColor = ColorTranslator.FromHtml("#FFFFFF");
             button.Tag = false;
             button.FlatStyle = FlatStyle.Flat;
             button.FlatAppearance.BorderSize = 1;
             button.FlatAppearance.BorderColor = ColorTranslator.FromHtml("#BDC3C7");
-            button.FlatAppearance.MouseOverBackColor = ColorTranslator.FromHtml("#AAB7B8");
-            button.FlatAppearance.MouseDownBackColor = ColorTranslator.FromHtml("#D5D8DC");
+            button.FlatAppearance.MouseOverBackColor = ColorTranslator.FromHtml("#2C3E50");
+            button.FlatAppearance.MouseDownBackColor = ColorTranslator.FromHtml("#2C3E50");
 
         }
 

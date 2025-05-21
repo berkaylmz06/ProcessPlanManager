@@ -6,6 +6,8 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 using iText.Forms.Form.Element;
+using KesimTakip.Abstracts;
+using KesimTakip.Concretes;
 using KesimTakip.DataBase;
 using KesimTakip.Entitys;
 using KesimTakip.Helper;
@@ -17,7 +19,8 @@ namespace KesimTakip.UsrControl
     public partial class ctlKesimDetaylari : UserControl
     {
         private List<KesimDetaylari> tumPozlar;
-        private string placeholderText = "Ara";
+        private string placeholderText = "Ara"; 
+
         public ctlKesimDetaylari()
         {
             InitializeComponent();
@@ -54,11 +57,7 @@ namespace KesimTakip.UsrControl
             txtArama.Multiline = true;
             txtArama.Height = 35;
             txtArama.Font = new Font("Segoe UI", 14F);
-
-           
-
         }
-
         private void YukleVeListele()
         {
             var dt = KesimDetaylariData.GetKesimDetaylari();
@@ -150,6 +149,7 @@ namespace KesimTakip.UsrControl
             panelKart1.Location = new Point(startX, y1);
             panelKart2.Location = new Point(startX + panelKart1.Width + spacing, y2);
             panelKart3.Location = new Point(startX + panelKart1.Width + spacing + panelKart2.Width + spacing, y3);
+
         }
 
         private void ctlKesimDetaylari_Load(object sender, EventArgs e)
@@ -192,6 +192,7 @@ namespace KesimTakip.UsrControl
         private void ctlKesimDetaylari_Resize(object sender, EventArgs e)
         {
             Refresh();
+            ChartiTiklanmazYap();
         }
     }
 }

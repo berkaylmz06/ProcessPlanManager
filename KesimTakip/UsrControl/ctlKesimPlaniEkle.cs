@@ -30,7 +30,7 @@ namespace KesimTakip.UsrControl
         private int? currentId = null;
         private readonly VeriOkuma _veriOkuma;
         private IFormArayuzu _formArayuzu;
-       
+
         public ctlKesimPlaniEkle()
         {
             InitializeComponent();
@@ -39,6 +39,8 @@ namespace KesimTakip.UsrControl
             DataGridViewHelper.StilUygula(dataGridView1);
             DataGridViewHelper.StilUygula(dataGridView2);
             DataGridViewHelper.StilUygula(dataGridView3);
+
+            
         }
         public void FormArayuzuAyarla(IFormArayuzu formArayuzu)
         {
@@ -484,7 +486,8 @@ namespace KesimTakip.UsrControl
             string olusturan = _formArayuzu.lblSistemKullaniciMetinAl();
             string malzeme = txtMalzeme.Text;
             string kalite = txtKalite.Text;
-            string eklemeTarihi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
+            DateTime eklemeTarihi = DateTime.Now;
+
 
             HashSet<string> islenmisPaketIdSet = new HashSet<string>();
             bool kayitYapildi = false;
@@ -544,7 +547,7 @@ namespace KesimTakip.UsrControl
                             adet = 0;
                         }
                     }
-                    
+
                     string sonParca = parcalar.LastOrDefault(p => p.Contains("."));
                     if (!string.IsNullOrEmpty(sonParca))
                     {
@@ -565,8 +568,8 @@ namespace KesimTakip.UsrControl
                     new string[] { adetStr },
                     eklemeTarihi
                 );
-                string kesimDetaylari = kalite+ "-" + malzeme +"-"+ kalip + "-" + poz+ "-" + proje;
-                KesimDetaylariData.SaveKesimDetaylariData(kesimDetaylari,dKesimId,adet,adet);
+                string kesimDetaylari = kalite + "-" + malzeme + "-" + kalip + "-" + poz + "-" + proje;
+                KesimDetaylariData.SaveKesimDetaylariData(kesimDetaylari, dKesimId, adet, adet);
 
                 kayitYapildi = true;
             }
@@ -577,6 +580,8 @@ namespace KesimTakip.UsrControl
             }
             else if (kayitYapildi)
             {
+                var userController = new UserController(_formArayuzu.lblSistemKullaniciMetinAl());
+                userController.LogYap("\"Kaydet\" Butonuna Tıklandı", "Kesim Planı Ekle", $"Kullanıcı {currentId.Value} numaralı kesim planını yükledi.");
                 MessageBox.Show("Kayıt işlemi tamamlandı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
@@ -869,6 +874,9 @@ namespace KesimTakip.UsrControl
                     writer.WriteEndElement();
                     writer.WriteEndDocument();
                 }
+
+                var userController = new UserController(_formArayuzu.lblSistemKullaniciMetinAl());
+                userController.LogYap("\"Xml Dosyası Oluştur\" Butonuna Tıklandı", "Kesim Planı Ekle", $"Kullanıcı {txtId.Text} numaralı kesim planı XML dosyası oluşturdu.");
 
                 MessageBox.Show("XML başarıyla oluşturuldu.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -1340,7 +1348,7 @@ namespace KesimTakip.UsrControl
                 }
             }
         }
-         private void HesaplaEkAgirlikYuzdeleri()
+        private void HesaplaEkAgirlikYuzdeleri()
         {
             try
             {

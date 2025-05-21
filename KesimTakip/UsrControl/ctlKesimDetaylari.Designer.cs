@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
             this.lstPozlar = new System.Windows.Forms.ListBox();
             this.txtArama = new System.Windows.Forms.TextBox();
             this.chartKesim = new System.Windows.Forms.DataVisualization.Charting.Chart();
@@ -89,25 +89,25 @@
             // 
             // chartKesim
             // 
-            chartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea1.AxisX.MajorTickMark.Enabled = false;
-            chartArea1.AxisX.Maximum = 4D;
-            chartArea1.AxisY.LabelStyle.ForeColor = System.Drawing.Color.Transparent;
-            chartArea1.AxisY.LineColor = System.Drawing.Color.Transparent;
-            chartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.Transparent;
-            chartArea1.AxisY.MajorTickMark.Enabled = false;
-            chartArea1.AxisY.Maximum = 100D;
-            chartArea1.Name = "ChartArea1";
-            this.chartKesim.ChartAreas.Add(chartArea1);
+            chartArea2.AxisX.MajorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea2.AxisX.MajorTickMark.Enabled = false;
+            chartArea2.AxisX.Maximum = 4D;
+            chartArea2.AxisY.LabelStyle.ForeColor = System.Drawing.Color.Transparent;
+            chartArea2.AxisY.LineColor = System.Drawing.Color.Transparent;
+            chartArea2.AxisY.MajorGrid.LineColor = System.Drawing.Color.Transparent;
+            chartArea2.AxisY.MajorTickMark.Enabled = false;
+            chartArea2.AxisY.Maximum = 100D;
+            chartArea2.Name = "ChartArea1";
+            this.chartKesim.ChartAreas.Add(chartArea2);
             this.chartKesim.Dock = System.Windows.Forms.DockStyle.Fill;
-            legend1.Name = "Legend1";
-            this.chartKesim.Legends.Add(legend1);
+            legend2.Name = "Legend1";
+            this.chartKesim.Legends.Add(legend2);
             this.chartKesim.Location = new System.Drawing.Point(0, 0);
             this.chartKesim.Name = "chartKesim";
-            series1.ChartArea = "ChartArea1";
-            series1.Legend = "Legend1";
-            series1.Name = "Series1";
-            this.chartKesim.Series.Add(series1);
+            series2.ChartArea = "ChartArea1";
+            series2.Legend = "Legend1";
+            series2.Name = "Series1";
+            this.chartKesim.Series.Add(series2);
             this.chartKesim.Size = new System.Drawing.Size(1209, 768);
             this.chartKesim.TabIndex = 137;
             this.chartKesim.TabStop = false;

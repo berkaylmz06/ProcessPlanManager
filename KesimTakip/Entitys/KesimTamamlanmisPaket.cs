@@ -12,7 +12,7 @@ namespace KesimTakip.Entitys
         public string kesimYapan { get; set; }
         public int kesimId { get; set; }
         public int kesilmisPlanSayisi { get; set; }
-        public string kesimTarihi { get; set; }
-        public string kesimSaati { get; set; }
+        public DateTime kesimTarihi { get; set; }
+        public TimeSpan kesimSaati { get; set; }
     }
 }

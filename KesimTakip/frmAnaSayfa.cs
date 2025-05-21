@@ -17,11 +17,13 @@ namespace KesimTakip
         private Timer timer;
         private int timerCounter = 0;
         public IFormArayuzu FormArayuzuInterface { get; private set; }
+        public IKullaniciAdiOgren KullaniciAdiInterface { get; private set; }
         public frmAnaSayfa(string adSoyad)
         {
             InitializeComponent();
 
             FormArayuzuInterface = new FormArayuzu(this);
+            KullaniciAdiInterface = new KullaniciAdiOgren(this);
 
             lblSistemKullanici.Text = adSoyad;
 
@@ -149,6 +151,7 @@ namespace KesimTakip
         {
             panelAnaSayfaContainer.Controls.Clear();
             var kesimYap = new ctlKesimYap();
+            kesimYap.FormKullaniciAdiGetir(KullaniciAdiInterface);
             kesimYap.Dock = DockStyle.Fill;
             panelAnaSayfaContainer.Controls.Add(kesimYap);
         }
@@ -488,17 +491,18 @@ namespace KesimTakip
         private void btnYapilanKesimleriGor_Click(object sender, EventArgs e)
         {
             panelAnaSayfaContainer.Controls.Clear();
-            var YapilanKesimleriGor = new ctlYapilanKesimleriGor();
-            YapilanKesimleriGor.Dock = DockStyle.Fill;
-            panelAnaSayfaContainer.Controls.Add(YapilanKesimleriGor);
+            var yapilanKesimleriGor = new ctlYapilanKesimleriGor();
+            yapilanKesimleriGor.FormKullaniciAdiGetir(KullaniciAdiInterface);
+            yapilanKesimleriGor.Dock = DockStyle.Fill;
+            panelAnaSayfaContainer.Controls.Add(yapilanKesimleriGor);
         }
 
         private void bntKesimDetaylari_Click(object sender, EventArgs e)
         {
             panelAnaSayfaContainer.Controls.Clear();
-            var kesmDetaylari = new ctlKesimDetaylari();
-            kesmDetaylari.Dock = DockStyle.Fill;
-            panelAnaSayfaContainer.Controls.Add(kesmDetaylari);
+            var kesimDetaylari = new ctlKesimDetaylari();
+            kesimDetaylari.Dock = DockStyle.Fill;
+            panelAnaSayfaContainer.Controls.Add(kesimDetaylari);
         }
         //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 
