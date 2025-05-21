@@ -226,9 +226,14 @@
     <Compile Include="Entitys\Kullanicilar.cs" />
     <Compile Include="Helper\ButonGenelHelper.cs" />
     <Compile Include="Helper\ButonMakinaSecHelper.cs" />
+    <Compile Include="Helper\ClickThroughPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Helper\DataGridViewHelper.cs" />
     <Compile Include="Helper\ListBoxHelper.cs" />
     <Compile Include="Helper\MenuStripGenelHelper.cs" />
+    <Compile Include="Helper\PanelRoundHelper.cs" />
+    <Compile Include="Helper\RoundedPanelHelper.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="frmYoneticiEkrani.cs">

@@ -9,7 +9,7 @@ namespace KesimTakip.DataBase
 {
     class KesimListesiData
     {
-        public static void SaveKesimData(int id, string olusturan, string kesimId, string projeno, string kalinlik, string kalite, string[] kaliplar, string[] pozlar, string[] adetler, string eklemeTarihi)
+        public static void SaveKesimData(int id, string olusturan, string kesimId, string projeno, string malzeme, string kalite, string[] kaliplar, string[] pozlar, string[] adetler, string eklemeTarihi)
         {
             try
             {
@@ -30,8 +30,8 @@ namespace KesimTakip.DataBase
 
                         if (!string.IsNullOrEmpty(temizPoz) && !string.IsNullOrEmpty(temizKalip) && !string.IsNullOrEmpty(temizAdet))
                         {
-                            string query = "INSERT INTO KesimListesi (id, olusturan, kesimId, projeNo, kalinlik, kalite, kalipNo, kesilecekPozlar, kpAdetSayilari, eklemeTarihi) " +
-                                           "VALUES (@id, @olusturan, @kesimId, @projeNo, @kalinlik, @kalite, @kalipNo, @kesilecekPozlar, @kpAdetSayilari, @eklemeTarihi)";
+                            string query = "INSERT INTO KesimListesi (id, olusturan, kesimId, projeNo, malzeme, kalite, kalipNo, kesilecekPozlar, kpAdetSayilari, eklemeTarihi) " +
+                                           "VALUES (@id, @olusturan, @kesimId, @projeNo, @malzeme, @kalite, @kalipNo, @kesilecekPozlar, @kpAdetSayilari, @eklemeTarihi)";
 
                             using (var cmd = new SqlCommand(query, conn))
                             {
@@ -39,7 +39,7 @@ namespace KesimTakip.DataBase
                                 cmd.Parameters.AddWithValue("@olusturan", olusturan);
                                 cmd.Parameters.AddWithValue("@kesimId", kesimId);
                                 cmd.Parameters.AddWithValue("@projeNo", projeno);
-                                cmd.Parameters.AddWithValue("@kalinlik", kalinlik);
+                                cmd.Parameters.AddWithValue("@malzeme", malzeme);
                                 cmd.Parameters.AddWithValue("@kalite", kalite);
                                 cmd.Parameters.AddWithValue("@kalipNo", temizKalip);
                                 cmd.Parameters.AddWithValue("@kesilecekPozlar", temizPoz);
@@ -63,7 +63,7 @@ namespace KesimTakip.DataBase
             try
             {
                 var veriler = new List<KesimListesi>();
-                string query = "SELECT olusturan, kesimId, projeNo, kalite, kalinlik, kalipNo, kesilecekPozlar, kpAdetSayilari, eklemeTarihi FROM KesimListesi";
+                string query = "SELECT olusturan, kesimId, projeNo, kalite, malzeme, kalipNo, kesilecekPozlar, kpAdetSayilari, eklemeTarihi FROM KesimListesi";
 
                 using (var connection = DataBaseHelper.GetConnection())
                 {
@@ -80,7 +80,7 @@ namespace KesimTakip.DataBase
                                     kesimId = reader.GetString(1),
                                     projeNo = reader.GetString(2),
                                     kalite = reader.GetString(3),
-                                    kalinlik = reader.GetString(4),
+                                    malzeme = reader.GetString(4),
                                     kalipNo = reader.GetString(5),
                                     kesilecekPozlar = reader.GetString(6),
                                     kpAdetSayilari = reader.GetString(7),

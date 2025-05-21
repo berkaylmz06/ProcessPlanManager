@@ -213,8 +213,8 @@ namespace KesimTakip.UsrControl
                             {
                                 if (data != null)
                                 {
-                                    _formArayuzu.RichTextBox2MetinEkle($"{data.Kalite} - {data.Kalinlik} - {data.Kalip} - {data.Poz} - {data.Adet} - {data.Proje}\n");
-                                    dataGridView1.Rows.Add(data.Kalite, data.Kalinlik, data.Kalip, data.Poz, data.Adet, data.Proje);
+                                    _formArayuzu.RichTextBox2MetinEkle($"{data.Kalite} - {data.Malzeme} - {data.Kalip} - {data.Poz} - {data.Adet} - {data.Proje}\n");
+                                    dataGridView1.Rows.Add(data.Kalite, data.Malzeme, data.Kalip, data.Poz, data.Adet, data.Proje);
                                     UpdateTextBoxes();
                                     currentItem++;
                                     int progressValue = totalItems > 0 ? (int)((currentItem / (float)totalItems) * 100) : 0;
@@ -458,19 +458,19 @@ namespace KesimTakip.UsrControl
         private void UpdateTextBoxes()
         {
             HashSet<string> kaliteSet = new HashSet<string>();
-            HashSet<string> kalinlikSet = new HashSet<string>();
+            HashSet<string> malzemeSet = new HashSet<string>();
 
             foreach (DataGridViewRow row in dataGridView1.Rows)
             {
                 if (!row.IsNewRow)
                 {
                     kaliteSet.Add(row.Cells[0].Value?.ToString());
-                    kalinlikSet.Add(row.Cells[1].Value?.ToString());
+                    malzemeSet.Add(row.Cells[1].Value?.ToString());
                 }
             }
 
             txtKalite.Text = kaliteSet.First();
-            txtKalinlik.Text = kalinlikSet.First();
+            txtMalzeme.Text = malzemeSet.First();
         }
 
         private void btnKaydet_Click(object sender, EventArgs e)
@@ -482,7 +482,7 @@ namespace KesimTakip.UsrControl
             }
 
             string olusturan = _formArayuzu.lblSistemKullaniciMetinAl();
-            string kalinlik = txtKalinlik.Text;
+            string malzeme = txtMalzeme.Text;
             string kalite = txtKalite.Text;
             string eklemeTarihi = DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss");
 
@@ -558,14 +558,14 @@ namespace KesimTakip.UsrControl
                     olusturan,
                     dKesimId,
                     proje,
-                    kalinlik,
+                    malzeme,
                     kalite,
                     new string[] { kalip },
                     new string[] { poz },
                     new string[] { adetStr },
                     eklemeTarihi
                 );
-                string kesimDetaylari = kalip + "-" + poz+ "-" + proje;
+                string kesimDetaylari = kalite+ "-" + malzeme +"-"+ kalip + "-" + poz+ "-" + proje;
                 KesimDetaylariData.SaveKesimDetaylariData(kesimDetaylari,dKesimId,adet,adet);
 
                 kayitYapildi = true;
@@ -835,14 +835,12 @@ namespace KesimTakip.UsrControl
                                 string ekAdi = "-";
                                 string ekOran = "-";
                                 string adetToWrite = parcaRow.Cells[2].Value?.ToString() ?? "0";
-                                bool hasEkVeri = false;
 
                                 if (parcaRow.Cells[4].Value != null &&
                                     double.TryParse(parcaRow.Cells[4].Value.ToString(), out double oran) &&
                                     parcaRow.Cells[2].Value != null &&
                                     double.TryParse(parcaRow.Cells[2].Value.ToString(), out double adet))
                                 {
-                                    hasEkVeri = true;
                                     ekOran = (oran).ToString(CultureInfo.InvariantCulture);
                                     adetToWrite = "0";
 

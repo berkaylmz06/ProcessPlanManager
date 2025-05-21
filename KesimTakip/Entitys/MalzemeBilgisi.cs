@@ -9,7 +9,7 @@ namespace KesimTakip.Entitys
     public class MalzemeBilgisi
     {
         public string Kalite { get; set; }
-        public string Kalinlik { get; set; }
+        public string Malzeme { get; set; }
         public string Kalip { get; set; }
         public string Poz { get; set; }
         public string Adet { get; set; }

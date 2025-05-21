@@ -103,7 +103,7 @@ namespace KesimTakip.Business
                         var malzeme = new MalzemeBilgisi
                         {
                             Kalite = validMatch.Groups[1].Value,
-                            Kalinlik = validMatch.Groups[2].Value,
+                            Malzeme = validMatch.Groups[2].Value,
                             Kalip = validMatch.Groups[3].Value,
                             Poz = validMatch.Groups[4].Value,
                             Adet = validMatch.Groups[5].Value,
@@ -154,7 +154,7 @@ namespace KesimTakip.Business
                         var malzeme = new MalzemeBilgisi
                         {
                             Kalite = validMatch.Groups[1].Value,
-                            Kalinlik = validMatch.Groups[2].Value,
+                            Malzeme = validMatch.Groups[2].Value,
                             Kalip = validMatch.Groups[3].Value,
                             Poz = validMatch.Groups[4].Value,
                             Adet = validMatch.Groups[5].Value,
@@ -175,7 +175,7 @@ namespace KesimTakip.Business
         private MalzemeBilgisi ParseLine(string line)
         {
             var match = Regex.Match(line,
-                @"ST(?<Kalite>\d{2})[-\s]*(?<Kalınlık>\d+(?:MM|mm))[-\s]*(?<Kalıp>\d{3}-\d{2})[-\s]*(?<Poz>P\d{1,3})[-\s]*(?<Adet>\d+[A-Za-z]{2})[-\s]*(?<Proje>\d{5}\.\d{2})",
+                @"ST(?<Kalite>\d{2})[-\s]*(?<Malzeme>\d+(?:MM|mm))[-\s]*(?<Kalıp>\d{3}-\d{2})[-\s]*(?<Poz>P\d{1,3})[-\s]*(?<Adet>\d+[A-Za-z]{2})[-\s]*(?<Proje>\d{5}\.\d{2})",
                 RegexOptions.IgnoreCase);
 
             if (match.Success)
@@ -183,7 +183,7 @@ namespace KesimTakip.Business
                 return new MalzemeBilgisi
                 {
                     Kalite = $"ST{match.Groups["Kalite"].Value}",
-                    Kalinlik = match.Groups["Kalınlık"].Value,
+                    Malzeme = match.Groups["Malzeme"].Value,
                     Kalip = match.Groups["Kalıp"].Value,
                     Poz = match.Groups["Poz"].Value,
                     Adet = match.Groups["Adet"].Value,

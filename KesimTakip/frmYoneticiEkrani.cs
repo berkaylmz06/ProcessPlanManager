@@ -41,7 +41,7 @@ namespace KesimTakip
             dataGridKesimListesi.Columns[2].HeaderText = "Kesim ID";
             dataGridKesimListesi.Columns[3].HeaderText = "Proje No";
             dataGridKesimListesi.Columns[4].HeaderText = "Kalite";
-            dataGridKesimListesi.Columns[5].HeaderText = "Kalınlık";
+            dataGridKesimListesi.Columns[5].HeaderText = "Malzeme";
             dataGridKesimListesi.Columns[6].HeaderText = "Kalıp No";
             dataGridKesimListesi.Columns[7].HeaderText = "Kesilen Pozlar";
             dataGridKesimListesi.Columns[8].HeaderText = "Kesilen Pozların Adet Sayıları";

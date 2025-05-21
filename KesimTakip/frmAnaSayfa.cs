@@ -147,7 +147,7 @@ namespace KesimTakip
 
         private void btnKesimYap_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear(); // Önceki kontrolü kaldır
+            panelAnaSayfaContainer.Controls.Clear();
             var kesimYap = new ctlKesimYap();
             kesimYap.Dock = DockStyle.Fill;
             panelAnaSayfaContainer.Controls.Add(kesimYap);

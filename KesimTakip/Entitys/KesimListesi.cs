@@ -13,7 +13,7 @@ namespace KesimTakip.Entitys
         public string kesimId { get; set; }
         public string projeNo { get; set; }
         public string kalite { get; set; }
-        public string kalinlik { get; set; }
+        public string malzeme { get; set; }
         public string kalipNo { get; set; }
         public string kesilecekPozlar { get; set; }
         public string kpAdetSayilari { get; set; }

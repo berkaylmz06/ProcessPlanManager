@@ -12,7 +12,7 @@ namespace KesimTakip.DataBase
 {
     class KesimDetaylariData
     {
-        public static void SaveKesimDetaylariData(string poz,string kesimId, int kesilecekAdet, int toplamAdet)
+        public static void SaveKesimDetaylariData(string poz, string kesimId, int kesilecekAdet, int toplamAdet)
         {
             try
             {
@@ -20,17 +20,30 @@ namespace KesimTakip.DataBase
                 {
                     conn.Open();
 
-                    string query = "INSERT INTO KesimDetaylari (poz, kesimId, kesilecekAdet, toplamAdet) " +
-                                   "VALUES (@poz, @kesimId, @kesilecekAdet, @toplamAdet)";
+                    string checkQuery = "SELECT COUNT(*) FROM KesimDetaylari WHERE poz = @poz";
 
-                    using (var cmd = new SqlCommand(query, conn))
+                    using (var checkCmd = new SqlCommand(checkQuery, conn))
                     {
-                        cmd.Parameters.AddWithValue("@poz", poz);
-                        cmd.Parameters.AddWithValue("@kesimId", kesimId);
-                        cmd.Parameters.AddWithValue("@kesilecekAdet", kesilecekAdet);
-                        cmd.Parameters.AddWithValue("@toplamAdet", toplamAdet);
+                        checkCmd.Parameters.AddWithValue("@poz", poz);
+                        checkCmd.Parameters.AddWithValue("@kesimId", kesimId);
 
-                        cmd.ExecuteNonQuery();
+                        int count = (int)checkCmd.ExecuteScalar();
+
+                        if (count == 0)
+                        {
+                            string insertQuery = "INSERT INTO KesimDetaylari (poz, kesimId, kesilecekAdet, toplamAdet) " +
+                                                 "VALUES (@poz, @kesimId, @kesilecekAdet, @toplamAdet)";
+
+                            using (var insertCmd = new SqlCommand(insertQuery, conn))
+                            {
+                                insertCmd.Parameters.AddWithValue("@poz", poz);
+                                insertCmd.Parameters.AddWithValue("@kesimId", kesimId);
+                                insertCmd.Parameters.AddWithValue("@kesilecekAdet", kesilecekAdet);
+                                insertCmd.Parameters.AddWithValue("@toplamAdet", toplamAdet);
+
+                                insertCmd.ExecuteNonQuery();
+                            }
+                        }
                     }
                 }
             }
@@ -39,6 +52,7 @@ namespace KesimTakip.DataBase
                 MessageBox.Show("Hata: " + ex.Message);
             }
         }
+
         public static DataTable GetKesimDetaylari()
         {
             string query = "SELECT poz, kesimId, kesilmisAdet, kesilecekAdet, toplamAdet FROM KesimDetaylari";

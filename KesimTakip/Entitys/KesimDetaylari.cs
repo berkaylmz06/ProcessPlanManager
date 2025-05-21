@@ -17,7 +17,7 @@ namespace KesimTakip.Entitys
         public int toplamAdet { get; set; }
         public override string ToString()
         {
-            return poz; // Veya istediğiniz başka bir format: $"{PozNo} - {ToplamAdet}"
+            return poz;
         }
     }
 

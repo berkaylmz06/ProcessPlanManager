@@ -35,7 +35,7 @@
             this.dtEklemeTarihi = new System.Windows.Forms.DateTimePicker();
             this.btnAjan = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
-            this.lblKalinlik = new System.Windows.Forms.Label();
+            this.lblMalzeme = new System.Windows.Forms.Label();
             this.btnAdm = new System.Windows.Forms.Button();
             this.txtSite = new System.Windows.Forms.TextBox();
             this.btnBaykal = new System.Windows.Forms.Button();
@@ -45,7 +45,7 @@
             this.txtId = new System.Windows.Forms.TextBox();
             this.lblSite = new System.Windows.Forms.Label();
             this.lblDosya = new System.Windows.Forms.Label();
-            this.txtKalinlik = new System.Windows.Forms.TextBox();
+            this.txtMalzeme = new System.Windows.Forms.TextBox();
             this.txtDosya = new System.Windows.Forms.TextBox();
             this.btnKaydet = new System.Windows.Forms.Button();
             this.lblEklemeTarihi = new System.Windows.Forms.Label();
@@ -53,12 +53,6 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.gridKalite = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridKalinlik = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridKalip = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridPoz = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridAdet = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.gridProje = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridView2 = new System.Windows.Forms.DataGridView();
             this.Column3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -74,6 +68,12 @@
             this.btnSec = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.pdfViewer1 = new Spire.PdfViewer.Forms.PdfViewer();
+            this.gridKalite = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridMalzeme = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridKalip = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridPoz = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridAdet = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.gridProje = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panelVeriYonetim.SuspendLayout();
             this.groupBoxVeriYonetim.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -103,7 +103,7 @@
             this.groupBoxVeriYonetim.Controls.Add(this.dtEklemeTarihi);
             this.groupBoxVeriYonetim.Controls.Add(this.btnAjan);
             this.groupBoxVeriYonetim.Controls.Add(this.button2);
-            this.groupBoxVeriYonetim.Controls.Add(this.lblKalinlik);
+            this.groupBoxVeriYonetim.Controls.Add(this.lblMalzeme);
             this.groupBoxVeriYonetim.Controls.Add(this.btnAdm);
             this.groupBoxVeriYonetim.Controls.Add(this.txtSite);
             this.groupBoxVeriYonetim.Controls.Add(this.btnBaykal);
@@ -113,7 +113,7 @@
             this.groupBoxVeriYonetim.Controls.Add(this.txtId);
             this.groupBoxVeriYonetim.Controls.Add(this.lblSite);
             this.groupBoxVeriYonetim.Controls.Add(this.lblDosya);
-            this.groupBoxVeriYonetim.Controls.Add(this.txtKalinlik);
+            this.groupBoxVeriYonetim.Controls.Add(this.txtMalzeme);
             this.groupBoxVeriYonetim.Controls.Add(this.txtDosya);
             this.groupBoxVeriYonetim.Controls.Add(this.btnKaydet);
             this.groupBoxVeriYonetim.Controls.Add(this.lblEklemeTarihi);
@@ -177,15 +177,15 @@
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
-            // lblKalinlik
+            // lblMalzeme
             // 
-            this.lblKalinlik.AutoSize = true;
-            this.lblKalinlik.Location = new System.Drawing.Point(47, 362);
-            this.lblKalinlik.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblKalinlik.Name = "lblKalinlik";
-            this.lblKalinlik.Size = new System.Drawing.Size(52, 16);
-            this.lblKalinlik.TabIndex = 309;
-            this.lblKalinlik.Text = "Kalınlık:";
+            this.lblMalzeme.AutoSize = true;
+            this.lblMalzeme.Location = new System.Drawing.Point(47, 362);
+            this.lblMalzeme.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblMalzeme.Name = "lblMalzeme";
+            this.lblMalzeme.Size = new System.Drawing.Size(81, 20);
+            this.lblMalzeme.TabIndex = 309;
+            this.lblMalzeme.Text = "Malzeme:";
             // 
             // btnAdm
             // 
@@ -277,13 +277,13 @@
             this.lblDosya.TabIndex = 305;
             this.lblDosya.Text = "Dosya:";
             // 
-            // txtKalinlik
+            // txtMalzeme
             // 
-            this.txtKalinlik.Location = new System.Drawing.Point(160, 358);
-            this.txtKalinlik.Margin = new System.Windows.Forms.Padding(2);
-            this.txtKalinlik.Name = "txtKalinlik";
-            this.txtKalinlik.Size = new System.Drawing.Size(212, 22);
-            this.txtKalinlik.TabIndex = 294;
+            this.txtMalzeme.Location = new System.Drawing.Point(160, 358);
+            this.txtMalzeme.Margin = new System.Windows.Forms.Padding(2);
+            this.txtMalzeme.Name = "txtMalzeme";
+            this.txtMalzeme.Size = new System.Drawing.Size(212, 22);
+            this.txtMalzeme.TabIndex = 294;
             // 
             // txtDosya
             // 
@@ -355,7 +355,7 @@
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.gridKalite,
-            this.gridKalinlik,
+            this.gridMalzeme,
             this.gridKalip,
             this.gridPoz,
             this.gridAdet,
@@ -371,42 +371,6 @@
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView1.Size = new System.Drawing.Size(544, 250);
             this.dataGridView1.TabIndex = 267;
-            // 
-            // gridKalite
-            // 
-            this.gridKalite.HeaderText = "Kalite";
-            this.gridKalite.MinimumWidth = 8;
-            this.gridKalite.Name = "gridKalite";
-            // 
-            // gridKalinlik
-            // 
-            this.gridKalinlik.HeaderText = "Kalınlık";
-            this.gridKalinlik.MinimumWidth = 8;
-            this.gridKalinlik.Name = "gridKalinlik";
-            // 
-            // gridKalip
-            // 
-            this.gridKalip.HeaderText = "Kalıp";
-            this.gridKalip.MinimumWidth = 8;
-            this.gridKalip.Name = "gridKalip";
-            // 
-            // gridPoz
-            // 
-            this.gridPoz.HeaderText = "Poz";
-            this.gridPoz.MinimumWidth = 8;
-            this.gridPoz.Name = "gridPoz";
-            // 
-            // gridAdet
-            // 
-            this.gridAdet.HeaderText = "Adet";
-            this.gridAdet.MinimumWidth = 8;
-            this.gridAdet.Name = "gridAdet";
-            // 
-            // gridProje
-            // 
-            this.gridProje.HeaderText = "Proje";
-            this.gridProje.MinimumWidth = 6;
-            this.gridProje.Name = "gridProje";
             // 
             // tabPage2
             // 
@@ -568,6 +532,42 @@
             this.pdfViewer1.Threshold = 60;
             this.pdfViewer1.ViewerBackgroundColor = System.Drawing.SystemColors.Window;
             // 
+            // gridKalite
+            // 
+            this.gridKalite.HeaderText = "Kalite";
+            this.gridKalite.MinimumWidth = 8;
+            this.gridKalite.Name = "gridKalite";
+            // 
+            // gridMalzeme
+            // 
+            this.gridMalzeme.HeaderText = "Malzeme";
+            this.gridMalzeme.MinimumWidth = 8;
+            this.gridMalzeme.Name = "gridMalzeme";
+            // 
+            // gridKalip
+            // 
+            this.gridKalip.HeaderText = "Kalıp";
+            this.gridKalip.MinimumWidth = 8;
+            this.gridKalip.Name = "gridKalip";
+            // 
+            // gridPoz
+            // 
+            this.gridPoz.HeaderText = "Poz";
+            this.gridPoz.MinimumWidth = 8;
+            this.gridPoz.Name = "gridPoz";
+            // 
+            // gridAdet
+            // 
+            this.gridAdet.HeaderText = "Adet";
+            this.gridAdet.MinimumWidth = 8;
+            this.gridAdet.Name = "gridAdet";
+            // 
+            // gridProje
+            // 
+            this.gridProje.HeaderText = "Proje";
+            this.gridProje.MinimumWidth = 6;
+            this.gridProje.Name = "gridProje";
+            // 
             // ctlKesimPlaniEkle
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -599,7 +599,7 @@
         private System.Windows.Forms.DateTimePicker dtEklemeTarihi;
         private System.Windows.Forms.Button btnAjan;
         private System.Windows.Forms.Button button2;
-        private System.Windows.Forms.Label lblKalinlik;
+        private System.Windows.Forms.Label lblMalzeme;
         private System.Windows.Forms.Button btnAdm;
         private System.Windows.Forms.TextBox txtSite;
         private System.Windows.Forms.Button btnBaykal;
@@ -609,7 +609,7 @@
         private System.Windows.Forms.TextBox txtId;
         private System.Windows.Forms.Label lblSite;
         private System.Windows.Forms.Label lblDosya;
-        private System.Windows.Forms.TextBox txtKalinlik;
+        private System.Windows.Forms.TextBox txtMalzeme;
         private System.Windows.Forms.TextBox txtDosya;
         private System.Windows.Forms.Button btnKaydet;
         private System.Windows.Forms.Label lblEklemeTarihi;
@@ -617,12 +617,6 @@
         private System.Windows.Forms.TabControl tabControl1;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.DataGridView dataGridView1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn gridKalite;
-        private System.Windows.Forms.DataGridViewTextBoxColumn gridKalinlik;
-        private System.Windows.Forms.DataGridViewTextBoxColumn gridKalip;
-        private System.Windows.Forms.DataGridViewTextBoxColumn gridPoz;
-        private System.Windows.Forms.DataGridViewTextBoxColumn gridAdet;
-        private System.Windows.Forms.DataGridViewTextBoxColumn gridProje;
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.DataGridView dataGridView2;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column3;
@@ -639,5 +633,11 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private Spire.PdfViewer.Forms.PdfViewer pdfViewer1;
         private System.Windows.Forms.Button btnYeni;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridKalite;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridMalzeme;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridKalip;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridPoz;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridAdet;
+        private System.Windows.Forms.DataGridViewTextBoxColumn gridProje;
     }
 }

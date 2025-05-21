@@ -87,7 +87,7 @@ namespace KesimTakip.UsrControl
                         dataGridTamamlanmisDetay.Columns[2].HeaderText = "Kesim ID";
                         dataGridTamamlanmisDetay.Columns[3].HeaderText = "Proje No";
                         dataGridTamamlanmisDetay.Columns[4].HeaderText = "Kalite";
-                        dataGridTamamlanmisDetay.Columns[5].HeaderText = "Kalınlık";
+                        dataGridTamamlanmisDetay.Columns[5].HeaderText = "Malzeme";
                         dataGridTamamlanmisDetay.Columns[6].HeaderText = "Kalıp No";
                         dataGridTamamlanmisDetay.Columns[7].HeaderText = "Kesilen Pozlar";
                         dataGridTamamlanmisDetay.Columns[8].HeaderText = "Kesilen Pozların Adet Sayıları";
