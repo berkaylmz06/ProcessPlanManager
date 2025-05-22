@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using KesimTakip.UsrControl;
 
 namespace KesimTakip.DataBase
 {

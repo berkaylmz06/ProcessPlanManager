@@ -18,7 +18,7 @@ namespace KesimTakip.Helper
 
         public void LogYap(string islemTuru, string sayfaAdi, string ekBilgi = "")
         {
-            KullaniciHareketLog.LogEkle(_kullaniciAdi, islemTuru, sayfaAdi, ekBilgi);
+            KullaniciHareketLogData.LogEkle(_kullaniciAdi, islemTuru, sayfaAdi, ekBilgi);
         }
     }
 

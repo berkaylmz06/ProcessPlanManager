@@ -109,6 +109,14 @@ namespace KesimTakip.UsrControl
 
             if (dataGridKesimListesi.Columns.Contains("Detay"))
                 dataGridKesimListesi.Columns["Detay"].HeaderText = "Detay";
+
+            if (!dataGridKesimListesi.Columns.Contains("Detay"))
+            {
+                DataGridViewTextBoxColumn detayKolon = new DataGridViewTextBoxColumn();
+                detayKolon.Name = "Detay";
+                detayKolon.HeaderText = "Detay";
+                dataGridKesimListesi.Columns.Add(detayKolon);
+            }
         }
 
         private void btnAra_Click(object sender, EventArgs e)
@@ -182,7 +190,7 @@ namespace KesimTakip.UsrControl
                 if (sonuc1 && sonuc2)
                 {
                     var userController = new UserController(_kullaniciAdi.lblSistemKullaniciMetinAl());
-                    userController.LogYap("\"Seçili Paketi Kes\" Butonuna Tıklandı", "Kesim Yap", $"Kullanıcı {kesimId} numaralı kesim planından {txtKesilecekPlanSayisi.Text} adet kesimini tamamladı.");
+                    userController.LogYap("KesimPlaniKesildi", "Kesim Yap", $"Kullanıcı {kesimId} numaralı kesim planından {txtKesilecekPlanSayisi.Text} adet kesimini tamamladı.");
                 }
                 else
                 {
@@ -237,6 +245,7 @@ namespace KesimTakip.UsrControl
                     "Başarılı!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 KesimListesiPaketData.VerileriYenile(dataGridKesimListesi);
                 tabloDuzenle();
+                VerileriYukle();
             }
             catch (FormatException)
             {

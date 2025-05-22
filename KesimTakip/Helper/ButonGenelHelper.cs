@@ -52,5 +52,21 @@ namespace KesimTakip.Helper
                 btn.BackColor = ColorTranslator.FromHtml("#E67E22");
             };
         }
+        public static void KullaniciEkleButonAyari(Button btn)
+        {
+            btn.BackColor = ColorTranslator.FromHtml("#3498DB");
+
+            btn.ForeColor = ColorTranslator.FromHtml("#FFFFFF");
+
+            btn.FlatStyle = FlatStyle.Flat;
+
+            btn.FlatAppearance.BorderSize = 0;
+            
+            btn.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+            
+            btn.Cursor = Cursors.Hand;
+            
+            btn.TabStop = false;
+        }
     }
 }

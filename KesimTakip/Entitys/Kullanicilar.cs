@@ -12,6 +12,11 @@ namespace KesimTakip
         public string adSoyad { get; set; }
         public string kullaniciAdi { get; set; }
         public string  sifre { get; set; }
-        public string gorev { get; set; }
+        public string kullaniciRol { get; set; }
+        public string email { get; set; }
+        public override string ToString()
+        {
+            return adSoyad;
+        }
     }
 }

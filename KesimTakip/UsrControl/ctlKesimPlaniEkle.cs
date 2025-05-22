@@ -581,7 +581,7 @@ namespace KesimTakip.UsrControl
             else if (kayitYapildi)
             {
                 var userController = new UserController(_formArayuzu.lblSistemKullaniciMetinAl());
-                userController.LogYap("\"Kaydet\" Butonuna Tıklandı", "Kesim Planı Ekle", $"Kullanıcı {currentId.Value} numaralı kesim planını yükledi.");
+                userController.LogYap("KesimPlaniEklendi", "Kesim Planı Ekle", $"Kullanıcı {currentId.Value} numaralı kesim planını yükledi.");
                 MessageBox.Show("Kayıt işlemi tamamlandı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
@@ -876,7 +876,7 @@ namespace KesimTakip.UsrControl
                 }
 
                 var userController = new UserController(_formArayuzu.lblSistemKullaniciMetinAl());
-                userController.LogYap("\"Xml Dosyası Oluştur\" Butonuna Tıklandı", "Kesim Planı Ekle", $"Kullanıcı {txtId.Text} numaralı kesim planı XML dosyası oluşturdu.");
+                userController.LogYap("XmlDosyasiOlusturuldu", "Kesim Planı Ekle", $"Kullanıcı {txtId.Text} numaralı kesim planı XML dosyası oluşturdu.");
 
                 MessageBox.Show("XML başarıyla oluşturuldu.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }

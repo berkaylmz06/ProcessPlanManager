@@ -67,6 +67,7 @@ namespace KesimTakip
             ButonGenelHelper.StilUygula(btnKullaniciAyarlari);
             ButonGenelHelper.StilUygula(btnIletilenSorunlar);
             ButonGenelHelper.StilUygula(btnOturumuKapat);
+            ButonGenelHelper.StilUygula(btnSistemHareketleri);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnSistem);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
             MenuStripGenelHelper.StilUygula(menuStrip1);
@@ -503,6 +504,26 @@ namespace KesimTakip
             var kesimDetaylari = new ctlKesimDetaylari();
             kesimDetaylari.Dock = DockStyle.Fill;
             panelAnaSayfaContainer.Controls.Add(kesimDetaylari);
+        }
+        
+        private void btnIletilenSorunlar_Click(object sender, EventArgs e)
+        {
+        }
+
+        private void btnSistemHareketleri_Click(object sender, EventArgs e)
+        {
+            panelAnaSayfaContainer.Controls.Clear();
+            var sistemHareket = new ctlSistemHareketleri();
+            sistemHareket.Dock = DockStyle.Fill;
+            panelAnaSayfaContainer.Controls.Add(sistemHareket);
+        }
+
+        private void btnKullaniciAyarlari_Click(object sender, EventArgs e)
+        {
+            panelAnaSayfaContainer.Controls.Clear();
+            var kullaniciAyar = new ctlKullaniciAyarlari();
+            kullaniciAyar.Dock = DockStyle.Fill;
+            panelAnaSayfaContainer.Controls.Add(kullaniciAyar);
         }
         //-----------------------------------------------------------------------------------------------------------------------------------------------------------------
 

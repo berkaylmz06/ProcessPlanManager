@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -7,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace KesimTakip.DataBase
 {
-    public static class KullaniciHareketLog
+    public class KullaniciHareketLogData
     {
         public static void LogEkle(string kullaniciAdi, string islemTuru, string sayfaAdi, string ekBilgi = "")
         {
@@ -29,6 +30,20 @@ namespace KesimTakip.DataBase
 
                     conn.Open();
                     cmd.ExecuteNonQuery();
+                }
+            }
+        }
+        public DataTable GetKullaniciLog()
+        {
+            string query = "SELECT [kullaniciAdi], [islemTuru], [sayfaAdi], [tarihSaat], [ekBilgi] FROM [KullaniciHareketLog]";
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                connection.Open();
+                using (var adapter = new SqlDataAdapter(query, connection))
+                {
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+                    return dt;
                 }
             }
         }

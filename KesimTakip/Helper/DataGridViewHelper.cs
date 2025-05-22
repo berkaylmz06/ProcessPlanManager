@@ -44,6 +44,33 @@ namespace KesimTakip.Helper
             dgv.DefaultCellStyle.SelectionForeColor = Color.WhiteSmoke;
 
             dgv.RowTemplate.DefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
+
+            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+        }
+        public static void StilUygulaKullaniciLog(DataGridView dgvLogs)
+        {
+            dgvLogs.RowTemplate.Height = 32;
+            dgvLogs.DefaultCellStyle.Font = new Font("Segoe UI", 9);
+            dgvLogs.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold);
+
+            dgvLogs.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(245, 245, 245);
+            dgvLogs.EnableHeadersVisualStyles = false;
+            dgvLogs.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(30, 30, 30);
+            dgvLogs.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+
+            dgvLogs.BorderStyle = BorderStyle.None;
+            dgvLogs.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
+            dgvLogs.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None;
+
+            dgvLogs.DefaultCellStyle.SelectionBackColor = Color.FromArgb(51, 153, 255);
+            dgvLogs.DefaultCellStyle.SelectionForeColor = Color.White;
+
+            dgvLogs.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+
+            typeof(DataGridView).InvokeMember("DoubleBuffered",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
+                null, dgvLogs, new object[] { true });
+
         }
     }
 }
