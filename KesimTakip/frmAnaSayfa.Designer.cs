@@ -38,6 +38,7 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.yardımCubugunuKaldirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelAraYuz = new System.Windows.Forms.Panel();
+            this.btnSistemHareketleri = new System.Windows.Forms.Button();
             this.btnIletilenSorunlar = new System.Windows.Forms.Button();
             this.btnKullaniciAyarlari = new System.Windows.Forms.Button();
             this.btnKesimDetaylari = new System.Windows.Forms.Button();
@@ -71,7 +72,7 @@
             this.btnGonder = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
-            this.btnSistemHareketleri = new System.Windows.Forms.Button();
+            this.lblKullaniciBilgi = new System.Windows.Forms.Label();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
@@ -79,6 +80,7 @@
             this.panelSistem.SuspendLayout();
             this.panelSistemBilgisi.SuspendLayout();
             this.panelYardim.SuspendLayout();
+            this.panelAnaSayfaContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelYardimCubugu
@@ -119,7 +121,7 @@
             // 
             // btnOturumuKapat
             // 
-            this.btnOturumuKapat.Location = new System.Drawing.Point(10, 647);
+            this.btnOturumuKapat.Location = new System.Drawing.Point(14, 463);
             this.btnOturumuKapat.Margin = new System.Windows.Forms.Padding(2);
             this.btnOturumuKapat.Name = "btnOturumuKapat";
             this.btnOturumuKapat.Size = new System.Drawing.Size(160, 58);
@@ -188,8 +190,19 @@
             this.panelAraYuz.Location = new System.Drawing.Point(0, 26);
             this.panelAraYuz.Margin = new System.Windows.Forms.Padding(2);
             this.panelAraYuz.Name = "panelAraYuz";
-            this.panelAraYuz.Size = new System.Drawing.Size(186, 787);
+            this.panelAraYuz.Size = new System.Drawing.Size(189, 787);
             this.panelAraYuz.TabIndex = 212;
+            // 
+            // btnSistemHareketleri
+            // 
+            this.btnSistemHareketleri.Location = new System.Drawing.Point(14, 401);
+            this.btnSistemHareketleri.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSistemHareketleri.Name = "btnSistemHareketleri";
+            this.btnSistemHareketleri.Size = new System.Drawing.Size(160, 58);
+            this.btnSistemHareketleri.TabIndex = 120;
+            this.btnSistemHareketleri.Text = "Sistem Hareketleri";
+            this.btnSistemHareketleri.UseVisualStyleBackColor = true;
+            this.btnSistemHareketleri.Click += new System.EventHandler(this.btnSistemHareketleri_Click);
             // 
             // btnIletilenSorunlar
             // 
@@ -544,22 +557,23 @@
             // panelAnaSayfaContainer
             // 
             this.panelAnaSayfaContainer.BackColor = System.Drawing.SystemColors.Window;
+            this.panelAnaSayfaContainer.Controls.Add(this.lblKullaniciBilgi);
             this.panelAnaSayfaContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelAnaSayfaContainer.Location = new System.Drawing.Point(186, 26);
+            this.panelAnaSayfaContainer.Location = new System.Drawing.Point(189, 26);
             this.panelAnaSayfaContainer.Name = "panelAnaSayfaContainer";
-            this.panelAnaSayfaContainer.Size = new System.Drawing.Size(1764, 787);
+            this.panelAnaSayfaContainer.Size = new System.Drawing.Size(1761, 787);
             this.panelAnaSayfaContainer.TabIndex = 279;
             // 
-            // btnSistemHareketleri
+            // lblKullaniciBilgi
             // 
-            this.btnSistemHareketleri.Location = new System.Drawing.Point(14, 401);
-            this.btnSistemHareketleri.Margin = new System.Windows.Forms.Padding(2);
-            this.btnSistemHareketleri.Name = "btnSistemHareketleri";
-            this.btnSistemHareketleri.Size = new System.Drawing.Size(160, 58);
-            this.btnSistemHareketleri.TabIndex = 120;
-            this.btnSistemHareketleri.Text = "Sistem Hareketleri";
-            this.btnSistemHareketleri.UseVisualStyleBackColor = true;
-            this.btnSistemHareketleri.Click += new System.EventHandler(this.btnSistemHareketleri_Click);
+            this.lblKullaniciBilgi.AutoSize = true;
+            this.lblKullaniciBilgi.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblKullaniciBilgi.Location = new System.Drawing.Point(32, 26);
+            this.lblKullaniciBilgi.Name = "lblKullaniciBilgi";
+            this.lblKullaniciBilgi.Size = new System.Drawing.Size(787, 20);
+            this.lblKullaniciBilgi.TabIndex = 0;
+            this.lblKullaniciBilgi.Text = "Şu anda tanımlı bir rolünüz bulunmamaktadır. Lütfen yetki için yöneticinizle ilet" +
+    "işime geçiniz.";
             // 
             // frmAnaSayfa
             // 
@@ -589,6 +603,8 @@
             this.panelSistemBilgisi.PerformLayout();
             this.panelYardim.ResumeLayout(false);
             this.panelYardim.PerformLayout();
+            this.panelAnaSayfaContainer.ResumeLayout(false);
+            this.panelAnaSayfaContainer.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -639,5 +655,6 @@
         private System.Windows.Forms.Button btnKesimDetaylari;
         private System.Windows.Forms.Button btnIletilenSorunlar;
         private System.Windows.Forms.Button btnSistemHareketleri;
+        private System.Windows.Forms.Label lblKullaniciBilgi;
     }
 }

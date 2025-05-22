@@ -18,49 +18,25 @@ namespace KesimTakip
             InitializeComponent();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnGiris_Click(object sender, EventArgs e)
         {
-            if (chkYoneticiGirisi.Checked)
+            string kullaniciAdi = txtKullaniciAdi.Text.Trim();
+            string sifre = txtSifre.Text.Trim();
+
+            KullanicilarData kullaniciService = new KullanicilarData();
+            Kullanicilar kullanici = kullaniciService.GirisYap(kullaniciAdi, sifre);
+
+            if (kullanici != null)
             {
-                string kullaniciAdi = txtKullaniciAdi.Text.Trim();
-                string sifre = txtSifre.Text.Trim();
+                frmAnaSayfa form1 = new frmAnaSayfa(kullanici);
+                form1.Show();
+                this.Hide();
 
-                YoneticiData kullaniciService = new YoneticiData();
-                Yoneticiler yonetici = kullaniciService.GirisYapYonetici(kullaniciAdi, sifre);
-
-                if (yonetici != null)
-                {
-                    frmYoneticiEkrani yonet = new frmYoneticiEkrani();
-                    yonet.Show();
-                    this.Hide();
-
-                    yonet.FormClosed += (s, args) => Application.Exit();
-                }
-                else
-                {
-                    MessageBox.Show("Geçersiz kullanıcı adı veya şifre.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                form1.FormClosed += (s, args) => Application.Exit();
             }
             else
             {
-                string kullaniciAdi = txtKullaniciAdi.Text.Trim();
-                string sifre = txtSifre.Text.Trim();
-
-                KullanicilarData kullaniciService = new KullanicilarData();
-                Kullanicilar kullanici = kullaniciService.GirisYap(kullaniciAdi, sifre);
-
-                if (kullanici != null)
-                {
-                    frmAnaSayfa form1 = new frmAnaSayfa(kullanici.adSoyad);
-                    form1.Show();
-                    this.Hide();
-
-                    form1.FormClosed += (s, args) => Application.Exit();
-                }
-                else
-                {
-                    MessageBox.Show("Geçersiz kullanıcı adı veya şifre.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
+                MessageBox.Show("Geçersiz kullanıcı adı veya şifre.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

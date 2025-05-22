@@ -28,6 +28,7 @@ namespace KesimTakip.UsrControl
             ButonGenelHelper.KullaniciEkleButonAyari(btnYeniKullanici);
             ButonGenelHelper.KullaniciEkleButonAyari(btnRolAta);
             ButonGenelHelper.KullaniciEkleButonAyari(btnGüncelle);
+            ButonGenelHelper.KullaniciEkleButonAyari(btnKullaniciSil);
             ListBoxHelper.StilUygula(lstKullanicilar);
 
             YukleVeListele();
@@ -42,7 +43,7 @@ namespace KesimTakip.UsrControl
             lstKullanicilar.ClearSelected();
         }
 
-        private void YukleVeListele()
+        public void YukleVeListele()
         {
             var dt = KullanicilarData.GetKullaniciListesi();
             if (dt == null || dt.Rows.Count == 0)
@@ -67,7 +68,7 @@ namespace KesimTakip.UsrControl
         {
             lstKullanicilar.DataSource = null;
             lstKullanicilar.DataSource = kullanicilar;
-            lstKullanicilar.DisplayMember = "poz";
+            lstKullanicilar.DisplayMember = "kullaniciAdi";
         }
 
         private void lstKullanicilar_SelectedIndexChanged(object sender, EventArgs e)
@@ -94,7 +95,37 @@ namespace KesimTakip.UsrControl
        
         private void btnGüncelle_Click(object sender, EventArgs e)
         {
+            if (string.IsNullOrWhiteSpace(txtKullaniciAdi.Text))
+            {
+                MessageBox.Show("Lütfen güncellenecek kullanıcı adını giriniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
+            var kullanici = new Kullanicilar
+            {
+                kullaniciAdi = txtKullaniciAdi.Text.Trim(),
+                adSoyad = txtAdSoyad.Text.Trim(),
+                sifre = txtSifre.Text.Trim(),
+                kullaniciRol = cbKullaniciRol.Text.Trim(),
+                email = txtEmail.Text.Trim()
+            };
+
+            var result = MessageBox.Show($"{kullanici.adSoyad} adlı kullanıcı güncellensin mi?", "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
+            {
+                bool guncellendi = KullanicilarData.KullaniciGuncelle(kullanici);
+
+                if (guncellendi)
+                {
+                    MessageBox.Show("Kullanıcı başarıyla güncellendi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    YukleVeListele();
+                }
+                else
+                {
+                    MessageBox.Show("Güncellenecek veri bulunamadı veya değişiklik yapılmadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
         }
 
         private void btnRolAta_Click(object sender, EventArgs e)
@@ -134,24 +165,37 @@ namespace KesimTakip.UsrControl
 
         private void btnYeniKullanici_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(txtAdSoyad.Text) || string.IsNullOrWhiteSpace(txtKullaniciAdi.Text) || string.IsNullOrWhiteSpace(txtSifre.Text) || string.IsNullOrWhiteSpace(cbKullaniciRol.Text) || string.IsNullOrWhiteSpace(txtEmail.Text))
+           frmKullaniciEkle kulEkle = new frmKullaniciEkle(this);
+            kulEkle.ShowDialog();
+        }
+
+        private void btnKullaniciSil_Click(object sender, EventArgs e)
+        {
+            string kullaniciAdi = txtKullaniciAdi.Text.Trim();
+
+            if (string.IsNullOrWhiteSpace(kullaniciAdi))
             {
-                MessageBox.Show("Kullanıcının tüm bilgilerini giriniz.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Silinecek kullanıcı adını giriniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
-            else
+
+            var result = MessageBox.Show($"{kullaniciAdi} adlı kullanıcıyı silmek istediğinize emin misiniz?",
+                                         "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result == DialogResult.Yes)
             {
-                var yeniKullanici = new Kullanicilar
+                bool silindi = KullanicilarData.KullaniciSil(kullaniciAdi);
+
+                if (silindi)
                 {
-                    adSoyad = txtAdSoyad.Text.Trim(),
-                    kullaniciAdi = txtKullaniciAdi.Text.Trim(),
-                    sifre = txtSifre.Text.Trim(),
-                    kullaniciRol = cbKullaniciRol.Text.Trim(),
-                    email = txtEmail.Text.Trim()
-                };
-
-                KullanicilarData.KullaniciEkle(yeniKullanici);
+                    MessageBox.Show("Kullanıcı başarıyla silindi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    YukleVeListele();
+                }
+                else
+                {
+                    MessageBox.Show("Kullanıcı bulunamadı veya silinemedi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
-
         }
     }
 }

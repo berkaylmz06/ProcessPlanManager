@@ -18,14 +18,17 @@ namespace KesimTakip
         private int timerCounter = 0;
         public IFormArayuzu FormArayuzuInterface { get; private set; }
         public IKullaniciAdiOgren KullaniciAdiInterface { get; private set; }
-        public frmAnaSayfa(string adSoyad)
+
+        private Kullanicilar aktifKullanici;
+        public frmAnaSayfa(Kullanicilar kullanici)
         {
             InitializeComponent();
 
+            aktifKullanici = kullanici ?? throw new ArgumentNullException(nameof(kullanici));
             FormArayuzuInterface = new FormArayuzu(this);
             KullaniciAdiInterface = new KullaniciAdiOgren(this);
 
-            lblSistemKullanici.Text = adSoyad;
+            aktifKullanici = kullanici;
 
             timer = new Timer();
             timer.Interval = 1000;
@@ -42,7 +45,7 @@ namespace KesimTakip
 
             panelAraYuz.BackColor = ColorTranslator.FromHtml("#2C3E50");
             panelYardimCubugu.BackColor = ColorTranslator.FromHtml("#E67E22");
-          
+
         }
         frmAnaSayfa()
         {
@@ -59,8 +62,8 @@ namespace KesimTakip
         private void frmAnaSayfa_Load(object sender, EventArgs e)
         {
             panelContainer.Size = new System.Drawing.Size(1696, 197);
-            
-            ButonGenelHelper.StilUygula(btnKesimPlaniEkle);  
+
+            ButonGenelHelper.StilUygula(btnKesimPlaniEkle);
             ButonGenelHelper.StilUygula(btnKesimYap);
             ButonGenelHelper.StilUygula(btnYapilanKesimleriGor);
             ButonGenelHelper.StilUygula(btnKesimDetaylari);
@@ -72,11 +75,94 @@ namespace KesimTakip
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
             MenuStripGenelHelper.StilUygula(menuStrip1);
 
+            lblSistemKullanici.Text = aktifKullanici.adSoyad;
+
+            btnKesimPlaniEkle.Visible = false;
+            btnKesimYap.Visible = false;
+            btnYapilanKesimleriGor.Visible = false;
+            btnKesimDetaylari.Visible = false;
+            btnKullaniciAyarlari.Visible = false;
+            btnIletilenSorunlar.Visible = false;
+            btnSistemHareketleri.Visible = false;
+            lblKullaniciBilgi.Visible = false;
+
+            switch (aktifKullanici.kullaniciRol)
+            {
+                case "Yönetici":
+                    btnKesimPlaniEkle.Visible = true;
+                    btnKesimYap.Visible = true;
+                    btnYapilanKesimleriGor.Visible = true;
+                    btnKesimDetaylari.Visible = true;
+                    btnKullaniciAyarlari.Visible = true;
+                    btnSistemHareketleri.Visible = true;
+                    break;
+
+                case "Destek":
+                    btnKesimPlaniEkle.Visible = true;
+                    btnKesimYap.Visible = true;
+                    btnYapilanKesimleriGor.Visible = true;
+                    btnKesimDetaylari.Visible = true;
+                    btnKullaniciAyarlari.Visible = true;
+                    btnIletilenSorunlar.Visible = true;
+                    btnSistemHareketleri.Visible = true;
+                    break;
+
+                case "İş Hazırlama":
+                    btnKesimPlaniEkle.Visible = true;
+                    btnKesimYap.Visible = true;
+                    btnYapilanKesimleriGor.Visible = true;
+                    break;
+
+                case "Muhasebe":
+                    btnKesimPlaniEkle.Visible = true;
+                    btnKesimYap.Visible = true;
+                    btnYapilanKesimleriGor.Visible = true;
+                    btnKesimDetaylari.Visible = true;
+                    btnKullaniciAyarlari.Visible = true;
+                    btnIletilenSorunlar.Visible = true;
+                    btnSistemHareketleri.Visible = true;
+                    break;
+
+                case "Operatör":
+                    btnKesimYap.Visible = true;
+                    btnYapilanKesimleriGor.Visible = true;
+                    break;
+
+                case "Kullanıcı":
+                    lblKullaniciBilgi.Visible = true;
+                    break;
+            }
+            DuzenliButonGoster
+              (panelAraYuz,
+              btnKesimPlaniEkle,
+              btnKesimYap,
+              btnYapilanKesimleriGor,
+              btnKesimDetaylari,
+              btnKullaniciAyarlari,
+              btnIletilenSorunlar,
+              btnSistemHareketleri,
+              btnOturumuKapat
+              );
         }
 
         private void btnSistem_Click(object sender, EventArgs e)
         {
             PanelGosterYardimMenu(panelSistem);
+        }
+        private void DuzenliButonGoster(Panel panel, params Button[] butonlar)
+        {
+            int y = 15;
+
+            foreach (var btn in butonlar)
+            {
+                if (btn.Visible)
+                {
+                    int x = (panel.Width - btn.Width) / 2;
+                    btn.Location = new Point(x, y);
+
+                    y += btn.Height + 10;
+                }
+            }
         }
 
 
@@ -388,7 +474,7 @@ namespace KesimTakip
         //        MessageBox.Show($"Hata oluştu: {ex.Message}");
         //    }
         //}
-        
+
 
         //---------------------------------------------------------------------------------------BAYKALPDF İÇİN KULLANILABİLİR---------------------------------------------
         public List<(string BirlesikVeri, string Agirlik)> EKIcerenIslenmisVeriler()
@@ -505,9 +591,13 @@ namespace KesimTakip
             kesimDetaylari.Dock = DockStyle.Fill;
             panelAnaSayfaContainer.Controls.Add(kesimDetaylari);
         }
-        
+
         private void btnIletilenSorunlar_Click(object sender, EventArgs e)
         {
+            panelAnaSayfaContainer.Controls.Clear();
+            var sorunlar = new ctlSorunlar();
+            sorunlar.Dock = DockStyle.Fill;
+            panelAnaSayfaContainer.Controls.Add(sorunlar);
         }
 
         private void btnSistemHareketleri_Click(object sender, EventArgs e)

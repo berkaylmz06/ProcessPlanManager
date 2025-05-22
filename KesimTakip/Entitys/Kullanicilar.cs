@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace KesimTakip
 {
-    class Kullanicilar
+    public class Kullanicilar
     {
         public int id { get; set; }
         public string adSoyad { get; set; }
