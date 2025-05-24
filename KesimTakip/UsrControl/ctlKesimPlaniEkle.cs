@@ -40,7 +40,7 @@ namespace KesimTakip.UsrControl
             DataGridViewHelper.StilUygula(dataGridView2);
             DataGridViewHelper.StilUygula(dataGridView3);
 
-            
+
         }
         public void FormArayuzuAyarla(IFormArayuzu formArayuzu)
         {
@@ -100,6 +100,168 @@ namespace KesimTakip.UsrControl
         }
         private async void btnSec_Click(object sender, EventArgs e)
         {
+            //if (_seciliButon == null)
+            //{
+            //    MessageBox.Show("Lütfen önce bir makine seçin (Ajan, Adm, Baykal).", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    return;
+            //}
+
+            //_formArayuzu.RichTextBox1Temizle();
+            //_formArayuzu.RichTextBox2Temizle();
+            //_formArayuzu.RichTextBox3Temizle();
+            //_formArayuzu.RichTextBox4Temizle();
+            //dataGridView1.Rows.Clear();
+            //dataGridView2.Rows.Clear();
+            //dataGridView3.Rows.Clear();
+            //OpenFileDialog open = new OpenFileDialog();
+            //open.Filter = "PDF File|*.pdf";
+            //if (open.ShowDialog() == DialogResult.OK)
+            //{
+            //    string filePath = open.FileName;
+            //    txtDosya.Text = filePath;
+            //    if (File.Exists(filePath))
+            //    {
+
+            //        try
+            //        {
+            //            progressBar1.Value = 0;
+            //            progressBar1.Visible = true;
+
+            //            string pdfText;
+
+            //            if (_seciliButon == btnBaykal)
+            //            {
+            //                pdfText = await PdfOkuBaykal(filePath);
+            //            }
+            //            else if (_seciliButon == btnAjan)
+            //            {
+            //                pdfText = await PdfOkuAjan(filePath);
+
+            //            }
+            //            else
+            //            {
+            //                MessageBox.Show("Geçersiz buton seçimi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //                progressBar1.Visible = false;
+            //                return;
+            //            }
+
+            //            if (string.IsNullOrEmpty(pdfText))
+            //            {
+            //                MessageBox.Show("PDF metni okunamadı. PDF dosyasının içeriğini kontrol edin.",
+            //                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //                progressBar1.Visible = false;
+            //                return;
+            //            }
+
+            //            string pdfTuru = TespitEtPdfTuru(pdfText);
+            //            if (string.IsNullOrEmpty(pdfTuru))
+            //            {
+            //                MessageBox.Show("PDF türü tespit edilemedi. Dosya içeriğini kontrol edin.",
+            //                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //                progressBar1.Visible = false;
+            //                return;
+            //            }
+            //            //Burada PdfOkuAjan da pdf metni işlendiği için hangi buton seçili hangisi değil sistem anlamıyor bu yüzden alttaki iki satır pdf türü tespit etmek ve okumak için
+            //            string pdf = await PdfOkuBaykal(filePath);
+            //            string pftTuruTespitEt = TespitEtPdfTuru(pdf);
+
+            //            if (!ButonVePdfUyumluMu(pftTuruTespitEt))
+            //            {
+            //                MessageBox.Show($"Hatalı seçim: {pftTuruTespitEt} PDF yüklendi, ancak {_seciliButon.Text} butonu seçili.",
+            //                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //                progressBar1.Visible = false;
+            //                return;
+            //            }
+
+            //            await PdfYukle(filePath);
+
+            //            _formArayuzu.RichTextBox1Yaz(pdfText);
+            //            string islenmisVeri = IslenmisVeri();
+            //            _formArayuzu.RichTextBox4Yaz(islenmisVeri);
+
+            //            string islenmisVeri2 = IslenmisVeri2();
+            //            _formArayuzu.RichTextBox4Yaz(islenmisVeri2);
+
+
+            //            (List<MalzemeBilgisi> validData, List<string> InvalidData) = await Task.Run(() =>
+            //            {
+            //                try
+            //                {
+            //                    if (_seciliButon == btnAjan)
+            //                        return _veriOkuma.AjanOku(islenmisVeri);
+            //                    else if (_seciliButon == btnBaykal)
+            //                        return _veriOkuma.BaykalOku(islenmisVeri2);
+            //                    else if (_seciliButon == btnAdm)
+            //                        return (_veriOkuma.LantekOku(pdfText), new List<string>());
+
+            //                    else
+            //                        throw new InvalidOperationException("Geçersiz buton seçimi.");
+            //                }
+            //                catch (Exception ex)
+            //                {
+            //                    return (null, new List<string> { $"Veri işleme hatası: {ex.Message}" });
+            //                }
+            //            });
+
+            //            if ((validData == null || validData.Count == 0) && (InvalidData == null || InvalidData.Count == 0))
+            //            {
+            //                MessageBox.Show("Hiçbir veri işlenemedi. PDF içeriğini kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //                progressBar1.Visible = false;
+            //                return;
+            //            }
+            //            _formArayuzu.RichTextBox2Temizle();
+            //            dataGridView1.Rows.Clear();
+
+            //            int totalItems = validData?.Count ?? 0;
+            //            int currentItem = 0;
+
+            //            if (validData != null)
+            //            {
+            //                foreach (var data in validData)
+            //                {
+            //                    if (data != null)
+            //                    {
+            //                        _formArayuzu.RichTextBox2MetinEkle($"{data.Kalite} - {data.Malzeme} - {data.Kalip} - {data.Poz} - {data.Adet} - {data.Proje}\n");
+            //                        dataGridView1.Rows.Add(data.Kalite, data.Malzeme, data.Kalip, data.Poz, data.Adet, data.Proje);
+            //                        UpdateTextBoxes();
+            //                        currentItem++;
+            //                        int progressValue = totalItems > 0 ? (int)((currentItem / (float)totalItems) * 100) : 0;
+            //                        progressBar1.Value = progressValue;
+            //                    }
+            //                }
+            //            }
+
+            //            if (InvalidData != null && InvalidData.Any())
+            //            {
+            //                foreach (var invalidLine in InvalidData)
+            //                {
+            //                    _formArayuzu.RichTextBox3MetinEkle($"{invalidLine}\n");
+            //                }
+            //                MessageBox.Show("Bazı veriler formata uymadığı için 'Sistem > Hatalı Format' bölümüne eklendi. Lütfen kontrol edin ve düzenleyin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            //            }
+            //            if (_seciliButon == btnBaykal)
+            //            {
+            //                //BaykalTekSayfaDetay();
+            //            }
+            //            else if (_seciliButon == btnAjan)
+            //            {
+            //            }
+
+            //            progressBar1.Visible = false;
+            //        }
+            //        catch (Exception ex)
+            //        {
+            //            MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //            progressBar1.Visible = false;
+            //        }
+            //    }
+            //    else
+            //    {
+            //        MessageBox.Show("Dosya bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //        progressBar1.Visible = false;
+            //    }
+            //}
+
             if (_seciliButon == null)
             {
                 MessageBox.Show("Lütfen önce bir makine seçin (Ajan, Adm, Baykal).", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -126,16 +288,28 @@ namespace KesimTakip.UsrControl
                     {
                         progressBar1.Value = 0;
                         progressBar1.Visible = true;
-
                         string pdfText;
+                        string islenmisVeri2 = null;
+                        string islenmisVeri = null;
 
                         if (_seciliButon == btnBaykal)
                         {
                             pdfText = await PdfOkuBaykal(filePath);
+
+                            _formArayuzu.RichTextBox1Yaz(pdfText);
+
+                            islenmisVeri2 = IslenmisVeriBaykal();
+                            _formArayuzu.RichTextBox4Yaz(islenmisVeri2);
                         }
                         else if (_seciliButon == btnAjan)
                         {
                             pdfText = await PdfOkuAjan(filePath);
+
+                            _formArayuzu.RichTextBox1Yaz(pdfText);
+
+
+                            islenmisVeri = IslenmisVeriAjan();
+                            _formArayuzu.RichTextBox4Yaz(islenmisVeri);
                         }
                         else
                         {
@@ -151,18 +325,17 @@ namespace KesimTakip.UsrControl
                             progressBar1.Visible = false;
                             return;
                         }
-
-                        string pdfTuru = TespitEtPdfTuru(pdfText);
-                        if (string.IsNullOrEmpty(pdfTuru))
+                        //Burada PdfOkuAjan da pdf metni işlendiği için hangi buton seçili hangisi değil sistem anlamıyor bu yüzden alttaki iki satır pdf türü tespit etmek ve okumak için
+                        string pdf = await PdfOkuBaykal(filePath);
+                        string pftTuruTespitEt = TespitEtPdfTuru(pdf);
+                        if (string.IsNullOrEmpty(pftTuruTespitEt))
                         {
                             MessageBox.Show("PDF türü tespit edilemedi. Dosya içeriğini kontrol edin.",
                                 "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             progressBar1.Visible = false;
                             return;
                         }
-                        //Burada PdfOkuAjan da pdf metni işlendiği için hangi buton seçili hangisi değil sistem anlamıyor bu yüzden alttaki iki satır pdf türü tespit etmek ve okumak için
-                        string pdf = await PdfOkuBaykal(filePath);
-                        string pftTuruTespitEt = TespitEtPdfTuru(pdf);
+
 
                         if (!ButonVePdfUyumluMu(pftTuruTespitEt))
                         {
@@ -174,20 +347,17 @@ namespace KesimTakip.UsrControl
 
                         await PdfYukle(filePath);
 
-                        _formArayuzu.RichTextBox1Yaz(pdfText);
-                        string islenmisVeri = IslenmisVeri();
-                        _formArayuzu.RichTextBox4Yaz(islenmisVeri);
-
                         (List<MalzemeBilgisi> validData, List<string> InvalidData) = await Task.Run(() =>
                         {
                             try
                             {
                                 if (_seciliButon == btnAjan)
-                                    return _veriOkuma.AjanOku(islenmisVeri);
+                                    return _veriOkuma.PlazmaOku(islenmisVeri);
+                                else if (_seciliButon == btnBaykal)
+                                    return _veriOkuma.PlazmaOku(islenmisVeri2);
                                 else if (_seciliButon == btnAdm)
                                     return (_veriOkuma.LantekOku(pdfText), new List<string>());
-                                else if (_seciliButon == btnBaykal)
-                                    return _veriOkuma.BaykalOku(pdfText);
+
                                 else
                                     throw new InvalidOperationException("Geçersiz buton seçimi.");
                             }
@@ -589,7 +759,7 @@ namespace KesimTakip.UsrControl
                 MessageBox.Show("Hiçbir geçerli satır bulunamadı, kayıt yapılmadı!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-        public string IslenmisVeri()
+        public string IslenmisVeriAjan()
         {
             if (_formArayuzu.RichTextBox1BosMu())
             {
@@ -603,7 +773,7 @@ namespace KesimTakip.UsrControl
             bool isFirmaAdiSection = false;
             int currentPageNumber = 1;
             int lastFirmaPageNumber = 1;
-
+            int firmaSayac = 0;
             for (int i = 0; i < satirlar.Length; i++)
             {
                 string satir = satirlar[i].Trim();
@@ -628,8 +798,6 @@ namespace KesimTakip.UsrControl
                 }
 
                 if (satir.StartsWith("--------") ||
-                    satir.StartsWith("02Mayıs2025") ||
-                    satir.StartsWith("25Nisan2025") ||
                     satir.StartsWith("Parça") ||
                     satir.StartsWith("Not:") ||
                     satir.StartsWith("EkstraKesim") ||
@@ -641,7 +809,13 @@ namespace KesimTakip.UsrControl
                     isFirmaAdiSection = false;
                     continue;
                 }
-
+                if (satir.StartsWith("FirmaAdı"))
+                {
+                    isFirmaAdiSection = true;
+                    firmaSayac++;
+                    lastFirmaPageNumber = firmaSayac;
+                    continue;
+                }
                 if (satir.StartsWith("FirmaAdı"))
                 {
                     isFirmaAdiSection = true;
@@ -682,9 +856,57 @@ namespace KesimTakip.UsrControl
 
                 string eklenecekVeri = sonrakiSutunlar.Length > 0 ? sonrakiSutunlar[0] : "";
 
-                string birlesikVeri = $"{parcaAdi}{eklenecekVeri} (Sayfa: {lastFirmaPageNumber})";
+                string birlesikVeri = $"{parcaAdi}{eklenecekVeri} (Yerleşim: {firmaSayac})(Sayfa: {currentPageNumber})";
 
                 sonucBuilder.AppendLine(birlesikVeri);
+            }
+
+            return sonucBuilder.ToString();
+        }
+
+        public string IslenmisVeriBaykal()
+        {
+            if (_formArayuzu.RichTextBox1BosMu())
+            {
+                MessageBox.Show("richTextBox1 boş. Lütfen veri girin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return string.Empty;
+            }
+
+            StringBuilder sonucBuilder = new StringBuilder();
+            string[] satirlar = _formArayuzu.RichTextBox1SatirlariGetir();
+
+            int currentYerlesim = 1;
+            int currentSayfa = 1;
+            Regex yerlesimRegex = new Regex(@"Yerleşim:\s*(\d+)\s*/\s*\d+", RegexOptions.IgnoreCase);
+            Regex sayfaRegex = new Regex(@"--------\s*Sayfa\s*(\d+)\s*işleniyor\s*---------------", RegexOptions.IgnoreCase);
+            string pattern = @"^\s*(?:(?:\d+\s*-\s*\d+\s*)|\d+\s*)?(ST\d*-.*-.*-.*-.*-\S*)";
+
+            foreach (string satir in satirlar)
+            {
+                string trimmedSatir = satir.Trim();
+
+                Match yerlesimMatch = yerlesimRegex.Match(trimmedSatir);
+                if (yerlesimMatch.Success && int.TryParse(yerlesimMatch.Groups[1].Value, out int yerlesimFromLayout))
+                {
+                    currentYerlesim = yerlesimFromLayout;
+                    continue;
+                }
+                Match sayfaMatch = sayfaRegex.Match(trimmedSatir);
+                if (sayfaMatch.Success && int.TryParse(sayfaMatch.Groups[1].Value, out int sayfaFromLayout))
+                {
+                    currentSayfa = sayfaFromLayout;
+                    continue;
+                }
+
+                if (trimmedSatir.IndexOf("ST", StringComparison.OrdinalIgnoreCase) >= 0)
+                {
+                    Match match = Regex.Match(trimmedSatir, pattern);
+                    if (match.Success)
+                    {
+                        string parcaAdi = match.Groups[1].Value.Trim();
+                        sonucBuilder.AppendLine($"{parcaAdi} (Yerleşim: {currentYerlesim})(Sayfa: {currentSayfa})");
+                    }
+                }
             }
 
             return sonucBuilder.ToString();
@@ -888,7 +1110,7 @@ namespace KesimTakip.UsrControl
 
         private void button2_Click(object sender, EventArgs e)
         {
-            string islenmisVeri = IslenmisVeri();
+            string islenmisVeri = IslenmisVeriAjan();
             _formArayuzu.RichTextBox4Yaz(islenmisVeri);
             _veriOkuma.AjanOku(islenmisVeri);
         }
@@ -897,6 +1119,7 @@ namespace KesimTakip.UsrControl
         {
             BaykalSayfaPozDagitimi();
             SayfaIDTabloVerileri();
+            HesaplaEkAgirlikYuzdeleri();
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -924,9 +1147,9 @@ namespace KesimTakip.UsrControl
         };
 
                 Regex pozRegex = new Regex(
-                    @"ST[A-Z0-9]{2,}\s*-\s*[A-Z0-9]{2,4}\s*-\s*(\d{1,3}\s*-\s*\d{1,3}\s*-\s*P\d+\s*-\s*\d+AD\s*-\s*\d{5,6}\.\d{2}(?:-\s*EK\d{1,2})?)",
-                    RegexOptions.IgnoreCase
-                );
+    @"ST[A-Z0-9]{2,}\s*-\s*[A-Z0-9]{2,4}\s*-\s*(\d{1,3}\s*-\s*\d{1,3}\s*-\s*P\d+\s*-\s*\d+AD\s*-\s*\d{5,6}\.\d{2}(?:-\s*EK\d{1,2})?)",
+    RegexOptions.IgnoreCase
+);
                 Regex suffixRegex = new Regex(@"-(?!EK\d+$)[A-Za-z0-9]+$", RegexOptions.IgnoreCase);
                 Regex sayfaSimpleRegex = new Regex(@"Sayfa:\s*(\d+)", RegexOptions.IgnoreCase);
 
@@ -938,13 +1161,28 @@ namespace KesimTakip.UsrControl
                 {
                     if (string.IsNullOrWhiteSpace(line)) continue;
 
-                    var parts = line.Split(new[] { " (Sayfa: " }, StringSplitOptions.None);
+                    // --- BURASI DÜZENLENDİ ---
+                    int sayfaStart = line.IndexOf("(Sayfa:");
+                    int sayfaEnd = sayfaStart >= 0 ? line.IndexOf(')', sayfaStart) : -1;
+
+                    string parcaAdiFull = (sayfaStart >= 0 && sayfaEnd > sayfaStart)
+                        ? line.Substring(0, sayfaEnd + 1).Trim()  // (Sayfa: ...) kısmı dahil
+                        : line.Trim();
+                    // --- DÜZENLEME BİTTİ ---
+
+                    // Sayfa numarasını almak için orijinal satırdan kullanmaya devam
+                    var parts = line.Split(new[] { "(Sayfa: " }, StringSplitOptions.None);
                     if (parts.Length < 2) continue;
 
-                    string parcaAdiFull = parts[0].Trim();
                     string sayfaNo = parts[1].Replace(")", "").Trim();
-
                     validSayfaNos.Add(sayfaNo);
+
+                    string yerlesimNo = "00";
+                    var yerlesimParts = line.Split(new[] { "(Yerleşim: " }, StringSplitOptions.None);
+                    if (yerlesimParts.Length >= 2)
+                    {
+                        yerlesimNo = yerlesimParts[1].Split(')')[0].Trim();
+                    }
 
                     if (!sayfaSayaclari.ContainsKey(sayfaNo))
                     {
@@ -960,11 +1198,13 @@ namespace KesimTakip.UsrControl
 
                     string parcaID = suffixRegex.Replace(parcaAdiFull, "");
 
+                    string yerlesimID = $"{id}-{yerlesimNo.PadLeft(2, '0')}";
                     string sayfaID = $"{id}-{sayfaNo.PadLeft(2, '0')}";
                     string parcaIDFinal = $"{sayfaID}-{sayfaSayaclari[sayfaNo].ToString("D2")}";
 
-                    logLines.Add($"{parcaAdiFull} => Poz: {poz}, Parça ID: {parcaIDFinal}, Sayfa ID: {sayfaID}");
+                    logLines.Add($"{parcaAdiFull} => Poz: {poz}, Parça ID: {parcaIDFinal}, Yerleşim ID: {yerlesimID}, Sayfa ID: {sayfaID}");
                 }
+
 
                 logLines.Add("\nRichTextBox1 Verileri:");
                 sayfaSayaclari.Clear();
@@ -1038,13 +1278,14 @@ namespace KesimTakip.UsrControl
                 {
                     if (line.Contains("RichTextBox4 Verileri:") || line.Contains("RichTextBox1 Verileri:")) continue;
 
-                    var match = Regex.Match(line, @"Poz: (.+?), Parça ID: (.+?), Sayfa ID: (.+)");
+                    var match = Regex.Match(line, @"Poz: (.+?), Parça ID: (.+?), Yerleşim ID: (.+), Sayfa ID: (.+)");
                     if (match.Success)
                     {
                         string poz = match.Groups[1].Value.Trim();
                         string parcaID = match.Groups[2].Value.Trim();
-                        string sayfaID = match.Groups[3].Value.Trim();
-                        rich4Dict[parcaID] = (poz, sayfaID);
+                        string yerlesimID = match.Groups[3].Value.Trim();
+                        string sayfaID = match.Groups[4].Value.Trim();
+                        rich4Dict[parcaID] = (poz, yerlesimID);
                     }
                 }
 
@@ -1065,13 +1306,13 @@ namespace KesimTakip.UsrControl
                 foreach (var kvp in rich4Dict)
                 {
                     string parcaID = kvp.Key;
-                    var (poz, sayfaID) = kvp.Value;
+                    var (poz, yerlesimID) = kvp.Value;
 
                     if (rich1Dict.ContainsKey(parcaID))
                     {
                         var (adet, agirlik) = rich1Dict[parcaID];
-                        logLines.Add($"Parça ID: {parcaID} => Poz: {poz}, Sayfa ID: {sayfaID}, Adet: {adet}, Ağırlık: {agirlik}");
-                        dataGridView2.Rows.Add(poz, sayfaID, adet, agirlik);
+                        logLines.Add($"Parça ID: {parcaID} => Poz: {poz}, Yerleşim ID: {yerlesimID}, Adet: {adet}, Ağırlık: {agirlik}");
+                        dataGridView2.Rows.Add(poz, yerlesimID, adet, agirlik);
                     }
                 }
 
@@ -1084,7 +1325,8 @@ namespace KesimTakip.UsrControl
                 MessageBox.Show($"Hata oluştu: {ex.Message}");
             }
         }
-        private void BaykalSayfaPozDagitimi()
+
+        private void BaykalSayfaPozDagitimi2()
         {
             try
             {
@@ -1116,17 +1358,19 @@ namespace KesimTakip.UsrControl
             $"BaseId: {baseId}",
             "\nRichTextBox1 Verileri:"
         };
-
-                Regex layoutRegex = new Regex(@"Yerleşim: (\d+) / \d+", RegexOptions.IgnoreCase);
+                Regex sayfaRegex = new Regex(@"--------\s*Sayfa\s*(\d+)\s*işleniyor\s*---------------", RegexOptions.IgnoreCase);
+                Regex yerlesimRegex = new Regex(@"Yerleşim: (\d+) / \d+", RegexOptions.IgnoreCase);
                 Regex kesmeRegex = new Regex(@"Kesme sayısı: (\d+)", RegexOptions.IgnoreCase);
-                Regex partRegex = new Regex(@"(\d+)(?: - (\d+))?\s+.*?(\d+-\d+)-P(\d+)(?:-\d+AD)?", RegexOptions.IgnoreCase);
+                Regex partRegex = new Regex(@"(\d+)(?:\s*-\s*(\d+))?\s+.*?(\d+-\d+-P\d+(?:-[\w\.]+)*) .*?(\d{1,3}(?:,\d{1,2})?)\s*kg", RegexOptions.IgnoreCase);
                 Regex siralamaRegex = new Regex(@"^\s*Sıralama\s*$", RegexOptions.IgnoreCase);
 
                 var lines = text.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-                var validSayfaNos = new HashSet<string>();
+                var validYerlesimNo = new HashSet<string>();
+                var validSayfaNo = new HashSet<string>();
                 var sayfaSayaclari = new Dictionary<string, int>();
                 var partInfoDict = new Dictionary<string, (string Poz, string SayfaID, int Count)>();
-                string currentPage = "";
+                string currentSayfa = "";
+                string currentYerlesim = "";
                 string baseLayout = "";
                 int continuationCount = 0;
                 bool isPartSection = false;
@@ -1136,15 +1380,26 @@ namespace KesimTakip.UsrControl
                 {
                     if (string.IsNullOrWhiteSpace(line)) continue;
 
-                    var layoutMatch = layoutRegex.Match(line);
-                    if (layoutMatch.Success)
+                    var yerlesimMatch = yerlesimRegex.Match(line);
+                    if (yerlesimMatch.Success)
                     {
-                        currentPage = layoutMatch.Groups[1].Value;
-                        baseLayout = currentPage;
+                        currentYerlesim = yerlesimMatch.Groups[1].Value;
+                        baseLayout = currentYerlesim;
                         continuationCount = 0;
                         isPartSection = false;
-                        validSayfaNos.Add(currentPage);
-                        logLines.Add($"Sayfa tespit edildi: {currentPage}, ID: {baseId}-{currentPage}");
+                        validYerlesimNo.Add(currentYerlesim);
+                        logLines.Add($"Yerleşim tespit edildi: {currentYerlesim}, ID: {baseId}-{currentYerlesim}");
+                        continue;
+                    }
+                    var sayfaMatch = sayfaRegex.Match(line);
+                    if (sayfaMatch.Success)
+                    {
+                        currentSayfa = sayfaMatch.Groups[1].Value;
+                        baseLayout = currentSayfa;
+                        continuationCount = 0;
+                        isPartSection = false;
+                        validSayfaNo.Add(currentSayfa);
+                        logLines.Add($"Sayfa tespit edildi: {currentSayfa}, ID: {baseId}-{currentSayfa}");
                         continue;
                     }
 
@@ -1159,12 +1414,12 @@ namespace KesimTakip.UsrControl
                     if (siralamaRegex.IsMatch(line))
                     {
                         isPartSection = true;
-                        string sayfaID = $"{baseId}-{currentPage.PadLeft(2, '0')}";
-                        if (!sayfaSayaclari.ContainsKey(currentPage))
+                        string sayfaID = $"{baseId}-{currentSayfa.PadLeft(2, '0')}";
+                        if (!sayfaSayaclari.ContainsKey(currentSayfa))
                         {
-                            sayfaSayaclari[currentPage] = 0;
+                            sayfaSayaclari[currentSayfa] = 0;
                         }
-                        logLines.Add($"Sıralama bölümü başladı, sayfa: {currentPage}, ID: {sayfaID}, Tekrar: {tekrarSayisi}");
+                        logLines.Add($"Sıralama bölümü başladı, sayfa: {currentSayfa}, yerleşim:{currentYerlesim}, ID: {sayfaID}, Tekrar: {tekrarSayisi}");
                         continue;
                     }
 
@@ -1175,20 +1430,18 @@ namespace KesimTakip.UsrControl
                         {
                             string startNum = partMatch.Groups[1].Value;
                             string endNum = partMatch.Groups[2].Value;
-                            string partCode = partMatch.Groups[3].Value;
-                            string pozNum = partMatch.Groups[4].Value;
-                            string poz = $"{partCode}-P{pozNum}";
+                            string poz = partMatch.Groups[3].Value;
                             int count = string.IsNullOrEmpty(endNum) ? 1 : int.Parse(endNum) - int.Parse(startNum) + 1;
 
-                            string currentLayout = continuationCount == 0 ? currentPage : $"{baseLayout}-{continuationCount}";
-                            string sayfaID = $"{baseId}-{currentPage.PadLeft(2, '0')}";
+                            string currentLayout = continuationCount == 0 ? currentSayfa : $"{baseLayout}-{continuationCount}";
+                            string sayfaID = $"{baseId}-{currentSayfa.PadLeft(2, '0')}";
                             int currentCount;
-                            sayfaSayaclari.TryGetValue(currentPage, out currentCount);
-                            sayfaSayaclari[currentPage] = currentCount + 1;
-                            string parcaID = $"{sayfaID}-{sayfaSayaclari[currentPage].ToString("D2")}";
+                            sayfaSayaclari.TryGetValue(currentSayfa, out currentCount);
+                            sayfaSayaclari[currentSayfa] = currentCount + 1;
+                            string parcaID = $"{sayfaID}-{sayfaSayaclari[currentSayfa].ToString("D2")}";
 
                             partInfoDict[parcaID] = (poz, sayfaID, count);
-                            logLines.Add($"{poz}, Yerleşim: {currentLayout}, Adet: {count}, Parça ID: {parcaID}, Satır: {line}");
+                            logLines.Add($"{poz}, Yerleşim: {currentLayout}, Sayfa: {currentSayfa}, Adet: {count}, Parça ID: {parcaID}, Satır: {line}");
                         }
                         else
                         {
@@ -1206,16 +1459,14 @@ namespace KesimTakip.UsrControl
                         {
                             string startNum = partMatch.Groups[1].Value;
                             string endNum = partMatch.Groups[2].Value;
-                            string partCode = partMatch.Groups[3].Value;
-                            string pozNum = partMatch.Groups[4].Value;
-                            string poz = $"{partCode}-P{pozNum}";
+                            string poz = partMatch.Groups[3].Value;
                             int count = string.IsNullOrEmpty(endNum) ? 1 : int.Parse(endNum) - int.Parse(startNum) + 1;
 
-                            string sayfaID = $"{baseId}-{currentPage.PadLeft(2, '0')}";
+                            string sayfaID = $"{baseId}-{currentSayfa.PadLeft(2, '0')}";
                             int currentCount;
-                            sayfaSayaclari.TryGetValue(currentPage, out currentCount);
-                            sayfaSayaclari[currentPage] = currentCount + 1;
-                            string parcaID = $"{sayfaID}-{sayfaSayaclari[currentPage].ToString("D2")}";
+                            sayfaSayaclari.TryGetValue(currentSayfa, out currentCount);
+                            sayfaSayaclari[currentSayfa] = currentCount + 1;
+                            string parcaID = $"{sayfaID}-{sayfaSayaclari[currentSayfa].ToString("D2")}";
 
                             partInfoDict[parcaID] = (poz, sayfaID, count);
                             logLines.Add($"Poz bulundu: {poz}, Yerleşim: {currentLayout}, Adet: {count}, Parça ID: {parcaID}, Satır: {line}");
@@ -1256,6 +1507,173 @@ namespace KesimTakip.UsrControl
                 MessageBox.Show($"Hata oluştu: {ex.Message}");
             }
         }
+
+        private void BaykalSayfaPozDagitimi()
+        {
+            try
+            {
+                string baseId = txtId.Text.Trim();
+                if (string.IsNullOrEmpty(baseId))
+                {
+                    MessageBox.Show("Lütfen txtId alanını doldurun!");
+                    return;
+                }
+
+                string text1 = _formArayuzu.RichTextBox1MetniAl().Trim();
+                if (string.IsNullOrEmpty(text1))
+                {
+                    MessageBox.Show("Lütfen richTextBox1 alanını doldurun!");
+                    return;
+                }
+
+                string text4 = _formArayuzu.RichTextBox4MetniAl().Trim();
+                if (string.IsNullOrEmpty(text4))
+                {
+                    MessageBox.Show("Lütfen richTextBox4 alanını doldurun!");
+                    return;
+                }
+
+                var logLines = new List<string>
+        {
+            "=== ProNest_Log.txt ===",
+            $"İşlem Tarihi: {DateTime.Now}",
+            $"BaseId: {baseId}",
+            "\nRichTextBox1 Verileri:"
+        };
+
+                Regex sayfaRegex = new Regex(@"--------\s*Sayfa\s*(\d+)\s*işleniyor\s*---------------", RegexOptions.IgnoreCase);
+                Regex partRegex = new Regex(@"(\d+)(?:\s*-\s*(\d+))?\s+.*?(\d+-\d+-P\d+(?:-[\w\.]+)*)\s.*?(\d{1,3}(?:,\d{1,2})?)\s*kg", RegexOptions.IgnoreCase);
+                Regex richTextBox4SayfaRegex = new Regex(@"\(Sayfa:\s*(\d+)\)", RegexOptions.IgnoreCase);
+                Regex richTextBox4YerlesimRegex = new Regex(@"\(Yerleşim:\s*(\d+)\)", RegexOptions.IgnoreCase);
+
+                var lines1 = text1.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                var lines4 = text4.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+
+                var richTextBox1Matches = new Dictionary<string, (int Adet, double Agirlik)>();
+                var partInfoDict = new Dictionary<string, (string Poz, string SayfaID, int Adet, double Agirlik)>();
+
+                string currentSayfa = "";
+                Dictionary<string, int> sayfaSiraSayaclari = new Dictionary<string, int>();
+
+                // RichTextBox1 işleme
+                foreach (var line in lines1)
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+
+                    var sayfaMatch = sayfaRegex.Match(line);
+                    if (sayfaMatch.Success)
+                    {
+                        currentSayfa = sayfaMatch.Groups[1].Value.PadLeft(2, '0');
+                        sayfaSiraSayaclari[currentSayfa] = 1;
+                        continue;
+                    }
+
+                    var partMatch = partRegex.Match(line);
+                    if (partMatch.Success)
+                    {
+                        if (!sayfaSiraSayaclari.ContainsKey(currentSayfa))
+                            sayfaSiraSayaclari[currentSayfa] = 1;
+
+                        string id = $"{baseId}-{currentSayfa}-{sayfaSiraSayaclari[currentSayfa].ToString("D2")}";
+                        string startNum = partMatch.Groups[1].Value;
+                        string endNum = partMatch.Groups[2].Value;
+                        double agirlik =double.Parse(partMatch.Groups[4].Value);
+                        int count = string.IsNullOrEmpty(endNum) ? 1 : int.Parse(endNum) - int.Parse(startNum) + 1;
+
+                        richTextBox1Matches[id] = (count, agirlik);
+                        logLines.Add($"{id}: {line} (Sayfa: {currentSayfa}), Adet: {count}, Ağırlık: {agirlik}");
+                        sayfaSiraSayaclari[currentSayfa]++;
+                    }
+                }
+
+                // RichTextBox4 işleme
+                logLines.Add("\nRichTextBox4 Verileri:");
+                string previousSayfa = "";
+                string currentYerlesim = "";
+
+                sayfaSiraSayaclari.Clear();
+
+                foreach (var line in lines4)
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+
+                    var sayfaMatch = richTextBox4SayfaRegex.Match(line);
+                    var yerlesimMatch = richTextBox4YerlesimRegex.Match(line);
+
+                    if (sayfaMatch.Success)
+                    {
+                        currentSayfa = sayfaMatch.Groups[1].Value.PadLeft(2, '0');
+                        if (!sayfaSiraSayaclari.ContainsKey(currentSayfa))
+                            sayfaSiraSayaclari[currentSayfa] = 1;
+
+                        previousSayfa = currentSayfa;
+                    }
+                    else
+                    {
+                        currentSayfa = previousSayfa;
+                    }
+
+                    currentYerlesim = yerlesimMatch.Success ? yerlesimMatch.Groups[1].Value.PadLeft(2, '0') : "00";
+
+                    string id = $"{baseId}-{currentSayfa}-{sayfaSiraSayaclari[currentSayfa].ToString("D2")}";
+                    string yerlesimId = $"{baseId}-{currentYerlesim}";
+
+                    var parcaKoduMatch = Regex.Match(line, @"(ST\d{2}-\d+(?:MM|mm)-.*?)(?=\(Yerleşim:)");
+
+                    if (!parcaKoduMatch.Success)
+                    {
+                        logLines.Add($"[Atlandı] {id}: Parça kodu bulunamadı -> {line}");
+                        continue;
+                    }
+
+                    string poz = parcaKoduMatch.Groups[1].Value;
+
+                    if (richTextBox1Matches.TryGetValue(id, out var info))
+                    {
+                        partInfoDict[id] = (poz, yerlesimId, info.Adet, info.Agirlik);
+                        logLines.Add($"{id} => {poz} | Sayfa: {currentSayfa}, Yerleşim: {yerlesimId}");
+                    }
+                    else
+                    {
+                        logLines.Add($"[Uyarı] {id}: RichTextBox1 ile eşleşmedi -> {poz}");
+                    }
+
+                    sayfaSiraSayaclari[currentSayfa]++;
+                }
+
+                // Sonuçları log ve grid'e yaz
+                logLines.Add("\nSon Çıktı Verileri:");
+                foreach (var kvp in partInfoDict)
+                {
+                    string parcaID = kvp.Key;
+                    var (poz, sayfaID, count, agirlik) = kvp.Value;
+                    logLines.Add($"Parça ID: {parcaID} => Poz: {poz}, Sayfa ID: {sayfaID}, Adet: {count}, Ağırlık: {agirlik}");
+                    dataGridView2.Rows.Add(poz, sayfaID, count, agirlik);
+                }
+
+                var uniquePozs = partInfoDict.Values.Select(p => p.Poz).Distinct().OrderBy(p => p).ToList();
+                logLines.Add($"\nBenzersiz pozlar: {string.Join(", ", uniquePozs)}");
+
+                if (!uniquePozs.Any())
+                {
+                    MessageBox.Show("Hiçbir poz bulunamadı. Lütfen veri formatını kontrol edin.");
+                    return;
+                }
+
+                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                string logPath = Path.Combine(desktopPath, "ProNest_Log.txt");
+                File.WriteAllLines(logPath, logLines);
+
+                MessageBox.Show("Veriler işlendi, log dosyasına yazıldı.");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hata oluştu: {ex.Message}");
+            }
+        }
+
+
+
         private void SayfaIDTabloVerileri()
         {
             dataGridView3.Rows.Clear();

@@ -121,7 +121,57 @@ namespace KesimTakip.Business
             return (validData, invalidData);
         }
 
-        public (List<MalzemeBilgisi> ValidData, List<string> InvalidData) BaykalOku(string text)
+        //public (List<MalzemeBilgisi> ValidData, List<string> InvalidData) PlazmaOku(string text)
+        //{
+        //    if (string.IsNullOrWhiteSpace(text))
+        //    {
+        //        throw new ArgumentException("Okunacak veri yok!");
+        //    }
+
+        //    List<MalzemeBilgisi> validData = new List<MalzemeBilgisi>();
+        //    List<string> invalidData = new List<string>();
+        //    HashSet<string> validDataSet = new HashSet<string>();
+        //    HashSet<string> invalidDataSet = new HashSet<string>();
+
+        //    string genelPattern = @"(?i)ST\d+.*?AD\s*-\s*\d{5}\.\d{2}";
+        //    string validPattern = @"(?i)(ST\d+)\s*-\s*(\d+(?:MM|mm))\s*-\s*(\d+-\d+)\s*-\s*(P\d+)\s*-\s*(\d+AD)\s*-\s*(\d{5}\.\d{2})";
+
+        //    MatchCollection matches = Regex.Matches(text, genelPattern);
+
+        //    foreach (Match match in matches)
+        //    {
+        //        string value = match.Value.Trim();
+        //        if (invalidDataSet.Contains(value))
+        //            continue;
+
+        //        Match validMatch = Regex.Match(value, validPattern);
+        //        if (validMatch.Success)
+        //        {
+        //            string uniqueKey = $"{validMatch.Groups[1].Value}|{validMatch.Groups[2].Value}|{validMatch.Groups[3].Value}|{validMatch.Groups[4].Value}|{validMatch.Groups[5].Value}|{validMatch.Groups[6].Value}";
+
+        //            if (validDataSet.Add(uniqueKey))
+        //            {
+        //                var malzeme = new MalzemeBilgisi
+        //                {
+        //                    Kalite = validMatch.Groups[1].Value,
+        //                    Malzeme = validMatch.Groups[2].Value,
+        //                    Kalip = validMatch.Groups[3].Value,
+        //                    Poz = validMatch.Groups[4].Value,
+        //                    Adet = validMatch.Groups[5].Value,
+        //                    Proje = validMatch.Groups[6].Value
+        //                };
+        //                validData.Add(malzeme);
+        //            }
+        //        }
+        //        else if (invalidDataSet.Add(value))
+        //        {
+        //            invalidData.Add(value);
+        //        }
+        //    }
+
+        //    return (validData, invalidData);
+        //}
+        public (List<MalzemeBilgisi> ValidData, List<string> InvalidData) PlazmaOku(string text)
         {
             if (string.IsNullOrWhiteSpace(text))
             {
@@ -133,18 +183,18 @@ namespace KesimTakip.Business
             HashSet<string> validDataSet = new HashSet<string>();
             HashSet<string> invalidDataSet = new HashSet<string>();
 
-            string genelPattern = @"(?i)ST\d+.*?AD\s*-\s*\d{5}\.\d{2}";
             string validPattern = @"(?i)(ST\d+)\s*-\s*(\d+(?:MM|mm))\s*-\s*(\d+-\d+)\s*-\s*(P\d+)\s*-\s*(\d+AD)\s*-\s*(\d{5}\.\d{2})";
 
-            MatchCollection matches = Regex.Matches(text, genelPattern);
+            // Satır satır işle (örneğin text satırları \n ile ayrılmışsa)
+            var lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 
-            foreach (Match match in matches)
+            foreach (var line in lines)
             {
-                string value = match.Value.Trim();
-                if (invalidDataSet.Contains(value))
+                string trimmedLine = line.Trim();
+                if (invalidDataSet.Contains(trimmedLine) || validDataSet.Contains(trimmedLine))
                     continue;
 
-                Match validMatch = Regex.Match(value, validPattern);
+                Match validMatch = Regex.Match(trimmedLine, validPattern);
                 if (validMatch.Success)
                 {
                     string uniqueKey = $"{validMatch.Groups[1].Value}|{validMatch.Groups[2].Value}|{validMatch.Groups[3].Value}|{validMatch.Groups[4].Value}|{validMatch.Groups[5].Value}|{validMatch.Groups[6].Value}";
@@ -163,9 +213,10 @@ namespace KesimTakip.Business
                         validData.Add(malzeme);
                     }
                 }
-                else if (invalidDataSet.Add(value))
+                else
                 {
-                    invalidData.Add(value);
+                    invalidDataSet.Add(trimmedLine);
+                    invalidData.Add(trimmedLine);
                 }
             }
 
