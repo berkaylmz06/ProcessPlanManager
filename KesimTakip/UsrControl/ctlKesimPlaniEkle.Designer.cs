@@ -31,7 +31,6 @@
             this.panelVeriYonetim = new System.Windows.Forms.Panel();
             this.groupBoxVeriYonetim = new System.Windows.Forms.GroupBox();
             this.btnYeni = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
             this.dtEklemeTarihi = new System.Windows.Forms.DateTimePicker();
             this.btnAjan = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -70,10 +69,11 @@
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.button3 = new System.Windows.Forms.Button();
             this.btnSec = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.pdfViewer1 = new Spire.PdfViewer.Forms.PdfViewer();
+            this.button3 = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.panelVeriYonetim.SuspendLayout();
             this.groupBoxVeriYonetim.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -136,17 +136,6 @@
             this.btnYeni.Text = "+";
             this.btnYeni.UseVisualStyleBackColor = true;
             this.btnYeni.Click += new System.EventHandler(this.button4_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(473, 299);
-            this.button1.Margin = new System.Windows.Forms.Padding(4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(100, 28);
-            this.button1.TabIndex = 318;
-            this.button1.Text = "Baykal";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // dtEklemeTarihi
             // 
@@ -517,17 +506,6 @@
             this.dataGridViewTextBoxColumn3.MinimumWidth = 6;
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(472, 332);
-            this.button3.Margin = new System.Windows.Forms.Padding(4);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(100, 28);
-            this.button3.TabIndex = 320;
-            this.button3.Text = "Ajan";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
             // btnSec
             // 
             this.btnSec.Location = new System.Drawing.Point(290, 196);
@@ -559,12 +537,36 @@
             this.pdfViewer1.IsToolBarVisible = true;
             this.pdfViewer1.Location = new System.Drawing.Point(672, 0);
             this.pdfViewer1.Margin = new System.Windows.Forms.Padding(4);
+            this.pdfViewer1.MultiPagesThreshold = 60;
             this.pdfViewer1.Name = "pdfViewer1";
             this.pdfViewer1.OnRenderPageExceptionEvent = null;
             this.pdfViewer1.Size = new System.Drawing.Size(858, 896);
             this.pdfViewer1.TabIndex = 325;
             this.pdfViewer1.Text = "pdfViewer1";
+            this.pdfViewer1.Threshold = 60;
             this.pdfViewer1.ViewerBackgroundColor = System.Drawing.SystemColors.Window;
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(472, 332);
+            this.button3.Margin = new System.Windows.Forms.Padding(4);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(100, 28);
+            this.button3.TabIndex = 320;
+            this.button3.Text = "Ajan";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(473, 299);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(100, 28);
+            this.button1.TabIndex = 318;
+            this.button1.Text = "Baykal";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // ctlKesimPlaniEkle
             // 
@@ -593,7 +595,6 @@
 
         private System.Windows.Forms.Panel panelVeriYonetim;
         private System.Windows.Forms.GroupBox groupBoxVeriYonetim;
-        private System.Windows.Forms.Button button1;
         private System.Windows.Forms.DateTimePicker dtEklemeTarihi;
         private System.Windows.Forms.Button btnAjan;
         private System.Windows.Forms.Button button2;
@@ -626,7 +627,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button btnSec;
         private System.Windows.Forms.ProgressBar progressBar1;
         private Spire.PdfViewer.Forms.PdfViewer pdfViewer1;
@@ -637,5 +637,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn gridPoz;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridAdet;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridProje;
+        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button button3;
     }
 }

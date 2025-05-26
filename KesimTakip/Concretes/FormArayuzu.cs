@@ -11,12 +11,10 @@ namespace KesimTakip.Concretes
     public class FormArayuzu : IFormArayuzu
     {
         private readonly frmAnaSayfa _form;
-
         public FormArayuzu(frmAnaSayfa form)
         {
             _form = form;
         }
-
         public string RichTextBox1MetniAl()
         {
             return _form.richTextBox1.Text;

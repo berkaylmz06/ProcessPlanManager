@@ -228,6 +228,12 @@
     <Compile Include="UsrControl\ctlKullaniciAyarlari.Designer.cs">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
     </Compile>
+    <Compile Include="UsrControl\ctlSistemBilgisi.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlSistemBilgisi.Designer.cs">
+      <DependentUpon>ctlSistemBilgisi.cs</DependentUpon>
+    </Compile>
     <Compile Include="UsrControl\ctlSistemHareketleri.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -278,6 +284,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlKullaniciAyarlari.resx">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlSistemBilgisi.resx">
+      <DependentUpon>ctlSistemBilgisi.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlSistemHareketleri.resx">
       <DependentUpon>ctlSistemHareketleri.cs</DependentUpon>

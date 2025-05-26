@@ -73,6 +73,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
             this.lblKullaniciBilgi = new System.Windows.Forms.Label();
+            this.btnSistemBilgisiAnaSayfa = new System.Windows.Forms.Button();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
@@ -121,7 +122,7 @@
             // 
             // btnOturumuKapat
             // 
-            this.btnOturumuKapat.Location = new System.Drawing.Point(14, 463);
+            this.btnOturumuKapat.Location = new System.Drawing.Point(14, 525);
             this.btnOturumuKapat.Margin = new System.Windows.Forms.Padding(2);
             this.btnOturumuKapat.Name = "btnOturumuKapat";
             this.btnOturumuKapat.Size = new System.Drawing.Size(160, 58);
@@ -178,6 +179,7 @@
             // 
             this.panelAraYuz.BackColor = System.Drawing.SystemColors.HotTrack;
             this.panelAraYuz.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelAraYuz.Controls.Add(this.btnSistemBilgisiAnaSayfa);
             this.panelAraYuz.Controls.Add(this.btnSistemHareketleri);
             this.panelAraYuz.Controls.Add(this.btnIletilenSorunlar);
             this.panelAraYuz.Controls.Add(this.btnKullaniciAyarlari);
@@ -575,6 +577,17 @@
             this.lblKullaniciBilgi.Text = "Şu anda tanımlı bir rolünüz bulunmamaktadır. Lütfen yetki için yöneticinizle ilet" +
     "işime geçiniz.";
             // 
+            // btnSistemBilgisiAnaSayfa
+            // 
+            this.btnSistemBilgisiAnaSayfa.Location = new System.Drawing.Point(14, 463);
+            this.btnSistemBilgisiAnaSayfa.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSistemBilgisiAnaSayfa.Name = "btnSistemBilgisiAnaSayfa";
+            this.btnSistemBilgisiAnaSayfa.Size = new System.Drawing.Size(160, 58);
+            this.btnSistemBilgisiAnaSayfa.TabIndex = 121;
+            this.btnSistemBilgisiAnaSayfa.Text = "Sistem Bilgisi";
+            this.btnSistemBilgisiAnaSayfa.UseVisualStyleBackColor = true;
+            this.btnSistemBilgisiAnaSayfa.Click += new System.EventHandler(this.btnSistemBilgisiAnaSayfa_Click);
+            // 
             // frmAnaSayfa
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
@@ -656,5 +669,6 @@
         private System.Windows.Forms.Button btnIletilenSorunlar;
         private System.Windows.Forms.Button btnSistemHareketleri;
         private System.Windows.Forms.Label lblKullaniciBilgi;
+        private System.Windows.Forms.Button btnSistemBilgisiAnaSayfa;
     }
 }

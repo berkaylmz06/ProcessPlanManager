@@ -45,7 +45,6 @@ namespace KesimTakip.Helper
 
             dgv.RowTemplate.DefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
 
-            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
         }
         public static void StilUygulaKullaniciLog(DataGridView dgvLogs)
         {
