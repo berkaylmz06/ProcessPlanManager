@@ -127,6 +127,7 @@ namespace KesimTakip.UsrControl
                         string pdfText;
                         string islenmisVeriBaykal = null;
                         string islenmisVeriAjan = null;
+                        string islenmisVeriAdm = null;
 
                         if (_seciliButon == btnBaykal)
                         {
@@ -147,6 +148,17 @@ namespace KesimTakip.UsrControl
                             islenmisVeriAjan = IslenmisVeriAjan();
                             _formArayuzu.RichTextBox4Yaz(islenmisVeriAjan);
                         }
+                        else if (_seciliButon == btnAdm)
+                        {
+                            pdfText = await PdfOkuBaykal(filePath);
+
+                            _formArayuzu.RichTextBox1Yaz(pdfText);
+
+
+                            islenmisVeriAdm = IslenmisVeriADM();
+                            _formArayuzu.RichTextBox4Yaz(islenmisVeriAdm);
+                        }
+
                         else
                         {
                             MessageBox.Show("Geçersiz buton seçimi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -193,8 +205,7 @@ namespace KesimTakip.UsrControl
                                 else if (_seciliButon == btnBaykal)
                                     return _veriOkuma.PlazmaOku(islenmisVeriBaykal);
                                 else if (_seciliButon == btnAdm)
-                                    return (_veriOkuma.LantekOku(pdfText), new List<string>());
-
+                                    return _veriOkuma.AdmOku(islenmisVeriAdm);
                                 else
                                     throw new InvalidOperationException("Geçersiz buton seçimi.");
                             }
@@ -777,6 +788,127 @@ namespace KesimTakip.UsrControl
 
             return sonucBuilder.ToString();
         }
+        public string IslenmisVeriADM()
+        {
+            if (_formArayuzu.RichTextBox1BosMu())
+            {
+                MessageBox.Show("Lütfen bir format seçin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return string.Empty;
+            }
+
+            StringBuilder sonucBuilder = new StringBuilder();
+            string[] satirlar = _formArayuzu.RichTextBox1SatirlariAl();
+            int currentPageNumber = 1;
+            string currentProgram = "";
+            string currentProgramTekrari = "";
+            string currentMalzeme = "";
+            Dictionary<string, int> pozToplamAdet = new Dictionary<string, int>();
+            List<(string Parca, string Miktar, int PageNumber, string Program, string ProgramTekrari)> parcaListesi = new List<(string, string, int, string, string)>();
+
+            string malzemeRegex = @"^ST\d+-[A-Za-z0-9]+X\d+";
+            string programRegex = @"^\d+\s+\d+\s+\d+\.\d{3}\s+[\d,]+\s+[\d,.]+\s+[\d,]+\s+[\d,]+%?$";
+            string parcaRegex = @"^\d{5}\.\d{2}(?:-\d+)*-P\d+(?:-EK\d+)?\s+\d{1,3}";
+
+            foreach (string satir in satirlar)
+            {
+                string temizSatir = Regex.Replace(satir, @"\s+", " ").Trim();
+                if (string.IsNullOrEmpty(temizSatir))
+                    continue;
+
+                if (temizSatir.StartsWith("-------- Sayfa"))
+                {
+                    string[] parts = temizSatir.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                    if (parts.Length >= 3 && int.TryParse(parts[2].Replace("--------", "").Trim(), out int pageNum))
+                    {
+                        currentPageNumber = pageNum;
+                    }
+                    continue;
+                }
+
+                if (temizSatir.StartsWith("Sayfa:") || temizSatir.StartsWith("Sayfa "))
+                {
+                    string pagePart = temizSatir.Replace("Sayfa:", "").Replace("Sayfa ", "").Trim();
+                    if (int.TryParse(pagePart.Split('/')[0].Trim(), out int pageNum))
+                    {
+                        currentPageNumber = pageNum;
+                    }
+                    continue;
+                }
+
+                if (Regex.IsMatch(temizSatir, malzemeRegex))
+                {
+                    string[] malzemeParts = temizSatir.Split('-');
+                    if (malzemeParts.Length >= 2)
+                    {
+                        currentMalzeme = $"{malzemeParts[0]}-{malzemeParts[1]}";
+                    }
+                    continue;
+                }
+
+                if (Regex.IsMatch(temizSatir, programRegex))
+                {
+                    string[] programSutun = Regex.Split(temizSatir, @"\s+")
+                        .Select(s => s.Trim())
+                        .Where(s => !string.IsNullOrEmpty(s))
+                        .ToArray();
+
+                    if (programSutun.Length >= 2)
+                    {
+                        currentProgram = programSutun[0];
+                        currentProgramTekrari = programSutun[1];
+                    }
+                    continue;
+                }
+
+                if (Regex.IsMatch(temizSatir, parcaRegex))
+                {
+                    string[] parcaSutun = Regex.Split(temizSatir, @"\s+")
+                        .Select(s => s.Trim())
+                        .Where(s => !string.IsNullOrEmpty(s))
+                        .ToArray();
+
+                    if (parcaSutun.Length >= 2)
+                    {
+                        string parca = parcaSutun[0];
+                        string miktar = parcaSutun[1];
+
+                        string[] parcaParts = parca.Split('-');
+                        if (parcaParts.Length >= 2 && !string.IsNullOrEmpty(currentMalzeme))
+                        {
+                            string proje = parcaParts[0];
+                            string kalip = parcaParts.Length > 2 ? string.Join("-", parcaParts.Skip(1).Take(parcaParts.Length - (parcaParts[parcaParts.Length - 1].StartsWith("EK") ? 3 : 2))) : "";
+                            string poz = parcaParts[parcaParts.Length - 1].StartsWith("P") ? parcaParts[parcaParts.Length - 1] : parcaParts[parcaParts.Length - 2];
+                            string ek = parcaParts[parcaParts.Length - 1].StartsWith("EK") ? parcaParts[parcaParts.Length - 1] : "";
+                            string pozKey = string.IsNullOrEmpty(ek) ? poz : $"{poz}-{ek}";
+                            int adet = int.Parse(miktar) * int.Parse(currentProgramTekrari);
+
+                            if (!pozToplamAdet.ContainsKey(pozKey))
+                            {
+                                pozToplamAdet[pozKey] = 0;
+                            }
+                            pozToplamAdet[pozKey] += adet;
+
+                            parcaListesi.Add((parca, miktar, currentPageNumber, currentProgram, currentProgramTekrari));
+                        }
+                    }
+                }
+            }
+
+            foreach (var (parca, miktar, pageNumber, program, programTekrari) in parcaListesi)
+            {
+                string[] parcaParts = parca.Split('-');
+                string proje = parcaParts[0];
+                string kalip = parcaParts.Length > 2 ? string.Join("-", parcaParts.Skip(1).Take(parcaParts.Length - (parcaParts[parcaParts.Length - 1].StartsWith("EK") ? 3 : 2))) : "";
+                string poz = parcaParts[parcaParts.Length - 1].StartsWith("P") ? parcaParts[parcaParts.Length - 1] : parcaParts[parcaParts.Length - 2];
+                string ek = parcaParts[parcaParts.Length - 1].StartsWith("EK") ? parcaParts[parcaParts.Length - 1] : "";
+                string pozKey = string.IsNullOrEmpty(ek) ? poz : $"{poz}-{ek}";
+                string sonuc1 = $"{currentMalzeme}{(string.IsNullOrEmpty(kalip) ? "" : "-")}{kalip}{(string.IsNullOrEmpty(kalip) ? "" : "-")}{pozKey}-{pozToplamAdet[pozKey]}AD-{proje}";
+                sonucBuilder.AppendLine($"{sonuc1} (Sayfa: {pageNumber}, Miktar: {miktar}, Program: {program}, Program Tekrarı: {programTekrari})");
+            }
+
+            string sonuc = sonucBuilder.ToString();
+            return sonuc;
+        }
 
         private void button4_Click(object sender, EventArgs e)
         {
@@ -991,6 +1123,12 @@ namespace KesimTakip.UsrControl
         private void button3_Click(object sender, EventArgs e)
         {
             AjanSayfaPozDagitimi();
+            SayfaIDTabloVerileri();
+            HesaplaEkAgirlikYuzdeleri();
+        }
+        private void button5_Click(object sender, EventArgs e)
+        {
+            AdmSayfaPozDagitimi();
             SayfaIDTabloVerileri();
             HesaplaEkAgirlikYuzdeleri();
         }
@@ -1338,7 +1476,6 @@ namespace KesimTakip.UsrControl
                     dataGridView2.Rows.Add(poz, yerlesimID, count, agirlik.ToString("F2", CultureInfo.InvariantCulture));
                 }
 
-                // DataGridView sütun biçimlendirmesi
                 dataGridView2.Columns[3].DefaultCellStyle.Format = "F2";
                 dataGridView2.Columns[3].DefaultCellStyle.FormatProvider = CultureInfo.InvariantCulture;
 
@@ -1362,6 +1499,294 @@ namespace KesimTakip.UsrControl
                 MessageBox.Show($"Bir hata oluştu, lütfen veri formatını kontrol edin veya destek ekibiyle iletişime geçin: {ex.Message}");
             }
         }
+        private void AdmSayfaPozDagitimi()
+        {
+            try
+            {
+                string baseId = txtId.Text.Trim();
+                if (string.IsNullOrEmpty(baseId))
+                {
+                    MessageBox.Show("Lütfen txtId alanını doldurun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string text1 = _formArayuzu.RichTextBox1MetniAl().Trim();
+                if (string.IsNullOrEmpty(text1))
+                {
+                    MessageBox.Show("Lütfen richTextBox1 alanını doldurun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string text4 = _formArayuzu.RichTextBox4MetniAl().Trim();
+                if (string.IsNullOrEmpty(text4))
+                {
+                    MessageBox.Show("Lütfen richTextBox4 alanını doldurun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                var logLines = new List<string>
+        {
+            "=== ADM_Log.txt ===",
+            $"İşlem Tarihi: {DateTime.Now:dd.MM.yyyy HH:mm:ss}",
+            $"BaseId: {baseId}"
+        };
+
+                // RichTextBox1 için regex desenleri
+                Regex partRegex = new Regex(@"(\d{5}\.\d{2}-\d{3}-00-P\d+)\s+(\d+)\s+[\d,.]+\s+([\d,]+)\s+[\d,]+\s+[\d,]+", RegexOptions.IgnoreCase);
+                Regex cncRegex = new Regex(@"^\d+\s+(\d+)\s+\d+\s+[\d,.]+\s+[\d,]+\s+[\d,.]+\s+[\d,]+", RegexOptions.IgnoreCase);
+
+                // RichTextBox4 için regex desenleri
+                Regex rich4PozRegex = new Regex(@"ST\d+-[A-Za-z0-9]+-(\d+-\d+-P\d+)-2AD-(\d+\.\d+)", RegexOptions.IgnoreCase);
+                Regex rich4SayfaRegex = new Regex(@"\(Sayfa:\s*(\d+)", RegexOptions.IgnoreCase);
+                Regex rich4ProgramRegex = new Regex(@"\(Program:\s*(\d+)", RegexOptions.IgnoreCase);
+                Regex rich4AdetRegex = new Regex(@"\(Miktar:\s*(\d+)", RegexOptions.IgnoreCase);
+
+                var lines1 = text1.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+                var lines4 = text4.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+
+                // Veri yapıları
+                var partInfoDict = new Dictionary<string, (string Poz, string YerlesimID, int Adet, double Agirlik)>();
+                var cncProgramDict = new Dictionary<string, (int ProgramNo, double Agirlik)>();
+
+                // RichTextBox1 işleme - CNC Program bilgileri ve parça bilgileri
+                logLines.Add("\nRichTextBox1 Verileri:");
+                string currentCncProgram = "";
+
+                foreach (var line in lines1)
+                {
+                    if (string.IsNullOrWhiteSpace(line) || line.Contains("Part Quantity Length Weight") ||
+                        line.Contains("Sayfa") || line.Contains("Nestings list") || line.Contains("Akyapak") ||
+                        line.StartsWith("ID CNC") || line.Contains("Toplam sayfa sayısı") || line.Contains("%")) continue;
+
+                    // CNC Program numarasını yakala
+                    var cncMatch = cncRegex.Match(line);
+                    if (cncMatch.Success)
+                    {
+                        currentCncProgram = cncMatch.Groups[1].Value;
+                        logLines.Add($"CNC Program Bulundu: {currentCncProgram}");
+                        continue;
+                    }
+
+                    // Parça bilgisi
+                    var partMatch = partRegex.Match(line.Trim());
+                    if (partMatch.Success)
+                    {
+                        string poz = partMatch.Groups[1].Value;
+                        string adetStr = partMatch.Groups[2].Value;
+                        string agirlikStr = partMatch.Groups[3].Value;
+
+                        if (int.TryParse(adetStr, out int adet) &&
+                            double.TryParse(agirlikStr.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double agirlik))
+                        {
+                            string parcaId = $"{baseId}-01-{poz}"; // Örnek: 5-01-25049.01-152-00-P8
+                            partInfoDict[parcaId] = (poz, currentCncProgram.PadLeft(2, '0'), adet, agirlik);
+                            logLines.Add($"Parça Bulundu: {parcaId} => Poz: {poz}, Program: {currentCncProgram}, Adet: {adet}, Ağırlık: {agirlik:F2}");
+                        }
+                        else
+                        {
+                            logLines.Add($"[HATA] Sayısal dönüşüm başarısız: {line}");
+                        }
+                    }
+                    else
+                    {
+                        logLines.Add($"[HATA] Regex eşleşmedi: {line}");
+                    }
+                }
+
+                // RichTextBox4 işleme - Eşleştirme için
+                logLines.Add("\nRichTextBox4 Verileri:");
+                foreach (var line in lines4)
+                {
+                    if (string.IsNullOrWhiteSpace(line)) continue;
+
+                    var pozMatch = rich4PozRegex.Match(line);
+                    var sayfaMatch = rich4SayfaRegex.Match(line);
+                    var programMatch = rich4ProgramRegex.Match(line);
+                    var adetMatch = rich4AdetRegex.Match(line);
+
+                    if (pozMatch.Success && sayfaMatch.Success && programMatch.Success && adetMatch.Success)
+                    {
+                        string pozSimple = pozMatch.Groups[1].Value; // Örnek: 152-00-P8
+                        string pozPrefix = pozMatch.Groups[2].Value; // Örnek: 25049.01
+                        string sayfaNo = sayfaMatch.Groups[1].Value.PadLeft(2, '0');
+                        string programNo = programMatch.Groups[1].Value.PadLeft(2, '0');
+                        string adetStr = adetMatch.Groups[1].Value;
+
+                        // Poz numarasını RichTextBox1 formatına uygun hale getirme
+                        string formattedPoz = $"{pozPrefix}-{pozSimple}"; // Örnek: 25049.01-152-00-P8
+                        string parcaId = $"{baseId}-{sayfaNo}-{formattedPoz}";
+                        string yerlesimId = $"{baseId}-{programNo}";
+
+                        if (partInfoDict.TryGetValue(parcaId, out var partInfo))
+                        {
+                            dataGridView2.Rows.Add(
+                                formattedPoz,
+                                yerlesimId,
+                                partInfo.Adet,
+                                partInfo.Agirlik.ToString("F2", CultureInfo.InvariantCulture)
+                            );
+                            logLines.Add($"Eşleşme Bulundu: {parcaId} => Poz: {formattedPoz}, Yerleşim: {yerlesimId}, Adet: {partInfo.Adet}, Ağırlık: {partInfo.Agirlik:F2}");
+                        }
+                        else
+                        {
+                            logLines.Add($"[UYARI] Eşleşme bulunamadı: {parcaId}");
+                        }
+                    }
+                    else
+                    {
+                        logLines.Add($"[HATA] RichTextBox4 regex eşleşmedi: {line}");
+                    }
+                }
+
+                // Log dosyasını kaydet
+                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                string logPath = Path.Combine(desktopPath, "ADM_Log.txt");
+                File.WriteAllLines(logPath, logLines, Encoding.UTF8);
+
+                MessageBox.Show("Veriler başarıyla işlendi ve DataGridView2'ye eklendi!", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                string errorPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ADM_Hata.txt");
+                File.WriteAllText(errorPath, $"Hata: {DateTime.Now:dd.MM.yyyy HH:mm:ss}\n{ex.ToString()}", Encoding.UTF8);
+                MessageBox.Show($"Bir hata oluştu:\n{ex.Message}\nDetaylar masaüstündeki ADM_Hata.txt dosyasına kaydedildi.",
+                              "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        //private void AdmSayfaPozDagitimi()
+        //{
+        //    try
+        //    {
+        //        string baseId = txtId.Text.Trim();
+        //        if (string.IsNullOrEmpty(baseId))
+        //        {
+        //            MessageBox.Show("Lütfen txtId alanını doldurun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //            return;
+        //        }
+
+        //        string text1 = _formArayuzu.RichTextBox1MetniAl().Trim();
+        //        if (string.IsNullOrEmpty(text1))
+        //        {
+        //            MessageBox.Show("Lütfen richTextBox1 alanını doldurun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //            return;
+        //        }
+
+        //        string text4 = _formArayuzu.RichTextBox4MetniAl().Trim();
+        //        if (string.IsNullOrEmpty(text4))
+        //        {
+        //            MessageBox.Show("Lütfen richTextBox4 alanını doldurun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //            return;
+        //        }
+
+        //        var logLines = new List<string>
+        //{
+        //    "=== ADM_Log.txt ===",
+        //    $"İşlem Tarihi: {DateTime.Now:dd.MM.yyyy HH:mm:ss}",
+        //    $"BaseId: {baseId}"
+        //};
+
+        //        // RichTextBox1 için regex desenleri
+        //        Regex partRegex = new Regex(@"(\d{5}\.\d{2}-\d{3}-P\d+)\s+(\d+)\s+[\d,]+\s+([\d,]+)", RegexOptions.IgnoreCase);
+
+        //        // RichTextBox4 için regex desenleri
+        //        Regex rich4PozRegex = new Regex(@"ST\d+-[A-Za-z0-9]+-\d+-\d+-P\d+-2AD-\d+\.\d+", RegexOptions.IgnoreCase);
+        //        Regex rich4SayfaRegex = new Regex(@"\(Sayfa:\s*(\d+)", RegexOptions.IgnoreCase);
+        //        Regex rich4ProgramRegex = new Regex(@"\(Program:\s*(\d+)", RegexOptions.IgnoreCase);
+        //        Regex rich4AdetRegex = new Regex(@"\(Miktar:\s*(\d+)", RegexOptions.IgnoreCase);
+
+        //        var lines1 = text1.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+        //        var lines4 = text4.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
+
+        //        // Veri yapıları
+        //        var partInfoDict = new Dictionary<string, (string Poz, string YerlesimID, int Adet, double Agirlik)>();
+        //        var cncProgramDict = new Dictionary<string, (int ProgramNo, double Agirlik)>();
+
+        //        // RichTextBox1 işleme - CNC Program bilgileri ve parça bilgileri
+        //        logLines.Add("\nRichTextBox1 Verileri:");
+        //        string currentCncProgram = "";
+        //        double currentProgramAgirlik = 0;
+
+        //        foreach (var line in lines1)
+        //        {
+        //            if (string.IsNullOrWhiteSpace(line)) continue;
+
+        //            // Parça bilgisi
+        //            var partMatch = partRegex.Match(line);
+        //            if (partMatch.Success)
+        //            {
+        //                string poz = partMatch.Groups[1].Value;
+        //                string adetStr = partMatch.Groups[2].Value;
+        //                string agirlikStr = partMatch.Groups[3].Value;
+
+        //                if (int.TryParse(adetStr, out int adet) &&
+        //                    double.TryParse(agirlikStr.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double agirlik))
+        //                {
+        //                    string parcaId = $"{baseId}-01-{poz}"; // Örnek: ABC123-01-25049.01-152-00-P8
+        //                    partInfoDict[parcaId] = (poz, currentCncProgram.PadLeft(2, '0'), adet, agirlik);
+        //                    logLines.Add($"Parça Bulundu: {parcaId} => Poz: {poz}, Program: {currentCncProgram}, Adet: {adet}, Ağırlık: {agirlik:F2}");
+        //                }
+        //            }
+        //        }
+
+        //        // RichTextBox4 işleme - Eşleştirme için
+        //        logLines.Add("\nRichTextBox4 Verileri:");
+        //        foreach (var line in lines4)
+        //        {
+        //            if (string.IsNullOrWhiteSpace(line)) continue;
+
+        //            var pozMatch = rich4PozRegex.Match(line);
+        //            var sayfaMatch = rich4SayfaRegex.Match(line);
+        //            var programMatch = rich4ProgramRegex.Match(line);
+        //            var adetMatch = rich4AdetRegex.Match(line);
+
+        //            if (pozMatch.Success && sayfaMatch.Success && programMatch.Success && adetMatch.Success)
+        //            {
+        //                string pozFull = pozMatch.Value;
+        //                string pozSimple = pozFull.Split('-').Last(); // 25049.01 gibi
+        //                string sayfaNo = sayfaMatch.Groups[1].Value.PadLeft(2, '0');
+        //                string programNo = programMatch.Groups[1].Value.PadLeft(2, '0');
+        //                string adetStr = adetMatch.Groups[1].Value;
+
+        //                // Poz numarasını RichTextBox1 formatına uygun hale getirme
+        //                string[] pozParts = pozFull.Split('-');
+        //                string formattedPoz = $"{pozParts[5]}.{pozParts[6]}-{pozParts[3]}-{pozParts[4]}";
+
+        //                string parcaId = $"{baseId}-{sayfaNo}-{formattedPoz}";
+        //                string yerlesimId = $"{baseId}-{programNo}";
+
+        //                if (partInfoDict.TryGetValue(parcaId, out var partInfo))
+        //                {
+        //                    dataGridView2.Rows.Add(
+        //                        formattedPoz,
+        //                        yerlesimId,
+        //                        partInfo.Adet,
+        //                        partInfo.Agirlik.ToString("F2", CultureInfo.InvariantCulture)
+        //                    );
+        //                    logLines.Add($"Eşleşme Bulundu: {parcaId} => Poz: {formattedPoz}, Yerleşim: {yerlesimId}, Adet: {partInfo.Adet}, Ağırlık: {partInfo.Agirlik:F2}");
+        //                }
+        //                else
+        //                {
+        //                    logLines.Add($"[UYARI] Eşleşme bulunamadı: {parcaId}");
+        //                }
+        //            }
+        //        }
+
+        //        // Log dosyasını kaydet
+        //        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+        //        string logPath = Path.Combine(desktopPath, "ADM_Log.txt");
+        //        File.WriteAllLines(logPath, logLines, Encoding.UTF8);
+
+        //        MessageBox.Show("Veriler başarıyla işlendi ve DataGridView2'ye eklendi!", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        string errorPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ADM_Hata.txt");
+        //        File.WriteAllText(errorPath, $"Hata: {DateTime.Now:dd.MM.yyyy HH:mm:ss}\n{ex.ToString()}", Encoding.UTF8);
+        //        MessageBox.Show($"Bir hata oluştu:\n{ex.Message}\nDetaylar masaüstündeki ADM_Hata.txt dosyasına kaydedildi.",
+        //                      "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //}
 
         private void SayfaIDTabloVerileri()
         {
@@ -1551,5 +1976,14 @@ namespace KesimTakip.UsrControl
                 MessageBox.Show($"Hata oluştu: {ex.Message}");
             }
         }
+
+        private void button4_Click_1(object sender, EventArgs e)
+        {
+            string islenmisVeri = IslenmisVeriADM();
+            _formArayuzu.RichTextBox4Yaz(islenmisVeri);
+            _veriOkuma.AdmOku(islenmisVeri);
+        }
+
+
     }
 }

@@ -30,7 +30,9 @@
         {
             this.panelVeriYonetim = new System.Windows.Forms.Panel();
             this.groupBoxVeriYonetim = new System.Windows.Forms.GroupBox();
+            this.button4 = new System.Windows.Forms.Button();
             this.btnYeni = new System.Windows.Forms.Button();
+            this.button1 = new System.Windows.Forms.Button();
             this.dtEklemeTarihi = new System.Windows.Forms.DateTimePicker();
             this.btnAjan = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
@@ -69,11 +71,11 @@
             this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.button3 = new System.Windows.Forms.Button();
             this.btnSec = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.pdfViewer1 = new Spire.PdfViewer.Forms.PdfViewer();
-            this.button3 = new System.Windows.Forms.Button();
-            this.button1 = new System.Windows.Forms.Button();
+            this.button5 = new System.Windows.Forms.Button();
             this.panelVeriYonetim.SuspendLayout();
             this.groupBoxVeriYonetim.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -98,6 +100,8 @@
             // 
             // groupBoxVeriYonetim
             // 
+            this.groupBoxVeriYonetim.Controls.Add(this.button5);
+            this.groupBoxVeriYonetim.Controls.Add(this.button4);
             this.groupBoxVeriYonetim.Controls.Add(this.btnYeni);
             this.groupBoxVeriYonetim.Controls.Add(this.button1);
             this.groupBoxVeriYonetim.Controls.Add(this.dtEklemeTarihi);
@@ -127,6 +131,16 @@
             this.groupBoxVeriYonetim.TabIndex = 325;
             this.groupBoxVeriYonetim.TabStop = false;
             // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(441, 228);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(149, 28);
+            this.button4.TabIndex = 325;
+            this.button4.Text = "Tekrar Okut ADM";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click_1);
+            // 
             // btnYeni
             // 
             this.btnYeni.Location = new System.Drawing.Point(30, 123);
@@ -136,6 +150,17 @@
             this.btnYeni.Text = "+";
             this.btnYeni.UseVisualStyleBackColor = true;
             this.btnYeni.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(473, 299);
+            this.button1.Margin = new System.Windows.Forms.Padding(4);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(100, 28);
+            this.button1.TabIndex = 318;
+            this.button1.Text = "Baykal";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // dtEklemeTarihi
             // 
@@ -506,6 +531,17 @@
             this.dataGridViewTextBoxColumn3.MinimumWidth = 6;
             this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(472, 332);
+            this.button3.Margin = new System.Windows.Forms.Padding(4);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(100, 28);
+            this.button3.TabIndex = 320;
+            this.button3.Text = "Ajan";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // btnSec
             // 
             this.btnSec.Location = new System.Drawing.Point(290, 196);
@@ -546,27 +582,16 @@
             this.pdfViewer1.Threshold = 60;
             this.pdfViewer1.ViewerBackgroundColor = System.Drawing.SystemColors.Window;
             // 
-            // button3
+            // button5
             // 
-            this.button3.Location = new System.Drawing.Point(472, 332);
-            this.button3.Margin = new System.Windows.Forms.Padding(4);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(100, 28);
-            this.button3.TabIndex = 320;
-            this.button3.Text = "Ajan";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(473, 299);
-            this.button1.Margin = new System.Windows.Forms.Padding(4);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(100, 28);
-            this.button1.TabIndex = 318;
-            this.button1.Text = "Baykal";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
+            this.button5.Location = new System.Drawing.Point(472, 368);
+            this.button5.Margin = new System.Windows.Forms.Padding(4);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(100, 28);
+            this.button5.TabIndex = 326;
+            this.button5.Text = "ADM";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // ctlKesimPlaniEkle
             // 
@@ -639,5 +664,7 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn gridProje;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.Button button4;
+        private System.Windows.Forms.Button button5;
     }
 }

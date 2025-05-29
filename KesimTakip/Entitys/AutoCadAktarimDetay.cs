@@ -1,0 +1,18 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace KesimTakip.Entitys
+{
+    public class AutoCadAktarimDetay
+    {
+        public string Proje { get; set; }
+        public string Grup { get; set; }
+        public string MalzemeKod { get; set; }
+        public int Adet { get; set; } // Grup adedi ile çarpılmış adet
+        public string MalzemeAd { get; set; }
+        public string Kalite { get; set; }
+    }
+}

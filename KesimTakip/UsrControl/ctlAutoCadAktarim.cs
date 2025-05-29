@@ -1,0 +1,158 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Xml.Linq;
+using KesimTakip.Entitys;
+using KesimTakip.Helper;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+
+namespace KesimTakip.UsrControl
+{
+    public partial class ctlAutoCadAktarim : UserControl
+    {
+        private List<AutoCadAktarim> tumParcalar;
+        public ctlAutoCadAktarim()
+        {
+            InitializeComponent();
+
+            DataGridViewHelper.StilUygula(dataGridIslenmisXml);
+            DataGridViewHelper.StilUygula(dataGridXmlCiktisi);
+        }
+
+        private void btnXmlDosyaSec_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog ofd = new OpenFileDialog())
+            {
+                ofd.Filter = "XML Dosyası|*.xml";
+                if (ofd.ShowDialog() == DialogResult.OK)
+                {
+                    string xmlPath = ofd.FileName;
+                    try
+                    {
+                        tumParcalar = ParcalariOku(xmlPath);
+                        dataGridXmlCiktisi.DataSource = tumParcalar;
+                    }
+                    catch (Exception ex)
+                    {
+                        MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+            }
+        }
+
+        private void txtAra_TextChanged(object sender, EventArgs e)
+        {
+            string filtre = txtAra.Text.ToLower();
+            if (string.IsNullOrEmpty(filtre))
+            {
+                dataGridXmlCiktisi.DataSource = tumParcalar;
+            }
+            else
+            {
+                var filtrelenmisParcalar = tumParcalar.Where(p =>
+                    (p.Grup?.ToLower().Contains(filtre) ?? false) ||
+                    (p.PozNo?.ToLower().Contains(filtre) ?? false) ||
+                    (p.Ad?.ToLower().Contains(filtre) ?? false) ||
+                    (p.Kalite?.ToLower().Contains(filtre) ?? false)
+                ).ToList();
+                dataGridXmlCiktisi.DataSource = filtrelenmisParcalar;
+            }
+        }
+       
+        private void OzetTabloyuGuncelle()
+        {
+            var guncelParcalar = dataGridXmlCiktisi .DataSource as List<AutoCadAktarim>;
+            if (guncelParcalar == null) return;
+
+            var project = txtProjeNo.Text.Trim();
+            var projeKodu = string.IsNullOrEmpty(project) ? "Bilinmiyor" : project;
+
+            var ozetParcalar = guncelParcalar
+                .Where(p => !string.IsNullOrEmpty(p.Ad) && !string.IsNullOrEmpty(p.Kalite))
+                .Select(p =>
+                {
+                    string formattedPozNo = p.PozNo.Length == 1 ? $"0{p.PozNo}" : p.PozNo;
+                    return new AutoCadAktarimDetay
+                    {
+                        Proje = projeKodu,
+                        Grup = p.Grup,
+                        MalzemeKod = $"{p.Grup.Substring(0, 3)}-00-{formattedPozNo}",
+                        Adet = p.Adet * p.GrupAdet,
+                        MalzemeAd = p.Ad,
+                        Kalite = p.Kalite
+                    };
+                })
+                .OrderBy(p => p.Grup)
+                .ThenBy(p => p.MalzemeKod)
+                .ToList();
+
+            dataGridIslenmisXml.DataSource = ozetParcalar;
+        }
+        private List<AutoCadAktarim> ParcalariOku(string xmlPath)
+        {
+            var liste = new List<AutoCadAktarim>();
+            var doc = XDocument.Load(xmlPath);
+
+            foreach (var mainpart in doc.Descendants("mainpart"))
+            {
+                string grupNo = mainpart.Attribute("num")?.Value ?? "Bilinmiyor";
+                int grupAdet = int.TryParse(mainpart.Attribute("quantity")?.Value, out int qty) ? qty : 1;
+
+                liste.Add(new AutoCadAktarim
+                {
+                    Grup = grupNo,
+                    PozNo = "",
+                    Adet = grupAdet,
+                    Ad = "",
+                    Kalite = "",
+                    NetAgirlik = null,
+                    GrupAdet = grupAdet 
+                });
+
+                foreach (var sp in mainpart.Descendants("singlepart"))
+                {
+                    var part = sp.Element("part");
+                    if (part == null)
+                    {
+                        Console.WriteLine($"Uyarı: singlepart (num: {sp.Attribute("num")?.Value}) içinde part elementi bulunamadı.");
+                        continue;
+                    }
+
+                    var parca = new AutoCadAktarim
+                    {
+                        Grup = grupNo,
+                        PozNo = sp.Attribute("num")?.Value ?? "Bilinmiyor",
+                        Adet = int.TryParse(sp.Attribute("quantity")?.Value, out int adet) ? adet : 1,
+                        Ad = part.Attribute("name")?.Value ?? "Bilinmiyor",
+                        Kalite = part.Element("material")?.Attribute("name")?.Value ?? "Bilinmiyor",
+                        NetAgirlik = double.TryParse(part.Element("exactWeight")?.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double net) ? net / 1000.0 : (double?)null,
+                        GrupAdet = grupAdet 
+                    };
+
+                    liste.Add(parca);
+                }
+            }
+
+            return liste;
+        }
+
+        private void btnHazirla_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtProjeNo.Text))
+            {
+                MessageBox.Show("Lütfen proje bilgisi giriniz.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            else
+            {
+                OzetTabloyuGuncelle();
+            }
+        }
+    }
+}

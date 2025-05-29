@@ -14,5 +14,7 @@ namespace KesimTakip.Entitys
         public string Poz { get; set; }
         public string Adet { get; set; }
         public string Proje { get; set; }
+        public string Program { get; set; }
+        public string ProgramTekrari { get; set; }
     }
 }

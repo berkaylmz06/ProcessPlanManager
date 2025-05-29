@@ -157,11 +157,13 @@
     <Compile Include="DataBase\KullaniciHareketLogData.cs" />
     <Compile Include="DataBase\KullanicilarData.cs" />
     <Compile Include="DataBase\SorunBildirimleriData.cs" />
+    <Compile Include="Entitys\AutoCadAktarimDetay.cs" />
     <Compile Include="Entitys\KesimDetaylari.cs" />
     <Compile Include="Entitys\KesimListesiPaket.cs" />
     <Compile Include="Entitys\KesimTamamlanmisPaket.cs" />
     <Compile Include="Entitys\KullaniciHareket.cs" />
     <Compile Include="Entitys\MalzemeBilgisi.cs" />
+    <Compile Include="Entitys\AutoCadAktarim.cs" />
     <Compile Include="Entitys\SorunBildirimleri.cs" />
     <Compile Include="Entitys\KesimListesi.cs" />
     <Compile Include="DataBase\KesimListesiData.cs" />
@@ -204,6 +206,12 @@
     <Compile Include="Helper\UserController.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="UsrControl\ctlAutoCadAktarim.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlAutoCadAktarim.Designer.cs">
+      <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
+    </Compile>
     <Compile Include="UsrControl\ctlKesimDetaylari.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -273,6 +281,9 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <EmbeddedResource Include="UsrControl\ctlAutoCadAktarim.resx">
+      <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlKesimDetaylari.resx">
       <DependentUpon>ctlKesimDetaylari.cs</DependentUpon>
     </EmbeddedResource>

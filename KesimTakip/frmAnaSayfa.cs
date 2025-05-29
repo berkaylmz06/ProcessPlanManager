@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
 using iText.StyledXmlParser.Jsoup.Helper;
@@ -23,6 +24,7 @@ namespace KesimTakip
 
         private ctlKesimPlaniEkle kesimPlaniEkle;
         private ctlSistemBilgisi sistemBilgisiAnaSayfa;
+        private ctlAutoCadAktarim autoCadAktarim;
 
         private Kullanicilar aktifKullanici;
 
@@ -78,6 +80,7 @@ namespace KesimTakip
             ButonGenelHelper.StilUygula(btnOturumuKapat);
             ButonGenelHelper.StilUygula(btnSistemHareketleri);
             ButonGenelHelper.StilUygula(btnSistemBilgisiAnaSayfa);
+            ButonGenelHelper.StilUygula(btnAutoCad);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnSistem);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
             MenuStripGenelHelper.StilUygula(menuStrip1);
@@ -93,6 +96,7 @@ namespace KesimTakip
             btnSistemHareketleri.Visible = false;
             lblKullaniciBilgi.Visible = false;
             btnSistemBilgisiAnaSayfa.Visible = false;
+            btnAutoCad.Visible = false;
 
             switch (aktifKullanici.kullaniciRol)
             {
@@ -114,6 +118,7 @@ namespace KesimTakip
                     btnIletilenSorunlar.Visible = true;
                     btnSistemHareketleri.Visible = true;
                     btnSistemBilgisiAnaSayfa.Visible = true;
+                    btnAutoCad.Visible = true;
                     break;
 
                 case "İş Hazırlama":
@@ -151,6 +156,7 @@ namespace KesimTakip
               btnIletilenSorunlar,
               btnSistemHareketleri,
               btnSistemBilgisiAnaSayfa,
+              btnAutoCad,
               btnOturumuKapat
               );
         }
@@ -313,7 +319,7 @@ namespace KesimTakip
 
         private void btnAktar_Click(object sender, EventArgs e)
         {
-            
+           
         }
         private void btnYapilanKesimleriGor_Click(object sender, EventArgs e)
         {
@@ -368,6 +374,19 @@ namespace KesimTakip
             }
 
             panelAnaSayfaContainer.Controls.Add(sistemBilgisiAnaSayfa);
+        }
+
+        private void btnAutoCad_Click(object sender, EventArgs e)
+        {
+            panelAnaSayfaContainer.Controls.Clear();
+
+            if (autoCadAktarim == null)
+            {
+                autoCadAktarim = new ctlAutoCadAktarim();
+                autoCadAktarim.Dock = DockStyle.Fill;
+            }
+
+            panelAnaSayfaContainer.Controls.Add(autoCadAktarim);
         }
     }
 }
