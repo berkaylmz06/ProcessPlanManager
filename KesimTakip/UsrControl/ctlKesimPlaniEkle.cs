@@ -55,6 +55,8 @@ namespace KesimTakip.UsrControl
             ButonMakinaSecHelper.NötrStilUygula(buttonGroup);
 
             _seciliButon = null;
+
+            ctlBaslik1.Baslik = "Kesim Planı Ekle";
         }
         private void ExclusiveButton_Click(object sender, EventArgs e)
         {
@@ -290,18 +292,16 @@ namespace KesimTakip.UsrControl
         }
         private string DuzeltRegexIle(string hataliSatir)
         {
-            // Örnek: ST ile başlayıp sonunda 5 sayı + nokta + 2 sayı varsa ama aradaki yapı eksikse düzelt
             var match = Regex.Match(hataliSatir, @"(ST[^\s]*)(\d{5}\.\d{2})");
             if (match.Success)
             {
                 string baslangic = match.Groups[1].Value;
                 string bitis = match.Groups[2].Value;
 
-                // Örnek düzeltme mantığı (kendi formatına göre özelleştir)
                 string duzenliSatir = $"{baslangic}-DZN-{bitis}";
                 return duzenliSatir;
             }
-            return hataliSatir; // Regex'e uymuyorsa aynen döner
+            return hataliSatir;
         }
         public async Task PdfYukle(string filePath)
         {
@@ -627,7 +627,7 @@ namespace KesimTakip.UsrControl
             }
             else if (kayitYapildi)
             {
-                var userController = new UserController(_formArayuzu.lblSistemKullaniciMetinAl());
+                var userController = new LogEkle(_formArayuzu.lblSistemKullaniciMetinAl());
                 userController.LogYap("KesimPlaniEklendi", "Kesim Planı Ekle", $"Kullanıcı {currentId.Value} numaralı kesim planını yükledi.");
                 MessageBox.Show("Kayıt işlemi tamamlandı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -1095,7 +1095,7 @@ namespace KesimTakip.UsrControl
                     writer.WriteEndDocument();
                 }
 
-                var userController = new UserController(_formArayuzu.lblSistemKullaniciMetinAl());
+                var userController = new LogEkle(_formArayuzu.lblSistemKullaniciMetinAl());
                 userController.LogYap("XmlDosyasiOlusturuldu", "Kesim Planı Ekle", $"Kullanıcı {txtId.Text} numaralı kesim planı XML dosyası oluşturdu.");
 
                 MessageBox.Show("XML başarıyla oluşturuldu.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);

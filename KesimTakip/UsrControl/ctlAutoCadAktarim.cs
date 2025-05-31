@@ -9,6 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using KesimTakip.DataBase;
 using KesimTakip.Entitys;
 using KesimTakip.Helper;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
@@ -25,7 +26,10 @@ namespace KesimTakip.UsrControl
             DataGridViewHelper.StilUygula(dataGridIslenmisXml);
             DataGridViewHelper.StilUygula(dataGridXmlCiktisi);
         }
-
+        private void ctlAutoCadAktarim_Load(object sender, EventArgs e)
+        {
+            ctlBaslik1.Baslik = "AutoCad Aktarım";
+        }
         private void btnXmlDosyaSec_Click(object sender, EventArgs e)
         {
             using (OpenFileDialog ofd = new OpenFileDialog())
@@ -45,6 +49,7 @@ namespace KesimTakip.UsrControl
                     }
                 }
             }
+            tabloDuzenle();
         }
 
         private void txtAra_TextChanged(object sender, EventArgs e)
@@ -153,6 +158,35 @@ namespace KesimTakip.UsrControl
             {
                 OzetTabloyuGuncelle();
             }
+        }
+        public void tabloDuzenle()
+        {
+
+            if (dataGridXmlCiktisi.Columns.Contains("GrupAdet"))
+                dataGridXmlCiktisi.Columns["GrupAdet"].Visible = false;
+        }
+
+        private void btnAktar_Click(object sender, EventArgs e)
+        {
+            foreach (DataGridViewRow row in dataGridIslenmisXml.Rows)
+            {
+                if (row.IsNewRow) continue;
+
+                string proje = row.Cells["Proje"].Value?.ToString() ?? "";
+                string grup = row.Cells["Grup"].Value?.ToString() ?? "";
+                string malzemeKod = row.Cells["MalzemeKod"].Value?.ToString() ?? "";
+                int adet = 0;
+                int.TryParse(row.Cells["Adet"].Value?.ToString(), out adet);
+                string malzemeAd = row.Cells["MalzemeAd"].Value?.ToString() ?? "";
+                string kalite = row.Cells["Kalite"].Value?.ToString() ?? "";
+
+                if (!string.IsNullOrWhiteSpace(proje) && !string.IsNullOrWhiteSpace(grup))
+                {
+                    AutoCadAktarimData.SaveAutoCadData(proje, grup, malzemeKod, adet, malzemeAd, kalite);
+                }
+            }
+
+            MessageBox.Show("Veriler kaydedildi.");
         }
     }
 }

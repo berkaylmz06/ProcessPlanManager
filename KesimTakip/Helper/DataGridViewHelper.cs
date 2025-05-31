@@ -18,7 +18,7 @@ namespace KesimTakip.Helper
             dgv.ScrollBars = ScrollBars.Both;
             dgv.AllowUserToResizeRows = false;
 
-            dgv.BorderStyle = BorderStyle.None;
+            dgv.BorderStyle = BorderStyle.FixedSingle;
             dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal;
 
             dgv.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(240, 240, 240);
@@ -70,6 +70,49 @@ namespace KesimTakip.Helper
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
                 null, dgvLogs, new object[] { true });
 
+        }
+        public static void StilUygulaProjeOge(DataGridView dgv)
+        {
+            dgv.AllowUserToAddRows = false;
+            dgv.AllowUserToDeleteRows = true;
+            dgv.AllowUserToResizeRows = false;
+            dgv.ReadOnly = false;
+            dgv.SelectionMode = DataGridViewSelectionMode.FullRowSelect; 
+            dgv.MultiSelect = false; 
+            dgv.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            dgv.RowHeadersVisible = false; 
+
+            dgv.BackgroundColor = ColorTranslator.FromHtml("#F5F6FA");
+            dgv.BorderStyle = BorderStyle.None;
+            dgv.EnableHeadersVisualStyles = false; 
+
+            dgv.ColumnHeadersDefaultCellStyle.BackColor = ColorTranslator.FromHtml("#2C3E50");
+            dgv.ColumnHeadersDefaultCellStyle.ForeColor = Color.White;
+            dgv.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10, FontStyle.Bold); 
+            dgv.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            dgv.ColumnHeadersHeight = 35; 
+
+            dgv.DefaultCellStyle.BackColor = Color.White; 
+            dgv.DefaultCellStyle.ForeColor = ColorTranslator.FromHtml("#2C3E50"); 
+            dgv.DefaultCellStyle.Font = new Font("Segoe UI", 9); 
+            dgv.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; 
+            dgv.DefaultCellStyle.Padding = new Padding(5);
+
+            dgv.AlternatingRowsDefaultCellStyle.BackColor = ColorTranslator.FromHtml("#E8ECEF");
+            dgv.AlternatingRowsDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleCenter; 
+
+            dgv.DefaultCellStyle.SelectionBackColor = ColorTranslator.FromHtml("#74B9FF");
+            dgv.DefaultCellStyle.SelectionForeColor = Color.White;
+
+            dgv.GridColor = ColorTranslator.FromHtml("#DCE3E8"); 
+            dgv.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal; 
+
+            dgv.AllowUserToOrderColumns = false; 
+            dgv.AllowUserToResizeColumns = true; 
+            dgv.EditMode = DataGridViewEditMode.EditOnEnter; 
+
+            dgv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
+            dgv.RowTemplate.Height = 30;
         }
     }
 }

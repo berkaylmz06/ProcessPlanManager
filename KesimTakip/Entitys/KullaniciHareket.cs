@@ -8,7 +8,7 @@ namespace KesimTakip.Entitys
 {
     public class KullaniciHareket
     {
-        public string kullaniciAdi { get; set; }
+        public int kullaniciId { get; set; }
         public IslemTuru islem { get; set; }
         public string sayfaAdi { get; set; }
         public DateTime tarihSaat { get; set; }

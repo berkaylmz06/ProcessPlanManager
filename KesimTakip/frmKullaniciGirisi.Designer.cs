@@ -58,6 +58,7 @@
             this.txtSifre.PasswordChar = '*';
             this.txtSifre.Size = new System.Drawing.Size(163, 22);
             this.txtSifre.TabIndex = 8;
+            this.txtSifre.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtSifre_KeyDown);
             // 
             // label2
             // 
@@ -112,6 +113,7 @@
             this.Name = "frmKullaniciGirisi";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "CEKA";
+            this.Load += new System.EventHandler(this.frmKullaniciGirisi_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

@@ -38,6 +38,8 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.yardımCubugunuKaldirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelAraYuz = new System.Windows.Forms.Panel();
+            this.btnProjeOgeleri = new System.Windows.Forms.Button();
+            this.btnAutoCad = new System.Windows.Forms.Button();
             this.btnSistemBilgisiAnaSayfa = new System.Windows.Forms.Button();
             this.btnSistemHareketleri = new System.Windows.Forms.Button();
             this.btnIletilenSorunlar = new System.Windows.Forms.Button();
@@ -74,7 +76,6 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
             this.lblKullaniciBilgi = new System.Windows.Forms.Label();
-            this.btnAutoCad = new System.Windows.Forms.Button();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
@@ -123,7 +124,7 @@
             // 
             // btnOturumuKapat
             // 
-            this.btnOturumuKapat.Location = new System.Drawing.Point(14, 587);
+            this.btnOturumuKapat.Location = new System.Drawing.Point(14, 649);
             this.btnOturumuKapat.Margin = new System.Windows.Forms.Padding(2);
             this.btnOturumuKapat.Name = "btnOturumuKapat";
             this.btnOturumuKapat.Size = new System.Drawing.Size(160, 58);
@@ -179,7 +180,7 @@
             // panelAraYuz
             // 
             this.panelAraYuz.BackColor = System.Drawing.SystemColors.HotTrack;
-            this.panelAraYuz.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panelAraYuz.Controls.Add(this.btnProjeOgeleri);
             this.panelAraYuz.Controls.Add(this.btnAutoCad);
             this.panelAraYuz.Controls.Add(this.btnSistemBilgisiAnaSayfa);
             this.panelAraYuz.Controls.Add(this.btnSistemHareketleri);
@@ -196,6 +197,28 @@
             this.panelAraYuz.Name = "panelAraYuz";
             this.panelAraYuz.Size = new System.Drawing.Size(189, 787);
             this.panelAraYuz.TabIndex = 212;
+            // 
+            // btnProjeOgeleri
+            // 
+            this.btnProjeOgeleri.Location = new System.Drawing.Point(14, 587);
+            this.btnProjeOgeleri.Margin = new System.Windows.Forms.Padding(2);
+            this.btnProjeOgeleri.Name = "btnProjeOgeleri";
+            this.btnProjeOgeleri.Size = new System.Drawing.Size(160, 58);
+            this.btnProjeOgeleri.TabIndex = 123;
+            this.btnProjeOgeleri.Text = "Proje Öğeleri\r\n";
+            this.btnProjeOgeleri.UseVisualStyleBackColor = true;
+            this.btnProjeOgeleri.Click += new System.EventHandler(this.btnProjeOgeleri_Click);
+            // 
+            // btnAutoCad
+            // 
+            this.btnAutoCad.Location = new System.Drawing.Point(14, 525);
+            this.btnAutoCad.Margin = new System.Windows.Forms.Padding(2);
+            this.btnAutoCad.Name = "btnAutoCad";
+            this.btnAutoCad.Size = new System.Drawing.Size(160, 58);
+            this.btnAutoCad.TabIndex = 122;
+            this.btnAutoCad.Text = "AutoCad Aktarım\r\n";
+            this.btnAutoCad.UseVisualStyleBackColor = true;
+            this.btnAutoCad.Click += new System.EventHandler(this.btnAutoCad_Click);
             // 
             // btnSistemBilgisiAnaSayfa
             // 
@@ -590,17 +613,6 @@
             this.lblKullaniciBilgi.Text = "Şu anda tanımlı bir rolünüz bulunmamaktadır. Lütfen yetki için yöneticinizle ilet" +
     "işime geçiniz.";
             // 
-            // btnAutoCad
-            // 
-            this.btnAutoCad.Location = new System.Drawing.Point(14, 525);
-            this.btnAutoCad.Margin = new System.Windows.Forms.Padding(2);
-            this.btnAutoCad.Name = "btnAutoCad";
-            this.btnAutoCad.Size = new System.Drawing.Size(160, 58);
-            this.btnAutoCad.TabIndex = 122;
-            this.btnAutoCad.Text = "AutoCad Aktarım\r\n";
-            this.btnAutoCad.UseVisualStyleBackColor = true;
-            this.btnAutoCad.Click += new System.EventHandler(this.btnAutoCad_Click);
-            // 
             // frmAnaSayfa
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
@@ -684,5 +696,6 @@
         private System.Windows.Forms.Label lblKullaniciBilgi;
         private System.Windows.Forms.Button btnSistemBilgisiAnaSayfa;
         private System.Windows.Forms.Button btnAutoCad;
+        private System.Windows.Forms.Button btnProjeOgeleri;
     }
 }

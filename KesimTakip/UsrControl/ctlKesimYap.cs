@@ -32,6 +32,10 @@ namespace KesimTakip.UsrControl
 
             VerileriYukle();
         }
+        private void ctlKesimYap_Load(object sender, EventArgs e)
+        {
+            ctlBaslik1.Baslik = "Kesim Yap";
+        }
         public void FormKullaniciAdiGetir(IKullaniciAdiOgren kullaniciAdi)
         {
             _kullaniciAdi = kullaniciAdi;
@@ -121,7 +125,7 @@ namespace KesimTakip.UsrControl
 
         private void btnAra_Click(object sender, EventArgs e)
         {
-            var userController = new UserController(_kullaniciAdi.lblSistemKullaniciMetinAl());
+            var userController = new LogEkle(_kullaniciAdi.lblSistemKullaniciMetinAl());
             userController.LogYap("Tabloda Arama", "Kesim Yap", "Kullanıcı Tabloda Arama Yaptı.");
 
 
@@ -189,7 +193,7 @@ namespace KesimTakip.UsrControl
 
                 if (sonuc1 && sonuc2)
                 {
-                    var userController = new UserController(_kullaniciAdi.lblSistemKullaniciMetinAl());
+                    var userController = new LogEkle(_kullaniciAdi.lblSistemKullaniciMetinAl());
                     userController.LogYap("KesimPlaniKesildi", "Kesim Yap", $"Kullanıcı {kesimId} numaralı kesim planından {txtKesilecekPlanSayisi.Text} adet kesimini tamamladı.");
                 }
                 else

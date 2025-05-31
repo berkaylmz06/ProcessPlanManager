@@ -37,8 +37,6 @@
             this.panelHeader = new System.Windows.Forms.Panel();
             this.panelDetay = new System.Windows.Forms.Panel();
             this.btnKullaniciSil = new System.Windows.Forms.Button();
-            this.panelBaslik = new System.Windows.Forms.Panel();
-            this.label6 = new System.Windows.Forms.Label();
             this.panelRolAtaCizgi = new System.Windows.Forms.Panel();
             this.cbKullaniciRol = new System.Windows.Forms.ComboBox();
             this.lblKullaniciRolu = new System.Windows.Forms.Label();
@@ -51,11 +49,13 @@
             this.lblKullaniciAdi = new System.Windows.Forms.Label();
             this.lblAdSoyad = new System.Windows.Forms.Label();
             this.txtAdSoyad = new System.Windows.Forms.TextBox();
+            this.ctlBaslik1 = new KesimTakip.UsrControl.ctlBaslik();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.ctlBaslik2 = new KesimTakip.UsrControl.ctlBaslik();
             this.panelDisContainer.SuspendLayout();
             this.panelList.SuspendLayout();
             this.panelHeader.SuspendLayout();
             this.panelDetay.SuspendLayout();
-            this.panelBaslik.SuspendLayout();
             this.panelRolAtaCizgi.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -86,10 +86,10 @@
             this.panelDisContainer.Controls.Add(this.panelSpacer1);
             this.panelDisContainer.Controls.Add(this.panelHeader);
             this.panelDisContainer.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelDisContainer.Location = new System.Drawing.Point(0, 0);
+            this.panelDisContainer.Location = new System.Drawing.Point(0, 50);
             this.panelDisContainer.Name = "panelDisContainer";
             this.panelDisContainer.Padding = new System.Windows.Forms.Padding(10);
-            this.panelDisContainer.Size = new System.Drawing.Size(462, 957);
+            this.panelDisContainer.Size = new System.Drawing.Size(460, 969);
             this.panelDisContainer.TabIndex = 139;
             // 
             // panelList
@@ -99,7 +99,7 @@
             this.panelList.Location = new System.Drawing.Point(10, 87);
             this.panelList.Margin = new System.Windows.Forms.Padding(10);
             this.panelList.Name = "panelList";
-            this.panelList.Size = new System.Drawing.Size(442, 860);
+            this.panelList.Size = new System.Drawing.Size(440, 872);
             this.panelList.TabIndex = 139;
             // 
             // lstKullanicilar
@@ -110,7 +110,7 @@
             this.lstKullanicilar.ItemHeight = 16;
             this.lstKullanicilar.Location = new System.Drawing.Point(0, 0);
             this.lstKullanicilar.Name = "lstKullanicilar";
-            this.lstKullanicilar.Size = new System.Drawing.Size(442, 860);
+            this.lstKullanicilar.Size = new System.Drawing.Size(440, 872);
             this.lstKullanicilar.TabIndex = 128;
             this.lstKullanicilar.SelectedIndexChanged += new System.EventHandler(this.lstKullanicilar_SelectedIndexChanged);
             // 
@@ -119,7 +119,7 @@
             this.panelSpacer1.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelSpacer1.Location = new System.Drawing.Point(10, 77);
             this.panelSpacer1.Name = "panelSpacer1";
-            this.panelSpacer1.Size = new System.Drawing.Size(442, 10);
+            this.panelSpacer1.Size = new System.Drawing.Size(440, 10);
             this.panelSpacer1.TabIndex = 140;
             // 
             // panelHeader
@@ -131,13 +131,14 @@
             this.panelHeader.Location = new System.Drawing.Point(10, 10);
             this.panelHeader.Name = "panelHeader";
             this.panelHeader.Padding = new System.Windows.Forms.Padding(5);
-            this.panelHeader.Size = new System.Drawing.Size(442, 67);
+            this.panelHeader.Size = new System.Drawing.Size(440, 67);
             this.panelHeader.TabIndex = 138;
             // 
             // panelDetay
             // 
+            this.panelDetay.Controls.Add(this.ctlBaslik2);
+            this.panelDetay.Controls.Add(this.panel1);
             this.panelDetay.Controls.Add(this.btnKullaniciSil);
-            this.panelDetay.Controls.Add(this.panelBaslik);
             this.panelDetay.Controls.Add(this.panelRolAtaCizgi);
             this.panelDetay.Controls.Add(this.btnGüncelle);
             this.panelDetay.Controls.Add(this.txtEmail);
@@ -149,9 +150,9 @@
             this.panelDetay.Controls.Add(this.lblAdSoyad);
             this.panelDetay.Controls.Add(this.txtAdSoyad);
             this.panelDetay.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelDetay.Location = new System.Drawing.Point(462, 0);
+            this.panelDetay.Location = new System.Drawing.Point(460, 50);
             this.panelDetay.Name = "panelDetay";
-            this.panelDetay.Size = new System.Drawing.Size(906, 957);
+            this.panelDetay.Size = new System.Drawing.Size(1247, 969);
             this.panelDetay.TabIndex = 140;
             // 
             // btnKullaniciSil
@@ -163,26 +164,6 @@
             this.btnKullaniciSil.Text = "Kullanıcıyı Sil";
             this.btnKullaniciSil.UseVisualStyleBackColor = true;
             this.btnKullaniciSil.Click += new System.EventHandler(this.btnKullaniciSil_Click);
-            // 
-            // panelBaslik
-            // 
-            this.panelBaslik.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.panelBaslik.Controls.Add(this.label6);
-            this.panelBaslik.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelBaslik.Location = new System.Drawing.Point(0, 0);
-            this.panelBaslik.Name = "panelBaslik";
-            this.panelBaslik.Size = new System.Drawing.Size(906, 55);
-            this.panelBaslik.TabIndex = 138;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label6.Location = new System.Drawing.Point(3, 13);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(211, 29);
-            this.label6.TabIndex = 136;
-            this.label6.Text = "Kullanıcı Bilgileri";
             // 
             // panelRolAtaCizgi
             // 
@@ -293,22 +274,47 @@
             this.txtAdSoyad.Size = new System.Drawing.Size(274, 22);
             this.txtAdSoyad.TabIndex = 0;
             // 
+            // ctlBaslik1
+            // 
+            this.ctlBaslik1.Baslik = "Başlık";
+            this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
+            this.ctlBaslik1.Name = "ctlBaslik1";
+            this.ctlBaslik1.Size = new System.Drawing.Size(1707, 50);
+            this.ctlBaslik1.TabIndex = 0;
+            // 
+            // panel1
+            // 
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(1247, 10);
+            this.panel1.TabIndex = 141;
+            // 
+            // ctlBaslik2
+            // 
+            this.ctlBaslik2.Baslik = "Başlık";
+            this.ctlBaslik2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ctlBaslik2.Location = new System.Drawing.Point(0, 10);
+            this.ctlBaslik2.Name = "ctlBaslik2";
+            this.ctlBaslik2.Size = new System.Drawing.Size(1247, 50);
+            this.ctlBaslik2.TabIndex = 142;
+            // 
             // ctlKullaniciAyarlari
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.panelDetay);
             this.Controls.Add(this.panelDisContainer);
+            this.Controls.Add(this.ctlBaslik1);
             this.Name = "ctlKullaniciAyarlari";
-            this.Size = new System.Drawing.Size(1368, 957);
+            this.Size = new System.Drawing.Size(1707, 1019);
             this.Load += new System.EventHandler(this.ctlKullaniciAyarlari_Load);
             this.panelDisContainer.ResumeLayout(false);
             this.panelList.ResumeLayout(false);
             this.panelHeader.ResumeLayout(false);
             this.panelDetay.ResumeLayout(false);
             this.panelDetay.PerformLayout();
-            this.panelBaslik.ResumeLayout(false);
-            this.panelBaslik.PerformLayout();
             this.panelRolAtaCizgi.ResumeLayout(false);
             this.panelRolAtaCizgi.PerformLayout();
             this.ResumeLayout(false);
@@ -337,8 +343,9 @@
         private System.Windows.Forms.TextBox txtAdSoyad;
         private System.Windows.Forms.Button btnGüncelle;
         private System.Windows.Forms.Panel panelRolAtaCizgi;
-        private System.Windows.Forms.Panel panelBaslik;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btnKullaniciSil;
+        private ctlBaslik ctlBaslik1;
+        private ctlBaslik ctlBaslik2;
+        private System.Windows.Forms.Panel panel1;
     }
 }

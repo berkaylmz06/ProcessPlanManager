@@ -159,12 +159,13 @@ namespace KesimTakip.UsrControl
             txtArama.GotFocus += TextBox1_GotFocus;
             txtArama.LostFocus += TextBox1_LostFocus;
 
-
             ChartiTiklanmazYap();
+
+            ctlBaslik1.Baslik = "Kesim Detayları";
         }
         private void ChartiTiklanmazYap()
         {
-            ClickThroughPanel engelleyici = new ClickThroughPanel();
+            ChartiTiklanmazYap engelleyici = new ChartiTiklanmazYap();
             engelleyici.Bounds = chartKesim.Bounds;
             engelleyici.Parent = chartKesim.Parent;
             engelleyici.BringToFront();

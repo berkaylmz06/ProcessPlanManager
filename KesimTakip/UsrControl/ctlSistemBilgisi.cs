@@ -18,7 +18,10 @@ namespace KesimTakip.UsrControl
         {
             InitializeComponent();
         }
-
+        private void ctlSistemBilgisi_Load(object sender, EventArgs e)
+        {
+            ctlBaslik1.Baslik = "Sistem Bilgisi";
+        }
         public void FormArayuzuAyarla(IFormArayuzu formArayuzu)
         {
             TextBoxaVeriGetir();
@@ -27,5 +30,6 @@ namespace KesimTakip.UsrControl
         {
           
         }
+
     }
 }

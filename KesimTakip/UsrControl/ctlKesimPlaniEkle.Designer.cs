@@ -30,6 +30,7 @@
         {
             this.panelVeriYonetim = new System.Windows.Forms.Panel();
             this.groupBoxVeriYonetim = new System.Windows.Forms.GroupBox();
+            this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
             this.btnYeni = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -75,7 +76,7 @@
             this.btnSec = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.pdfViewer1 = new Spire.PdfViewer.Forms.PdfViewer();
-            this.button5 = new System.Windows.Forms.Button();
+            this.ctlBaslik1 = new KesimTakip.UsrControl.ctlBaslik();
             this.panelVeriYonetim.SuspendLayout();
             this.groupBoxVeriYonetim.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -93,9 +94,9 @@
             this.panelVeriYonetim.Controls.Add(this.groupBoxVeriYonetim);
             this.panelVeriYonetim.Controls.Add(this.progressBar1);
             this.panelVeriYonetim.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelVeriYonetim.Location = new System.Drawing.Point(0, 0);
+            this.panelVeriYonetim.Location = new System.Drawing.Point(0, 48);
             this.panelVeriYonetim.Name = "panelVeriYonetim";
-            this.panelVeriYonetim.Size = new System.Drawing.Size(672, 896);
+            this.panelVeriYonetim.Size = new System.Drawing.Size(672, 903);
             this.panelVeriYonetim.TabIndex = 326;
             // 
             // groupBoxVeriYonetim
@@ -130,6 +131,17 @@
             this.groupBoxVeriYonetim.Size = new System.Drawing.Size(627, 853);
             this.groupBoxVeriYonetim.TabIndex = 325;
             this.groupBoxVeriYonetim.TabStop = false;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(472, 368);
+            this.button5.Margin = new System.Windows.Forms.Padding(4);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(100, 28);
+            this.button5.TabIndex = 326;
+            this.button5.Text = "ADM";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button4
             // 
@@ -556,7 +568,7 @@
             // progressBar1
             // 
             this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.progressBar1.Location = new System.Drawing.Point(0, 883);
+            this.progressBar1.Location = new System.Drawing.Point(0, 890);
             this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar1.Name = "progressBar1";
             this.progressBar1.Size = new System.Drawing.Size(672, 13);
@@ -571,27 +583,25 @@
             this.pdfViewer1.FormFillEnabled = false;
             this.pdfViewer1.IgnoreCase = false;
             this.pdfViewer1.IsToolBarVisible = true;
-            this.pdfViewer1.Location = new System.Drawing.Point(672, 0);
+            this.pdfViewer1.Location = new System.Drawing.Point(672, 48);
             this.pdfViewer1.Margin = new System.Windows.Forms.Padding(4);
             this.pdfViewer1.MultiPagesThreshold = 60;
             this.pdfViewer1.Name = "pdfViewer1";
             this.pdfViewer1.OnRenderPageExceptionEvent = null;
-            this.pdfViewer1.Size = new System.Drawing.Size(858, 896);
+            this.pdfViewer1.Size = new System.Drawing.Size(953, 903);
             this.pdfViewer1.TabIndex = 325;
             this.pdfViewer1.Text = "pdfViewer1";
             this.pdfViewer1.Threshold = 60;
             this.pdfViewer1.ViewerBackgroundColor = System.Drawing.SystemColors.Window;
             // 
-            // button5
+            // ctlBaslik1
             // 
-            this.button5.Location = new System.Drawing.Point(472, 368);
-            this.button5.Margin = new System.Windows.Forms.Padding(4);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(100, 28);
-            this.button5.TabIndex = 326;
-            this.button5.Text = "ADM";
-            this.button5.UseVisualStyleBackColor = true;
-            this.button5.Click += new System.EventHandler(this.button5_Click);
+            this.ctlBaslik1.Baslik = "Başlık";
+            this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
+            this.ctlBaslik1.Name = "ctlBaslik1";
+            this.ctlBaslik1.Size = new System.Drawing.Size(1625, 48);
+            this.ctlBaslik1.TabIndex = 327;
             // 
             // ctlKesimPlaniEkle
             // 
@@ -599,8 +609,9 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.pdfViewer1);
             this.Controls.Add(this.panelVeriYonetim);
+            this.Controls.Add(this.ctlBaslik1);
             this.Name = "ctlKesimPlaniEkle";
-            this.Size = new System.Drawing.Size(1530, 896);
+            this.Size = new System.Drawing.Size(1625, 951);
             this.Load += new System.EventHandler(this.ctlKesimPlaniEkle_Load);
             this.panelVeriYonetim.ResumeLayout(false);
             this.groupBoxVeriYonetim.ResumeLayout(false);
@@ -666,5 +677,6 @@
         private System.Windows.Forms.Button button3;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
+        private ctlBaslik ctlBaslik1;
     }
 }

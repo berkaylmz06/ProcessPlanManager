@@ -8,26 +8,25 @@ using System.Windows.Forms;
 
 namespace KesimTakip.Helper
 {
-    public class ClickThroughPanel : Panel
+    public class ChartiTiklanmazYap : Panel
     {
         protected override CreateParams CreateParams
         {
             get
             {
                 var cp = base.CreateParams;
-                cp.ExStyle |= 0x20; // WS_EX_TRANSPARENT
+                cp.ExStyle |= 0x20; 
                 return cp;
             }
         }
 
-        public ClickThroughPanel()
+        public ChartiTiklanmazYap()
         {
-            this.BackColor = Color.FromArgb(1, 1, 1); // Neredeyse şeffaf, ama çizim yok
+            this.BackColor = Color.FromArgb(1, 1, 1);
         }
 
         protected override void OnPaintBackground(PaintEventArgs e)
         {
-            // Arka plan çizilmesin = altındaki Chart görünür kalsın
         }
     }
 }

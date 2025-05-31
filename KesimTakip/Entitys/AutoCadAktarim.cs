@@ -13,10 +13,10 @@ namespace KesimTakip.Entitys
         public int Adet { get; set; }
         public string Ad { get; set; }
         public string Kalite { get; set; }
-        public double? NetAgirlik { get; set; } // Nullable double
+        public double? NetAgirlik { get; set; }
         public double? ToplamAgirlik
         {
-            get { return NetAgirlik.HasValue ? (double?)Math.Round(Adet * NetAgirlik.Value, 2) : null; } // Explicit double? cast
+            get { return NetAgirlik.HasValue ? (double?)Math.Round(Adet * NetAgirlik.Value, 2) : null; }
         }
         public int GrupAdet { get; set; }
     }

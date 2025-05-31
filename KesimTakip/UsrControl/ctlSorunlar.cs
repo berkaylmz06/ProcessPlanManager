@@ -23,7 +23,28 @@ namespace KesimTakip.UsrControl
             sorunlar = SorunBildirimleriData.GetSorunlar();
             dataGridSorunBildirimleri.DataSource = sorunlar;
         }
+        private void ctlSorunlar_Load(object sender, EventArgs e)
+        {
+            List<SorunBildirimleri> sorunlar = SorunBildirimleriData.GetSorunlar();
 
+            dataGridSorunBildirimleri.DataSource = sorunlar;
+
+            dataGridSorunBildirimleri.Columns[0].Visible = false;
+            dataGridSorunBildirimleri.Columns[1].Visible = true;
+            dataGridSorunBildirimleri.Columns[2].Visible = false;
+            dataGridSorunBildirimleri.Columns[3].Visible = false;
+            dataGridSorunBildirimleri.Columns[4].Visible = false;
+
+            dataGridSorunBildirimleri.Columns[1].HeaderText = "Bildiri Ve Durum Bilgisi";
+
+            dataGridSorunBildirimleri.ReadOnly = true;
+            dataGridSorunBildirimleri.AllowUserToAddRows = false;
+            dataGridSorunBildirimleri.AllowUserToDeleteRows = false;
+            dataGridSorunBildirimleri.DefaultCellStyle.SelectionBackColor = dataGridSorunBildirimleri.DefaultCellStyle.BackColor;
+            dataGridSorunBildirimleri.DefaultCellStyle.SelectionForeColor = dataGridSorunBildirimleri.DefaultCellStyle.ForeColor;
+
+            ctlBaslik1.Baslik = "Sorunlar";
+        }
         private void dataGridSorunBildirimleri_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -56,28 +77,6 @@ namespace KesimTakip.UsrControl
                 }
             }
         }
-
-        private void ctlSorunlar_Load(object sender, EventArgs e)
-        {
-            List<SorunBildirimleri> sorunlar = SorunBildirimleriData.GetSorunlar();
-
-            dataGridSorunBildirimleri.DataSource = sorunlar;
-
-            dataGridSorunBildirimleri.Columns[0].Visible = false;
-            dataGridSorunBildirimleri.Columns[1].Visible = true;
-            dataGridSorunBildirimleri.Columns[2].Visible = false;
-            dataGridSorunBildirimleri.Columns[3].Visible = false;
-            dataGridSorunBildirimleri.Columns[4].Visible = false;
-
-            dataGridSorunBildirimleri.Columns[1].HeaderText = "Bildiri Ve Durum Bilgisi";
-
-            dataGridSorunBildirimleri.ReadOnly = true;
-            dataGridSorunBildirimleri.AllowUserToAddRows = false;
-            dataGridSorunBildirimleri.AllowUserToDeleteRows = false;
-            dataGridSorunBildirimleri.DefaultCellStyle.SelectionBackColor = dataGridSorunBildirimleri.DefaultCellStyle.BackColor;
-            dataGridSorunBildirimleri.DefaultCellStyle.SelectionForeColor = dataGridSorunBildirimleri.DefaultCellStyle.ForeColor;
-        }
-
         private void dataGridSorunBildirimleri_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (e.RowIndex >= 0 && e.ColumnIndex == 1)

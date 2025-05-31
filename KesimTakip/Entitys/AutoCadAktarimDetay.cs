@@ -11,7 +11,7 @@ namespace KesimTakip.Entitys
         public string Proje { get; set; }
         public string Grup { get; set; }
         public string MalzemeKod { get; set; }
-        public int Adet { get; set; } // Grup adedi ile çarpılmış adet
+        public int Adet { get; set; }
         public string MalzemeAd { get; set; }
         public string Kalite { get; set; }
     }

@@ -28,8 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.panelBaslik = new System.Windows.Forms.Panel();
-            this.label6 = new System.Windows.Forms.Label();
             this.btnAra = new System.Windows.Forms.Button();
             this.dataGridViewTamamlanmisKesimListesi = new System.Windows.Forms.DataGridView();
             this.dataGridTamamlanmisDetay = new System.Windows.Forms.DataGridView();
@@ -37,31 +35,11 @@
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.dataGridViewTamamlanmisHareket = new System.Windows.Forms.DataGridView();
-            this.panelBaslik.SuspendLayout();
+            this.ctlBaslik1 = new KesimTakip.UsrControl.ctlBaslik();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTamamlanmisKesimListesi)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridTamamlanmisDetay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTamamlanmisHareket)).BeginInit();
             this.SuspendLayout();
-            // 
-            // panelBaslik
-            // 
-            this.panelBaslik.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.panelBaslik.Controls.Add(this.label6);
-            this.panelBaslik.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelBaslik.Location = new System.Drawing.Point(0, 0);
-            this.panelBaslik.Name = "panelBaslik";
-            this.panelBaslik.Size = new System.Drawing.Size(1575, 55);
-            this.panelBaslik.TabIndex = 138;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label6.Location = new System.Drawing.Point(3, 14);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(269, 29);
-            this.label6.TabIndex = 136;
-            this.label6.Text = "Yapılan Kesimleri Gör";
             // 
             // btnAra
             // 
@@ -139,7 +117,7 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.label2.Location = new System.Drawing.Point(813, 96);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(399, 25);
+            this.label2.Size = new System.Drawing.Size(319, 20);
             this.label2.TabIndex = 145;
             this.label2.Text = "Tamamlanmış Kesimlerin Hareketleri";
             // 
@@ -162,10 +140,20 @@
             this.dataGridViewTamamlanmisHareket.Size = new System.Drawing.Size(684, 294);
             this.dataGridViewTamamlanmisHareket.TabIndex = 144;
             // 
+            // ctlBaslik1
+            // 
+            this.ctlBaslik1.Baslik = "Başlık";
+            this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
+            this.ctlBaslik1.Name = "ctlBaslik1";
+            this.ctlBaslik1.Size = new System.Drawing.Size(1575, 50);
+            this.ctlBaslik1.TabIndex = 146;
+            // 
             // ctlYapilanKesimleriGor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.Controls.Add(this.ctlBaslik1);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.dataGridViewTamamlanmisHareket);
             this.Controls.Add(this.label1);
@@ -173,11 +161,9 @@
             this.Controls.Add(this.dataGridTamamlanmisDetay);
             this.Controls.Add(this.dataGridViewTamamlanmisKesimListesi);
             this.Controls.Add(this.btnAra);
-            this.Controls.Add(this.panelBaslik);
             this.Name = "ctlYapilanKesimleriGor";
             this.Size = new System.Drawing.Size(1575, 940);
-            this.panelBaslik.ResumeLayout(false);
-            this.panelBaslik.PerformLayout();
+            this.Load += new System.EventHandler(this.ctlYapilanKesimleriGor_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTamamlanmisKesimListesi)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridTamamlanmisDetay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTamamlanmisHareket)).EndInit();
@@ -187,8 +173,6 @@
         }
 
         #endregion
-        private System.Windows.Forms.Panel panelBaslik;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Button btnAra;
         public System.Windows.Forms.DataGridView dataGridViewTamamlanmisKesimListesi;
         private System.Windows.Forms.DataGridView dataGridTamamlanmisDetay;
@@ -196,5 +180,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label label2;
         public System.Windows.Forms.DataGridView dataGridViewTamamlanmisHareket;
+        private ctlBaslik ctlBaslik1;
     }
 }

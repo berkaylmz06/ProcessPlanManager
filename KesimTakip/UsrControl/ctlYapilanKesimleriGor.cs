@@ -30,6 +30,10 @@ namespace KesimTakip.UsrControl
 
             tabloDuzenle();
         }
+        private void ctlYapilanKesimleriGor_Load(object sender, EventArgs e)
+        {
+            ctlBaslik1.Baslik = "Yapılan Kesimleri Gör";
+        }
         public void FormKullaniciAdiGetir(IKullaniciAdiOgren kullaniciAdi)
         {
             _kullaniciAdi = kullaniciAdi;
@@ -117,5 +121,6 @@ namespace KesimTakip.UsrControl
                 }
             }
         }
+
     }
 }

@@ -25,6 +25,7 @@ namespace KesimTakip
         private ctlKesimPlaniEkle kesimPlaniEkle;
         private ctlSistemBilgisi sistemBilgisiAnaSayfa;
         private ctlAutoCadAktarim autoCadAktarim;
+        private ctlProjeOgeleri projeOgeleri;
 
         private Kullanicilar aktifKullanici;
 
@@ -81,11 +82,12 @@ namespace KesimTakip
             ButonGenelHelper.StilUygula(btnSistemHareketleri);
             ButonGenelHelper.StilUygula(btnSistemBilgisiAnaSayfa);
             ButonGenelHelper.StilUygula(btnAutoCad);
+            ButonGenelHelper.StilUygula(btnProjeOgeleri);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnSistem);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
             MenuStripGenelHelper.StilUygula(menuStrip1);
 
-            lblSistemKullanici.Text = aktifKullanici.adSoyad;
+            lblSistemKullanici.Text = aktifKullanici.kullaniciAdi;
 
             btnKesimPlaniEkle.Visible = false;
             btnKesimYap.Visible = false;
@@ -97,6 +99,7 @@ namespace KesimTakip
             lblKullaniciBilgi.Visible = false;
             btnSistemBilgisiAnaSayfa.Visible = false;
             btnAutoCad.Visible = false;
+            btnProjeOgeleri.Visible = false;
 
             switch (aktifKullanici.kullaniciRol)
             {
@@ -119,6 +122,7 @@ namespace KesimTakip
                     btnSistemHareketleri.Visible = true;
                     btnSistemBilgisiAnaSayfa.Visible = true;
                     btnAutoCad.Visible = true;
+                    btnProjeOgeleri.Visible = true;
                     break;
 
                 case "İş Hazırlama":
@@ -157,6 +161,7 @@ namespace KesimTakip
               btnSistemHareketleri,
               btnSistemBilgisiAnaSayfa,
               btnAutoCad,
+              btnProjeOgeleri,
               btnOturumuKapat
               );
         }
@@ -387,6 +392,19 @@ namespace KesimTakip
             }
 
             panelAnaSayfaContainer.Controls.Add(autoCadAktarim);
+        }
+
+        private void btnProjeOgeleri_Click(object sender, EventArgs e)
+        {
+            panelAnaSayfaContainer.Controls.Clear();
+
+            if (projeOgeleri == null)
+            {
+                projeOgeleri = new ctlProjeOgeleri();
+                projeOgeleri.Dock = DockStyle.Fill;
+            }
+
+            panelAnaSayfaContainer.Controls.Add(projeOgeleri);
         }
     }
 }

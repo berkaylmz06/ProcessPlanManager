@@ -10,40 +10,74 @@ namespace KesimTakip.DataBase
 {
     public class KullaniciHareketLogData
     {
-        public static void LogEkle(string kullaniciAdi, string islemTuru, string sayfaAdi, string ekBilgi = "")
+        public static void LogEkle(int kullaniciId, string islemTuru, string sayfaAdi, string ekBilgi = "")
         {
+            string query = @"
+        INSERT INTO KullaniciHareketLog 
+        (kullaniciId, islemTuru, sayfaAdi, tarihSaat, ekBilgi) 
+        VALUES 
+        (@kullaniciId, @islemTuru, @sayfaAdi, @tarihSaat, @ekBilgi)";
+
             using (var conn = DataBaseHelper.GetConnection())
             {
-                string query = @"
-                INSERT INTO KullaniciHareketLog 
-                (kullaniciAdi, islemTuru, tarihSaat, sayfaAdi, ekBilgi) 
-                VALUES 
-                (@kullaniciAdi, @islemTuru, @tarihSaat, @sayfaAdi, @ekBilgi)";
-
-                using (var cmd = new SqlCommand(query, conn))
+                try
                 {
-                    cmd.Parameters.AddWithValue("@kullaniciAdi", kullaniciAdi);
-                    cmd.Parameters.AddWithValue("@islemTuru", islemTuru);
-                    cmd.Parameters.AddWithValue("@tarihSaat", DateTime.Now);
-                    cmd.Parameters.AddWithValue("@sayfaAdi", sayfaAdi);
-                    cmd.Parameters.AddWithValue("@ekBilgi", ekBilgi);
-
                     conn.Open();
-                    cmd.ExecuteNonQuery();
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@kullaniciId", kullaniciId);
+                        cmd.Parameters.AddWithValue("@islemTuru", islemTuru ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@sayfaAdi", sayfaAdi ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@tarihSaat", DateTime.Now);
+                        cmd.Parameters.AddWithValue("@ekBilgi", string.IsNullOrEmpty(ekBilgi) ? (object)DBNull.Value : ekBilgi);
+
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    throw new Exception("Log ekleme sırasında bir hata oluştu.", ex);
+                }
+                finally
+                {
+                    if (conn.State == ConnectionState.Open)
+                        conn.Close();
                 }
             }
         }
         public DataTable GetKullaniciLog()
         {
-            string query = "SELECT [kullaniciAdi], [islemTuru], [sayfaAdi], [tarihSaat], [ekBilgi] FROM [KullaniciHareketLog]";
+            string query = @"
+        SELECT 
+            k.kullaniciAdi,
+            l.islemTuru,
+            l.sayfaAdi,
+            l.tarihSaat,
+            l.ekBilgi
+        FROM KullaniciHareketLog l
+        INNER JOIN Kullanicilar k ON l.kullaniciId = k.id
+        ORDER BY l.tarihSaat DESC";
+
             using (var connection = DataBaseHelper.GetConnection())
             {
-                connection.Open();
-                using (var adapter = new SqlDataAdapter(query, connection))
+                try
                 {
-                    DataTable dt = new DataTable();
-                    adapter.Fill(dt);
-                    return dt;
+                    connection.Open();
+                    using (var adapter = new SqlDataAdapter(query, connection))
+                    {
+                        DataTable dt = new DataTable();
+                        adapter.Fill(dt);
+                        return dt;
+                    }
+                }
+                catch (SqlException ex)
+                {
+                    throw new Exception("Veritabanı sorgusu sırasında bir hata oluştu.", ex);
+                }
+                finally
+                {
+                    if (connection.State == ConnectionState.Open)
+                        connection.Close();
                 }
             }
         }

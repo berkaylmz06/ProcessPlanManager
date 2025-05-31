@@ -41,6 +41,8 @@ namespace KesimTakip.UsrControl
         private void ctlKullaniciAyarlari_Load(object sender, EventArgs e)
         {
             lstKullanicilar.ClearSelected();
+            ctlBaslik1.Baslik = "Kullanıcı Ayarları";
+            ctlBaslik2.Baslik = "Kullanıcı Bilgileri";
         }
 
         public void YukleVeListele()

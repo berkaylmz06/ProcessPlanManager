@@ -28,7 +28,10 @@ namespace KesimTakip.UsrControl
 
             dataGridKullaniciLog.DefaultCellStyle.WrapMode = DataGridViewTriState.True;
         }
-
+        private void ctlSistemHareketleri_Load(object sender, EventArgs e)
+        {
+            ctlBaslik1.Baslik = "Sistem Hareketleri";
+        }
         private void dataGridKullaniciLog_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
             if (dataGridKullaniciLog.Columns[e.ColumnIndex].Name == "islemTuru")

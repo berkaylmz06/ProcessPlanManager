@@ -149,6 +149,7 @@
     <Compile Include="Business\VeriOkuma.cs" />
     <Compile Include="Concretes\FormArayuzu.cs" />
     <Compile Include="Concretes\KullaniciAdiOgren.cs" />
+    <Compile Include="DataBase\AutoCadAktarimData.cs" />
     <Compile Include="DataBase\DataBaseHelper.cs" />
     <Compile Include="DataBase\KesimDetaylariData.cs" />
     <Compile Include="DataBase\KesimListesiPaketData.cs" />
@@ -194,7 +195,7 @@
     <Compile Include="Entitys\Kullanicilar.cs" />
     <Compile Include="Helper\ButonGenelHelper.cs" />
     <Compile Include="Helper\ButonMakinaSecHelper.cs" />
-    <Compile Include="Helper\ClickThroughPanel.cs">
+    <Compile Include="Helper\ChartiTiklanmazYap.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Helper\DataGridViewHelper.cs" />
@@ -203,7 +204,7 @@
     <Compile Include="Helper\MenuStripGenelHelper.cs" />
     <Compile Include="Helper\PanelRoundHelper.cs" />
     <Compile Include="Helper\RoundedPanelHelper.cs" />
-    <Compile Include="Helper\UserController.cs" />
+    <Compile Include="Helper\LogEkle.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="UsrControl\ctlAutoCadAktarim.cs">
@@ -211,6 +212,12 @@
     </Compile>
     <Compile Include="UsrControl\ctlAutoCadAktarim.Designer.cs">
       <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UsrControl\ctlBaslik.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlBaslik.Designer.cs">
+      <DependentUpon>ctlBaslik.cs</DependentUpon>
     </Compile>
     <Compile Include="UsrControl\ctlKesimDetaylari.cs">
       <SubType>UserControl</SubType>
@@ -235,6 +242,12 @@
     </Compile>
     <Compile Include="UsrControl\ctlKullaniciAyarlari.Designer.cs">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UsrControl\ctlProjeOgeleri.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlProjeOgeleri.Designer.cs">
+      <DependentUpon>ctlProjeOgeleri.cs</DependentUpon>
     </Compile>
     <Compile Include="UsrControl\ctlSistemBilgisi.cs">
       <SubType>UserControl</SubType>
@@ -284,6 +297,9 @@
     <EmbeddedResource Include="UsrControl\ctlAutoCadAktarim.resx">
       <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlBaslik.resx">
+      <DependentUpon>ctlBaslik.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlKesimDetaylari.resx">
       <DependentUpon>ctlKesimDetaylari.cs</DependentUpon>
     </EmbeddedResource>
@@ -295,6 +311,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlKullaniciAyarlari.resx">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlProjeOgeleri.resx">
+      <DependentUpon>ctlProjeOgeleri.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlSistemBilgisi.resx">
       <DependentUpon>ctlSistemBilgisi.cs</DependentUpon>

@@ -38,11 +38,9 @@
             this.dataGridKesimListesi = new System.Windows.Forms.DataGridView();
             this.label4 = new System.Windows.Forms.Label();
             this.label5 = new System.Windows.Forms.Label();
-            this.label6 = new System.Windows.Forms.Label();
-            this.panelBaslik = new System.Windows.Forms.Panel();
+            this.ctlBaslik1 = new KesimTakip.UsrControl.ctlBaslik();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridDetay)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridKesimListesi)).BeginInit();
-            this.panelBaslik.SuspendLayout();
             this.SuspendLayout();
             // 
             // label3
@@ -161,31 +159,20 @@
             this.label5.TabIndex = 135;
             this.label5.Text = "Kesim Paket Detay";
             // 
-            // label6
+            // ctlBaslik1
             // 
-            this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label6.Location = new System.Drawing.Point(3, 13);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(139, 29);
-            this.label6.TabIndex = 136;
-            this.label6.Text = "Kesim Yap";
-            // 
-            // panelBaslik
-            // 
-            this.panelBaslik.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.panelBaslik.Controls.Add(this.label6);
-            this.panelBaslik.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelBaslik.Location = new System.Drawing.Point(0, 0);
-            this.panelBaslik.Name = "panelBaslik";
-            this.panelBaslik.Size = new System.Drawing.Size(1820, 55);
-            this.panelBaslik.TabIndex = 137;
+            this.ctlBaslik1.Baslik = "Başlık";
+            this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
+            this.ctlBaslik1.Name = "ctlBaslik1";
+            this.ctlBaslik1.Size = new System.Drawing.Size(1820, 50);
+            this.ctlBaslik1.TabIndex = 136;
             // 
             // ctlKesimYap
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.panelBaslik);
+            this.Controls.Add(this.ctlBaslik1);
             this.Controls.Add(this.label5);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.label3);
@@ -198,10 +185,9 @@
             this.Controls.Add(this.dataGridKesimListesi);
             this.Name = "ctlKesimYap";
             this.Size = new System.Drawing.Size(1820, 784);
+            this.Load += new System.EventHandler(this.ctlKesimYap_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridDetay)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridKesimListesi)).EndInit();
-            this.panelBaslik.ResumeLayout(false);
-            this.panelBaslik.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -219,7 +205,6 @@
         public System.Windows.Forms.DataGridView dataGridKesimListesi;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.Panel panelBaslik;
+        private ctlBaslik ctlBaslik1;
     }
 }
