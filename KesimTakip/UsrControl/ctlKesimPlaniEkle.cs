@@ -20,6 +20,7 @@ using System.Globalization;
 using System.Xml;
 using KesimTakip.Abstracts;
 using System.Threading;
+using KesimTakip.Concretes;
 
 namespace KesimTakip.UsrControl
 {
@@ -806,7 +807,8 @@ namespace KesimTakip.UsrControl
             List<(string Parca, string Miktar, int PageNumber, string Program, string ProgramTekrari)> parcaListesi = new List<(string, string, int, string, string)>();
 
             string malzemeRegex = @"^ST\d+-[A-Za-z0-9]+X\d+";
-            string programRegex = @"^\d+\s+\d+\s+\d+\.\d{3}\s+[\d,]+\s+[\d,.]+\s+[\d,]+\s+[\d,]+%?$";
+            //string programRegex = @"^\d+\s+\d+\s+\d+\.\d{3}\s+[\d,]+\s+[\d,.]+\s+[\d,]+\s+[\d,]+%?$";
+            string programRegex = @"^\s*(\d+)\s+(\d+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)";
             string parcaRegex = @"^\d{5}\.\d{2}(?:-\d+)*-P\d+(?:-EK\d+)?\s+\d{1,3}";
 
             foreach (string satir in satirlar)
@@ -1499,6 +1501,8 @@ namespace KesimTakip.UsrControl
                 MessageBox.Show($"Bir hata oluştu, lütfen veri formatını kontrol edin veya destek ekibiyle iletişime geçin: {ex.Message}");
             }
         }
+
+
         private void AdmSayfaPozDagitimi()
         {
             try
@@ -1533,22 +1537,23 @@ namespace KesimTakip.UsrControl
 
                 // RichTextBox1 için regex desenleri
                 Regex partRegex = new Regex(@"(\d{5}\.\d{2}-\d{3}-00-P\d+)\s+(\d+)\s+[\d,.]+\s+([\d,]+)\s+[\d,]+\s+[\d,]+", RegexOptions.IgnoreCase);
-                Regex cncRegex = new Regex(@"^\d+\s+(\d+)\s+\d+\s+[\d,.]+\s+[\d,]+\s+[\d,.]+\s+[\d,]+", RegexOptions.IgnoreCase);
+                Regex cncRegex = new Regex(@"^\s*(\d+)\s+(\d+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)", RegexOptions.IgnoreCase);
 
-                // RichTextBox4 için regex desenleri
-                Regex rich4PozRegex = new Regex(@"ST\d+-[A-Za-z0-9]+-(\d+-\d+-P\d+)-2AD-(\d+\.\d+)", RegexOptions.IgnoreCase);
-                Regex rich4SayfaRegex = new Regex(@"\(Sayfa:\s*(\d+)", RegexOptions.IgnoreCase);
-                Regex rich4ProgramRegex = new Regex(@"\(Program:\s*(\d+)", RegexOptions.IgnoreCase);
-                Regex rich4AdetRegex = new Regex(@"\(Miktar:\s*(\d+)", RegexOptions.IgnoreCase);
+                // RichTextBox4 için yeni regex deseni
+                Regex rich4Regex = new Regex(
+                    @"ST\d+-[A-Za-z0-9]+-(?<poz>\d+-\d+-P\d+)-2AD-(?<pozPrefix>[\d.]+).*\(Sayfa\s*[:]\s*(?<sayfa>\d+).*M[iı]ktar\s*[:\s]\s*(?<adet>\d+).*Program\s*[:\s]\s*(?<program>\d+)",
+                    RegexOptions.IgnoreCase);
 
                 var lines1 = text1.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
                 var lines4 = text4.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
                 // Veri yapıları
-                var partInfoDict = new Dictionary<string, (string Poz, string YerlesimID, int Adet, double Agirlik)>();
-                var cncProgramDict = new Dictionary<string, (int ProgramNo, double Agirlik)>();
+                var partInfoDict = new Dictionary<string, (string Poz, string YerlesimID, int Adet, double Agirlik, string Id)>();
+                var programSequenceDict = new Dictionary<string, int>();
+                var programIdMap = new Dictionary<string, string>();
+                int programCounter = 1;
 
-                // RichTextBox1 işleme - CNC Program bilgileri ve parça bilgileri
+                // RichTextBox1 işleme
                 logLines.Add("\nRichTextBox1 Verileri:");
                 string currentCncProgram = "";
 
@@ -1558,16 +1563,20 @@ namespace KesimTakip.UsrControl
                         line.Contains("Sayfa") || line.Contains("Nestings list") || line.Contains("Akyapak") ||
                         line.StartsWith("ID CNC") || line.Contains("Toplam sayfa sayısı") || line.Contains("%")) continue;
 
-                    // CNC Program numarasını yakala
                     var cncMatch = cncRegex.Match(line);
                     if (cncMatch.Success)
                     {
                         currentCncProgram = cncMatch.Groups[1].Value;
+                        if (!programIdMap.ContainsKey(currentCncProgram))
+                        {
+                            programIdMap[currentCncProgram] = programCounter.ToString("D2");
+                            programCounter++;
+                        }
+                        programSequenceDict[currentCncProgram] = 0;
                         logLines.Add($"CNC Program Bulundu: {currentCncProgram}");
                         continue;
                     }
 
-                    // Parça bilgisi
                     var partMatch = partRegex.Match(line.Trim());
                     if (partMatch.Success)
                     {
@@ -1578,63 +1587,79 @@ namespace KesimTakip.UsrControl
                         if (int.TryParse(adetStr, out int adet) &&
                             double.TryParse(agirlikStr.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double agirlik))
                         {
-                            string parcaId = $"{baseId}-01-{poz}"; // Örnek: 5-01-25049.01-152-00-P8
-                            partInfoDict[parcaId] = (poz, currentCncProgram.PadLeft(2, '0'), adet, agirlik);
-                            logLines.Add($"Parça Bulundu: {parcaId} => Poz: {poz}, Program: {currentCncProgram}, Adet: {adet}, Ağırlık: {agirlik:F2}");
+                            string programId = programIdMap[currentCncProgram];
+                            int sequence = programSequenceDict.ContainsKey(currentCncProgram) ? programSequenceDict[currentCncProgram] + 1 : 1;
+                            programSequenceDict[currentCncProgram] = sequence;
+                            string sequenceStr = sequence.ToString("D2");
+                            string parcaId = $"{baseId}-{programId}-{poz}";
+                            string uniqueId = $"{baseId}-{programId}-{sequenceStr}";
+                            partInfoDict[parcaId] = (poz, currentCncProgram.PadLeft(2, '0'), adet, agirlik, uniqueId);
+                            logLines.Add($"Parça Bulundu: {parcaId} => Poz: {poz}, Program: {currentCncProgram}, Adet: {adet}, Ağırlık: {agirlik:F2}, Id: {uniqueId}");
                         }
-                        else
-                        {
-                            logLines.Add($"[HATA] Sayısal dönüşüm başarısız: {line}");
-                        }
-                    }
-                    else
-                    {
-                        logLines.Add($"[HATA] Regex eşleşmedi: {line}");
                     }
                 }
 
-                // RichTextBox4 işleme - Eşleştirme için
+                // RichTextBox4 işleme
                 logLines.Add("\nRichTextBox4 Verileri:");
+                programSequenceDict.Clear();
+
                 foreach (var line in lines4)
                 {
                     if (string.IsNullOrWhiteSpace(line)) continue;
 
-                    var pozMatch = rich4PozRegex.Match(line);
-                    var sayfaMatch = rich4SayfaRegex.Match(line);
-                    var programMatch = rich4ProgramRegex.Match(line);
-                    var adetMatch = rich4AdetRegex.Match(line);
+                    string cleanedLine = Regex.Replace(line.Trim(), @"\s+", " ").Replace("\r", "").Replace("\n", "");
+                    cleanedLine = Regex.Replace(cleanedLine, @"\p{C}", "");
 
-                    if (pozMatch.Success && sayfaMatch.Success && programMatch.Success && adetMatch.Success)
+                    var match = rich4Regex.Match(cleanedLine);
+                    if (match.Success)
                     {
-                        string pozSimple = pozMatch.Groups[1].Value; // Örnek: 152-00-P8
-                        string pozPrefix = pozMatch.Groups[2].Value; // Örnek: 25049.01
-                        string sayfaNo = sayfaMatch.Groups[1].Value.PadLeft(2, '0');
-                        string programNo = programMatch.Groups[1].Value.PadLeft(2, '0');
-                        string adetStr = adetMatch.Groups[1].Value;
+                        string pozSimple = match.Groups["poz"].Value;
+                        string pozPrefix = match.Groups["pozPrefix"].Value;
+                        string programNo = match.Groups["program"].Value;
+                        string adetStr = match.Groups["adet"].Value;
 
-                        // Poz numarasını RichTextBox1 formatına uygun hale getirme
-                        string formattedPoz = $"{pozPrefix}-{pozSimple}"; // Örnek: 25049.01-152-00-P8
-                        string parcaId = $"{baseId}-{sayfaNo}-{formattedPoz}";
-                        string yerlesimId = $"{baseId}-{programNo}";
+                        // Program ID'sini al
+                        string programId = programIdMap.ContainsKey(programNo) ? programIdMap[programNo] : "00";
+
+                        // Sıra numarasını al ve artır
+                        int sequence = programSequenceDict.ContainsKey(programNo) ? programSequenceDict[programNo] + 1 : 1;
+                        programSequenceDict[programNo] = sequence;
+                        string sequenceStr = sequence.ToString("D2");
+                        string uniqueId = $"{baseId}-{programId}-{sequenceStr}";
+
+                        // Poz numarasını formatla
+                        string formattedPoz = $"{pozPrefix}-{pozSimple}";
+                        string parcaId = $"{baseId}-{programId}-{formattedPoz}";
 
                         if (partInfoDict.TryGetValue(parcaId, out var partInfo))
                         {
                             dataGridView2.Rows.Add(
                                 formattedPoz,
-                                yerlesimId,
+                                $"{baseId}-{programId}",
                                 partInfo.Adet,
-                                partInfo.Agirlik.ToString("F2", CultureInfo.InvariantCulture)
+                                partInfo.Agirlik.ToString("F2", CultureInfo.InvariantCulture),
+                                partInfo.Id
                             );
-                            logLines.Add($"Eşleşme Bulundu: {parcaId} => Poz: {formattedPoz}, Yerleşim: {yerlesimId}, Adet: {partInfo.Adet}, Ağırlık: {partInfo.Agirlik:F2}");
+                            logLines.Add($"Eşleşme Bulundu: {cleanedLine},Id: {partInfo.Id}");
                         }
                         else
                         {
-                            logLines.Add($"[UYARI] Eşleşme bulunamadı: {parcaId}");
+                            logLines.Add($"Eşleşme Bulundu: {cleanedLine},Id: {uniqueId}");
                         }
                     }
                     else
                     {
-                        logLines.Add($"[HATA] RichTextBox4 regex eşleşmedi: {line}");
+                        // Eşleşme olmayan satırlar için ID tahmini yap
+                        string possibleProgram = Regex.Match(cleanedLine, @"Program\s*[:\s]\s*(\d+)").Groups[1].Value;
+                        string programId = programIdMap.ContainsKey(possibleProgram) ? programIdMap[possibleProgram] : "00";
+                        int sequence = programSequenceDict.ContainsKey(possibleProgram) ? programSequenceDict[possibleProgram] + 1 : 1;
+                        string sequenceStr = sequence.ToString("D2");
+                        string uniqueId = $"{baseId}-{programId}-{sequenceStr}";
+
+                        logLines.Add($"Eşleşme Bulundu: {cleanedLine},Id: {uniqueId}");
+
+                        if (!string.IsNullOrEmpty(possibleProgram))
+                            programSequenceDict[possibleProgram] = sequence;
                     }
                 }
 
@@ -1653,140 +1678,6 @@ namespace KesimTakip.UsrControl
                               "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
-        //private void AdmSayfaPozDagitimi()
-        //{
-        //    try
-        //    {
-        //        string baseId = txtId.Text.Trim();
-        //        if (string.IsNullOrEmpty(baseId))
-        //        {
-        //            MessageBox.Show("Lütfen txtId alanını doldurun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //            return;
-        //        }
-
-        //        string text1 = _formArayuzu.RichTextBox1MetniAl().Trim();
-        //        if (string.IsNullOrEmpty(text1))
-        //        {
-        //            MessageBox.Show("Lütfen richTextBox1 alanını doldurun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //            return;
-        //        }
-
-        //        string text4 = _formArayuzu.RichTextBox4MetniAl().Trim();
-        //        if (string.IsNullOrEmpty(text4))
-        //        {
-        //            MessageBox.Show("Lütfen richTextBox4 alanını doldurun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //            return;
-        //        }
-
-        //        var logLines = new List<string>
-        //{
-        //    "=== ADM_Log.txt ===",
-        //    $"İşlem Tarihi: {DateTime.Now:dd.MM.yyyy HH:mm:ss}",
-        //    $"BaseId: {baseId}"
-        //};
-
-        //        // RichTextBox1 için regex desenleri
-        //        Regex partRegex = new Regex(@"(\d{5}\.\d{2}-\d{3}-P\d+)\s+(\d+)\s+[\d,]+\s+([\d,]+)", RegexOptions.IgnoreCase);
-
-        //        // RichTextBox4 için regex desenleri
-        //        Regex rich4PozRegex = new Regex(@"ST\d+-[A-Za-z0-9]+-\d+-\d+-P\d+-2AD-\d+\.\d+", RegexOptions.IgnoreCase);
-        //        Regex rich4SayfaRegex = new Regex(@"\(Sayfa:\s*(\d+)", RegexOptions.IgnoreCase);
-        //        Regex rich4ProgramRegex = new Regex(@"\(Program:\s*(\d+)", RegexOptions.IgnoreCase);
-        //        Regex rich4AdetRegex = new Regex(@"\(Miktar:\s*(\d+)", RegexOptions.IgnoreCase);
-
-        //        var lines1 = text1.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-        //        var lines4 = text4.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-
-        //        // Veri yapıları
-        //        var partInfoDict = new Dictionary<string, (string Poz, string YerlesimID, int Adet, double Agirlik)>();
-        //        var cncProgramDict = new Dictionary<string, (int ProgramNo, double Agirlik)>();
-
-        //        // RichTextBox1 işleme - CNC Program bilgileri ve parça bilgileri
-        //        logLines.Add("\nRichTextBox1 Verileri:");
-        //        string currentCncProgram = "";
-        //        double currentProgramAgirlik = 0;
-
-        //        foreach (var line in lines1)
-        //        {
-        //            if (string.IsNullOrWhiteSpace(line)) continue;
-
-        //            // Parça bilgisi
-        //            var partMatch = partRegex.Match(line);
-        //            if (partMatch.Success)
-        //            {
-        //                string poz = partMatch.Groups[1].Value;
-        //                string adetStr = partMatch.Groups[2].Value;
-        //                string agirlikStr = partMatch.Groups[3].Value;
-
-        //                if (int.TryParse(adetStr, out int adet) &&
-        //                    double.TryParse(agirlikStr.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double agirlik))
-        //                {
-        //                    string parcaId = $"{baseId}-01-{poz}"; // Örnek: ABC123-01-25049.01-152-00-P8
-        //                    partInfoDict[parcaId] = (poz, currentCncProgram.PadLeft(2, '0'), adet, agirlik);
-        //                    logLines.Add($"Parça Bulundu: {parcaId} => Poz: {poz}, Program: {currentCncProgram}, Adet: {adet}, Ağırlık: {agirlik:F2}");
-        //                }
-        //            }
-        //        }
-
-        //        // RichTextBox4 işleme - Eşleştirme için
-        //        logLines.Add("\nRichTextBox4 Verileri:");
-        //        foreach (var line in lines4)
-        //        {
-        //            if (string.IsNullOrWhiteSpace(line)) continue;
-
-        //            var pozMatch = rich4PozRegex.Match(line);
-        //            var sayfaMatch = rich4SayfaRegex.Match(line);
-        //            var programMatch = rich4ProgramRegex.Match(line);
-        //            var adetMatch = rich4AdetRegex.Match(line);
-
-        //            if (pozMatch.Success && sayfaMatch.Success && programMatch.Success && adetMatch.Success)
-        //            {
-        //                string pozFull = pozMatch.Value;
-        //                string pozSimple = pozFull.Split('-').Last(); // 25049.01 gibi
-        //                string sayfaNo = sayfaMatch.Groups[1].Value.PadLeft(2, '0');
-        //                string programNo = programMatch.Groups[1].Value.PadLeft(2, '0');
-        //                string adetStr = adetMatch.Groups[1].Value;
-
-        //                // Poz numarasını RichTextBox1 formatına uygun hale getirme
-        //                string[] pozParts = pozFull.Split('-');
-        //                string formattedPoz = $"{pozParts[5]}.{pozParts[6]}-{pozParts[3]}-{pozParts[4]}";
-
-        //                string parcaId = $"{baseId}-{sayfaNo}-{formattedPoz}";
-        //                string yerlesimId = $"{baseId}-{programNo}";
-
-        //                if (partInfoDict.TryGetValue(parcaId, out var partInfo))
-        //                {
-        //                    dataGridView2.Rows.Add(
-        //                        formattedPoz,
-        //                        yerlesimId,
-        //                        partInfo.Adet,
-        //                        partInfo.Agirlik.ToString("F2", CultureInfo.InvariantCulture)
-        //                    );
-        //                    logLines.Add($"Eşleşme Bulundu: {parcaId} => Poz: {formattedPoz}, Yerleşim: {yerlesimId}, Adet: {partInfo.Adet}, Ağırlık: {partInfo.Agirlik:F2}");
-        //                }
-        //                else
-        //                {
-        //                    logLines.Add($"[UYARI] Eşleşme bulunamadı: {parcaId}");
-        //                }
-        //            }
-        //        }
-
-        //        // Log dosyasını kaydet
-        //        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-        //        string logPath = Path.Combine(desktopPath, "ADM_Log.txt");
-        //        File.WriteAllLines(logPath, logLines, Encoding.UTF8);
-
-        //        MessageBox.Show("Veriler başarıyla işlendi ve DataGridView2'ye eklendi!", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        string errorPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ADM_Hata.txt");
-        //        File.WriteAllText(errorPath, $"Hata: {DateTime.Now:dd.MM.yyyy HH:mm:ss}\n{ex.ToString()}", Encoding.UTF8);
-        //        MessageBox.Show($"Bir hata oluştu:\n{ex.Message}\nDetaylar masaüstündeki ADM_Hata.txt dosyasına kaydedildi.",
-        //                      "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-        //}
 
         private void SayfaIDTabloVerileri()
         {

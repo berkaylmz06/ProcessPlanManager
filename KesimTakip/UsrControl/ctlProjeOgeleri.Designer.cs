@@ -46,7 +46,6 @@
             this.btnYeni = new System.Windows.Forms.Button();
             this.dataGridOgeDetay = new System.Windows.Forms.DataGridView();
             this.ctlBaslik1 = new KesimTakip.UsrControl.ctlBaslik();
-            this.lblSilinenSatirSayisi = new System.Windows.Forms.Label();
             this.panelDisContainer.SuspendLayout();
             this.panelList.SuspendLayout();
             this.panelSearch.SuspendLayout();
@@ -180,7 +179,6 @@
             // 
             // panelButtons
             // 
-            this.panelButtons.Controls.Add(this.lblSilinenSatirSayisi);
             this.panelButtons.Controls.Add(this.btnStandartProje);
             this.panelButtons.Controls.Add(this.btnKaydet);
             this.panelButtons.Controls.Add(this.btnYeni);
@@ -240,14 +238,6 @@
             this.ctlBaslik1.Size = new System.Drawing.Size(1619, 50);
             this.ctlBaslik1.TabIndex = 0;
             // 
-            // lblSilinenSatirSayisi
-            // 
-            this.lblSilinenSatirSayisi.AutoSize = true;
-            this.lblSilinenSatirSayisi.Location = new System.Drawing.Point(1033, 25);
-            this.lblSilinenSatirSayisi.Name = "lblSilinenSatirSayisi";
-            this.lblSilinenSatirSayisi.Size = new System.Drawing.Size(0, 20);
-            this.lblSilinenSatirSayisi.TabIndex = 14;
-            // 
             // ctlProjeOgeleri
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -266,7 +256,6 @@
             this.panelHeader.PerformLayout();
             this.panelDetayContainer.ResumeLayout(false);
             this.panelButtons.ResumeLayout(false);
-            this.panelButtons.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridOgeDetay)).EndInit();
             this.ResumeLayout(false);
 
@@ -292,6 +281,5 @@
         private System.Windows.Forms.Button btnYeni;
         private System.Windows.Forms.Button btnStandartProje;
         private System.Windows.Forms.Panel panelButtons;
-        private System.Windows.Forms.Label lblSilinenSatirSayisi;
     }
 }
