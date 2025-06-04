@@ -24,9 +24,5 @@ namespace KesimTakip.Helper
         {
             this.BackColor = Color.FromArgb(1, 1, 1);
         }
-
-        protected override void OnPaintBackground(PaintEventArgs e)
-        {
-        }
     }
 }

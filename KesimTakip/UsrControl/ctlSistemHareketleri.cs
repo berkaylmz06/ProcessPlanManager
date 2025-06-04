@@ -31,6 +31,7 @@ namespace KesimTakip.UsrControl
         private void ctlSistemHareketleri_Load(object sender, EventArgs e)
         {
             ctlBaslik1.Baslik = "Sistem Hareketleri";
+            dataGridKullaniciLog.ClearSelection();
         }
         private void dataGridKullaniciLog_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {

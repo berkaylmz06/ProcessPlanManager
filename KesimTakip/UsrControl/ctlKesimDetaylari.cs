@@ -34,14 +34,17 @@ namespace KesimTakip.UsrControl
             panelKart1.BackColor = Color.FromArgb(0, 95, 107);
             panelKart2.BackColor = Color.FromArgb(191, 128, 255);
             panelKart3.BackColor = Color.FromArgb(255, 83, 97);
+            panelKart3.BackColor = Color.FromArgb(15, 48, 56);
 
             OrtalaLabel(lblKesilecekPoz, panelKart1);
             OrtalaLabel(lblKesilmisPoz, panelKart2);
             OrtalaLabel(lblToplamPoz, panelKart3);
+            OrtalaLabel(lblToplamPozIfsKarsiligi,panelKart4);
 
             PanelRoundHelper.RoundCorners(panelKart1, 20);
             PanelRoundHelper.RoundCorners(panelKart2, 20);
             PanelRoundHelper.RoundCorners(panelKart3, 20);
+            PanelRoundHelper.RoundCorners(panelKart4, 20);
             RoundedPanelHelper.ApplyRoundedBorder(panelList, 10);
             RoundedPanelHelper.ApplyRoundedBorder(panelHeader, 10);
             RoundedPanelHelper.ApplyRoundedBorder(panelSearch, 10);
@@ -127,8 +130,32 @@ namespace KesimTakip.UsrControl
                 panelKart2.BackColor = Color.FromArgb(191, 128, 255);
                 lblToplamPoz.Text = secilen.toplamAdet.ToString();
                 panelKart3.BackColor = Color.FromArgb(255, 83, 97);
-            }
 
+                // poz string'ini "_" ayıracı ile parçala
+                string[] pozParcalari = secilen.poz.Split('-');
+                if (pozParcalari.Length >= 4)
+                {
+                    string kalite = pozParcalari[0]; // İlk parça: kalite
+                    string malzeme = pozParcalari[1]; // İkinci parça: malzeme
+                    string kalip = $"{pozParcalari[2]}-{pozParcalari[3]}-{pozParcalari[4]}"; // Üçüncü parça: kalip
+                    string proje = pozParcalari[5];
+
+                    var (uygunMu, toplamAdet) = AutoCadAktarimData.KontrolAdet(
+                        kalite,
+                        malzeme,
+                        kalip,
+                        proje,
+                        secilen.kesilmisAdet
+                    );
+                    lblToplamPozIfsKarsiligi.Text = toplamAdet.ToString();
+                    panelKart4.BackColor = uygunMu ? Color.FromArgb(15, 48, 56) : Color.Red;
+                }
+                else
+                {
+                    lblToplamPozIfsKarsiligi.Text = "Hatalı poz formatı";
+                    panelKart4.BackColor = Color.Red;
+                }
+            }
         }
         private void OrtalaLabel(Label lbl, Panel pnl)
         {
@@ -139,18 +166,20 @@ namespace KesimTakip.UsrControl
         private void panel3_Resize(object sender, EventArgs e)
         {
             int spacing = 60;
-            int totalWidth = panelKart1.Width + panelKart2.Width + panelKart3.Width + (2 * spacing);
+            int totalWidth = panelKart1.Width + panelKart2.Width + panelKart3.Width + panelKart4.Width + (3 * spacing);
             int startX = Math.Max((panelKartContainer.Width - totalWidth) / 2, 0);
 
             int y1 = Math.Max((panelKartContainer.Height - panelKart1.Height) / 2, 0);
             int y2 = Math.Max((panelKartContainer.Height - panelKart2.Height) / 2, 0);
             int y3 = Math.Max((panelKartContainer.Height - panelKart3.Height) / 2, 0);
+            int y4 = Math.Max((panelKartContainer.Height - panelKart4.Height) / 2, 0);
 
             panelKart1.Location = new Point(startX, y1);
             panelKart2.Location = new Point(startX + panelKart1.Width + spacing, y2);
             panelKart3.Location = new Point(startX + panelKart1.Width + spacing + panelKart2.Width + spacing, y3);
-
+            panelKart4.Location = new Point(startX + panelKart1.Width + spacing + panelKart2.Width + spacing + panelKart3.Width + spacing, y4);
         }
+
 
         private void ctlKesimDetaylari_Load(object sender, EventArgs e)
         {

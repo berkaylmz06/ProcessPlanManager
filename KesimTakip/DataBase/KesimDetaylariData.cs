@@ -119,5 +119,19 @@ namespace KesimTakip.DataBase
                 }
             }
         }
+        public static bool KayitVarMi(string poz)
+        {
+            // Veritabanı bağlantınızı ve sorgunuzu buraya ekleyin
+            // Örnek bir SQL sorgusu
+            string query = "SELECT COUNT(*) FROM KesimDetaylari WHERE poz = @poz";
+            using (SqlConnection connection =DataBaseHelper.GetConnection())
+            using (SqlCommand command = new SqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@poz", poz);
+                connection.Open();
+                int count = (int)command.ExecuteScalar();
+                return count > 0; // Kayıt varsa true döner
+            }
+        }
     }
 }

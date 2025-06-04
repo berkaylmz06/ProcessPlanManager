@@ -173,5 +173,25 @@ namespace KesimTakip.DataBase
 
             return dt;
         }
+        public static bool KesimIdVarMi(string kesimId)
+        {
+            string query = @"
+        SELECT COUNT(*) 
+        FROM KesimListesiPaket 
+        WHERE SUBSTRING(KesimId, 1, CHARINDEX('-', KesimId) - 1) = @KesimId";
+
+            using (var conn = DataBaseHelper.GetConnection())
+            {
+                conn.Open();
+                using (var command = new SqlCommand(query, conn))
+                {
+                    string kesimIdSade = kesimId.Split('-')[0];
+                    command.Parameters.AddWithValue("@KesimId", kesimIdSade);
+
+                    int count = (int)command.ExecuteScalar();
+                    return count > 0;
+                }
+            }
+        }
     }
 }

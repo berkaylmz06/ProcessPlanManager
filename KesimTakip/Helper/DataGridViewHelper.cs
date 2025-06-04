@@ -109,7 +109,7 @@ namespace KesimTakip.Helper
 
             dgv.AllowUserToOrderColumns = false; 
             dgv.AllowUserToResizeColumns = true; 
-            dgv.EditMode = DataGridViewEditMode.EditOnEnter; 
+            dgv.EditMode = DataGridViewEditMode.EditOnKeystrokeOrF2; 
 
             dgv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
             dgv.RowTemplate.Height = 30;

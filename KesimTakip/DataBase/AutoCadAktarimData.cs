@@ -13,12 +13,6 @@ namespace KesimTakip.DataBase
 {
     public class AutoCadAktarimData
     {
-        private static void LogMessage(string message)
-        {
-            // Dosyaya veya konsola yazdırabilirsiniz
-            Console.WriteLine($"{DateTime.Now}: {message}");
-            // Alternatif olarak: System.IO.File.AppendAllText("log.txt", $"{DateTime.Now}: {message}\n");
-        }
         public static void SaveAutoCadData(string projeAdi, string grupAdi, string malzemeKod, int adet, string malzemeAd, string kalite)
         {
             try
@@ -238,13 +232,10 @@ namespace KesimTakip.DataBase
                 try
                 {
                     conn.Open();
-                    LogMessage($"GrupEkleGuncelle başladı: projeAdi={projeAdi}, grupAdi={grupAdi}, eskiGrupAdi={eskiGrupAdi}");
-
                     using (var transaction = conn.BeginTransaction())
                     {
                         try
                         {
-                            // ProjeId'yi getir
                             int projeId;
                             string getProjeIdQuery = "SELECT projeId FROM Projeler WHERE projeAdi = @projeAdi";
                             using (var cmd = new SqlCommand(getProjeIdQuery, conn, transaction))
@@ -256,10 +247,8 @@ namespace KesimTakip.DataBase
                                     throw new Exception($"Proje bulunamadı: {projeAdi}");
                                 }
                                 projeId = Convert.ToInt32(result);
-                                LogMessage($"ProjeId alındı: {projeId}");
                             }
 
-                            // Eski grup adını sil (güncelleme için)
                             if (!string.IsNullOrEmpty(eskiGrupAdi) && eskiGrupAdi != grupAdi)
                             {
                                 string deleteQuery = @"
@@ -278,11 +267,9 @@ namespace KesimTakip.DataBase
                                     deleteCmd.Parameters.AddWithValue("@projeAdi", projeAdi);
                                     deleteCmd.Parameters.AddWithValue("@eskiGrupAdi", eskiGrupAdi);
                                     int rowsAffected = deleteCmd.ExecuteNonQuery();
-                                    LogMessage($"Eski grup silindi: eskiGrupAdi={eskiGrupAdi}, etkilenen satır sayısı={rowsAffected}");
                                 }
                             }
 
-                            // Grup zaten varsa güncelle, yoksa ekle
                             string checkQuery = @"
                             SELECT grupId 
                             FROM Gruplar g
@@ -297,8 +284,6 @@ namespace KesimTakip.DataBase
                                 if (result != null)
                                 {
                                     grupId = Convert.ToInt32(result);
-                                    LogMessage($"Grup zaten var: grupId={grupId}, güncelleme yapılıyor");
-                                    // Grup zaten varsa, güncelleme yapılabilir (örneğin, grupAdi değişmişse)
                                     string updateQuery = @"
                                     UPDATE Gruplar
                                     SET grupAdi = @grupAdi
@@ -308,7 +293,6 @@ namespace KesimTakip.DataBase
                                         updateCmd.Parameters.AddWithValue("@grupAdi", grupAdi);
                                         updateCmd.Parameters.AddWithValue("@grupId", grupId);
                                         int rowsAffected = updateCmd.ExecuteNonQuery();
-                                        LogMessage($"Grup güncellendi: grupId={grupId}, etkilenen satır sayısı={rowsAffected}");
                                     }
                                 }
                                 else
@@ -323,25 +307,21 @@ namespace KesimTakip.DataBase
                                         insertCmd.Parameters.AddWithValue("@projeId", projeId);
                                         insertCmd.Parameters.AddWithValue("@grupAdi", grupAdi);
                                         grupId = Convert.ToInt32(insertCmd.ExecuteScalar());
-                                        LogMessage($"Yeni grup eklendi: grupId={grupId}");
                                     }
                                 }
                             }
 
                             transaction.Commit();
-                            LogMessage("GrupEkleGuncelle işlemi başarıyla tamamlandı");
                         }
                         catch (Exception ex)
                         {
                             transaction.Rollback();
-                            LogMessage($"GrupEkleGuncelle hatası: {ex.Message}");
                             throw new Exception($"Grup ekleme/güncelleme hatası: {ex.Message}", ex);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogMessage($"Bağlantı hatası: {ex.Message}");
                     throw new Exception($"Veritabanı bağlantı hatası: {ex.Message}", ex);
                 }
             }
@@ -353,9 +333,7 @@ namespace KesimTakip.DataBase
                 try
                 {
                     conn.Open();
-                    LogMessage($"GrupSil başladı: projeAdi={projeAdi}, grupAdi={grupAdi}");
 
-                    // Önce grupId'yi kontrol et
                     string checkQuery = @"
                 SELECT g.grupId
                 FROM Gruplar g
@@ -368,7 +346,6 @@ namespace KesimTakip.DataBase
                         var result = checkCmd.ExecuteScalar();
                         if (result == null)
                         {
-                            LogMessage($"Hata: Grup bulunamadı: projeAdi={projeAdi}, grupAdi={grupAdi}");
                             throw new Exception($"Grup bulunamadı: projeAdi={projeAdi}, grupAdi={grupAdi}");
                         }
                     }
@@ -390,21 +367,14 @@ namespace KesimTakip.DataBase
                         komut.Parameters.AddWithValue("@projeAdi", projeAdi);
                         komut.Parameters.AddWithValue("@grupAdi", grupAdi);
                         int rowsAffected = komut.ExecuteNonQuery();
-                        LogMessage($"GrupSil tamamlandı: etkilenen satır sayısı={rowsAffected}");
-                        if (rowsAffected == 0)
-                        {
-                            LogMessage($"Uyarı: Hiçbir satır silinmedi: projeAdi={projeAdi}, grupAdi={grupAdi}");
-                        }
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogMessage($"GrupSil hatası: {ex.Message}, StackTrace: {ex.StackTrace}");
                     throw new Exception($"Grup silme hatası: {ex.Message}", ex);
                 }
             }
         }
-
         public static void MalzemeEkleGuncelle(string projeAdi, string grupAdi, string malzemeKod, int adet, string malzemeAd, string kalite)
         {
             if (string.IsNullOrEmpty(malzemeKod))
@@ -415,18 +385,16 @@ namespace KesimTakip.DataBase
                 try
                 {
                     conn.Open();
-                    LogMessage($"MalzemeEkleGuncelle başladı: projeAdi={projeAdi}, grupAdi={grupAdi}, malzemeKod={malzemeKod}, adet={adet}");
-
                     using (var transaction = conn.BeginTransaction())
                     {
                         try
                         {
                             // GrupId'yi getir
                             string getGrupIdQuery = @"
-                            SELECT g.grupId
-                            FROM Gruplar g
-                            JOIN Projeler p ON g.projeId = p.projeId
-                            WHERE p.projeAdi = @projeAdi AND g.grupAdi = @grupAdi";
+                        SELECT g.grupId
+                        FROM Gruplar g
+                        JOIN Projeler p ON g.projeId = p.projeId
+                        WHERE p.projeAdi = @projeAdi AND g.grupAdi = @grupAdi";
                             int grupId;
                             using (var cmd = new SqlCommand(getGrupIdQuery, conn, transaction))
                             {
@@ -438,14 +406,12 @@ namespace KesimTakip.DataBase
                                     throw new Exception($"Grup bulunamadı: projeAdi={projeAdi}, grupAdi={grupAdi}");
                                 }
                                 grupId = Convert.ToInt32(result);
-                                LogMessage($"GrupId alındı: {grupId}");
                             }
 
-                            // Malzeme zaten varsa güncelle, yoksa ekle
                             string checkQuery = @"
-                            SELECT malzemeId, ISNULL(adet, 0) AS mevcutAdet
-                            FROM Malzemeler
-                            WHERE grupId = @grupId AND malzemeKod = @malzemeKod";
+                        SELECT malzemeId
+                        FROM Malzemeler
+                        WHERE grupId = @grupId AND malzemeKod = @malzemeKod";
                             using (var checkCmd = new SqlCommand(checkQuery, conn, transaction))
                             {
                                 checkCmd.Parameters.AddWithValue("@grupId", grupId);
@@ -455,33 +421,29 @@ namespace KesimTakip.DataBase
                                     if (reader.Read())
                                     {
                                         int malzemeId = reader.GetInt32(0);
-                                        int mevcutAdet = reader.GetInt32(1);
                                         reader.Close();
 
-                                        // Güncelle
                                         string updateQuery = @"
-                                        UPDATE Malzemeler
-                                        SET adet = @yeniAdet, malzemeAd = @malzemeAd, kalite = @kalite
-                                        WHERE malzemeId = @malzemeId";
+                                    UPDATE Malzemeler
+                                    SET adet = @adet, malzemeAd = @malzemeAd, kalite = @kalite
+                                    WHERE malzemeId = @malzemeId";
                                         using (var updateCmd = new SqlCommand(updateQuery, conn, transaction))
                                         {
-                                            updateCmd.Parameters.AddWithValue("@yeniAdet", mevcutAdet + adet);
+                                            updateCmd.Parameters.AddWithValue("@adet", adet);
                                             updateCmd.Parameters.AddWithValue("@malzemeAd", malzemeAd ?? (object)DBNull.Value);
                                             updateCmd.Parameters.AddWithValue("@kalite", kalite ?? (object)DBNull.Value);
                                             updateCmd.Parameters.AddWithValue("@malzemeId", malzemeId);
                                             int rowsAffected = updateCmd.ExecuteNonQuery();
-                                            LogMessage($"Malzeme güncellendi: malzemeId={malzemeId}, yeniAdet={mevcutAdet + adet}, etkilenen satır sayısı={rowsAffected}");
                                         }
                                     }
                                     else
                                     {
                                         reader.Close();
 
-                                        // Ekle
                                         string insertQuery = @"
-                                        INSERT INTO Malzemeler (grupId, malzemeKod, adet, malzemeAd, kalite)
-                                        VALUES (@grupId, @malzemeKod, @adet, @malzemeAd, @kalite);
-                                        SELECT SCOPE_IDENTITY();";
+                                    INSERT INTO Malzemeler (grupId, malzemeKod, adet, malzemeAd, kalite)
+                                    VALUES (@grupId, @malzemeKod, @adet, @malzemeAd, @kalite);
+                                    SELECT SCOPE_IDENTITY();";
                                         using (var insertCmd = new SqlCommand(insertQuery, conn, transaction))
                                         {
                                             insertCmd.Parameters.AddWithValue("@grupId", grupId);
@@ -490,31 +452,25 @@ namespace KesimTakip.DataBase
                                             insertCmd.Parameters.AddWithValue("@malzemeAd", malzemeAd ?? (object)DBNull.Value);
                                             insertCmd.Parameters.AddWithValue("@kalite", kalite ?? (object)DBNull.Value);
                                             int malzemeId = Convert.ToInt32(insertCmd.ExecuteScalar());
-                                            LogMessage($"Yeni malzeme eklendi: malzemeId={malzemeId}");
                                         }
                                     }
                                 }
                             }
-
                             transaction.Commit();
-                            LogMessage("MalzemeEkleGuncelle işlemi başarıyla tamamlandı");
                         }
                         catch (Exception ex)
                         {
                             transaction.Rollback();
-                            LogMessage($"MalzemeEkleGuncelle hatası: {ex.Message}");
                             throw new Exception($"Malzeme ekleme/güncelleme hatası: {ex.Message}", ex);
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogMessage($"Bağlantı hatası: {ex.Message}");
                     throw new Exception($"Veritabanı bağlantı hatası: {ex.Message}", ex);
                 }
             }
         }
-
         public static void MalzemeSil(string projeAdi, string grupAdi, string malzemeKod)
         {
             using (var conn = DataBaseHelper.GetConnection())
@@ -522,8 +478,6 @@ namespace KesimTakip.DataBase
                 try
                 {
                     conn.Open();
-                    LogMessage($"MalzemeSil başladı: projeAdi={projeAdi}, grupAdi={grupAdi}, malzemeKod={malzemeKod}");
-
                     string sorgu = @"
                     DELETE m
                     FROM Malzemeler m
@@ -537,13 +491,40 @@ namespace KesimTakip.DataBase
                         komut.Parameters.AddWithValue("@grupAdi", grupAdi);
                         komut.Parameters.AddWithValue("@malzemeKod", malzemeKod);
                         int rowsAffected = komut.ExecuteNonQuery();
-                        LogMessage($"MalzemeSil tamamlandı: etkilenen satır sayısı={rowsAffected}");
                     }
                 }
                 catch (Exception ex)
                 {
-                    LogMessage($"MalzemeSil hatası: {ex.Message}");
                     throw new Exception($"Malzeme silme hatası: {ex.Message}", ex);
+                }
+            }
+        }
+        public static (bool, int) KontrolAdet(string kalite, string malzeme, string kalip, string proje, int girilenAdet)
+        {
+            string query = @"
+        SELECT SUM(m.adet) AS ToplamAdet
+        FROM Malzemeler m
+        JOIN Gruplar g ON m.grupID = g.grupID
+        JOIN Projeler p ON g.projeID = p.projeID
+        WHERE m.kalite = @Kalite 
+          AND m.malzemeAd = @malzemeAd 
+          AND m.malzemeKod = @malzemeKod 
+          AND p.projeAdi = @ProjeAdi";
+
+            using (var conn = DataBaseHelper.GetConnection())
+            {
+                conn.Open();
+                using (var command = new SqlCommand(query, conn))
+                {
+                    command.Parameters.AddWithValue("@Kalite", kalite);
+                    command.Parameters.AddWithValue("@malzemeAd", malzeme);
+                    command.Parameters.AddWithValue("@malzemeKod", kalip); // malzemeAd ile kalip birleştirilmiş kabul ediliyor
+                    command.Parameters.AddWithValue("@ProjeAdi", proje);
+
+                    var result = command.ExecuteScalar();
+                    int toplamAdet = result != DBNull.Value ? Convert.ToInt32(result) : 0;
+
+                    return (girilenAdet <= toplamAdet, toplamAdet);
                 }
             }
         }

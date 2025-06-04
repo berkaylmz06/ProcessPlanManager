@@ -585,13 +585,11 @@
             this.pdfViewer1.IsToolBarVisible = true;
             this.pdfViewer1.Location = new System.Drawing.Point(672, 48);
             this.pdfViewer1.Margin = new System.Windows.Forms.Padding(4);
-            this.pdfViewer1.MultiPagesThreshold = 60;
             this.pdfViewer1.Name = "pdfViewer1";
             this.pdfViewer1.OnRenderPageExceptionEvent = null;
             this.pdfViewer1.Size = new System.Drawing.Size(953, 903);
             this.pdfViewer1.TabIndex = 325;
             this.pdfViewer1.Text = "pdfViewer1";
-            this.pdfViewer1.Threshold = 60;
             this.pdfViewer1.ViewerBackgroundColor = System.Drawing.SystemColors.Window;
             // 
             // ctlBaslik1
