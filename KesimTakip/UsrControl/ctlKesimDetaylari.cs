@@ -68,24 +68,38 @@ namespace KesimTakip.UsrControl
                 return;
 
             tumPozlar = dt.AsEnumerable()
-                .GroupBy(row => row["poz"].ToString())
+                .GroupBy(row => new
+                {
+                    kalite = row["kalite"].ToString(),
+                    malzeme = row["malzeme"].ToString(),
+                    malzemeKod = row["malzemeKod"].ToString(),
+                    proje = row["proje"].ToString()
+                })
                 .Select(gr => new KesimDetaylari
                 {
-                    poz = gr.Key,
+                    kalite = gr.Key.kalite,
+                    malzeme = gr.Key.malzeme,
+                    malzemeKod = gr.Key.malzemeKod,
+                    proje = gr.Key.proje,
                     toplamAdet = gr.Sum(r => Convert.ToInt32(r["toplamAdet"])),
                     kesilecekAdet = gr.Sum(r => Convert.ToInt32(r["kesilecekAdet"])),
                     kesilmisAdet = gr.Sum(r => Convert.ToInt32(r["kesilmisAdet"]))
-                }).OrderBy(x => x.poz).ToList();
+                })
+                .OrderBy(x => x.kalite)
+                .ThenBy(x => x.malzeme)
+                .ThenBy(x => x.malzemeKod)
+                .ThenBy(x => x.proje)
+                .ToList();
 
             PozlariListele(tumPozlar);
         }
 
-        private void PozlariListele(List<KesimDetaylari> pozlar)
+        private void PozlariListele(List<KesimDetaylari> kesimDetaylari)
         {
             lstPozlar.DataSource = null;
-            lstPozlar.DataSource = pozlar;
-            lstPozlar.DisplayMember = "poz";
+            lstPozlar.DataSource = kesimDetaylari; 
         }
+
 
         private void TxtAra_TextChanged(object sender, EventArgs e)
         {
@@ -97,7 +111,7 @@ namespace KesimTakip.UsrControl
 
             var filtre = txtArama.Text.ToLower();
             var filtrelenmis = tumPozlar
-                .Where(p => p.poz.ToLower().Contains(filtre))
+                .Where(p => p.kalite.ToLower().Contains(filtre) || p.malzeme.ToLower().Contains(filtre) || p.malzemeKod.ToLower().Contains(filtre) || p.malzeme.ToLower().Contains(filtre))
                 .ToList();
 
             PozlariListele(filtrelenmis);
@@ -131,28 +145,29 @@ namespace KesimTakip.UsrControl
                 lblToplamPoz.Text = secilen.toplamAdet.ToString();
                 panelKart3.BackColor = Color.FromArgb(255, 83, 97);
 
-                // poz string'ini "_" ayıracı ile parçala
                 string[] pozParcalari = secilen.poz.Split('-');
-                if (pozParcalari.Length >= 4)
+                if (pozParcalari.Length == 6) 
                 {
-                    string kalite = pozParcalari[0]; // İlk parça: kalite
-                    string malzeme = pozParcalari[1]; // İkinci parça: malzeme
-                    string kalip = $"{pozParcalari[2]}-{pozParcalari[3]}-{pozParcalari[4]}"; // Üçüncü parça: kalip
+                    string kalite = pozParcalari[0];
+                    string malzeme = pozParcalari[1];
+                    string malzemeKod = $"{pozParcalari[2]}-{pozParcalari[3]}-{pozParcalari[4]}";
                     string proje = pozParcalari[5];
 
                     var (uygunMu, toplamAdet) = AutoCadAktarimData.KontrolAdet(
                         kalite,
                         malzeme,
-                        kalip,
+                        malzemeKod,
                         proje,
                         secilen.kesilmisAdet
                     );
                     lblToplamPozIfsKarsiligi.Text = toplamAdet.ToString();
+                    int index4 = seri.Points.AddXY("IFS Toplam Poz", toplamAdet);
+                    seri.Points[index4].Color = Color.FromArgb(15, 48, 56);
                     panelKart4.BackColor = uygunMu ? Color.FromArgb(15, 48, 56) : Color.Red;
                 }
                 else
                 {
-                    lblToplamPozIfsKarsiligi.Text = "Hatalı poz formatı";
+                    lblToplamPozIfsKarsiligi.Text = "Hatalı poz";
                     panelKart4.BackColor = Color.Red;
                 }
             }

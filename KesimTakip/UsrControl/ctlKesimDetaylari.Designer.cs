@@ -45,6 +45,9 @@
             this.panelChart = new System.Windows.Forms.Panel();
             this.panelSpacer3 = new System.Windows.Forms.Panel();
             this.panelKartContainer = new System.Windows.Forms.Panel();
+            this.panelKart4 = new System.Windows.Forms.Panel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.lblToplamPozIfsKarsiligi = new System.Windows.Forms.Label();
             this.panelKart3 = new System.Windows.Forms.Panel();
             this.label3 = new System.Windows.Forms.Label();
             this.lblToplamPoz = new System.Windows.Forms.Label();
@@ -54,9 +57,6 @@
             this.panelKart1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.lblKesilecekPoz = new System.Windows.Forms.Label();
-            this.panelKart4 = new System.Windows.Forms.Panel();
-            this.label4 = new System.Windows.Forms.Label();
-            this.lblToplamPozIfsKarsiligi = new System.Windows.Forms.Label();
             this.ctlBaslik1 = new KesimTakip.UsrControl.ctlBaslik();
             ((System.ComponentModel.ISupportInitialize)(this.chartKesim)).BeginInit();
             this.panelDisContainer.SuspendLayout();
@@ -66,10 +66,10 @@
             this.panel2.SuspendLayout();
             this.panelChart.SuspendLayout();
             this.panelKartContainer.SuspendLayout();
+            this.panelKart4.SuspendLayout();
             this.panelKart3.SuspendLayout();
             this.panelKart2.SuspendLayout();
             this.panelKart1.SuspendLayout();
-            this.panelKart4.SuspendLayout();
             this.SuspendLayout();
             // 
             // lstPozlar
@@ -96,7 +96,7 @@
             // 
             chartArea1.AxisX.MajorGrid.LineColor = System.Drawing.Color.Transparent;
             chartArea1.AxisX.MajorTickMark.Enabled = false;
-            chartArea1.AxisX.Maximum = 4D;
+            chartArea1.AxisX.Maximum = 5D;
             chartArea1.AxisY.LabelStyle.ForeColor = System.Drawing.Color.Transparent;
             chartArea1.AxisY.LineColor = System.Drawing.Color.Transparent;
             chartArea1.AxisY.MajorGrid.LineColor = System.Drawing.Color.Transparent;
@@ -234,6 +234,38 @@
             this.panelKartContainer.TabIndex = 138;
             this.panelKartContainer.Resize += new System.EventHandler(this.panel3_Resize);
             // 
+            // panelKart4
+            // 
+            this.panelKart4.BackColor = System.Drawing.Color.Orange;
+            this.panelKart4.Controls.Add(this.label4);
+            this.panelKart4.Controls.Add(this.lblToplamPozIfsKarsiligi);
+            this.panelKart4.Location = new System.Drawing.Point(821, 38);
+            this.panelKart4.Name = "panelKart4";
+            this.panelKart4.Size = new System.Drawing.Size(236, 120);
+            this.panelKart4.TabIndex = 4;
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label4.ForeColor = System.Drawing.SystemColors.Control;
+            this.label4.Location = new System.Drawing.Point(3, 18);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(202, 20);
+            this.label4.TabIndex = 3;
+            this.label4.Text = "IFS’ye göre toplam poz";
+            // 
+            // lblToplamPozIfsKarsiligi
+            // 
+            this.lblToplamPozIfsKarsiligi.AutoSize = true;
+            this.lblToplamPozIfsKarsiligi.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblToplamPozIfsKarsiligi.ForeColor = System.Drawing.SystemColors.Control;
+            this.lblToplamPozIfsKarsiligi.Location = new System.Drawing.Point(51, 51);
+            this.lblToplamPozIfsKarsiligi.Name = "lblToplamPozIfsKarsiligi";
+            this.lblToplamPozIfsKarsiligi.Size = new System.Drawing.Size(29, 20);
+            this.lblToplamPozIfsKarsiligi.TabIndex = 2;
+            this.lblToplamPozIfsKarsiligi.Text = "....";
+            // 
             // panelKart3
             // 
             this.panelKart3.BackColor = System.Drawing.Color.Orange;
@@ -330,38 +362,6 @@
             this.lblKesilecekPoz.TabIndex = 0;
             this.lblKesilecekPoz.Text = "....";
             // 
-            // panelKart4
-            // 
-            this.panelKart4.BackColor = System.Drawing.Color.Orange;
-            this.panelKart4.Controls.Add(this.label4);
-            this.panelKart4.Controls.Add(this.lblToplamPozIfsKarsiligi);
-            this.panelKart4.Location = new System.Drawing.Point(821, 38);
-            this.panelKart4.Name = "panelKart4";
-            this.panelKart4.Size = new System.Drawing.Size(236, 120);
-            this.panelKart4.TabIndex = 4;
-            // 
-            // label4
-            // 
-            this.label4.AutoSize = true;
-            this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label4.ForeColor = System.Drawing.SystemColors.Control;
-            this.label4.Location = new System.Drawing.Point(3, 18);
-            this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(202, 20);
-            this.label4.TabIndex = 3;
-            this.label4.Text = "IFS’ye göre toplam poz";
-            // 
-            // lblToplamPozIfsKarsiligi
-            // 
-            this.lblToplamPozIfsKarsiligi.AutoSize = true;
-            this.lblToplamPozIfsKarsiligi.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblToplamPozIfsKarsiligi.ForeColor = System.Drawing.SystemColors.Control;
-            this.lblToplamPozIfsKarsiligi.Location = new System.Drawing.Point(51, 51);
-            this.lblToplamPozIfsKarsiligi.Name = "lblToplamPozIfsKarsiligi";
-            this.lblToplamPozIfsKarsiligi.Size = new System.Drawing.Size(29, 20);
-            this.lblToplamPozIfsKarsiligi.TabIndex = 2;
-            this.lblToplamPozIfsKarsiligi.Text = "....";
-            // 
             // ctlBaslik1
             // 
             this.ctlBaslik1.Baslik = "Başlık";
@@ -392,14 +392,14 @@
             this.panel2.ResumeLayout(false);
             this.panelChart.ResumeLayout(false);
             this.panelKartContainer.ResumeLayout(false);
+            this.panelKart4.ResumeLayout(false);
+            this.panelKart4.PerformLayout();
             this.panelKart3.ResumeLayout(false);
             this.panelKart3.PerformLayout();
             this.panelKart2.ResumeLayout(false);
             this.panelKart2.PerformLayout();
             this.panelKart1.ResumeLayout(false);
             this.panelKart1.PerformLayout();
-            this.panelKart4.ResumeLayout(false);
-            this.panelKart4.PerformLayout();
             this.ResumeLayout(false);
 
         }

@@ -12,7 +12,7 @@ namespace KesimTakip.DataBase
 {
     class KesimDetaylariData
     {
-        public static void SaveKesimDetaylariData(string poz, string kesimId, int kesilecekAdet, int toplamAdet)
+        public static void SaveKesimDetaylariData(string kalite, string malzeme, string malzemeKod, string proje, int kesilecekAdet, int toplamAdet)
         {
             try
             {
@@ -20,30 +20,39 @@ namespace KesimTakip.DataBase
                 {
                     conn.Open();
 
-                    string checkQuery = "SELECT COUNT(*) FROM KesimDetaylari WHERE poz = @poz";
+                    string checkQuery = @"SELECT COUNT(*) FROM KesimDetaylari 
+                                  WHERE kalite = @kalite AND malzeme = @malzeme 
+                                  AND malzemeKod = @malzemeKod AND proje = @proje";
 
                     using (var checkCmd = new SqlCommand(checkQuery, conn))
                     {
-                        checkCmd.Parameters.AddWithValue("@poz", poz);
-                        checkCmd.Parameters.AddWithValue("@kesimId", kesimId);
+                        checkCmd.Parameters.AddWithValue("@kalite", kalite);
+                        checkCmd.Parameters.AddWithValue("@malzeme", malzeme);
+                        checkCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
+                        checkCmd.Parameters.AddWithValue("@proje", proje);
 
                         int count = (int)checkCmd.ExecuteScalar();
 
                         if (count == 0)
                         {
-                            string insertQuery = "INSERT INTO KesimDetaylari (poz, kesimId, kesilecekAdet, toplamAdet) " +
-                                                 "VALUES (@poz, @kesimId, @kesilecekAdet, @toplamAdet)";
+                            string insertQuery = @"INSERT INTO KesimDetaylari 
+                                           (kalite, malzeme, malzemeKod, proje, kesilecekAdet, toplamAdet) 
+                                           VALUES 
+                                           (@kalite, @malzeme, @malzemeKod, @proje, @kesilecekAdet, @toplamAdet)";
 
                             using (var insertCmd = new SqlCommand(insertQuery, conn))
                             {
-                                insertCmd.Parameters.AddWithValue("@poz", poz);
-                                insertCmd.Parameters.AddWithValue("@kesimId", kesimId);
+                                insertCmd.Parameters.AddWithValue("@kalite", kalite);
+                                insertCmd.Parameters.AddWithValue("@malzeme", malzeme);
+                                insertCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
+                                insertCmd.Parameters.AddWithValue("@proje", proje);
                                 insertCmd.Parameters.AddWithValue("@kesilecekAdet", kesilecekAdet);
                                 insertCmd.Parameters.AddWithValue("@toplamAdet", toplamAdet);
 
                                 insertCmd.ExecuteNonQuery();
                             }
                         }
+                        // Not: Eğer varsa else ile update işlemi de eklenebilir.
                     }
                 }
             }
@@ -53,9 +62,10 @@ namespace KesimTakip.DataBase
             }
         }
 
+
         public static DataTable GetKesimDetaylari()
         {
-            string query = "SELECT poz, kesimId, kesilmisAdet, kesilecekAdet, toplamAdet FROM KesimDetaylari";
+            string query = "SELECT kalite, malzeme, malzemeKod, proje ,kesilmisAdet, kesilecekAdet, toplamAdet FROM KesimDetaylari";
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();

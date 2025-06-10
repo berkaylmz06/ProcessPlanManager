@@ -15,9 +15,9 @@ namespace KesimTakip.DataBase
             Kullanicilar kullanici = null;
 
             string sql = @"
-                SELECT id, adSoyad, kullaniciAdi, sifre, kullaniciRol, email 
-                FROM Kullanicilar 
-                WHERE kullaniciAdi = @kullaniciAdi";
+        SELECT id, adSoyad, kullaniciAdi, sifre, kullaniciRol, email 
+        FROM Kullanicilar 
+        WHERE kullaniciAdi = @kullaniciAdi AND sifre = @sifre";
 
             using (var connection = DataBaseHelper.GetConnection())
             {
@@ -27,6 +27,7 @@ namespace KesimTakip.DataBase
                     using (var cmd = new SqlCommand(sql, connection))
                     {
                         cmd.Parameters.AddWithValue("@kullaniciAdi", kullaniciAdi);
+                        cmd.Parameters.AddWithValue("@sifre", sifre);
 
                         using (var reader = cmd.ExecuteReader())
                         {
@@ -53,6 +54,7 @@ namespace KesimTakip.DataBase
 
             return kullanici;
         }
+
         public static DataTable GetKullaniciListesi()
         {
             string query = @"
@@ -86,9 +88,9 @@ namespace KesimTakip.DataBase
             string kontrolQuery = "SELECT COUNT(*) FROM Kullanicilar WHERE kullaniciAdi = @kullaniciAdi OR email = @email";
             string insertQuery = @"
                 INSERT INTO Kullanicilar 
-                (adSoyad, kullaniciAdi, sifre, kullaniciRol, email) 
+                (adSoyad, kullaniciAdi, sifre, email) 
                 VALUES 
-                (@adSoyad, @kullaniciAdi, @sifre, @kullaniciRol, @email)";
+                (@adSoyad, @kullaniciAdi, @sifre, @email)";
 
             using (var connection = DataBaseHelper.GetConnection())
             {
@@ -111,7 +113,6 @@ namespace KesimTakip.DataBase
                         command.Parameters.AddWithValue("@adSoyad", kullanici.adSoyad ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@kullaniciAdi", kullanici.kullaniciAdi);
                         command.Parameters.AddWithValue("@sifre", kullanici.sifre);
-                        command.Parameters.AddWithValue("@kullaniciRol", kullanici.kullaniciRol ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@email", kullanici.email ?? (object)DBNull.Value);
 
                         command.ExecuteNonQuery();

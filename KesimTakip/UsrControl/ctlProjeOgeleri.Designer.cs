@@ -180,9 +180,9 @@
             // 
             // panelButtons
             // 
-            this.panelButtons.Controls.Add(this.btnStandartProje);
             this.panelButtons.Controls.Add(this.btnKaydet);
             this.panelButtons.Controls.Add(this.btnYeni);
+            this.panelButtons.Controls.Add(this.btnStandartProje);
             this.panelButtons.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelButtons.Location = new System.Drawing.Point(0, 0);
             this.panelButtons.Name = "panelButtons";
@@ -191,9 +191,9 @@
             // 
             // btnStandartProje
             // 
-            this.btnStandartProje.Location = new System.Drawing.Point(471, 16);
+            this.btnStandartProje.Location = new System.Drawing.Point(470, 16);
             this.btnStandartProje.Name = "btnStandartProje";
-            this.btnStandartProje.Size = new System.Drawing.Size(156, 38);
+            this.btnStandartProje.Size = new System.Drawing.Size(210, 38);
             this.btnStandartProje.TabIndex = 13;
             this.btnStandartProje.Text = "Standart Projeler";
             this.btnStandartProje.UseVisualStyleBackColor = true;
@@ -201,9 +201,9 @@
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(643, 16);
+            this.btnKaydet.Location = new System.Drawing.Point(700, 16);
             this.btnKaydet.Name = "btnKaydet";
-            this.btnKaydet.Size = new System.Drawing.Size(156, 38);
+            this.btnKaydet.Size = new System.Drawing.Size(210, 38);
             this.btnKaydet.TabIndex = 12;
             this.btnKaydet.Text = "Kaydet";
             this.btnKaydet.UseVisualStyleBackColor = true;
@@ -211,9 +211,9 @@
             // 
             // btnYeni
             // 
-            this.btnYeni.Location = new System.Drawing.Point(820, 16);
+            this.btnYeni.Location = new System.Drawing.Point(930, 16);
             this.btnYeni.Name = "btnYeni";
-            this.btnYeni.Size = new System.Drawing.Size(156, 38);
+            this.btnYeni.Size = new System.Drawing.Size(210, 38);
             this.btnYeni.TabIndex = 11;
             this.btnYeni.Text = "Yeni";
             this.btnYeni.UseVisualStyleBackColor = true;

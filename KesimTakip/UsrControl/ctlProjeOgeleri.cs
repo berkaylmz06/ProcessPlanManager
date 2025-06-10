@@ -807,22 +807,7 @@ namespace KesimTakip.UsrControl
 
         private void btnStandartProje_Click(object sender, EventArgs e)
         {
-            string proje = txtProjeNo.Text.Trim();
-            if (string.IsNullOrEmpty(proje))
-            {
-                MessageBox.Show("Lütfen bir proje numarası girin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (!HandleUnsavedChanges())
-                return;
-
-            var kayitlar = AutoCadAktarimData.GetAutoCadKayitlari(proje);
-            if (kayitlar.Count == 0)
-            {
-                AutoCadAktarimData.ProjeEkle(proje);
-            }
-            TreeViewYukle(proje);
+          
         }
 
         public bool OnUserControlExit()

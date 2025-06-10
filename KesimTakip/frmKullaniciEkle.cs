@@ -55,6 +55,7 @@ namespace KesimTakip
 
             KullanicilarData.KullaniciEkle(yeniKullanici);
             MessageBox.Show("Kullanıcı başarıyla eklendi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            this.Close();
 
             kullaniciAyar?.YukleVeListele();
         }

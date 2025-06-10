@@ -9,32 +9,34 @@ namespace KesimTakip.DataBase
 {
     class KesimListesiPaketData
     {
-        public static void SaveKesimDataPaket(string olusturan, string kesimId, int kesilecekPlanSayisi, int toplamPlanTekrari, DateTime eklemeTarihi)
+        public static bool SaveKesimDataPaket(string olusturan, string kesimId, int kesilecekPlanSayisi, int toplamPlanTekrari, DateTime eklemeTarihi)
         {
             try
             {
                 using (var conn = DataBaseHelper.GetConnection())
                 {
                     conn.Open();
-
-                    string query = "INSERT INTO [KesimListesiPaket] ([olusturan], [kesimId], [kesilecekPlanSayisi], [toplamPlanTekrari], [eklemeTarihi])" +
-                                   "VALUES (@olusturan, @kesimId, @kesilecekPlanSayisi, @toplamPlanTekrari, @eklemeTarihi)";
+                    string query = @"IF NOT EXISTS (SELECT 1 FROM KesimListesiPaket WHERE kesimId = @kesimId)
+                            INSERT INTO KesimListesiPaket ([olusturan], [kesimId], [kesilecekPlanSayisi], [toplamPlanTekrari], [eklemeTarihi])
+                            VALUES (@olusturan, @kesimId, @kesilecekPlanSayisi, @toplamPlanTekrari, @eklemeTarihi)";
 
                     using (var cmd = new SqlCommand(query, conn))
                     {
-                        cmd.Parameters.AddWithValue("@olusturan", olusturan);
-                        cmd.Parameters.AddWithValue("@kesimId", kesimId);
-                        cmd.Parameters.AddWithValue("@kesilecekPlanSayisi", kesilecekPlanSayisi);
-                        cmd.Parameters.AddWithValue("@toplamPlanTekrari", toplamPlanTekrari);
-                        cmd.Parameters.AddWithValue("@eklemeTarihi", eklemeTarihi);
+                        cmd.Parameters.Add("@olusturan", SqlDbType.NVarChar).Value = olusturan;
+                        cmd.Parameters.Add("@kesimId", SqlDbType.NVarChar).Value = kesimId;
+                        cmd.Parameters.Add("@kesilecekPlanSayisi", SqlDbType.Int).Value = kesilecekPlanSayisi;
+                        cmd.Parameters.Add("@toplamPlanTekrari", SqlDbType.Int).Value = toplamPlanTekrari;
+                        cmd.Parameters.Add("@eklemeTarihi", SqlDbType.DateTime).Value = eklemeTarihi;
 
-                        cmd.ExecuteNonQuery();
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
                     }
                 }
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Hata: " + ex.Message);
+                MessageBox.Show("Kayıt sırasında hata oluştu: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
         }
 

@@ -76,6 +76,7 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
             this.lblKullaniciBilgi = new System.Windows.Forms.Label();
+            this.panelKesimPlaniEkleVeri = new System.Windows.Forms.Panel();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
@@ -84,6 +85,7 @@
             this.panelSistemBilgisi.SuspendLayout();
             this.panelYardim.SuspendLayout();
             this.panelAnaSayfaContainer.SuspendLayout();
+            this.panelKesimPlaniEkleVeri.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelYardimCubugu
@@ -324,17 +326,9 @@
             // panelSistem
             // 
             this.panelSistem.BackColor = System.Drawing.SystemColors.ScrollBar;
-            this.panelSistem.Controls.Add(this.richTextBox4);
-            this.panelSistem.Controls.Add(this.label20);
-            this.panelSistem.Controls.Add(this.btnAktar);
-            this.panelSistem.Controls.Add(this.label19);
-            this.panelSistem.Controls.Add(this.label18);
-            this.panelSistem.Controls.Add(this.label10);
-            this.panelSistem.Controls.Add(this.richTextBox3);
+            this.panelSistem.Controls.Add(this.panelKesimPlaniEkleVeri);
             this.panelSistem.Controls.Add(this.panelSistemBilgisi);
             this.panelSistem.Controls.Add(this.label12);
-            this.panelSistem.Controls.Add(this.richTextBox2);
-            this.panelSistem.Controls.Add(this.richTextBox1);
             this.panelSistem.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelSistem.Location = new System.Drawing.Point(0, 0);
             this.panelSistem.Margin = new System.Windows.Forms.Padding(2);
@@ -345,7 +339,7 @@
             // 
             // richTextBox4
             // 
-            this.richTextBox4.Location = new System.Drawing.Point(424, 44);
+            this.richTextBox4.Location = new System.Drawing.Point(18, 50);
             this.richTextBox4.Margin = new System.Windows.Forms.Padding(2);
             this.richTextBox4.Name = "richTextBox4";
             this.richTextBox4.Size = new System.Drawing.Size(366, 144);
@@ -357,7 +351,7 @@
             // 
             this.label20.AutoSize = true;
             this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label20.Location = new System.Drawing.Point(1182, 78);
+            this.label20.Location = new System.Drawing.Point(776, 80);
             this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label20.Name = "label20";
             this.label20.Size = new System.Drawing.Size(48, 20);
@@ -366,7 +360,7 @@
             // 
             // btnAktar
             // 
-            this.btnAktar.Location = new System.Drawing.Point(1145, 105);
+            this.btnAktar.Location = new System.Drawing.Point(739, 107);
             this.btnAktar.Margin = new System.Windows.Forms.Padding(4);
             this.btnAktar.Name = "btnAktar";
             this.btnAktar.Size = new System.Drawing.Size(128, 39);
@@ -378,7 +372,7 @@
             // label19
             // 
             this.label19.AutoSize = true;
-            this.label19.Location = new System.Drawing.Point(1602, 28);
+            this.label19.Location = new System.Drawing.Point(1202, 30);
             this.label19.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label19.Name = "label19";
             this.label19.Size = new System.Drawing.Size(72, 16);
@@ -388,7 +382,7 @@
             // label18
             // 
             this.label18.AutoSize = true;
-            this.label18.Location = new System.Drawing.Point(1275, 28);
+            this.label18.Location = new System.Drawing.Point(875, 30);
             this.label18.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label18.Name = "label18";
             this.label18.Size = new System.Drawing.Size(87, 16);
@@ -398,7 +392,7 @@
             // label10
             // 
             this.label10.AutoSize = true;
-            this.label10.Location = new System.Drawing.Point(798, 28);
+            this.label10.Location = new System.Drawing.Point(397, 30);
             this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(89, 16);
@@ -407,7 +401,7 @@
             // 
             // richTextBox3
             // 
-            this.richTextBox3.Location = new System.Drawing.Point(1279, 44);
+            this.richTextBox3.Location = new System.Drawing.Point(873, 50);
             this.richTextBox3.Margin = new System.Windows.Forms.Padding(2);
             this.richTextBox3.Name = "richTextBox3";
             this.richTextBox3.Size = new System.Drawing.Size(290, 144);
@@ -427,10 +421,10 @@
             this.panelSistemBilgisi.Controls.Add(this.label16);
             this.panelSistemBilgisi.Controls.Add(this.label13);
             this.panelSistemBilgisi.Controls.Add(this.label14);
-            this.panelSistemBilgisi.Location = new System.Drawing.Point(42, 58);
+            this.panelSistemBilgisi.Location = new System.Drawing.Point(42, 50);
             this.panelSistemBilgisi.Margin = new System.Windows.Forms.Padding(2);
             this.panelSistemBilgisi.Name = "panelSistemBilgisi";
-            this.panelSistemBilgisi.Size = new System.Drawing.Size(363, 132);
+            this.panelSistemBilgisi.Size = new System.Drawing.Size(363, 144);
             this.panelSistemBilgisi.TabIndex = 125;
             // 
             // lblSistemSaat
@@ -516,7 +510,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(39, 39);
+            this.label12.Location = new System.Drawing.Point(40, 30);
             this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(87, 16);
@@ -525,7 +519,7 @@
             // 
             // richTextBox2
             // 
-            this.richTextBox2.Location = new System.Drawing.Point(801, 44);
+            this.richTextBox2.Location = new System.Drawing.Point(395, 50);
             this.richTextBox2.Margin = new System.Windows.Forms.Padding(2);
             this.richTextBox2.Name = "richTextBox2";
             this.richTextBox2.Size = new System.Drawing.Size(335, 144);
@@ -535,7 +529,7 @@
             // 
             // richTextBox1
             // 
-            this.richTextBox1.Location = new System.Drawing.Point(1606, 44);
+            this.richTextBox1.Location = new System.Drawing.Point(1200, 50);
             this.richTextBox1.Margin = new System.Windows.Forms.Padding(2);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.Size = new System.Drawing.Size(324, 144);
@@ -560,17 +554,17 @@
             // 
             // txtSorun
             // 
-            this.txtSorun.Location = new System.Drawing.Point(38, 52);
+            this.txtSorun.Location = new System.Drawing.Point(42, 50);
             this.txtSorun.Margin = new System.Windows.Forms.Padding(2);
             this.txtSorun.Name = "txtSorun";
-            this.txtSorun.Size = new System.Drawing.Size(363, 132);
+            this.txtSorun.Size = new System.Drawing.Size(363, 144);
             this.txtSorun.TabIndex = 127;
             this.txtSorun.Text = "";
             // 
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(32, 32);
+            this.label17.Location = new System.Drawing.Point(40, 30);
             this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(75, 16);
@@ -579,7 +573,7 @@
             // 
             // btnGonder
             // 
-            this.btnGonder.Location = new System.Drawing.Point(412, 156);
+            this.btnGonder.Location = new System.Drawing.Point(414, 166);
             this.btnGonder.Margin = new System.Windows.Forms.Padding(2);
             this.btnGonder.Name = "btnGonder";
             this.btnGonder.Size = new System.Drawing.Size(92, 28);
@@ -613,6 +607,23 @@
             this.lblKullaniciBilgi.Text = "Şu anda tanımlı bir rolünüz bulunmamaktadır. Lütfen yetki için yöneticinizle ilet" +
     "işime geçiniz.";
             // 
+            // panelKesimPlaniEkleVeri
+            // 
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.richTextBox4);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.btnAktar);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.label20);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.richTextBox1);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.richTextBox2);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.label19);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.richTextBox3);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.label18);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.label10);
+            this.panelKesimPlaniEkleVeri.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panelKesimPlaniEkleVeri.Location = new System.Drawing.Point(412, 0);
+            this.panelKesimPlaniEkleVeri.Name = "panelKesimPlaniEkleVeri";
+            this.panelKesimPlaniEkleVeri.Size = new System.Drawing.Size(1538, 228);
+            this.panelKesimPlaniEkleVeri.TabIndex = 1;
+            // 
             // frmAnaSayfa
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
@@ -643,6 +654,8 @@
             this.panelYardim.PerformLayout();
             this.panelAnaSayfaContainer.ResumeLayout(false);
             this.panelAnaSayfaContainer.PerformLayout();
+            this.panelKesimPlaniEkleVeri.ResumeLayout(false);
+            this.panelKesimPlaniEkleVeri.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -697,5 +710,6 @@
         private System.Windows.Forms.Button btnSistemBilgisiAnaSayfa;
         private System.Windows.Forms.Button btnAutoCad;
         private System.Windows.Forms.Button btnProjeOgeleri;
+        private System.Windows.Forms.Panel panelKesimPlaniEkleVeri;
     }
 }

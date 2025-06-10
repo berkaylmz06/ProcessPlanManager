@@ -151,6 +151,7 @@
     <Compile Include="Concretes\KullaniciAdiOgren.cs" />
     <Compile Include="DataBase\AutoCadAktarimData.cs" />
     <Compile Include="DataBase\DataBaseHelper.cs" />
+    <Compile Include="DataBase\KarsilastirmaTablosuData.cs" />
     <Compile Include="DataBase\KesimDetaylariData.cs" />
     <Compile Include="DataBase\KesimListesiPaketData.cs" />
     <Compile Include="DataBase\KesimTamamlanmisData.cs" />
@@ -159,6 +160,7 @@
     <Compile Include="DataBase\KullanicilarData.cs" />
     <Compile Include="DataBase\SorunBildirimleriData.cs" />
     <Compile Include="Entitys\AutoCadAktarimDetay.cs" />
+    <Compile Include="Entitys\KarsilastirmaTablosu.cs" />
     <Compile Include="Entitys\KesimDetaylari.cs" />
     <Compile Include="Entitys\KesimListesiPaket.cs" />
     <Compile Include="Entitys\KesimTamamlanmisPaket.cs" />

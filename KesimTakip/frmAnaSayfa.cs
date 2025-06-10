@@ -100,6 +100,7 @@ namespace KesimTakip
             btnSistemBilgisiAnaSayfa.Visible = false;
             btnAutoCad.Visible = false;
             btnProjeOgeleri.Visible = false;
+            panelKesimPlaniEkleVeri.Visible = false;
 
             switch (aktifKullanici.kullaniciRol)
             {
@@ -110,6 +111,7 @@ namespace KesimTakip
                     btnKesimDetaylari.Visible = true;
                     btnKullaniciAyarlari.Visible = true;
                     btnSistemHareketleri.Visible = true;
+                    panelKesimPlaniEkleVeri.Visible=true;
                     break;
 
                 case "Destek":
@@ -123,22 +125,17 @@ namespace KesimTakip
                     btnSistemBilgisiAnaSayfa.Visible = true;
                     btnAutoCad.Visible = true;
                     btnProjeOgeleri.Visible = true;
+                    panelKesimPlaniEkleVeri.Visible = true;
                     break;
 
                 case "İş Hazırlama":
                     btnKesimPlaniEkle.Visible = true;
                     btnKesimYap.Visible = true;
                     btnYapilanKesimleriGor.Visible = true;
+                    panelKesimPlaniEkleVeri.Visible = true;
                     break;
 
                 case "Muhasebe":
-                    btnKesimPlaniEkle.Visible = true;
-                    btnKesimYap.Visible = true;
-                    btnYapilanKesimleriGor.Visible = true;
-                    btnKesimDetaylari.Visible = true;
-                    btnKullaniciAyarlari.Visible = true;
-                    btnIletilenSorunlar.Visible = true;
-                    btnSistemHareketleri.Visible = true;
                     break;
 
                 case "Operatör":
@@ -148,6 +145,11 @@ namespace KesimTakip
 
                 case "Kullanıcı":
                     lblKullaniciBilgi.Visible = true;
+                    break;
+
+                case "Ressam":
+                    btnAutoCad.Visible = true;
+                    btnProjeOgeleri.Visible = true;
                     break;
             }
             DuzenliButonGoster
@@ -188,12 +190,16 @@ namespace KesimTakip
 
         private void btnOturumuKapat_Click(object sender, EventArgs e)
         {
-            frmKullaniciGirisi kullanicigiris = new frmKullaniciGirisi();
-            kullanicigiris.Show();
+            DialogResult result = MessageBox.Show("Oturumu kapatmak istiyor musunuz?", "Bilgi", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
 
-            this.Hide();
+            if (result == DialogResult.OK)
+            {
+                frmKullaniciGirisi kullanicigiris = new frmKullaniciGirisi();
+                kullanicigiris.FormClosed += (s, args) => Application.Exit();
+                kullanicigiris.Show();
+                this.Hide();
+            }
 
-            kullanicigiris.FormClosed += (s, args) => Application.Exit();
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)

@@ -70,27 +70,35 @@ namespace KesimTakip.UsrControl
                 dataGridXmlCiktisi.DataSource = filtrelenmisParcalar;
             }
         }
-       
         private void OzetTabloyuGuncelle()
         {
-            var guncelParcalar = dataGridXmlCiktisi .DataSource as List<AutoCadAktarim>;
+            var guncelParcalar = dataGridXmlCiktisi.DataSource as List<AutoCadAktarim>;
             if (guncelParcalar == null) return;
 
             var project = txtProjeNo.Text.Trim();
             var projeKodu = string.IsNullOrEmpty(project) ? "Bilinmiyor" : project;
+
+            List<string> hataMesajlari = new List<string>();
 
             var ozetParcalar = guncelParcalar
                 .Where(p => !string.IsNullOrEmpty(p.Ad) && !string.IsNullOrEmpty(p.Kalite))
                 .Select(p =>
                 {
                     string formattedPozNo = p.PozNo.Length == 1 ? $"0{p.PozNo}" : p.PozNo;
+
+                    string ifsMalzemeAd = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeMalzeme(p.Ad);
+                    if (string.IsNullOrEmpty(ifsMalzemeAd))
+                    {
+                        ifsMalzemeAd = p.Ad; 
+                    }
+
                     return new AutoCadAktarimDetay
                     {
                         Proje = projeKodu,
                         Grup = p.Grup,
                         MalzemeKod = $"{p.Grup.Substring(0, 3)}-00-{formattedPozNo}",
                         Adet = p.Adet * p.GrupAdet,
-                        MalzemeAd = p.Ad,
+                        MalzemeAd = ifsMalzemeAd,
                         Kalite = p.Kalite
                     };
                 })
@@ -98,8 +106,15 @@ namespace KesimTakip.UsrControl
                 .ThenBy(p => p.MalzemeKod)
                 .ToList();
 
+            if (hataMesajlari.Count > 0)
+            {
+                string hataMesaji = "Aşağıdaki uyarilar bulundu:\n\n" + string.Join("\n", hataMesajlari);
+                MessageBox.Show(hataMesaji, "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+
             dataGridIslenmisXml.DataSource = ozetParcalar;
         }
+      
         private List<AutoCadAktarim> ParcalariOku(string xmlPath)
         {
             var liste = new List<AutoCadAktarim>();
