@@ -222,6 +222,12 @@
     <Compile Include="UsrControl\ctlBaslik.Designer.cs">
       <DependentUpon>ctlBaslik.cs</DependentUpon>
     </Compile>
+    <Compile Include="UsrControl\ctlKarsilastirmaTablosu.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlKarsilastirmaTablosu.Designer.cs">
+      <DependentUpon>ctlKarsilastirmaTablosu.cs</DependentUpon>
+    </Compile>
     <Compile Include="UsrControl\ctlKesimDetaylari.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -302,6 +308,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlBaslik.resx">
       <DependentUpon>ctlBaslik.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlKarsilastirmaTablosu.resx">
+      <DependentUpon>ctlKarsilastirmaTablosu.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlKesimDetaylari.resx">
       <DependentUpon>ctlKesimDetaylari.cs</DependentUpon>

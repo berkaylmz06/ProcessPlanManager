@@ -225,104 +225,44 @@ namespace KesimTakip.DataBase
                 komut.ExecuteNonQuery();
             }
         }
-        public static void GrupEkleGuncelle(string projeAdi, string grupAdi, string eskiGrupAdi = null)
+        public static void GrupEkleGuncelle(string projeNo, string grupAdi, string eskiGrupAdi)
         {
             using (var conn = DataBaseHelper.GetConnection())
             {
-                try
+                conn.Open();
+                // ProjeId'yi al
+                int projeId = GetProjeId(conn, projeNo);
+
+                string checkQuery = "SELECT COUNT(*) FROM Gruplar WHERE projeId = @projeId AND grupAdi = @grupAdi";
+                using (var checkCmd = new SqlCommand(checkQuery, conn))
                 {
-                    conn.Open();
-                    using (var transaction = conn.BeginTransaction())
+                    checkCmd.Parameters.AddWithValue("@projeId", projeId);
+                    checkCmd.Parameters.AddWithValue("@grupAdi", eskiGrupAdi ?? grupAdi);
+                    int count = (int)checkCmd.ExecuteScalar();
+
+                    if (count > 0 && !string.IsNullOrEmpty(eskiGrupAdi))
                     {
-                        try
+                        // Güncelleme işlemi
+                        string updateQuery = "UPDATE Gruplar SET grupAdi = @yeniGrupAdi WHERE projeId = @projeId AND grupAdi = @eskiGrupAdi";
+                        using (var updateCmd = new SqlCommand(updateQuery, conn))
                         {
-                            int projeId;
-                            string getProjeIdQuery = "SELECT projeId FROM Projeler WHERE projeAdi = @projeAdi";
-                            using (var cmd = new SqlCommand(getProjeIdQuery, conn, transaction))
-                            {
-                                cmd.Parameters.AddWithValue("@projeAdi", projeAdi);
-                                var result = cmd.ExecuteScalar();
-                                if (result == null)
-                                {
-                                    throw new Exception($"Proje bulunamadı: {projeAdi}");
-                                }
-                                projeId = Convert.ToInt32(result);
-                            }
-
-                            if (!string.IsNullOrEmpty(eskiGrupAdi) && eskiGrupAdi != grupAdi)
-                            {
-                                string deleteQuery = @"
-                                DELETE m
-                                FROM Malzemeler m
-                                JOIN Gruplar g ON m.grupId = g.grupId
-                                JOIN Projeler p ON g.projeId = p.projeId
-                                WHERE p.projeAdi = @projeAdi AND g.grupAdi = @eskiGrupAdi;
-
-                                DELETE g
-                                FROM Gruplar g
-                                JOIN Projeler p ON g.projeId = p.projeId
-                                WHERE p.projeAdi = @projeAdi AND g.grupAdi = @eskiGrupAdi";
-                                using (var deleteCmd = new SqlCommand(deleteQuery, conn, transaction))
-                                {
-                                    deleteCmd.Parameters.AddWithValue("@projeAdi", projeAdi);
-                                    deleteCmd.Parameters.AddWithValue("@eskiGrupAdi", eskiGrupAdi);
-                                    int rowsAffected = deleteCmd.ExecuteNonQuery();
-                                }
-                            }
-
-                            string checkQuery = @"
-                            SELECT grupId 
-                            FROM Gruplar g
-                            JOIN Projeler p ON g.projeId = p.projeId
-                            WHERE p.projeAdi = @projeAdi AND g.grupAdi = @grupAdi";
-                            int grupId;
-                            using (var checkCmd = new SqlCommand(checkQuery, conn, transaction))
-                            {
-                                checkCmd.Parameters.AddWithValue("@projeAdi", projeAdi);
-                                checkCmd.Parameters.AddWithValue("@grupAdi", grupAdi);
-                                var result = checkCmd.ExecuteScalar();
-                                if (result != null)
-                                {
-                                    grupId = Convert.ToInt32(result);
-                                    string updateQuery = @"
-                                    UPDATE Gruplar
-                                    SET grupAdi = @grupAdi
-                                    WHERE grupId = @grupId";
-                                    using (var updateCmd = new SqlCommand(updateQuery, conn, transaction))
-                                    {
-                                        updateCmd.Parameters.AddWithValue("@grupAdi", grupAdi);
-                                        updateCmd.Parameters.AddWithValue("@grupId", grupId);
-                                        int rowsAffected = updateCmd.ExecuteNonQuery();
-                                    }
-                                }
-                                else
-                                {
-                                    // Yeni grup ekle
-                                    string insertQuery = @"
-                                    INSERT INTO Gruplar (projeId, grupAdi)
-                                    VALUES (@projeId, @grupAdi);
-                                    SELECT SCOPE_IDENTITY();";
-                                    using (var insertCmd = new SqlCommand(insertQuery, conn, transaction))
-                                    {
-                                        insertCmd.Parameters.AddWithValue("@projeId", projeId);
-                                        insertCmd.Parameters.AddWithValue("@grupAdi", grupAdi);
-                                        grupId = Convert.ToInt32(insertCmd.ExecuteScalar());
-                                    }
-                                }
-                            }
-
-                            transaction.Commit();
-                        }
-                        catch (Exception ex)
-                        {
-                            transaction.Rollback();
-                            throw new Exception($"Grup ekleme/güncelleme hatası: {ex.Message}", ex);
+                            updateCmd.Parameters.AddWithValue("@yeniGrupAdi", grupAdi);
+                            updateCmd.Parameters.AddWithValue("@projeId", projeId);
+                            updateCmd.Parameters.AddWithValue("@eskiGrupAdi", eskiGrupAdi);
+                            updateCmd.ExecuteNonQuery();
                         }
                     }
-                }
-                catch (Exception ex)
-                {
-                    throw new Exception($"Veritabanı bağlantı hatası: {ex.Message}", ex);
+                    else
+                    {
+                        // Ekleme işlemi
+                        string insertQuery = "INSERT INTO Gruplar (projeId, grupAdi) VALUES (@projeId, @grupAdi)";
+                        using (var insertCmd = new SqlCommand(insertQuery, conn))
+                        {
+                            insertCmd.Parameters.AddWithValue("@projeId", projeId);
+                            insertCmd.Parameters.AddWithValue("@grupAdi", grupAdi);
+                            insertCmd.ExecuteNonQuery();
+                        }
+                    }
                 }
             }
         }
@@ -375,100 +315,83 @@ namespace KesimTakip.DataBase
                 }
             }
         }
-        public static void MalzemeEkleGuncelle(string projeAdi, string grupAdi, string malzemeKod, int adet, string malzemeAd, string kalite)
+        public static void MalzemeEkleGuncelle(string projeNo, string grupAdi, string malzemeKod, int adet, string malzemeAd, string kalite, string eskiMalzemeKod = null)
         {
-            if (string.IsNullOrEmpty(malzemeKod))
-                throw new ArgumentException("Malzeme kodu boş olamaz.");
-
             using (var conn = DataBaseHelper.GetConnection())
             {
-                try
+                conn.Open();
+                // ProjeId ve GrupId'yi al
+                int projeId = GetProjeId(conn, projeNo);
+                int grupId = GetGrupId(conn, projeId, grupAdi);
+
+                string checkQuery = "SELECT COUNT(*) FROM Malzemeler WHERE grupId = @grupId AND malzemeKod = @malzemeKod";
+                using (var checkCmd = new SqlCommand(checkQuery, conn))
                 {
-                    conn.Open();
-                    using (var transaction = conn.BeginTransaction())
+                    checkCmd.Parameters.AddWithValue("@grupId", grupId);
+                    checkCmd.Parameters.AddWithValue("@malzemeKod", eskiMalzemeKod ?? malzemeKod);
+                    int count = (int)checkCmd.ExecuteScalar();
+
+                    if (count > 0 && !string.IsNullOrEmpty(eskiMalzemeKod))
                     {
-                        try
+                        string updateQuery = @"UPDATE Malzemeler 
+                                   SET malzemeKod = @yeniMalzemeKod, adet = @adet, malzemeAd = @malzemeAd, kalite = @kalite 
+                                   WHERE grupId = @grupId AND malzemeKod = @eskiMalzemeKod";
+                        using (var updateCmd = new SqlCommand(updateQuery, conn))
                         {
-                            // GrupId'yi getir
-                            string getGrupIdQuery = @"
-                        SELECT g.grupId
-                        FROM Gruplar g
-                        JOIN Projeler p ON g.projeId = p.projeId
-                        WHERE p.projeAdi = @projeAdi AND g.grupAdi = @grupAdi";
-                            int grupId;
-                            using (var cmd = new SqlCommand(getGrupIdQuery, conn, transaction))
-                            {
-                                cmd.Parameters.AddWithValue("@projeAdi", projeAdi);
-                                cmd.Parameters.AddWithValue("@grupAdi", grupAdi);
-                                var result = cmd.ExecuteScalar();
-                                if (result == null)
-                                {
-                                    throw new Exception($"Grup bulunamadı: projeAdi={projeAdi}, grupAdi={grupAdi}");
-                                }
-                                grupId = Convert.ToInt32(result);
-                            }
-
-                            string checkQuery = @"
-                        SELECT malzemeId
-                        FROM Malzemeler
-                        WHERE grupId = @grupId AND malzemeKod = @malzemeKod";
-                            using (var checkCmd = new SqlCommand(checkQuery, conn, transaction))
-                            {
-                                checkCmd.Parameters.AddWithValue("@grupId", grupId);
-                                checkCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
-                                using (var reader = checkCmd.ExecuteReader())
-                                {
-                                    if (reader.Read())
-                                    {
-                                        int malzemeId = reader.GetInt32(0);
-                                        reader.Close();
-
-                                        string updateQuery = @"
-                                    UPDATE Malzemeler
-                                    SET adet = @adet, malzemeAd = @malzemeAd, kalite = @kalite
-                                    WHERE malzemeId = @malzemeId";
-                                        using (var updateCmd = new SqlCommand(updateQuery, conn, transaction))
-                                        {
-                                            updateCmd.Parameters.AddWithValue("@adet", adet);
-                                            updateCmd.Parameters.AddWithValue("@malzemeAd", malzemeAd ?? (object)DBNull.Value);
-                                            updateCmd.Parameters.AddWithValue("@kalite", kalite ?? (object)DBNull.Value);
-                                            updateCmd.Parameters.AddWithValue("@malzemeId", malzemeId);
-                                            int rowsAffected = updateCmd.ExecuteNonQuery();
-                                        }
-                                    }
-                                    else
-                                    {
-                                        reader.Close();
-
-                                        string insertQuery = @"
-                                    INSERT INTO Malzemeler (grupId, malzemeKod, adet, malzemeAd, kalite)
-                                    VALUES (@grupId, @malzemeKod, @adet, @malzemeAd, @kalite);
-                                    SELECT SCOPE_IDENTITY();";
-                                        using (var insertCmd = new SqlCommand(insertQuery, conn, transaction))
-                                        {
-                                            insertCmd.Parameters.AddWithValue("@grupId", grupId);
-                                            insertCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
-                                            insertCmd.Parameters.AddWithValue("@adet", adet);
-                                            insertCmd.Parameters.AddWithValue("@malzemeAd", malzemeAd ?? (object)DBNull.Value);
-                                            insertCmd.Parameters.AddWithValue("@kalite", kalite ?? (object)DBNull.Value);
-                                            int malzemeId = Convert.ToInt32(insertCmd.ExecuteScalar());
-                                        }
-                                    }
-                                }
-                            }
-                            transaction.Commit();
+                            updateCmd.Parameters.AddWithValue("@yeniMalzemeKod", malzemeKod);
+                            updateCmd.Parameters.AddWithValue("@adet", adet);
+                            updateCmd.Parameters.AddWithValue("@malzemeAd", malzemeAd ?? (object)DBNull.Value);
+                            updateCmd.Parameters.AddWithValue("@kalite", kalite ?? (object)DBNull.Value);
+                            updateCmd.Parameters.AddWithValue("@grupId", grupId);
+                            updateCmd.Parameters.AddWithValue("@eskiMalzemeKod", eskiMalzemeKod);
+                            updateCmd.ExecuteNonQuery();
                         }
-                        catch (Exception ex)
+                    }
+                    else
+                    {
+                        string insertQuery = @"INSERT INTO Malzemeler (grupId, malzemeKod, adet, malzemeAd, kalite) 
+                                   VALUES (@grupId, @malzemeKod, @adet, @malzemeAd, @kalite)";
+                        using (var insertCmd = new SqlCommand(insertQuery, conn))
                         {
-                            transaction.Rollback();
-                            throw new Exception($"Malzeme ekleme/güncelleme hatası: {ex.Message}", ex);
+                            insertCmd.Parameters.AddWithValue("@grupId", grupId);
+                            insertCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
+                            insertCmd.Parameters.AddWithValue("@adet", adet);
+                            insertCmd.Parameters.AddWithValue("@malzemeAd", malzemeAd ?? (object)DBNull.Value);
+                            insertCmd.Parameters.AddWithValue("@kalite", kalite ?? (object)DBNull.Value);
+                            insertCmd.ExecuteNonQuery();
                         }
                     }
                 }
-                catch (Exception ex)
+            }
+        }
+        private static int GetProjeId(SqlConnection conn, string projeNo)
+        {
+            string query = "SELECT projeId FROM Projeler WHERE projeAdi = @projeAdi";
+            using (var cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@projeAdi", projeNo);
+                var result = cmd.ExecuteScalar();
+                if (result == null)
                 {
-                    throw new Exception($"Veritabanı bağlantı hatası: {ex.Message}", ex);
+                    throw new Exception($"Proje bulunamadı: {projeNo}");
                 }
+                return Convert.ToInt32(result);
+            }
+        }
+
+        private static int GetGrupId(SqlConnection conn, int projeId, string grupAdi)
+        {
+            string query = "SELECT grupId FROM Gruplar WHERE projeId = @projeId AND grupAdi = @grupAdi";
+            using (var cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddWithValue("@projeId", projeId);
+                cmd.Parameters.AddWithValue("@grupAdi", grupAdi);
+                var result = cmd.ExecuteScalar();
+                if (result == null)
+                {
+                    throw new Exception($"Grup bulunamadı: projeId={projeId}, grupAdi={grupAdi}");
+                }
+                return Convert.ToInt32(result);
             }
         }
         public static void MalzemeSil(string projeAdi, string grupAdi, string malzemeKod)
@@ -518,13 +441,55 @@ namespace KesimTakip.DataBase
                 {
                     command.Parameters.AddWithValue("@Kalite", kalite);
                     command.Parameters.AddWithValue("@malzemeAd", malzeme);
-                    command.Parameters.AddWithValue("@malzemeKod", kalip); // malzemeAd ile kalip birleştirilmiş kabul ediliyor
+                    command.Parameters.AddWithValue("@malzemeKod", kalip);
                     command.Parameters.AddWithValue("@ProjeAdi", proje);
 
                     var result = command.ExecuteScalar();
                     int toplamAdet = result != DBNull.Value ? Convert.ToInt32(result) : 0;
 
                     return (girilenAdet <= toplamAdet, toplamAdet);
+                }
+            }
+        }
+
+        public static (bool isValid, int toplamAdetIfs, int toplamAdetYuklenen) KontrolAdeta(string kalite, string malzeme, string kalip, string proje, int girilenAdet)
+        {
+            string query = @"
+SELECT 
+    SUM(m.adet) AS ToplamAdetIfs, 
+    COALESCE(SUM(KD.toplamAdet), 0) AS ToplamAdetYuklenen 
+FROM Malzemeler m 
+JOIN Gruplar g ON m.grupID = g.grupID 
+JOIN Projeler p ON g.projeID = p.projeID 
+LEFT JOIN KesimDetaylari KD ON KD.malzemeKod = m.malzemeKod 
+    AND KD.kalite = m.kalite 
+    AND KD.proje = p.projeAdi 
+WHERE m.kalite = @Kalite 
+  AND m.malzemeAd = @malzemeAd 
+  AND m.malzemeKod = @malzemeKod 
+  AND p.projeAdi = @ProjeAdi";
+
+            using (var conn = DataBaseHelper.GetConnection())
+            {
+                conn.Open();
+                using (var command = new SqlCommand(query, conn))
+                {
+                    command.Parameters.AddWithValue("@Kalite", kalite);
+                    command.Parameters.AddWithValue("@malzemeAd", malzeme);
+                    command.Parameters.AddWithValue("@malzemeKod", kalip);
+                    command.Parameters.AddWithValue("@ProjeAdi", proje);
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        int toplamAdetIfs = 0;
+                        int toplamAdetYuklenen = 0;
+                        if (reader.Read())
+                        {
+                            toplamAdetIfs = reader["ToplamAdetIfs"] != DBNull.Value ? Convert.ToInt32(reader["ToplamAdetIfs"]) : 0;
+                            toplamAdetYuklenen = reader["ToplamAdetYuklenen"] != DBNull.Value ? Convert.ToInt32(reader["ToplamAdetYuklenen"]) : 0;
+                        }
+                        return (girilenAdet + toplamAdetYuklenen <= toplamAdetIfs, toplamAdetIfs, toplamAdetYuklenen);
+                    }
                 }
             }
         }

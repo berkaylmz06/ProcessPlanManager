@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -40,7 +41,7 @@ namespace KesimTakip.DataBase
                     var command = new SqlCommand(
                         "INSERT INTO KarsilastirmaTablosuKalite (CekaCode, IfsCode, Aciklama) VALUES (@CekaCode, @IfsCode, @Aciklama)",
                         connection);
-                    command.Parameters.AddWithValue("@AutoCadCode", CekaCode);
+                    command.Parameters.AddWithValue("@CekaCode", CekaCode);
                     command.Parameters.AddWithValue("@IfsCode", ifsCode);
                     command.Parameters.AddWithValue("@Aciklama", (object)aciklama ?? DBNull.Value);
 
@@ -49,7 +50,6 @@ namespace KesimTakip.DataBase
             }
             catch (Exception ex)
             {
-                // Hata loglama (isteğe bağlı)
                 Console.WriteLine($"Hata: {ex.Message}");
                 throw;
             }
@@ -89,12 +89,11 @@ namespace KesimTakip.DataBase
                     command.Parameters.AddWithValue("@AutoCadCode", autoCadCode);
 
                     var result = command.ExecuteScalar();
-                    return result?.ToString(); // Eğer eşleşme yoksa null döner
+                    return result?.ToString(); 
                 }
             }
             catch (Exception ex)
             {
-                // Hata loglama (isteğe bağlı)
                 Console.WriteLine($"Hata: {ex.Message}");
                 return null;
             }
@@ -118,7 +117,6 @@ namespace KesimTakip.DataBase
             }
             catch (Exception ex)
             {
-                // Hata loglama (isteğe bağlı)
                 Console.WriteLine($"Hata: {ex.Message}");
                 throw;
             }
@@ -146,6 +144,41 @@ namespace KesimTakip.DataBase
                 Console.WriteLine($"Hata: {ex.Message}");
                 throw;
             }
+        }
+        public static DataTable GetAllKaliteKarsilastirmalari()
+        {
+            DataTable tablo = new DataTable();
+            using (var conn = DataBaseHelper.GetConnection())
+            {
+                conn.Open();
+                string sorgu = "SELECT id, CekaCode, IfsCode, Aciklama FROM KarsilastirmaTablosuKalite";
+                using (var command = new SqlCommand(sorgu, conn))
+                {
+                    using (var adapter = new SqlDataAdapter(command))
+                    {
+                        adapter.Fill(tablo);
+                    }
+                }
+            }
+            return tablo;
+        }
+
+        public static DataTable GetAllMalzemeKarsilastirmalari()
+        {
+            DataTable tablo = new DataTable();
+            using (var conn = DataBaseHelper.GetConnection())
+            {
+                conn.Open();
+                string sorgu = "SELECT id, AutoCadCode, IfsCode, Aciklama FROM KarsilastirmaTablosuMalzeme";
+                using (var command = new SqlCommand(sorgu, conn))
+                {
+                    using (var adapter = new SqlDataAdapter(command))
+                    {
+                        adapter.Fill(tablo);
+                    }
+                }
+            }
+            return tablo;
         }
     }
 }

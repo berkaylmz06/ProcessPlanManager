@@ -17,6 +17,7 @@ namespace KesimTakip.Entitys
         public int kesilmisAdet { get; set; }
         public int kesilecekAdet { get; set; }
         public int toplamAdet { get; set; }
+        public string Key { get; set; }
         public string poz
         {
             get { return $"{kalite}-{malzeme}-{malzemeKod}-{proje}"; }

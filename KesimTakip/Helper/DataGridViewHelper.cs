@@ -113,6 +113,36 @@ namespace KesimTakip.Helper
 
             dgv.AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.None;
             dgv.RowTemplate.Height = 30;
+
+            dgv.DefaultCellStyle.SelectionBackColor = dgv.DefaultCellStyle.BackColor;
+            dgv.DefaultCellStyle.SelectionForeColor = dgv.DefaultCellStyle.ForeColor;
+
+            dgv.CellPainting -= Dgv_SeciliSatiraSadeceCerceveCiz;
+            dgv.CellPainting += Dgv_SeciliSatiraSadeceCerceveCiz;
         }
+        private static void Dgv_SeciliSatiraSadeceCerceveCiz(object sender, DataGridViewCellPaintingEventArgs e)
+        {
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                var dgv = sender as DataGridView;
+                var cell = dgv.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+                e.Handled = true;
+                e.PaintBackground(e.ClipBounds, false);
+                e.PaintContent(e.ClipBounds);
+
+                if (dgv.Rows[e.RowIndex].Selected)
+                {
+                    using (Pen pen = new Pen(ColorTranslator.FromHtml("#2980B9"), 2))
+                    {
+                        Rectangle rect = e.CellBounds;
+                        rect.Width -= 1;
+                        rect.Height -= 1;
+                        e.Graphics.DrawRectangle(pen, rect);
+                    }
+                }
+            }
+        }
+
     }
 }

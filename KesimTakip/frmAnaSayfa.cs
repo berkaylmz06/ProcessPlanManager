@@ -26,6 +26,7 @@ namespace KesimTakip
         private ctlSistemBilgisi sistemBilgisiAnaSayfa;
         private ctlAutoCadAktarim autoCadAktarim;
         private ctlProjeOgeleri projeOgeleri;
+        private ctlKarsilastirmaTablosu karsilastirmaTablosu;
 
         private Kullanicilar aktifKullanici;
 
@@ -83,6 +84,7 @@ namespace KesimTakip
             ButonGenelHelper.StilUygula(btnSistemBilgisiAnaSayfa);
             ButonGenelHelper.StilUygula(btnAutoCad);
             ButonGenelHelper.StilUygula(btnProjeOgeleri);
+            ButonGenelHelper.StilUygula(btnKarsilastirmaTablolari);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnSistem);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
             MenuStripGenelHelper.StilUygula(menuStrip1);
@@ -100,6 +102,7 @@ namespace KesimTakip
             btnSistemBilgisiAnaSayfa.Visible = false;
             btnAutoCad.Visible = false;
             btnProjeOgeleri.Visible = false;
+            btnKarsilastirmaTablolari.Visible = false;
             panelKesimPlaniEkleVeri.Visible = false;
 
             switch (aktifKullanici.kullaniciRol)
@@ -112,6 +115,7 @@ namespace KesimTakip
                     btnKullaniciAyarlari.Visible = true;
                     btnSistemHareketleri.Visible = true;
                     panelKesimPlaniEkleVeri.Visible=true;
+                    btnKarsilastirmaTablolari.Visible = true;
                     break;
 
                 case "Destek":
@@ -126,6 +130,7 @@ namespace KesimTakip
                     btnAutoCad.Visible = true;
                     btnProjeOgeleri.Visible = true;
                     panelKesimPlaniEkleVeri.Visible = true;
+                    btnKarsilastirmaTablolari.Visible = true;
                     break;
 
                 case "İş Hazırlama":
@@ -164,6 +169,7 @@ namespace KesimTakip
               btnSistemBilgisiAnaSayfa,
               btnAutoCad,
               btnProjeOgeleri,
+              btnKarsilastirmaTablolari,
               btnOturumuKapat
               );
         }
@@ -411,6 +417,19 @@ namespace KesimTakip
             }
 
             panelAnaSayfaContainer.Controls.Add(projeOgeleri);
+        }
+
+        private void btnKarsilastirmaTablolari_Click(object sender, EventArgs e)
+        {
+            panelAnaSayfaContainer.Controls.Clear();
+
+            if (karsilastirmaTablosu == null)
+            {
+                karsilastirmaTablosu = new ctlKarsilastirmaTablosu();
+                karsilastirmaTablosu.Dock = DockStyle.Fill;
+            }
+
+            panelAnaSayfaContainer.Controls.Add(karsilastirmaTablosu);
         }
     }
 }

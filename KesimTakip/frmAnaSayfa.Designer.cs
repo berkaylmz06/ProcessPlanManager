@@ -50,13 +50,16 @@
             this.btnKesimPlaniEkle = new System.Windows.Forms.Button();
             this.panelContainer = new System.Windows.Forms.Panel();
             this.panelSistem = new System.Windows.Forms.Panel();
+            this.panelKesimPlaniEkleVeri = new System.Windows.Forms.Panel();
             this.richTextBox4 = new System.Windows.Forms.RichTextBox();
-            this.label20 = new System.Windows.Forms.Label();
             this.btnAktar = new System.Windows.Forms.Button();
+            this.label20 = new System.Windows.Forms.Label();
+            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
+            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
             this.label19 = new System.Windows.Forms.Label();
+            this.richTextBox3 = new System.Windows.Forms.RichTextBox();
             this.label18 = new System.Windows.Forms.Label();
             this.label10 = new System.Windows.Forms.Label();
-            this.richTextBox3 = new System.Windows.Forms.RichTextBox();
             this.panelSistemBilgisi = new System.Windows.Forms.Panel();
             this.lblSistemSaat = new System.Windows.Forms.Label();
             this.lblSistemTarih = new System.Windows.Forms.Label();
@@ -67,8 +70,6 @@
             this.label13 = new System.Windows.Forms.Label();
             this.label14 = new System.Windows.Forms.Label();
             this.label12 = new System.Windows.Forms.Label();
-            this.richTextBox2 = new System.Windows.Forms.RichTextBox();
-            this.richTextBox1 = new System.Windows.Forms.RichTextBox();
             this.panelYardim = new System.Windows.Forms.Panel();
             this.txtSorun = new System.Windows.Forms.RichTextBox();
             this.label17 = new System.Windows.Forms.Label();
@@ -76,16 +77,16 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
             this.lblKullaniciBilgi = new System.Windows.Forms.Label();
-            this.panelKesimPlaniEkleVeri = new System.Windows.Forms.Panel();
+            this.btnKarsilastirmaTablolari = new System.Windows.Forms.Button();
             this.panelYardimCubugu.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
             this.panelContainer.SuspendLayout();
             this.panelSistem.SuspendLayout();
+            this.panelKesimPlaniEkleVeri.SuspendLayout();
             this.panelSistemBilgisi.SuspendLayout();
             this.panelYardim.SuspendLayout();
             this.panelAnaSayfaContainer.SuspendLayout();
-            this.panelKesimPlaniEkleVeri.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelYardimCubugu
@@ -126,7 +127,7 @@
             // 
             // btnOturumuKapat
             // 
-            this.btnOturumuKapat.Location = new System.Drawing.Point(14, 649);
+            this.btnOturumuKapat.Location = new System.Drawing.Point(14, 712);
             this.btnOturumuKapat.Margin = new System.Windows.Forms.Padding(2);
             this.btnOturumuKapat.Name = "btnOturumuKapat";
             this.btnOturumuKapat.Size = new System.Drawing.Size(160, 58);
@@ -182,6 +183,7 @@
             // panelAraYuz
             // 
             this.panelAraYuz.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.panelAraYuz.Controls.Add(this.btnKarsilastirmaTablolari);
             this.panelAraYuz.Controls.Add(this.btnProjeOgeleri);
             this.panelAraYuz.Controls.Add(this.btnAutoCad);
             this.panelAraYuz.Controls.Add(this.btnSistemBilgisiAnaSayfa);
@@ -337,6 +339,23 @@
             this.panelSistem.TabIndex = 151;
             this.panelSistem.Visible = false;
             // 
+            // panelKesimPlaniEkleVeri
+            // 
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.richTextBox4);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.btnAktar);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.label20);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.richTextBox1);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.richTextBox2);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.label19);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.richTextBox3);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.label18);
+            this.panelKesimPlaniEkleVeri.Controls.Add(this.label10);
+            this.panelKesimPlaniEkleVeri.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panelKesimPlaniEkleVeri.Location = new System.Drawing.Point(412, 0);
+            this.panelKesimPlaniEkleVeri.Name = "panelKesimPlaniEkleVeri";
+            this.panelKesimPlaniEkleVeri.Size = new System.Drawing.Size(1538, 228);
+            this.panelKesimPlaniEkleVeri.TabIndex = 1;
+            // 
             // richTextBox4
             // 
             this.richTextBox4.Location = new System.Drawing.Point(18, 50);
@@ -346,17 +365,6 @@
             this.richTextBox4.TabIndex = 132;
             this.richTextBox4.Text = "";
             this.richTextBox4.WordWrap = false;
-            // 
-            // label20
-            // 
-            this.label20.AutoSize = true;
-            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label20.Location = new System.Drawing.Point(776, 80);
-            this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.label20.Name = "label20";
-            this.label20.Size = new System.Drawing.Size(48, 20);
-            this.label20.TabIndex = 131;
-            this.label20.Text = "<----";
             // 
             // btnAktar
             // 
@@ -369,6 +377,37 @@
             this.btnAktar.UseVisualStyleBackColor = true;
             this.btnAktar.Click += new System.EventHandler(this.btnAktar_Click);
             // 
+            // label20
+            // 
+            this.label20.AutoSize = true;
+            this.label20.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label20.Location = new System.Drawing.Point(776, 80);
+            this.label20.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.label20.Name = "label20";
+            this.label20.Size = new System.Drawing.Size(48, 20);
+            this.label20.TabIndex = 131;
+            this.label20.Text = "<----";
+            // 
+            // richTextBox1
+            // 
+            this.richTextBox1.Location = new System.Drawing.Point(1200, 50);
+            this.richTextBox1.Margin = new System.Windows.Forms.Padding(2);
+            this.richTextBox1.Name = "richTextBox1";
+            this.richTextBox1.Size = new System.Drawing.Size(324, 144);
+            this.richTextBox1.TabIndex = 104;
+            this.richTextBox1.Text = "";
+            this.richTextBox1.WordWrap = false;
+            // 
+            // richTextBox2
+            // 
+            this.richTextBox2.Location = new System.Drawing.Point(395, 50);
+            this.richTextBox2.Margin = new System.Windows.Forms.Padding(2);
+            this.richTextBox2.Name = "richTextBox2";
+            this.richTextBox2.Size = new System.Drawing.Size(335, 144);
+            this.richTextBox2.TabIndex = 109;
+            this.richTextBox2.Text = "";
+            this.richTextBox2.WordWrap = false;
+            // 
             // label19
             // 
             this.label19.AutoSize = true;
@@ -378,6 +417,16 @@
             this.label19.Size = new System.Drawing.Size(72, 16);
             this.label19.TabIndex = 129;
             this.label19.Text = "PDF Çıktısı";
+            // 
+            // richTextBox3
+            // 
+            this.richTextBox3.Location = new System.Drawing.Point(873, 50);
+            this.richTextBox3.Margin = new System.Windows.Forms.Padding(2);
+            this.richTextBox3.Name = "richTextBox3";
+            this.richTextBox3.Size = new System.Drawing.Size(290, 144);
+            this.richTextBox3.TabIndex = 126;
+            this.richTextBox3.Text = "";
+            this.richTextBox3.WordWrap = false;
             // 
             // label18
             // 
@@ -398,16 +447,6 @@
             this.label10.Size = new System.Drawing.Size(89, 16);
             this.label10.TabIndex = 127;
             this.label10.Text = "Doğru Format";
-            // 
-            // richTextBox3
-            // 
-            this.richTextBox3.Location = new System.Drawing.Point(873, 50);
-            this.richTextBox3.Margin = new System.Windows.Forms.Padding(2);
-            this.richTextBox3.Name = "richTextBox3";
-            this.richTextBox3.Size = new System.Drawing.Size(290, 144);
-            this.richTextBox3.TabIndex = 126;
-            this.richTextBox3.Text = "";
-            this.richTextBox3.WordWrap = false;
             // 
             // panelSistemBilgisi
             // 
@@ -517,26 +556,6 @@
             this.label12.TabIndex = 120;
             this.label12.Text = "Sistem Bilgisi";
             // 
-            // richTextBox2
-            // 
-            this.richTextBox2.Location = new System.Drawing.Point(395, 50);
-            this.richTextBox2.Margin = new System.Windows.Forms.Padding(2);
-            this.richTextBox2.Name = "richTextBox2";
-            this.richTextBox2.Size = new System.Drawing.Size(335, 144);
-            this.richTextBox2.TabIndex = 109;
-            this.richTextBox2.Text = "";
-            this.richTextBox2.WordWrap = false;
-            // 
-            // richTextBox1
-            // 
-            this.richTextBox1.Location = new System.Drawing.Point(1200, 50);
-            this.richTextBox1.Margin = new System.Windows.Forms.Padding(2);
-            this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(324, 144);
-            this.richTextBox1.TabIndex = 104;
-            this.richTextBox1.Text = "";
-            this.richTextBox1.WordWrap = false;
-            // 
             // panelYardim
             // 
             this.panelYardim.AutoSize = true;
@@ -607,22 +626,16 @@
             this.lblKullaniciBilgi.Text = "Şu anda tanımlı bir rolünüz bulunmamaktadır. Lütfen yetki için yöneticinizle ilet" +
     "işime geçiniz.";
             // 
-            // panelKesimPlaniEkleVeri
+            // btnKarsilastirmaTablolari
             // 
-            this.panelKesimPlaniEkleVeri.Controls.Add(this.richTextBox4);
-            this.panelKesimPlaniEkleVeri.Controls.Add(this.btnAktar);
-            this.panelKesimPlaniEkleVeri.Controls.Add(this.label20);
-            this.panelKesimPlaniEkleVeri.Controls.Add(this.richTextBox1);
-            this.panelKesimPlaniEkleVeri.Controls.Add(this.richTextBox2);
-            this.panelKesimPlaniEkleVeri.Controls.Add(this.label19);
-            this.panelKesimPlaniEkleVeri.Controls.Add(this.richTextBox3);
-            this.panelKesimPlaniEkleVeri.Controls.Add(this.label18);
-            this.panelKesimPlaniEkleVeri.Controls.Add(this.label10);
-            this.panelKesimPlaniEkleVeri.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panelKesimPlaniEkleVeri.Location = new System.Drawing.Point(412, 0);
-            this.panelKesimPlaniEkleVeri.Name = "panelKesimPlaniEkleVeri";
-            this.panelKesimPlaniEkleVeri.Size = new System.Drawing.Size(1538, 228);
-            this.panelKesimPlaniEkleVeri.TabIndex = 1;
+            this.btnKarsilastirmaTablolari.Location = new System.Drawing.Point(14, 650);
+            this.btnKarsilastirmaTablolari.Margin = new System.Windows.Forms.Padding(2);
+            this.btnKarsilastirmaTablolari.Name = "btnKarsilastirmaTablolari";
+            this.btnKarsilastirmaTablolari.Size = new System.Drawing.Size(160, 58);
+            this.btnKarsilastirmaTablolari.TabIndex = 124;
+            this.btnKarsilastirmaTablolari.Text = "Karşılaştırma Tabloları";
+            this.btnKarsilastirmaTablolari.UseVisualStyleBackColor = true;
+            this.btnKarsilastirmaTablolari.Click += new System.EventHandler(this.btnKarsilastirmaTablolari_Click);
             // 
             // frmAnaSayfa
             // 
@@ -648,14 +661,14 @@
             this.panelContainer.PerformLayout();
             this.panelSistem.ResumeLayout(false);
             this.panelSistem.PerformLayout();
+            this.panelKesimPlaniEkleVeri.ResumeLayout(false);
+            this.panelKesimPlaniEkleVeri.PerformLayout();
             this.panelSistemBilgisi.ResumeLayout(false);
             this.panelSistemBilgisi.PerformLayout();
             this.panelYardim.ResumeLayout(false);
             this.panelYardim.PerformLayout();
             this.panelAnaSayfaContainer.ResumeLayout(false);
             this.panelAnaSayfaContainer.PerformLayout();
-            this.panelKesimPlaniEkleVeri.ResumeLayout(false);
-            this.panelKesimPlaniEkleVeri.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -711,5 +724,6 @@
         private System.Windows.Forms.Button btnAutoCad;
         private System.Windows.Forms.Button btnProjeOgeleri;
         private System.Windows.Forms.Panel panelKesimPlaniEkleVeri;
+        private System.Windows.Forms.Button btnKarsilastirmaTablolari;
     }
 }
