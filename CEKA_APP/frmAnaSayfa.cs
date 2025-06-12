@@ -56,6 +56,7 @@ namespace CEKA_APP
             panelAraYuz.BackColor = ColorTranslator.FromHtml("#2C3E50");
             panelYardimCubugu.BackColor = ColorTranslator.FromHtml("#E67E22");
 
+            this.Icon = new Icon("cekalogokirmizi.ico");
         }
         frmAnaSayfa()
         {
@@ -172,6 +173,11 @@ namespace CEKA_APP
               btnKarsilastirmaTablolari,
               btnOturumuKapat
               );
+
+
+            pictureBox1.Image = Properties.Resources.kullanici;
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; 
+            pictureBox1.Cursor = Cursors.Hand;
         }
 
         private void btnSistem_Click(object sender, EventArgs e)
@@ -430,6 +436,17 @@ namespace CEKA_APP
             }
 
             panelAnaSayfaContainer.Controls.Add(karsilastirmaTablosu);
+        }
+
+        private void btnKullaniciAyar_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void pictureBox1_Click(object sender, EventArgs e)
+        {
+            frmKullaniciBilgileri kulEkle = new frmKullaniciBilgileri(lblSistemKullanici.Text);
+            kulEkle.ShowDialog();
         }
     }
 }

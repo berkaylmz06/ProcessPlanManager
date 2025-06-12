@@ -18,6 +18,8 @@ namespace CEKA_APP
         {
             InitializeComponent();
             _kullaniciService = new KullanicilarData();
+
+            this.Icon = new Icon("cekalogokirmizi.ico");
         }
 
         private void btnGiris_Click(object sender, EventArgs e)

@@ -29,6 +29,8 @@
         private void InitializeComponent()
         {
             this.panelYardimCubugu = new System.Windows.Forms.Panel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.panelKullaniciAyar = new System.Windows.Forms.Panel();
             this.btnYardim = new System.Windows.Forms.Button();
             this.btnSistem = new System.Windows.Forms.Button();
             this.btnOturumuKapat = new System.Windows.Forms.Button();
@@ -38,6 +40,7 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.yardımCubugunuKaldirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelAraYuz = new System.Windows.Forms.Panel();
+            this.btnKarsilastirmaTablolari = new System.Windows.Forms.Button();
             this.btnProjeOgeleri = new System.Windows.Forms.Button();
             this.btnAutoCad = new System.Windows.Forms.Button();
             this.btnSistemBilgisiAnaSayfa = new System.Windows.Forms.Button();
@@ -77,8 +80,9 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
             this.lblKullaniciBilgi = new System.Windows.Forms.Label();
-            this.btnKarsilastirmaTablolari = new System.Windows.Forms.Button();
             this.panelYardimCubugu.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.panelKullaniciAyar.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.panelAraYuz.SuspendLayout();
             this.panelContainer.SuspendLayout();
@@ -92,6 +96,7 @@
             // panelYardimCubugu
             // 
             this.panelYardimCubugu.BackColor = System.Drawing.SystemColors.ControlDarkDark;
+            this.panelYardimCubugu.Controls.Add(this.panelKullaniciAyar);
             this.panelYardimCubugu.Controls.Add(this.btnYardim);
             this.panelYardimCubugu.Controls.Add(this.btnSistem);
             this.panelYardimCubugu.Dock = System.Windows.Forms.DockStyle.Bottom;
@@ -100,6 +105,25 @@
             this.panelYardimCubugu.Name = "panelYardimCubugu";
             this.panelYardimCubugu.Size = new System.Drawing.Size(1950, 59);
             this.panelYardimCubugu.TabIndex = 210;
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.Location = new System.Drawing.Point(18, 10);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(39, 41);
+            this.pictureBox1.TabIndex = 119;
+            this.pictureBox1.TabStop = false;
+            this.pictureBox1.Click += new System.EventHandler(this.pictureBox1_Click);
+            // 
+            // panelKullaniciAyar
+            // 
+            this.panelKullaniciAyar.Controls.Add(this.pictureBox1);
+            this.panelKullaniciAyar.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panelKullaniciAyar.Location = new System.Drawing.Point(1879, 0);
+            this.panelKullaniciAyar.Name = "panelKullaniciAyar";
+            this.panelKullaniciAyar.Size = new System.Drawing.Size(71, 59);
+            this.panelKullaniciAyar.TabIndex = 1;
             // 
             // btnYardim
             // 
@@ -201,6 +225,17 @@
             this.panelAraYuz.Name = "panelAraYuz";
             this.panelAraYuz.Size = new System.Drawing.Size(189, 787);
             this.panelAraYuz.TabIndex = 212;
+            // 
+            // btnKarsilastirmaTablolari
+            // 
+            this.btnKarsilastirmaTablolari.Location = new System.Drawing.Point(14, 650);
+            this.btnKarsilastirmaTablolari.Margin = new System.Windows.Forms.Padding(2);
+            this.btnKarsilastirmaTablolari.Name = "btnKarsilastirmaTablolari";
+            this.btnKarsilastirmaTablolari.Size = new System.Drawing.Size(160, 58);
+            this.btnKarsilastirmaTablolari.TabIndex = 124;
+            this.btnKarsilastirmaTablolari.Text = "Karşılaştırma Tabloları";
+            this.btnKarsilastirmaTablolari.UseVisualStyleBackColor = true;
+            this.btnKarsilastirmaTablolari.Click += new System.EventHandler(this.btnKarsilastirmaTablolari_Click);
             // 
             // btnProjeOgeleri
             // 
@@ -626,17 +661,6 @@
             this.lblKullaniciBilgi.Text = "Şu anda tanımlı bir rolünüz bulunmamaktadır. Lütfen yetki için yöneticinizle ilet" +
     "işime geçiniz.";
             // 
-            // btnKarsilastirmaTablolari
-            // 
-            this.btnKarsilastirmaTablolari.Location = new System.Drawing.Point(14, 650);
-            this.btnKarsilastirmaTablolari.Margin = new System.Windows.Forms.Padding(2);
-            this.btnKarsilastirmaTablolari.Name = "btnKarsilastirmaTablolari";
-            this.btnKarsilastirmaTablolari.Size = new System.Drawing.Size(160, 58);
-            this.btnKarsilastirmaTablolari.TabIndex = 124;
-            this.btnKarsilastirmaTablolari.Text = "Karşılaştırma Tabloları";
-            this.btnKarsilastirmaTablolari.UseVisualStyleBackColor = true;
-            this.btnKarsilastirmaTablolari.Click += new System.EventHandler(this.btnKarsilastirmaTablolari_Click);
-            // 
             // frmAnaSayfa
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(120F, 120F);
@@ -654,6 +678,8 @@
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.Load += new System.EventHandler(this.frmAnaSayfa_Load);
             this.panelYardimCubugu.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.panelKullaniciAyar.ResumeLayout(false);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.panelAraYuz.ResumeLayout(false);
@@ -725,5 +751,7 @@
         private System.Windows.Forms.Button btnProjeOgeleri;
         private System.Windows.Forms.Panel panelKesimPlaniEkleVeri;
         private System.Windows.Forms.Button btnKarsilastirmaTablolari;
+        private System.Windows.Forms.Panel panelKullaniciAyar;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }

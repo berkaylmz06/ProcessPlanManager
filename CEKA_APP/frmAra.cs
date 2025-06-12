@@ -22,6 +22,8 @@ namespace CEKA_APP
             this.aramaSonucuCallback = callback;
             this.detayEklenecekMi = detayEkle;
             AraFormDinamikLabel(columns);
+
+            this.Icon = new Icon("cekalogokirmizi.ico");
         }
 
         public frmAra()

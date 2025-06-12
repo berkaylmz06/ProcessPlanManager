@@ -20,6 +20,8 @@ namespace CEKA_APP
         {
             InitializeComponent();
             kullaniciAyar = kullaniciAyarKontrol;
+
+            this.Icon = new Icon("cekalogokirmizi.ico");
         }
 
         private void btnKaydet_Click(object sender, EventArgs e)

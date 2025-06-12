@@ -229,6 +229,7 @@ namespace CEKA_APP.DataBase
                 }
             }
         }
+      
         public int GetKullaniciIdByKullaniciAdi(string kullaniciAdi)
         {
             if (string.IsNullOrEmpty(kullaniciAdi))
@@ -258,6 +259,66 @@ namespace CEKA_APP.DataBase
                 {
                     throw new Exception("Kullanıcı ID'si alınırken bir hata oluştu.", ex);
                 }
+            }
+        }
+        public static Kullanicilar KullaniciBilgiGetir(string kullaniciAdi)
+        {
+            try
+            {
+                using (var connection = DataBaseHelper.GetConnection())
+                {
+                    connection.Open();
+                    string query = "SELECT k.adSoyad, k.sifre, k.email FROM Kullanicilar k WHERE k.kullaniciAdi = @kullaniciAdi";
+                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@kullaniciAdi", kullaniciAdi);
+
+                        using (SqlDataReader reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                return new Kullanicilar
+                                {
+                                    kullaniciAdi = kullaniciAdi,
+                                    adSoyad = reader["adSoyad"].ToString(),
+                                    sifre = reader["sifre"].ToString(),
+                                    email = reader["email"].ToString()
+                                };
+                            }
+                            return null;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Kullanıcı bilgileri getirilemedi: " + ex.Message);
+            }
+        }
+
+        public static bool KullaniciGuncelleKullaniciBilgi(Kullanicilar kullanici)
+        {
+            try
+            {
+                using (var connection = DataBaseHelper.GetConnection())
+                {
+                    connection.Open();
+                    string query = "UPDATE Kullanicilar SET adSoyad = @adSoyad, sifre = @sifre, email = @email WHERE kullaniciAdi = @kullaniciAdi";
+                    using (SqlCommand cmd = new SqlCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@adSoyad", kullanici.adSoyad);
+                        cmd.Parameters.AddWithValue("@sifre", kullanici.sifre);
+                        cmd.Parameters.AddWithValue("@email", kullanici.email);
+                        cmd.Parameters.AddWithValue("@kullaniciAdi", kullanici.kullaniciAdi);
+
+                        int affectedRows = cmd.ExecuteNonQuery();
+                        return affectedRows > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Kullanıcı bilgileri güncellenemedi: " + ex.Message);
             }
         }
     }
