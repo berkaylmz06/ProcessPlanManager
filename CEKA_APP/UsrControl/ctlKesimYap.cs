@@ -150,10 +150,9 @@ namespace CEKA_APP.UsrControl
         }
         private void btnPaketKes_Click(object sender, EventArgs e)
         {
-            DateTime currentDateTime = DateTime.Now; 
+            DateTime currentDateTime = DateTime.Now;
             DateTime tarih = currentDateTime.Date;
             TimeSpan saat = currentDateTime.TimeOfDay;
-
 
             if (dataGridKesimListesi.SelectedRows.Count == 0)
             {
@@ -180,12 +179,86 @@ namespace CEKA_APP.UsrControl
                     return;
                 }
 
+                var dt = KesimListesiData.GetirKesimListesi(kesimId);
+                if (dt.Rows.Count == 0)
+                {
+                    MessageBox.Show("KesimListesi tablosunda ilgili kesimId bulunamadı.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                StringBuilder pozVeSondurumMesaj = new StringBuilder();
+                StringBuilder hataAyrintilari = new StringBuilder();
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    string kalite = row["kalite"].ToString();
+                    string malzeme = row["malzeme"].ToString();
+                    string kalipNo = row["kalipNo"].ToString();
+                    string poz = row["kesilecekPozlar"].ToString();
+                    string proje = row["projeNo"].ToString();
+                    string adetSatır = row["kpAdetSayilari"].ToString();
+
+                    string ifsKalite = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKalite(kalite);
+                    if (string.IsNullOrEmpty(ifsKalite))
+                    {
+                        MessageBox.Show($"Kalite kodu '{kalite}' için eşleşme bulunamadı.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    if (!int.TryParse(adetSatır, out int kpAdet))
+                    {
+                        MessageBox.Show("Veritabanındaki bazı adet değerleri geçerli değil.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    int sondurum = kpAdet * carpan;
+                    string kalipNoPoz = $"{kalipNo}-{poz}";
+                    string pozbilgileri = $"{ifsKalite}-{malzeme}-{kalipNoPoz}-{proje}";
+                    pozVeSondurumMesaj.AppendLine($"Poz: {pozbilgileri}, Sondurum: {sondurum}");
+
+                    hataAyrintilari.AppendLine($"Kontrol edilen pozbilgileri: {pozbilgileri}");
+
+                    if (!KesimDetaylariData.PozExists(ifsKalite, malzeme, kalipNoPoz, proje))
+                    {
+                        MessageBox.Show($"Poz: {pozbilgileri} KesimDetaylari tablosunda bulunamadı.\nAyrıntılar:\n{hataAyrintilari.ToString()}",
+                            "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                }
                 string hata;
                 bool paketSonuc = KesimListesiPaketData.KesimListesiPaketKontrolluDusme(kesimId, carpan, out hata);
                 if (!paketSonuc)
                 {
                     MessageBox.Show(hata, "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
+                }
+
+                foreach (DataRow row in dt.Rows)
+                {
+                    string kalite = row["kalite"].ToString();
+                    string malzeme = row["malzeme"].ToString();
+                    string kalipNo = row["kalipNo"].ToString();
+                    string poz = row["kesilecekPozlar"].ToString();
+                    string proje = row["projeNo"].ToString();
+                    string adetSatır = row["kpAdetSayilari"].ToString();
+
+                    string ifsKalite = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKalite(kalite);
+                    if (string.IsNullOrEmpty(ifsKalite))
+                    {
+                        MessageBox.Show($"Kalite kodu '{kalite}' için eşleşme bulunamadı.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    int sondurum = int.Parse(adetSatır) * carpan;
+                    string kalipNoPoz = $"{kalipNo}-{poz}"; 
+
+                    bool updateSuccess = KesimDetaylariData.UpdateKesilmisAdet(ifsKalite, malzeme, kalipNoPoz, proje, sondurum);
+                    if (!updateSuccess)
+                    {
+                        MessageBox.Show($"Poz: {ifsKalite}-{malzeme}-{kalipNoPoz}-{proje} için kesilmisAdet veya kesilecekAdet güncellenemedi. Kesilecek adet yetersiz olabilir.\nSondurum: {sondurum}",
+                            "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
                 }
 
                 bool sonuc1 = KesimTamamlanmisData.TablodanKesimTamamlanmisEkleme(olusturan, kesimId, carpan, tarih, saat);
@@ -199,50 +272,7 @@ namespace CEKA_APP.UsrControl
                 else
                 {
                     MessageBox.Show("Kayıt işlemi sırasında hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
-
-
-                var dt = KesimListesiData.GetirKesimListesi(kesimId);
-                if (dt.Rows.Count == 0)
-                {
-                    MessageBox.Show("KesimListesi tablosunda ilgili kesimId bulunamadı.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
-                }
-
-                StringBuilder pozVeSondurumMesaj = new StringBuilder();
-
-                foreach (DataRow row in dt.Rows)
-                {
-                    string kalite = row["kalite"].ToString();
-                    string malzeme = row["malzeme"].ToString();
-                    string kalipNo = row["kalipNo"].ToString();
-                    string poz = row["kesilecekPozlar"].ToString();
-                    string proje = row["projeNo"].ToString();
-                    string adetSatır = row["kpAdetSayilari"].ToString();
-
-                    if (!int.TryParse(adetSatır, out int kpAdet))
-                    {
-                        MessageBox.Show("Veritabanındaki bazı adet değerleri geçerli değil.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    int sondurum = kpAdet * carpan;
-                    string pozbilgileri = $"{kalite}-{malzeme}-{kalipNo}-{poz}-{proje}";
-                    pozVeSondurumMesaj.AppendLine($"Poz: {pozbilgileri}, Sondurum: {sondurum}");
-
-                    if (!KesimDetaylariData.PozExists(pozbilgileri))
-                    {
-                        MessageBox.Show($"Poz: {pozbilgileri} KesimDetaylari tablosunda bulunamadı.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    bool updateSuccess = KesimDetaylariData.UpdateKesilmisAdet(pozbilgileri, sondurum);
-                    if (!updateSuccess)
-                    {
-                        MessageBox.Show($"Poz: {pozbilgileri} için kesilmisAdet veya kesilecekAdet güncellenemedi. Kesilecek adet yetersiz olabilir.\nSondurum: {sondurum}",
-                            "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
                 }
 
                 MessageBox.Show("Kesim başarıyla tamamlandı.",

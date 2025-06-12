@@ -50,7 +50,6 @@ namespace CEKA_APP.DataBase
                                 insertCmd.Parameters.AddWithValue("@toplamAdet", toplamAdet);
 
                                 insertCmd.ExecuteNonQuery();
-                                // Log ekle
                                 Console.WriteLine($"Yeni kayıt eklendi: kalite={kalite}, malzeme={malzeme}, malzemeKod={malzemeKod}, proje={proje}, kesilecekAdet={kesilecekAdet}, toplamAdet={toplamAdet}");
                             }
                         }
@@ -72,7 +71,6 @@ namespace CEKA_APP.DataBase
                                 updateCmd.Parameters.AddWithValue("@toplamAdet", toplamAdet);
 
                                 int rowsAffected = updateCmd.ExecuteNonQuery();
-                                // Log ekle
                                 Console.WriteLine($"Kayıt güncellendi: kalite={kalite}, malzeme={malzeme}, malzemeKod={malzemeKod}, proje={proje}, kesilecekAdet+={kesilecekAdet}, toplamAdet+={toplamAdet}, etkilenen satır={rowsAffected}");
                             }
                         }
@@ -82,60 +80,10 @@ namespace CEKA_APP.DataBase
             catch (Exception ex)
             {
                 MessageBox.Show("Hata: " + ex.Message);
-                // Log ekle
                 Console.WriteLine($"Hata oluştu: {ex.Message}");
             }
         }
-        //public static void SaveKesimDetaylariData(string kalite, string malzeme, string malzemeKod, string proje, int kesilecekAdet, int toplamAdet)
-        //{
-        //    try
-        //    {
-        //        using (var conn = DataBaseHelper.GetConnection())
-        //        {
-        //            conn.Open();
-
-        //            string checkQuery = @"SELECT COUNT(*) FROM KesimDetaylari 
-        //                          WHERE kalite = @kalite AND malzeme = @malzeme 
-        //                          AND malzemeKod = @malzemeKod AND proje = @proje";
-
-        //            using (var checkCmd = new SqlCommand(checkQuery, conn))
-        //            {
-        //                checkCmd.Parameters.AddWithValue("@kalite", kalite);
-        //                checkCmd.Parameters.AddWithValue("@malzeme", malzeme);
-        //                checkCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
-        //                checkCmd.Parameters.AddWithValue("@proje", proje);
-
-        //                int count = (int)checkCmd.ExecuteScalar();
-
-        //                if (count == 0)
-        //                {
-        //                    string insertQuery = @"INSERT INTO KesimDetaylari 
-        //                                   (kalite, malzeme, malzemeKod, proje, kesilecekAdet, toplamAdet) 
-        //                                   VALUES 
-        //                                   (@kalite, @malzeme, @malzemeKod, @proje, @kesilecekAdet, @toplamAdet)";
-
-        //                    using (var insertCmd = new SqlCommand(insertQuery, conn))
-        //                    {
-        //                        insertCmd.Parameters.AddWithValue("@kalite", kalite);
-        //                        insertCmd.Parameters.AddWithValue("@malzeme", malzeme);
-        //                        insertCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
-        //                        insertCmd.Parameters.AddWithValue("@proje", proje);
-        //                        insertCmd.Parameters.AddWithValue("@kesilecekAdet", kesilecekAdet);
-        //                        insertCmd.Parameters.AddWithValue("@toplamAdet", toplamAdet);
-
-        //                        insertCmd.ExecuteNonQuery();
-        //                    }
-        //                }
-        //                // Not: Eğer varsa else ile update işlemi de eklenebilir.
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("Hata: " + ex.Message);
-        //    }
-        //}
-
+       
 
         public static DataTable GetKesimDetaylari()
         {
@@ -151,17 +99,20 @@ namespace CEKA_APP.DataBase
                 }
             }
         }
-        public static bool PozExists(string poz)
+        public static bool PozExists(string kalite, string malzeme, string malzemekod, string proje)
         {
             using (SqlConnection connection = DataBaseHelper.GetConnection())
             {
                 try
                 {
                     connection.Open();
-                    string query = "SELECT COUNT(*) FROM KesimDetaylari WHERE poz = @poz";
+                    string query = "SELECT COUNT(*) FROM KesimDetaylari WHERE kalite = @kalite AND malzeme = @malzeme AND malzemekod = @malzemekod AND proje = @proje";
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
-                        command.Parameters.AddWithValue("@poz", poz);
+                        command.Parameters.AddWithValue("@kalite", kalite);
+                        command.Parameters.AddWithValue("@malzeme", malzeme);
+                        command.Parameters.AddWithValue("@malzemekod", malzemekod);
+                        command.Parameters.AddWithValue("@proje", proje);
                         int count = (int)command.ExecuteScalar();
                         return count > 0;
                     }
@@ -174,7 +125,7 @@ namespace CEKA_APP.DataBase
             }
         }
 
-        public static bool UpdateKesilmisAdet(string poz, int sondurum)
+        public static bool UpdateKesilmisAdet(string kalite, string malzeme, string malzemekod, string proje, int sondurum)
         {
             using (SqlConnection connection = DataBaseHelper.GetConnection())
             {
@@ -182,17 +133,24 @@ namespace CEKA_APP.DataBase
                 {
                     connection.Open();
                     string query = @"
-                    UPDATE KesimDetaylari 
-                    SET kesilmisAdet = kesilmisAdet + @sondurum, 
-                        kesilecekAdet = kesilecekAdet - @sondurum 
-                    WHERE poz = @poz AND kesilecekAdet >= @sondurum";
+                UPDATE KesimDetaylari 
+                SET kesilmisAdet = kesilmisAdet + @sondurum, 
+                    kesilecekAdet = kesilecekAdet - @sondurum 
+                WHERE kalite = @kalite 
+                AND malzeme = @malzeme 
+                AND malzemekod = @malzemekod 
+                AND proje = @proje 
+                AND kesilecekAdet >= @sondurum";
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
+                        command.Parameters.AddWithValue("@kalite", kalite);
+                        command.Parameters.AddWithValue("@malzeme", malzeme);
+                        command.Parameters.AddWithValue("@malzemekod", malzemekod);
+                        command.Parameters.AddWithValue("@proje", proje);
                         command.Parameters.AddWithValue("@sondurum", sondurum);
-                        command.Parameters.AddWithValue("@poz", poz);
                         int rowsAffected = command.ExecuteNonQuery();
 
-                        Console.WriteLine($"Poz: {poz}, Sondurum: {sondurum}, RowsAffected: {rowsAffected}");
+                        Console.WriteLine($"Kalite: {kalite}, Malzeme: {malzeme}, Malzemekod: {malzemekod}, Proje: {proje}, Sondurum: {sondurum}, RowsAffected: {rowsAffected}");
                         return rowsAffected > 0;
                     }
                 }
@@ -203,18 +161,29 @@ namespace CEKA_APP.DataBase
                 }
             }
         }
-        public static bool KayitVarMi(string poz)
+        public static bool KayitVarMi(string kalite, string malzeme, string malzemekod, string proje)
         {
-            // Veritabanı bağlantınızı ve sorgunuzu buraya ekleyin
-            // Örnek bir SQL sorgusu
-            string query = "SELECT COUNT(*) FROM KesimDetaylari WHERE poz = @poz";
             using (SqlConnection connection = DataBaseHelper.GetConnection())
-            using (SqlCommand command = new SqlCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@poz", poz);
-                connection.Open();
-                int count = (int)command.ExecuteScalar();
-                return count > 0; // Kayıt varsa true döner
+                try
+                {
+                    connection.Open();
+                    string query = "SELECT COUNT(*) FROM KesimDetaylari WHERE kalite = @kalite AND malzeme = @malzeme AND malzemekod = @malzemekod AND proje = @proje";
+                    using (SqlCommand command = new SqlCommand(query, connection))
+                    {
+                        command.Parameters.AddWithValue("@kalite", kalite);
+                        command.Parameters.AddWithValue("@malzeme", malzeme);
+                        command.Parameters.AddWithValue("@malzemekod", malzemekod);
+                        command.Parameters.AddWithValue("@proje", proje);
+                        int count = (int)command.ExecuteScalar();
+                        return count > 0;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"KayitVarMi Hata: {ex.Message}");
+                    return false;
+                }
             }
         }
         public static List<KesimDetaylari> GetKesimDetaylariBilgileri()
