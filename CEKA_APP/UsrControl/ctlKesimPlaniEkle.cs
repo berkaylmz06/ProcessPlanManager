@@ -1,27 +1,28 @@
-﻿using System;
+﻿using CEKA_APP.Abstracts;
+using CEKA_APP.Business;
+using CEKA_APP.Concretes;
+using CEKA_APP.DataBase;
+using CEKA_APP.Entitys;
+using CEKA_APP.Helper;
+using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Parser;
+using iText.Kernel.Pdf.Canvas.Parser.Listener;
+using Spire.Additions.Html;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using iText.Kernel.Pdf.Canvas.Parser.Listener;
-using iText.Kernel.Pdf;
-using CEKA_APP.Business;
-using CEKA_APP.Entitys;
-using CEKA_APP.Helper;
-using CEKA_APP.DataBase;
-using iText.Kernel.Pdf.Canvas.Parser;
-using System.Globalization;
 using System.Xml;
-using CEKA_APP.Abstracts;
-using System.Threading;
-using CEKA_APP.Concretes;
-using Spire.Additions.Html;
 
 namespace CEKA_APP.UsrControl
 {
@@ -1357,8 +1358,8 @@ namespace CEKA_APP.UsrControl
                     }
                 }
 
-                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                string logPath = Path.Combine(desktopPath, "AjanLog.txt");
+                string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string logPath = Path.Combine(appPath, "AjanLog.txt");
                 logLines.Add("\nSon Çıktı Verileri:");
 
                 var rich4Dict = new Dictionary<string, (string Poz, string SayfaID)>();
@@ -1577,8 +1578,8 @@ namespace CEKA_APP.UsrControl
                     return;
                 }
 
-                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                string logPath = Path.Combine(desktopPath, "ProNest_Log.txt");
+                string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string logPath = Path.Combine(appPath, "ProNest_Log.txt");
                 File.WriteAllLines(logPath, logLines);
 
                 MessageBox.Show("Veriler işlendi, log dosyasına yazıldı.");
@@ -1943,8 +1944,8 @@ namespace CEKA_APP.UsrControl
                         $"Parça ID: {output.ParcaId} => Poz: {output.Poz}, Yerleşim ID: {output.YerlesimId}, Adet: {output.Adet}, Ağırlık: {output.Agirlik:F2}"));
                 }
 
-                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                string logPath = Path.Combine(desktopPath, "ADM_Log.txt");
+                string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string logPath = Path.Combine(appPath, "ADM_Log.txt");
                 File.WriteAllLines(logPath, logLines, Encoding.UTF8);
 
                 MessageBox.Show("Veriler başarıyla işlendi ve DataGridView2'ye eklendi!", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1960,12 +1961,11 @@ namespace CEKA_APP.UsrControl
 
         private void SayfaIDTabloVerileri()
         {
-            string logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "SayfaIDlog.txt");
+            string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string logPath = Path.Combine(appPath, "SayfaIDlog.txt");
 
-            // Başlangıçta log dosyasını sıfırla (üzerine yaz)
             File.WriteAllText(logPath, $"[{DateTime.Now}] Yeni işlem başladı\n");
 
-            // Sonrasında ekleme modunda aç
             using (StreamWriter log = new StreamWriter(logPath, true))
             {
                 log.WriteLine($"[{DateTime.Now}] İşlem başladı");
@@ -2361,8 +2361,8 @@ namespace CEKA_APP.UsrControl
                     }
                 }
 
-                string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                string logPath = Path.Combine(desktopPath, "EkAdetAgirlikYuzdeLog.txt");
+                string appPath = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+                string logPath = Path.Combine(appPath, "EkAdetAgirlikYuzdeLog.txt");
                 File.WriteAllLines(logPath, logLines);
 
                 MessageBox.Show("EK ibaresi içeren pozların ağırlık yüzdeleri hesaplandı ve tabloya yazıldı. Log dosyası masaüstüne kaydedildi!");
