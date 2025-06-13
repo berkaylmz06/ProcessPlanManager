@@ -55,6 +55,14 @@ namespace CEKA_APP.UsrControl
         private void txtAra_TextChanged(object sender, EventArgs e)
         {
             string filtre = txtAra.Text.ToLower();
+
+            if (tumParcalar == null)
+            {
+                MessageBox.Show("XML okutması yapılmamış!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                dataGridXmlCiktisi.DataSource = null;
+                return;
+            }
+
             if (string.IsNullOrEmpty(filtre))
             {
                 dataGridXmlCiktisi.DataSource = tumParcalar;
@@ -183,6 +191,12 @@ namespace CEKA_APP.UsrControl
 
         private void btnAktar_Click(object sender, EventArgs e)
         {
+            if (dataGridIslenmisXml == null || dataGridIslenmisXml.Rows.Count == 0)
+            {
+                MessageBox.Show("Kaydedilecek veri bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             foreach (DataGridViewRow row in dataGridIslenmisXml.Rows)
             {
                 if (row.IsNewRow) continue;
@@ -201,7 +215,7 @@ namespace CEKA_APP.UsrControl
                 }
             }
 
-            MessageBox.Show("Veriler kaydedildi.");
+            MessageBox.Show("Veriler kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

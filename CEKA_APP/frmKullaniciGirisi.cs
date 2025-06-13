@@ -1,12 +1,6 @@
 ﻿using CEKA_APP.DataBase;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CEKA_APP
@@ -14,14 +8,19 @@ namespace CEKA_APP
     public partial class frmKullaniciGirisi : Form
     {
         private readonly KullanicilarData _kullaniciService;
+
         public frmKullaniciGirisi()
         {
             InitializeComponent();
             _kullaniciService = new KullanicilarData();
-
             this.Icon = new Icon("cekalogokirmizi.ico");
         }
-
+        private void frmKullaniciGirisi_Load(object sender, EventArgs e)
+        {
+            txtSifre.UseSystemPasswordChar = true;
+            this.AcceptButton = btnGiris;
+            KullaniciBilgileriniYukle();
+        }
         private void btnGiris_Click(object sender, EventArgs e)
         {
             string kullaniciAdi = txtKullaniciAdi.Text.Trim();
@@ -39,6 +38,7 @@ namespace CEKA_APP
 
                 if (kullanici != null)
                 {
+                    KullaniciBilgileriniKaydet();
                     frmAnaSayfa form1 = new frmAnaSayfa(kullanici);
                     form1.FormClosed += (s, args) => Application.Exit();
                     form1.Show();
@@ -55,19 +55,40 @@ namespace CEKA_APP
             }
         }
 
-        private void frmKullaniciGirisi_Load(object sender, EventArgs e)
-        {
-            txtSifre.UseSystemPasswordChar = true;
-
-            this.AcceptButton = btnGiris;
-        }
-
         private void txtSifre_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
             {
                 btnGiris_Click(sender, e);
             }
+        }
+
+        private void KullaniciBilgileriniYukle()
+        {
+            if (Properties.Settings.Default.BeniHatirla)
+            {
+                txtKullaniciAdi.Text = Properties.Settings.Default.KaydedilenKullaniciAdi ?? string.Empty;
+                txtSifre.Text = Properties.Settings.Default.KaydedilenSifre ?? string.Empty;
+                chkBeniHatirla.Checked = true;
+            }
+        }
+
+        private void KullaniciBilgileriniKaydet()
+        {
+            if (chkBeniHatirla.Checked)
+            {
+                Properties.Settings.Default.KaydedilenKullaniciAdi = txtKullaniciAdi.Text;
+                Properties.Settings.Default.KaydedilenSifre = txtSifre.Text;
+                Properties.Settings.Default.BeniHatirla = true;
+            }
+            else
+            {
+                Properties.Settings.Default.KaydedilenKullaniciAdi = string.Empty;
+                Properties.Settings.Default.KaydedilenSifre = string.Empty;
+                Properties.Settings.Default.BeniHatirla = false;
+            }
+
+            Properties.Settings.Default.Save();
         }
     }
 }

@@ -35,6 +35,7 @@
             this.btnGiris = new System.Windows.Forms.Button();
             this.txtKullaniciAdi = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.chkBeniHatirla = new System.Windows.Forms.CheckBox();
             this.SuspendLayout();
             // 
             // panel1
@@ -47,7 +48,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(533, 251);
+            this.panel1.Size = new System.Drawing.Size(539, 251);
             this.panel1.TabIndex = 11;
             // 
             // txtSifre
@@ -71,7 +72,7 @@
             // 
             // btnGiris
             // 
-            this.btnGiris.Location = new System.Drawing.Point(201, 359);
+            this.btnGiris.Location = new System.Drawing.Point(203, 405);
             this.btnGiris.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnGiris.Name = "btnGiris";
             this.btnGiris.Size = new System.Drawing.Size(111, 30);
@@ -97,12 +98,23 @@
             this.label1.TabIndex = 6;
             this.label1.Text = "Kullanıcı  Adı:";
             // 
+            // chkBeniHatirla
+            // 
+            this.chkBeniHatirla.AutoSize = true;
+            this.chkBeniHatirla.Location = new System.Drawing.Point(134, 360);
+            this.chkBeniHatirla.Name = "chkBeniHatirla";
+            this.chkBeniHatirla.Size = new System.Drawing.Size(98, 20);
+            this.chkBeniHatirla.TabIndex = 12;
+            this.chkBeniHatirla.Text = "Beni Hatırla";
+            this.chkBeniHatirla.UseVisualStyleBackColor = true;
+            // 
             // frmKullaniciGirisi
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.ClientSize = new System.Drawing.Size(533, 410);
+            this.ClientSize = new System.Drawing.Size(539, 459);
+            this.Controls.Add(this.chkBeniHatirla);
             this.Controls.Add(this.panel1);
             this.Controls.Add(this.txtSifre);
             this.Controls.Add(this.label2);
@@ -126,5 +138,6 @@
         private System.Windows.Forms.Button btnGiris;
         private System.Windows.Forms.TextBox txtKullaniciAdi;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.CheckBox chkBeniHatirla;
     }
 }

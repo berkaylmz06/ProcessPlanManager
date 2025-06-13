@@ -279,6 +279,13 @@ namespace CEKA_APP.UsrControl
                             SayfaIDTabloVerileri();
                             HesaplaEkAgirlikYuzdeleri();
                         }
+                        else if (_seciliButon == btnAdm)
+                        {
+                            AdmSayfaPozDagitimi();
+                            SayfaIDTabloVerileri();
+                            HesaplaEkAgirlikYuzdeleri();
+                        }
+
 
                         progressBar1.Visible = false;
                     }
