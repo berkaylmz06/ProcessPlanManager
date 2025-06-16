@@ -1,6 +1,10 @@
 ﻿using CEKA_APP.DataBase;
 using System;
+using System.Deployment.Application;
+using System.Diagnostics;
 using System.Drawing;
+using System.IO;
+using System.Reflection;
 using System.Windows.Forms;
 
 namespace CEKA_APP
@@ -20,7 +24,67 @@ namespace CEKA_APP
             txtSifre.UseSystemPasswordChar = true;
             this.AcceptButton = btnGiris;
             KullaniciBilgileriniYukle();
+            //GuncellemeKontrol();
         }
+        public void GuncellemeKontrol()
+        {
+            try
+            {
+                string localVersion;
+
+                if (ApplicationDeployment.IsNetworkDeployed)
+                {
+                    localVersion = ApplicationDeployment.CurrentDeployment.CurrentVersion.ToString();
+                }
+                else
+                {
+                    var fileVersionInfo = FileVersionInfo.GetVersionInfo(Assembly.GetExecutingAssembly().Location);
+                    localVersion = fileVersionInfo.ProductVersion;
+                }
+
+                string remoteVersionFile = @"\\fileserver\proje\CEKA APP\version.txt";
+
+                if (!File.Exists(remoteVersionFile))
+                {
+                    MessageBox.Show("Sürüm dosyası bulunamadı:\n" + remoteVersionFile, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string latestVersionText = File.ReadAllText(remoteVersionFile).Trim();
+
+                if (!Version.TryParse(latestVersionText, out Version remoteVer))
+                {
+                    MessageBox.Show("Sunucudaki sürüm formatı geçersiz:\n" + latestVersionText, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!Version.TryParse(localVersion, out Version localVer))
+                {
+                    MessageBox.Show("Yerel sürüm formatı geçersiz:\n" + localVersion, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (localVer < remoteVer)
+                {
+                    DialogResult result = MessageBox.Show(
+                        $"Yeni sürüm bulundu!\n\nYerel: {localVersion}\nSunucu: {latestVersionText}\n\nGüncellemeyi başlatmak istiyor musunuz?",
+                        "Güncelleme Gerekli", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        Process.Start(@"\\fileserver\proje\CEKA APP\setup.exe");
+                    }
+
+                    Application.Exit();
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Güncelleme kontrolü sırasında hata oluştu:\n" + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
         private void btnGiris_Click(object sender, EventArgs e)
         {
             string kullaniciAdi = txtKullaniciAdi.Text.Trim();

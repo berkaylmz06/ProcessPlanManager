@@ -15,7 +15,7 @@
     <NuGetPackageImportStamp>
     </NuGetPackageImportStamp>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>publish\</PublishUrl>
+    <PublishUrl>publish\\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -25,7 +25,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>5</ApplicationRevision>
+    <ApplicationRevision>18</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -182,6 +182,7 @@
     <Compile Include="Concretes\KullaniciAdiOgren.cs" />
     <Compile Include="DataBase\AutoCadAktarimData.cs" />
     <Compile Include="DataBase\DataBaseHelper.cs" />
+    <Compile Include="DataBase\DuyurularData.cs" />
     <Compile Include="DataBase\KarsilastirmaTablosuData.cs" />
     <Compile Include="DataBase\KesimDetaylariData.cs" />
     <Compile Include="DataBase\KesimListesiPaketData.cs" />
@@ -191,6 +192,7 @@
     <Compile Include="DataBase\KullanicilarData.cs" />
     <Compile Include="DataBase\SorunBildirimleriData.cs" />
     <Compile Include="Entitys\AutoCadAktarimDetay.cs" />
+    <Compile Include="Entitys\Duyurular.cs" />
     <Compile Include="Entitys\KarsilastirmaTablosu.cs" />
     <Compile Include="Entitys\KesimDetaylari.cs" />
     <Compile Include="Entitys\KesimListesiPaket.cs" />
@@ -289,6 +291,12 @@
     <Compile Include="UsrControl\ctlKullaniciAyarlari.Designer.cs">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
     </Compile>
+    <Compile Include="UsrControl\ctlProjeKutuk.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlProjeKutuk.Designer.cs">
+      <DependentUpon>ctlProjeKutuk.cs</DependentUpon>
+    </Compile>
     <Compile Include="UsrControl\ctlProjeOgeleri.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -365,6 +373,9 @@
     <EmbeddedResource Include="UsrControl\ctlKullaniciAyarlari.resx">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlProjeKutuk.resx">
+      <DependentUpon>ctlProjeKutuk.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlProjeOgeleri.resx">
       <DependentUpon>ctlProjeOgeleri.cs</DependentUpon>
     </EmbeddedResource>
@@ -397,9 +408,12 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="cekalogokirmizi.ico" />
+    <Content Include="image\anasayfa.png" />
     <Content Include="image\cekalogo.png" />
     <Content Include="image\cekalogokirmizi.png" />
     <Content Include="image\kullanici.png" />
+    <None Include="Resources\kullanici.png" />
+    <None Include="Resources\anasayfa.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">

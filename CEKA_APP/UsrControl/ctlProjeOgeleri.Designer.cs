@@ -41,9 +41,9 @@
             this.lblProjeOgeleri = new System.Windows.Forms.Label();
             this.panelDetayContainer = new System.Windows.Forms.Panel();
             this.panelButtons = new System.Windows.Forms.Panel();
-            this.btnStandartProje = new System.Windows.Forms.Button();
             this.btnKaydet = new System.Windows.Forms.Button();
             this.btnYeni = new System.Windows.Forms.Button();
+            this.btnStandartProje = new System.Windows.Forms.Button();
             this.dataGridOgeDetay = new System.Windows.Forms.DataGridView();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.panelDisContainer.SuspendLayout();
@@ -189,16 +189,6 @@
             this.panelButtons.Size = new System.Drawing.Size(1619, 70);
             this.panelButtons.TabIndex = 14;
             // 
-            // btnStandartProje
-            // 
-            this.btnStandartProje.Location = new System.Drawing.Point(470, 16);
-            this.btnStandartProje.Name = "btnStandartProje";
-            this.btnStandartProje.Size = new System.Drawing.Size(210, 38);
-            this.btnStandartProje.TabIndex = 13;
-            this.btnStandartProje.Text = "Standart Projeler";
-            this.btnStandartProje.UseVisualStyleBackColor = true;
-            this.btnStandartProje.Click += new System.EventHandler(this.btnStandartProje_Click);
-            // 
             // btnKaydet
             // 
             this.btnKaydet.Location = new System.Drawing.Point(700, 16);
@@ -218,6 +208,16 @@
             this.btnYeni.Text = "Yeni";
             this.btnYeni.UseVisualStyleBackColor = true;
             this.btnYeni.Click += new System.EventHandler(this.btnYeni_Click);
+            // 
+            // btnStandartProje
+            // 
+            this.btnStandartProje.Location = new System.Drawing.Point(470, 16);
+            this.btnStandartProje.Name = "btnStandartProje";
+            this.btnStandartProje.Size = new System.Drawing.Size(210, 38);
+            this.btnStandartProje.TabIndex = 13;
+            this.btnStandartProje.Text = "Standart Projeler";
+            this.btnStandartProje.UseVisualStyleBackColor = true;
+            this.btnStandartProje.Click += new System.EventHandler(this.btnStandartProje_Click);
             // 
             // dataGridOgeDetay
             // 

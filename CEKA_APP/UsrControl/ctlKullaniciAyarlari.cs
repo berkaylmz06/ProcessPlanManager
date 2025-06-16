@@ -43,6 +43,8 @@ namespace CEKA_APP.UsrControl
             lstKullanicilar.ClearSelected();
             ctlBaslik1.Baslik = "Kullanıcı Ayarları";
             ctlBaslik2.Baslik = "Kullanıcı Bilgileri";
+
+            txtSifre.PasswordChar = '*';
         }
 
         public void YukleVeListele()

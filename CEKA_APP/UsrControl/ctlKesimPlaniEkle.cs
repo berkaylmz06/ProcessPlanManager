@@ -576,6 +576,12 @@ namespace CEKA_APP.UsrControl
                 hataMesajlari.Add($"Kalite '{kalite}' için eşleşme bulunamadı, hata mesajlarında orijinal değer kullanılacak.");
                 ifsKalite = kalite;
             }
+            string ifsMalzeme = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKesim(malzeme);
+            if (string.IsNullOrEmpty(ifsMalzeme))
+            {
+                hataMesajlari.Add($"Malzeme '{malzeme}' için eşleşme bulunamadı, hata mesajlarında orijinal değer kullanılacak.");
+                ifsMalzeme = malzeme;
+            }
 
             for (int i = 0; i < dataGridView2.Rows.Count; i++)
             {
@@ -628,7 +634,7 @@ namespace CEKA_APP.UsrControl
                 }
 
                 string kalipPoz = $"{kalip}-{poz}";
-                var (isValid, toplamAdetIfs, toplamAdetYuklenen) = AutoCadAktarimData.KontrolAdeta(ifsKalite, malzeme, kalipPoz, proje, adet);
+                var (isValid, toplamAdetIfs, toplamAdetYuklenen) = AutoCadAktarimData.KontrolAdeta(ifsKalite, ifsMalzeme, kalipPoz, proje, adet);
 
                 if (!isValid)
                 {
@@ -680,7 +686,7 @@ namespace CEKA_APP.UsrControl
                     int.TryParse(adetStrDg, out adetDg);
                 }
 
-                KesimDetaylariData.SaveKesimDetaylariData(ifsKalite, malzemeDg, malzemeKodDg, projeDg, adetDg, adetDg);
+                KesimDetaylariData.SaveKesimDetaylariData(ifsKalite, ifsMalzeme, malzemeKodDg, projeDg, adetDg, adetDg);
             }
 
             foreach (var kayit in geciciKayitlar)

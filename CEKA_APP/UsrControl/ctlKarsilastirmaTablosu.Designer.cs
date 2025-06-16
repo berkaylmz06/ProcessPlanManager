@@ -30,8 +30,8 @@
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridKalite = new System.Windows.Forms.DataGridView();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.dataGridMalzeme = new System.Windows.Forms.DataGridView();
             this.btnEkle = new System.Windows.Forms.Button();
             this.btnSil = new System.Windows.Forms.Button();
@@ -43,18 +43,23 @@
             this.labelAciklama = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.dataGridKesim = new System.Windows.Forms.DataGridView();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
-            this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridKalite)).BeginInit();
+            this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridMalzeme)).BeginInit();
             this.panel1.SuspendLayout();
+            this.tabPage3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridKesim)).BeginInit();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -74,17 +79,6 @@
             this.tabPage1.Text = "Kalite Karşılaştırma";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.dataGridMalzeme);
-            this.tabPage2.Location = new System.Drawing.Point(4, 25);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(759, 966);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Malzeme Karşılaştırma";
-            this.tabPage2.UseVisualStyleBackColor = true;
-            // 
             // dataGridKalite
             // 
             this.dataGridKalite.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -99,6 +93,17 @@
             this.dataGridKalite.TabIndex = 2;
             this.dataGridKalite.SelectionChanged += new System.EventHandler(this.dataGridKalite_SelectionChanged);
             // 
+            // tabPage2
+            // 
+            this.tabPage2.Controls.Add(this.dataGridMalzeme);
+            this.tabPage2.Location = new System.Drawing.Point(4, 25);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(802, 966);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Malzeme Karşılaştırma";
+            this.tabPage2.UseVisualStyleBackColor = true;
+            // 
             // dataGridMalzeme
             // 
             this.dataGridMalzeme.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
@@ -109,7 +114,7 @@
             this.dataGridMalzeme.RowHeadersWidth = 51;
             this.dataGridMalzeme.RowTemplate.Height = 24;
             this.dataGridMalzeme.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridMalzeme.Size = new System.Drawing.Size(941, 1200);
+            this.dataGridMalzeme.Size = new System.Drawing.Size(796, 960);
             this.dataGridMalzeme.TabIndex = 2;
             this.dataGridMalzeme.SelectionChanged += new System.EventHandler(this.dataGridMalzeme_SelectionChanged);
             // 
@@ -159,9 +164,9 @@
             this.labelCode.AutoSize = true;
             this.labelCode.Location = new System.Drawing.Point(860, 112);
             this.labelCode.Name = "labelCode";
-            this.labelCode.Size = new System.Drawing.Size(44, 16);
+            this.labelCode.Size = new System.Drawing.Size(54, 20);
             this.labelCode.TabIndex = 8;
-            this.labelCode.Text = "label1";
+            this.labelCode.Text = "Code:";
             // 
             // labelIfsCode
             // 
@@ -199,6 +204,30 @@
             this.ctlBaslik1.Size = new System.Drawing.Size(1759, 50);
             this.ctlBaslik1.TabIndex = 1;
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.dataGridKesim);
+            this.tabPage3.Location = new System.Drawing.Point(4, 25);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Size = new System.Drawing.Size(802, 966);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "Kesim Karşılaştırma";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // dataGridKesim
+            // 
+            this.dataGridKesim.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridKesim.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridKesim.Location = new System.Drawing.Point(0, 0);
+            this.dataGridKesim.Name = "dataGridKesim";
+            this.dataGridKesim.ReadOnly = true;
+            this.dataGridKesim.RowHeadersWidth = 51;
+            this.dataGridKesim.RowTemplate.Height = 24;
+            this.dataGridKesim.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
+            this.dataGridKesim.Size = new System.Drawing.Size(802, 966);
+            this.dataGridKesim.TabIndex = 3;
+            this.dataGridKesim.SelectionChanged += new System.EventHandler(this.dataGridKesim_SelectionChanged);
+            // 
             // ctlKarsilastirmaTablosu
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -218,10 +247,12 @@
             this.Load += new System.EventHandler(this.ctlKarsilastirmaTablosu_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
-            this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridKalite)).EndInit();
+            this.tabPage2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridMalzeme)).EndInit();
             this.panel1.ResumeLayout(false);
+            this.tabPage3.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridKesim)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -244,5 +275,7 @@
         private System.Windows.Forms.Label labelIfsCode;
         private System.Windows.Forms.Label labelAciklama;
         private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.DataGridView dataGridKesim;
     }
 }
