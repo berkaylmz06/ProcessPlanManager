@@ -190,6 +190,9 @@
     <Compile Include="DataBase\KesimTamamlanmisHareket.cs" />
     <Compile Include="DataBase\KullaniciHareketLogData.cs" />
     <Compile Include="DataBase\KullanicilarData.cs" />
+    <Compile Include="DataBase\ProjeFinans\IscilikData.cs" />
+    <Compile Include="DataBase\ProjeFinans\ProjeFiyatlandirmaData.cs" />
+    <Compile Include="DataBase\ProjeFinans\ProjeKutukData.cs" />
     <Compile Include="DataBase\SorunBildirimleriData.cs" />
     <Compile Include="Entitys\AutoCadAktarimDetay.cs" />
     <Compile Include="Entitys\Duyurular.cs" />
@@ -200,6 +203,7 @@
     <Compile Include="Entitys\KullaniciHareket.cs" />
     <Compile Include="Entitys\MalzemeBilgisi.cs" />
     <Compile Include="Entitys\AutoCadAktarim.cs" />
+    <Compile Include="Entitys\ProjeKutuk.cs" />
     <Compile Include="Entitys\SorunBildirimleri.cs" />
     <Compile Include="Entitys\KesimListesi.cs" />
     <Compile Include="DataBase\KesimListesiData.cs" />
@@ -234,6 +238,12 @@
       <DependentUpon>frmKullaniciEkle.cs</DependentUpon>
     </Compile>
     <Compile Include="Entitys\Kullanicilar.cs" />
+    <Compile Include="frmYeniIscilikEkle.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmYeniIscilikEkle.Designer.cs">
+      <DependentUpon>frmYeniIscilikEkle.cs</DependentUpon>
+    </Compile>
     <Compile Include="Helper\ButonGenelHelper.cs" />
     <Compile Include="Helper\ButonMakinaSecHelper.cs" />
     <Compile Include="Helper\ChartiTiklanmazYap.cs">
@@ -291,6 +301,24 @@
     <Compile Include="UsrControl\ctlKullaniciAyarlari.Designer.cs">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
     </Compile>
+    <Compile Include="UsrControl\ctlNavigasyon.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlNavigasyon.Designer.cs">
+      <DependentUpon>ctlNavigasyon.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UsrControl\ctlProjeBilgileri.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlProjeBilgileri.Designer.cs">
+      <DependentUpon>ctlProjeBilgileri.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UsrControl\ctlProjeFiyatlandirma.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlProjeFiyatlandirma.Designer.cs">
+      <DependentUpon>ctlProjeFiyatlandirma.cs</DependentUpon>
+    </Compile>
     <Compile Include="UsrControl\ctlProjeKutuk.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -342,6 +370,9 @@
     <EmbeddedResource Include="frmKullaniciEkle.resx">
       <DependentUpon>frmKullaniciEkle.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="frmYeniIscilikEkle.resx">
+      <DependentUpon>frmYeniIscilikEkle.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -372,6 +403,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlKullaniciAyarlari.resx">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlNavigasyon.resx">
+      <DependentUpon>ctlNavigasyon.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlProjeBilgileri.resx">
+      <DependentUpon>ctlProjeBilgileri.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlProjeFiyatlandirma.resx">
+      <DependentUpon>ctlProjeFiyatlandirma.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlProjeKutuk.resx">
       <DependentUpon>ctlProjeKutuk.cs</DependentUpon>
@@ -412,6 +452,8 @@
     <Content Include="image\cekalogo.png" />
     <Content Include="image\cekalogokirmizi.png" />
     <Content Include="image\kullanici.png" />
+    <None Include="Resources\navigationForward.png" />
+    <None Include="Resources\navigationBack.png" />
     <None Include="Resources\kullanici.png" />
     <None Include="Resources\anasayfa.png" />
   </ItemGroup>

@@ -42,6 +42,7 @@
             this.editToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.yardımCubugunuKaldirToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panelAraYuz = new System.Windows.Forms.Panel();
+            this.btnProjeFiyatlandirma = new System.Windows.Forms.Button();
             this.btnProjeKutuk = new System.Windows.Forms.Button();
             this.btnKarsilastirmaTablolari = new System.Windows.Forms.Button();
             this.btnProjeOgeleri = new System.Windows.Forms.Button();
@@ -86,10 +87,11 @@
             this.btnGonder = new System.Windows.Forms.Button();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
-            this.lblDuyuru = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
+            this.btnMusteriler = new System.Windows.Forms.Panel();
             this.lblKullaniciBilgi = new System.Windows.Forms.Label();
-            this.panelAnaSayfaİcerik = new System.Windows.Forms.Panel();
+            this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
+            this.label2 = new System.Windows.Forms.Label();
+            this.lblDuyuru = new System.Windows.Forms.Label();
             this.panelYardimCubugu.SuspendLayout();
             this.panelKullaniciAyar.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
@@ -103,7 +105,7 @@
             this.panelKesimPlaniEkleVeri.SuspendLayout();
             this.panelYardim.SuspendLayout();
             this.panelAnaSayfaContainer.SuspendLayout();
-            this.panelAnaSayfaİcerik.SuspendLayout();
+            this.btnMusteriler.SuspendLayout();
             this.SuspendLayout();
             // 
             // panelYardimCubugu
@@ -245,6 +247,7 @@
             // 
             this.panelAraYuz.AutoScroll = true;
             this.panelAraYuz.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.panelAraYuz.Controls.Add(this.btnProjeFiyatlandirma);
             this.panelAraYuz.Controls.Add(this.btnProjeKutuk);
             this.panelAraYuz.Controls.Add(this.btnKarsilastirmaTablolari);
             this.panelAraYuz.Controls.Add(this.btnProjeOgeleri);
@@ -264,6 +267,17 @@
             this.panelAraYuz.Name = "panelAraYuz";
             this.panelAraYuz.Size = new System.Drawing.Size(189, 975);
             this.panelAraYuz.TabIndex = 212;
+            // 
+            // btnProjeFiyatlandirma
+            // 
+            this.btnProjeFiyatlandirma.Location = new System.Drawing.Point(14, 774);
+            this.btnProjeFiyatlandirma.Margin = new System.Windows.Forms.Padding(2);
+            this.btnProjeFiyatlandirma.Name = "btnProjeFiyatlandirma";
+            this.btnProjeFiyatlandirma.Size = new System.Drawing.Size(160, 58);
+            this.btnProjeFiyatlandirma.TabIndex = 126;
+            this.btnProjeFiyatlandirma.Text = "Proje Fiyatlandırma";
+            this.btnProjeFiyatlandirma.UseVisualStyleBackColor = true;
+            this.btnProjeFiyatlandirma.Click += new System.EventHandler(this.btnProjeFiyatlandirma_Click);
             // 
             // btnProjeKutuk
             // 
@@ -479,7 +493,7 @@
             this.panelSistemBilgisi.Controls.Add(this.label16);
             this.panelSistemBilgisi.Controls.Add(this.label13);
             this.panelSistemBilgisi.Controls.Add(this.label14);
-            this.panelSistemBilgisi.Location = new System.Drawing.Point(42, 50);
+            this.panelSistemBilgisi.Location = new System.Drawing.Point(34, 50);
             this.panelSistemBilgisi.Margin = new System.Windows.Forms.Padding(2);
             this.panelSistemBilgisi.Name = "panelSistemBilgisi";
             this.panelSistemBilgisi.Size = new System.Drawing.Size(363, 144);
@@ -568,7 +582,7 @@
             // label12
             // 
             this.label12.AutoSize = true;
-            this.label12.Location = new System.Drawing.Point(40, 30);
+            this.label12.Location = new System.Drawing.Point(32, 30);
             this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(87, 16);
@@ -701,7 +715,7 @@
             // 
             // txtSorun
             // 
-            this.txtSorun.Location = new System.Drawing.Point(42, 50);
+            this.txtSorun.Location = new System.Drawing.Point(34, 50);
             this.txtSorun.Margin = new System.Windows.Forms.Padding(2);
             this.txtSorun.Name = "txtSorun";
             this.txtSorun.Size = new System.Drawing.Size(363, 144);
@@ -711,7 +725,7 @@
             // label17
             // 
             this.label17.AutoSize = true;
-            this.label17.Location = new System.Drawing.Point(40, 30);
+            this.label17.Location = new System.Drawing.Point(32, 30);
             this.label17.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label17.Name = "label17";
             this.label17.Size = new System.Drawing.Size(75, 16);
@@ -720,7 +734,7 @@
             // 
             // btnGonder
             // 
-            this.btnGonder.Location = new System.Drawing.Point(414, 166);
+            this.btnGonder.Location = new System.Drawing.Point(406, 166);
             this.btnGonder.Margin = new System.Windows.Forms.Padding(2);
             this.btnGonder.Name = "btnGonder";
             this.btnGonder.Size = new System.Drawing.Size(92, 28);
@@ -736,53 +750,66 @@
             // panelAnaSayfaContainer
             // 
             this.panelAnaSayfaContainer.BackColor = System.Drawing.SystemColors.Window;
-            this.panelAnaSayfaContainer.Controls.Add(this.panelAnaSayfaİcerik);
+            this.panelAnaSayfaContainer.Controls.Add(this.btnMusteriler);
             this.panelAnaSayfaContainer.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelAnaSayfaContainer.Location = new System.Drawing.Point(189, 26);
             this.panelAnaSayfaContainer.Name = "panelAnaSayfaContainer";
             this.panelAnaSayfaContainer.Size = new System.Drawing.Size(1761, 975);
             this.panelAnaSayfaContainer.TabIndex = 279;
             // 
-            // lblDuyuru
+            // btnMusteriler
             // 
-            this.lblDuyuru.AutoSize = true;
-            this.lblDuyuru.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblDuyuru.Location = new System.Drawing.Point(33, 118);
-            this.lblDuyuru.Name = "lblDuyuru";
-            this.lblDuyuru.Size = new System.Drawing.Size(0, 29);
-            this.lblDuyuru.TabIndex = 2;
-            // 
-            // label2
-            // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label2.Location = new System.Drawing.Point(33, 63);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(124, 29);
-            this.label2.TabIndex = 1;
-            this.label2.Text = "Duyurular";
+            this.btnMusteriler.Controls.Add(this.lblKullaniciBilgi);
+            this.btnMusteriler.Controls.Add(this.ctlBaslik1);
+            this.btnMusteriler.Controls.Add(this.label2);
+            this.btnMusteriler.Controls.Add(this.lblDuyuru);
+            this.btnMusteriler.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.btnMusteriler.Location = new System.Drawing.Point(0, 0);
+            this.btnMusteriler.Name = "btnMusteriler";
+            this.btnMusteriler.Size = new System.Drawing.Size(1761, 975);
+            this.btnMusteriler.TabIndex = 3;
             // 
             // lblKullaniciBilgi
             // 
             this.lblKullaniciBilgi.AutoSize = true;
+            this.lblKullaniciBilgi.BackColor = System.Drawing.Color.Transparent;
+            this.lblKullaniciBilgi.Dock = System.Windows.Forms.DockStyle.Right;
             this.lblKullaniciBilgi.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblKullaniciBilgi.Location = new System.Drawing.Point(33, 26);
+            this.lblKullaniciBilgi.ForeColor = System.Drawing.SystemColors.ControlText;
+            this.lblKullaniciBilgi.Location = new System.Drawing.Point(974, 50);
             this.lblKullaniciBilgi.Name = "lblKullaniciBilgi";
             this.lblKullaniciBilgi.Size = new System.Drawing.Size(787, 20);
             this.lblKullaniciBilgi.TabIndex = 0;
             this.lblKullaniciBilgi.Text = "Şu anda tanımlı bir rolünüz bulunmamaktadır. Lütfen yetki için yöneticinizle ilet" +
     "işime geçiniz.";
             // 
-            // panelAnaSayfaİcerik
+            // ctlBaslik1
             // 
-            this.panelAnaSayfaİcerik.Controls.Add(this.label2);
-            this.panelAnaSayfaİcerik.Controls.Add(this.lblDuyuru);
-            this.panelAnaSayfaİcerik.Controls.Add(this.lblKullaniciBilgi);
-            this.panelAnaSayfaİcerik.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelAnaSayfaİcerik.Location = new System.Drawing.Point(0, 0);
-            this.panelAnaSayfaİcerik.Name = "panelAnaSayfaİcerik";
-            this.panelAnaSayfaİcerik.Size = new System.Drawing.Size(2201, 1219);
-            this.panelAnaSayfaİcerik.TabIndex = 3;
+            this.ctlBaslik1.Baslik = "Başlık";
+            this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
+            this.ctlBaslik1.Name = "ctlBaslik1";
+            this.ctlBaslik1.Size = new System.Drawing.Size(1761, 50);
+            this.ctlBaslik1.TabIndex = 3;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label2.Location = new System.Drawing.Point(20, 63);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(124, 29);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Duyurular";
+            // 
+            // lblDuyuru
+            // 
+            this.lblDuyuru.AutoSize = true;
+            this.lblDuyuru.Font = new System.Drawing.Font("Microsoft Sans Serif", 13.8F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblDuyuru.Location = new System.Drawing.Point(32, 100);
+            this.lblDuyuru.Name = "lblDuyuru";
+            this.lblDuyuru.Size = new System.Drawing.Size(0, 29);
+            this.lblDuyuru.TabIndex = 2;
             // 
             // frmAnaSayfa
             // 
@@ -820,8 +847,8 @@
             this.panelYardim.ResumeLayout(false);
             this.panelYardim.PerformLayout();
             this.panelAnaSayfaContainer.ResumeLayout(false);
-            this.panelAnaSayfaİcerik.ResumeLayout(false);
-            this.panelAnaSayfaİcerik.PerformLayout();
+            this.btnMusteriler.ResumeLayout(false);
+            this.btnMusteriler.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -889,6 +916,8 @@
         private System.Windows.Forms.Button btnProjeKutuk;
         private System.Windows.Forms.Label label2;
         private System.Windows.Forms.Label lblDuyuru;
-        private System.Windows.Forms.Panel panelAnaSayfaİcerik;
+        private System.Windows.Forms.Panel btnMusteriler;
+        private System.Windows.Forms.Button btnProjeFiyatlandirma;
+        private UsrControl.ctlBaslik ctlBaslik1;
     }
 }

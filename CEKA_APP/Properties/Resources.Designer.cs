@@ -73,9 +73,39 @@ namespace CEKA_APP.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap cekalogo {
+            get {
+                object obj = ResourceManager.GetObject("cekalogo", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap kullanici {
             get {
                 object obj = ResourceManager.GetObject("kullanici", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap navigationBack {
+            get {
+                object obj = ResourceManager.GetObject("navigationBack", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap navigationForward {
+            get {
+                object obj = ResourceManager.GetObject("navigationForward", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

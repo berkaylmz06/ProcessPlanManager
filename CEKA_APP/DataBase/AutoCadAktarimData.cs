@@ -21,7 +21,6 @@ namespace CEKA_APP.DataBase
                 {
                     conn.Open();
 
-                    // 1. ProjeId getir (yoksa ekle)
                     int projeId;
                     string projeQuery = "SELECT projeId FROM Projeler WHERE projeAdi = @projeAdi";
                     using (var cmd = new SqlCommand(projeQuery, conn))
@@ -44,7 +43,6 @@ namespace CEKA_APP.DataBase
                         }
                     }
 
-                    // 2. GrupId getir (yoksa ekle)
                     int grupId;
                     string grupQuery = "SELECT grupId FROM Gruplar WHERE projeId = @projeId AND grupAdi = @grupAdi";
                     using (var cmd = new SqlCommand(grupQuery, conn))
@@ -68,7 +66,6 @@ namespace CEKA_APP.DataBase
                         }
                     }
 
-                    // 3. Malzeme ekle
                     string insertMalzeme = @"
                 INSERT INTO Malzemeler (grupId, malzemeKod, adet, malzemeAd, kalite)
                 VALUES (@grupId, @malzemeKod, @adet, @malzemeAd, @kalite)";

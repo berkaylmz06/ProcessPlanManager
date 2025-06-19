@@ -1,18 +1,12 @@
 ﻿using CEKA_APP.Abstracts;
-using CEKA_APP.Business;
 using CEKA_APP.Concretes;
 using CEKA_APP.DataBase;
 using CEKA_APP.Entitys;
 using CEKA_APP.Helper;
 using CEKA_APP.UsrControl;
-using iText.StyledXmlParser.Jsoup.Helper;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
-using System.Linq;
-using System.Security.Cryptography;
-using System.Text.RegularExpressions;
 using System.Windows.Forms;
 
 namespace CEKA_APP
@@ -30,6 +24,7 @@ namespace CEKA_APP
         private ctlProjeOgeleri projeOgeleri;
         private ctlKarsilastirmaTablosu karsilastirmaTablosu;
         private ctlProjeKutuk projeKutuk;
+        private ctlProjeFiyatlandirma projeFiyatlandirma;
 
         private Kullanicilar aktifKullanici;
 
@@ -92,6 +87,7 @@ namespace CEKA_APP
             ButonGenelHelper.StilUygula(btnProjeOgeleri);
             ButonGenelHelper.StilUygula(btnKarsilastirmaTablolari);
             ButonGenelHelper.StilUygula(btnProjeKutuk);
+            ButonGenelHelper.StilUygula(btnProjeFiyatlandirma);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnSistem);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnDuyuru);
@@ -112,8 +108,9 @@ namespace CEKA_APP
             btnProjeOgeleri.Visible = false;
             btnKarsilastirmaTablolari.Visible = false;
             panelKesimPlaniEkleVeri.Visible = false;
-            btnDuyuru.Visible = false; 
+            btnDuyuru.Visible = false;
             btnProjeKutuk.Visible = false;
+            btnProjeFiyatlandirma.Visible = false;
 
             switch (aktifKullanici.kullaniciRol)
             {
@@ -124,10 +121,11 @@ namespace CEKA_APP
                     btnKesimDetaylari.Visible = true;
                     btnKullaniciAyarlari.Visible = true;
                     btnSistemHareketleri.Visible = true;
-                    panelKesimPlaniEkleVeri.Visible=true;
+                    panelKesimPlaniEkleVeri.Visible = true;
                     btnKarsilastirmaTablolari.Visible = true;
-                    btnDuyuru.Visible=true;
+                    btnDuyuru.Visible = true;
                     btnProjeKutuk.Visible = true;
+                    btnProjeFiyatlandirma.Visible = true;
                     break;
 
                 case "Destek":
@@ -145,6 +143,7 @@ namespace CEKA_APP
                     btnKarsilastirmaTablolari.Visible = true;
                     btnDuyuru.Visible = true;
                     btnProjeKutuk.Visible = true;
+                    btnProjeFiyatlandirma.Visible = true;
                     break;
 
                 case "İş Hazırlama":
@@ -156,6 +155,7 @@ namespace CEKA_APP
 
                 case "Muhasebe":
                     btnProjeKutuk.Visible = true;
+                    btnProjeFiyatlandirma.Visible = true;
                     break;
 
                 case "Operatör":
@@ -186,12 +186,13 @@ namespace CEKA_APP
               btnProjeOgeleri,
               btnKarsilastirmaTablolari,
               btnProjeKutuk,
+              btnProjeFiyatlandirma,
               btnOturumuKapat
               );
 
 
             pictureBox1.Image = Properties.Resources.kullanici;
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom; 
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox1.Cursor = Cursors.Hand;
 
             pictureBox2.Image = Properties.Resources.anasayfa;
@@ -211,6 +212,7 @@ namespace CEKA_APP
             {
                 lblDuyuru.Text = "Henüz bir duyuru yok.";
             }
+            ctlBaslik1.Baslik = "Ana Sayfa";
         }
 
         private void btnSistem_Click(object sender, EventArgs e)
@@ -375,7 +377,7 @@ namespace CEKA_APP
 
         private void btnAktar_Click(object sender, EventArgs e)
         {
-           
+
         }
         private void btnYapilanKesimleriGor_Click(object sender, EventArgs e)
         {
@@ -439,6 +441,7 @@ namespace CEKA_APP
             if (autoCadAktarim == null)
             {
                 autoCadAktarim = new ctlAutoCadAktarim();
+                autoCadAktarim.FormArayuzuAyarla(FormArayuzuInterface);
                 autoCadAktarim.Dock = DockStyle.Fill;
             }
 
@@ -473,7 +476,7 @@ namespace CEKA_APP
 
         private void btnKullaniciAyar_Click(object sender, EventArgs e)
         {
-            
+
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -485,7 +488,7 @@ namespace CEKA_APP
         private void pictureBox2_Click(object sender, EventArgs e)
         {
             panelAnaSayfaContainer.Controls.Clear();
-            panelAnaSayfaContainer.Controls.Add(panelAnaSayfaİcerik);
+            panelAnaSayfaContainer.Controls.Add(btnMusteriler);
         }
 
         private void btnDuyuru_Click(object sender, EventArgs e)
@@ -543,6 +546,19 @@ namespace CEKA_APP
             }
 
             panelAnaSayfaContainer.Controls.Add(projeKutuk);
+        }
+
+        private void btnProjeFiyatlandirma_Click(object sender, EventArgs e)
+        {
+            panelAnaSayfaContainer.Controls.Clear();
+
+            if (projeFiyatlandirma == null)
+            {
+                projeFiyatlandirma = new ctlProjeFiyatlandirma();
+                projeFiyatlandirma.Dock = DockStyle.Fill;
+            }
+
+            panelAnaSayfaContainer.Controls.Add(projeFiyatlandirma);
         }
     }
 }

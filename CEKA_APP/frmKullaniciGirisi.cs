@@ -18,6 +18,16 @@ namespace CEKA_APP
             InitializeComponent();
             _kullaniciService = new KullanicilarData();
             this.Icon = new Icon("cekalogokirmizi.ico");
+
+            this.BackColor = ColorTranslator.FromHtml("#2C3E50");
+            btnGiris.BackColor=Color.FromArgb(52, 152, 219);
+            pictureBox1.Image = Properties.Resources.cekalogo;
+            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
+            panelCizgi.Width = this.ClientSize.Width - 80; 
+            panelCizgi.Height = 1;
+            panelCizgi.BackColor = Color.White;
+            panelCizgi.Left = 40;                          
+            panelCizgi.Top = pictureBox1.Bottom + 50;
         }
         private void frmKullaniciGirisi_Load(object sender, EventArgs e)
         {
@@ -153,6 +163,12 @@ namespace CEKA_APP
             }
 
             Properties.Settings.Default.Save();
+        }
+
+        private void frmKullaniciGirisi_Resize(object sender, EventArgs e)
+        {
+            panelCizgi.Width = this.ClientSize.Width - 80;
+            panelCizgi.Left = 40;
         }
     }
 }

@@ -1,4 +1,8 @@
-﻿using System;
+﻿using CEKA_APP.Abstracts;
+using CEKA_APP.DataBase;
+using CEKA_APP.Entitys;
+using CEKA_APP.Helper;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,9 +13,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
-using CEKA_APP.DataBase;
-using CEKA_APP.Entitys;
-using CEKA_APP.Helper;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CEKA_APP.UsrControl
@@ -19,12 +20,17 @@ namespace CEKA_APP.UsrControl
     public partial class ctlAutoCadAktarim : UserControl
     {
         private List<AutoCadAktarim> tumParcalar;
+        private IFormArayuzu _formArayuzu;
         public ctlAutoCadAktarim()
         {
             InitializeComponent();
 
             DataGridViewHelper.StilUygula(dataGridIslenmisXml);
             DataGridViewHelper.StilUygula(dataGridXmlCiktisi);
+        }
+        public void FormArayuzuAyarla(IFormArayuzu formArayuzu)
+        {
+            _formArayuzu = formArayuzu;
         }
         private void ctlAutoCadAktarim_Load(object sender, EventArgs e)
         {
@@ -197,11 +203,20 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
+            DialogResult result = MessageBox.Show("Verileri yüklemek istiyor musunuz?", "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            string proje = "";
+            HashSet<string> uniqueGruplar = new HashSet<string>();
+
             foreach (DataGridViewRow row in dataGridIslenmisXml.Rows)
             {
                 if (row.IsNewRow) continue;
 
-                string proje = row.Cells["Proje"].Value?.ToString() ?? "";
+                proje = row.Cells["Proje"].Value?.ToString() ?? "";
                 string grup = row.Cells["Grup"].Value?.ToString() ?? "";
                 string malzemeKod = row.Cells["MalzemeKod"].Value?.ToString() ?? "";
                 int adet = 0;
@@ -212,9 +227,14 @@ namespace CEKA_APP.UsrControl
                 if (!string.IsNullOrWhiteSpace(proje) && !string.IsNullOrWhiteSpace(grup))
                 {
                     AutoCadAktarimData.SaveAutoCadData(proje, grup, malzemeKod, adet, malzemeAd, kalite);
+                    uniqueGruplar.Add(grup);
                 }
             }
 
+            string gruplar = string.Join(", ", uniqueGruplar);
+
+            var userController = new LogEkle(_formArayuzu.lblSistemKullaniciMetinAl());
+            userController.LogYap("PaftaYüklemesiYapıldı", "AutoCad Aktarım", $"Kullanıcı {proje} numaralı projeye {gruplar} grupları yükledi.");
             MessageBox.Show("Veriler kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
