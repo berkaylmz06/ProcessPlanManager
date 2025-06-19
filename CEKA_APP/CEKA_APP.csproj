@@ -301,12 +301,6 @@
     <Compile Include="UsrControl\ctlKullaniciAyarlari.Designer.cs">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ctlNavigasyon.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UsrControl\ctlNavigasyon.Designer.cs">
-      <DependentUpon>ctlNavigasyon.cs</DependentUpon>
-    </Compile>
     <Compile Include="UsrControl\ctlProjeBilgileri.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -403,9 +397,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlKullaniciAyarlari.resx">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ctlNavigasyon.resx">
-      <DependentUpon>ctlNavigasyon.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlProjeBilgileri.resx">
       <DependentUpon>ctlProjeBilgileri.cs</DependentUpon>

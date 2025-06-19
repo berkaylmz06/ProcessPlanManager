@@ -287,7 +287,7 @@
             // 
             // btnAra
             // 
-            this.btnAra.Location = new System.Drawing.Point(364, 65);
+            this.btnAra.Location = new System.Drawing.Point(361, 62);
             this.btnAra.Name = "btnAra";
             this.btnAra.Size = new System.Drawing.Size(100, 28);
             this.btnAra.TabIndex = 316;

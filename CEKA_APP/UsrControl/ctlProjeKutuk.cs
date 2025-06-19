@@ -20,9 +20,7 @@ namespace CEKA_APP.UsrControl
         private ContextMenuStrip contextMenu;
         private ToolStripMenuItem mnuProjeFiyatlandirma;
         private ToolStripMenuItem mnuProjeBilgileri;
-        private ctlProjeFiyatlandirma projeFiyatlandirma;
-        private ctlProjeBilgileri projeBilgileri;
-        private bool projeBilgileriKaydedildi; // Proje bilgileri kaydedildi mi kontrolü
+        private bool projeBilgileriKaydedildi;
 
         public ctlProjeKutuk()
         {
@@ -30,7 +28,6 @@ namespace CEKA_APP.UsrControl
 
             projeBilgileriKaydedildi = false;
 
-            // ContextMenuStrip oluştur
             contextMenu = new ContextMenuStrip();
             mnuProjeFiyatlandirma = new ToolStripMenuItem("Proje Fiyatlandırma") { Enabled = false };
             mnuProjeBilgileri = new ToolStripMenuItem("Proje Bilgileri") { Enabled = false };
@@ -38,57 +35,49 @@ namespace CEKA_APP.UsrControl
             contextMenu.Items.Add(mnuProjeBilgileri);
             this.ContextMenuStrip = contextMenu;
 
-            // Proje Fiyatlandırma buton tıklama olayı
             mnuProjeFiyatlandirma.Click += (s, e) =>
             {
-                var parentForm = this.FindForm();
-                var panelAnaSayfaContainer = parentForm?.Controls.OfType<Panel>().FirstOrDefault(p => p.Name == "panelAnaSayfaContainer");
-                if (panelAnaSayfaContainer == null)
+                var parentForm = this.FindForm() as frmAnaSayfa;
+                if (parentForm == null)
                 {
-                    MessageBox.Show("Ana panel bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Ana form bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                panelAnaSayfaContainer.Controls.Clear();
-
-                if (projeFiyatlandirma == null)
+                if (parentForm.projeFiyatlandirma == null)
                 {
-                    projeFiyatlandirma = new ctlProjeFiyatlandirma();
-                    projeFiyatlandirma.Dock = DockStyle.Fill;
+                    parentForm.projeFiyatlandirma = new ctlProjeFiyatlandirma();
+                    parentForm.projeFiyatlandirma.Dock = DockStyle.Fill;
                 }
 
-                projeFiyatlandirma.txtProjeNo.Text = txtProjeNo.Text.Trim();
-                projeFiyatlandirma.LoadProjeFiyatlandirma(txtProjeNo.Text.Trim()); // Fiyatlandırma bilgilerini yükle
-                panelAnaSayfaContainer.Controls.Add(projeFiyatlandirma);
+                parentForm.projeFiyatlandirma.txtProjeNo.Text = txtProjeNo.Text.Trim();
+                parentForm.projeFiyatlandirma.LoadProjeFiyatlandirma(txtProjeNo.Text.Trim());
+                parentForm.NavigateToUserControl(parentForm.projeFiyatlandirma);
             };
 
-            // Proje Bilgileri buton tıklama olayı
             mnuProjeBilgileri.Click += (s, e) =>
             {
-                var parentForm = this.FindForm();
-                var panelAnaSayfaContainer = parentForm?.Controls.OfType<Panel>().FirstOrDefault(p => p.Name == "panelAnaSayfaContainer");
-                if (panelAnaSayfaContainer == null)
+                var parentForm = this.FindForm() as frmAnaSayfa;
+                if (parentForm == null)
                 {
-                    MessageBox.Show("Ana panel bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Ana form bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                panelAnaSayfaContainer.Controls.Clear();
-
-                if (projeBilgileri == null)
+                if (parentForm.projeBilgileri == null)
                 {
-                    projeBilgileri = new ctlProjeBilgileri();
-                    projeBilgileri.Dock = DockStyle.Fill;
-                    projeBilgileri.OnKaydet += () => projeBilgileriKaydedildi = true; // Kaydetme olayını dinle
+                    parentForm.projeBilgileri = new ctlProjeBilgileri();
+                    parentForm.projeBilgileri.Dock = DockStyle.Fill;
+                    parentForm.projeBilgileri.OnKaydet += () => projeBilgileriKaydedildi = true;
                 }
 
-                projeBilgileri.LoadProjects(chkAltProjeVar.Checked
+                parentForm.projeBilgileri.LoadProjects(chkAltProjeVar.Checked
                     ? flpAltProjeTextBoxes.Controls.OfType<TextBox>()
                         .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                         .Select(txt => txt.Text.Trim()).ToList()
                     : new List<string> { txtProjeNo.Text.Trim() });
 
-                panelAnaSayfaContainer.Controls.Add(projeBilgileri);
+                parentForm.NavigateToUserControl(parentForm.projeBilgileri);
             };
 
             flpAltProjeTextBoxes = new FlowLayoutPanel
@@ -149,7 +138,6 @@ namespace CEKA_APP.UsrControl
             this.Controls.Add(flpAltProjeTextBoxes);
             this.Controls.Add(flpIliskiTextBoxes);
 
-            // Checkbox olaylarını güncelle
             chkAltProjeVar.CheckedChanged += (s, e) => CheckBoxKontrol(chkAltProjeVar, chkAltProjeYok, flpAltProjeTextBoxes);
             chkAltProjeYok.CheckedChanged += (s, e) => CheckBoxKontrol(chkAltProjeYok, chkAltProjeVar, flpAltProjeTextBoxes, false);
             chkProjeIliskisiVar.CheckedChanged += (s, e) => Ayarla(chkProjeIliskisiVar, chkProjeIliskisiYok, flpIliskiTextBoxes);
@@ -157,7 +145,6 @@ namespace CEKA_APP.UsrControl
             chkNakliyeVar.CheckedChanged += (s, e) => Ayarla(chkNakliyeVar, chkNakliyeYok, null);
             chkNakliyeYok.CheckedChanged += (s, e) => Ayarla(chkNakliyeYok, chkNakliyeVar, null, false);
 
-            // Proje No değiştiğinde sağ tık menüsünü kontrol et
             txtProjeNo.TextChanged += (s, e) => UpdateContextMenu();
         }
 
@@ -388,12 +375,12 @@ namespace CEKA_APP.UsrControl
                     .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                     .Select(txt => txt.Text.Trim()).ToList();
                 mnuProjeBilgileri.Enabled = altProjeler.Any();
-                mnuProjeFiyatlandirma.Enabled = isProjeKayitli; // Kayıtlıysa aktif
+                mnuProjeFiyatlandirma.Enabled = isProjeKayitli;
             }
             else if (chkAltProjeYok.Checked && !string.IsNullOrWhiteSpace(txtProjeNo.Text.Trim()))
             {
                 mnuProjeBilgileri.Enabled = true;
-                mnuProjeFiyatlandirma.Enabled = isProjeKayitli; // Kayıtlıysa aktif
+                mnuProjeFiyatlandirma.Enabled = isProjeKayitli;
             }
             else
             {
@@ -612,7 +599,7 @@ namespace CEKA_APP.UsrControl
 
             if (!ProjeKutukData.ProjeEkleProjeFinans(proje))
             {
-                return; // Hata mesajı ProjeEkleProjeFinans içinde gösteriliyor
+                return;
             }
 
             if (ProjeKutukData.ProjeKutukEkle(kutuk))
@@ -623,7 +610,7 @@ namespace CEKA_APP.UsrControl
                     {
                         if (!ProjeKutukData.ProjeEkleProjeFinans(altProje))
                         {
-                            return; // Hata mesajı ProjeEkleProjeFinans içinde gösteriliyor
+                            return;
                         }
 
                         if (!ProjeKutukData.AltProjeEkle(proje, altProje))
@@ -635,8 +622,8 @@ namespace CEKA_APP.UsrControl
                 }
 
                 MessageBox.Show("Kayıt başarıyla eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                projeBilgileriKaydedildi = false; // Yeni kayıt için sıfırla
-                UpdateContextMenu(); // Kayıt başarılı olduğunda menüyü güncelle
+                projeBilgileriKaydedildi = false;
+                UpdateContextMenu();
             }
             else
             {

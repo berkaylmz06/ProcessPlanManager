@@ -5,6 +5,7 @@ using CEKA_APP.Entitys;
 using CEKA_APP.Helper;
 using CEKA_APP.UsrControl;
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
@@ -18,15 +19,25 @@ namespace CEKA_APP
         public IFormArayuzu FormArayuzuInterface { get; private set; }
         public IKullaniciAdiOgren KullaniciAdiInterface { get; private set; }
 
+        private Kullanicilar aktifKullanici;
+        private Stack<UserControl> geriYigin = new Stack<UserControl>();
+        private Stack<UserControl> ileriYigin = new Stack<UserControl>();
+
+        // Tüm UserControl’leri sınıf düzeyinde tut
         private ctlKesimPlaniEkle kesimPlaniEkle;
         private ctlSistemBilgisi sistemBilgisiAnaSayfa;
         private ctlAutoCadAktarim autoCadAktarim;
         private ctlProjeOgeleri projeOgeleri;
         private ctlKarsilastirmaTablosu karsilastirmaTablosu;
         private ctlProjeKutuk projeKutuk;
-        private ctlProjeFiyatlandirma projeFiyatlandirma;
-
-        private Kullanicilar aktifKullanici;
+        public ctlProjeFiyatlandirma projeFiyatlandirma;
+        public ctlProjeBilgileri projeBilgileri;
+        private ctlKesimYap kesimYap;
+        private ctlYapilanKesimleriGor yapilanKesimleriGor;
+        private ctlKesimDetaylari kesimDetaylari;
+        private ctlSorunlar sorunlar;
+        private ctlSistemHareketleri sistemHareketleri;
+        private ctlKullaniciAyarlari kullaniciAyarlari;
 
         public frmAnaSayfa(Kullanicilar kullanici)
         {
@@ -35,8 +46,6 @@ namespace CEKA_APP
             aktifKullanici = kullanici ?? throw new ArgumentNullException(nameof(kullanici));
             FormArayuzuInterface = new FormArayuzu(this);
             KullaniciAdiInterface = new KullaniciAdiOgren(this);
-
-            aktifKullanici = kullanici;
 
             timer = new Timer();
             timer.Interval = 1000;
@@ -47,32 +56,39 @@ namespace CEKA_APP
 
             panelAraYuz.Dock = DockStyle.Left;
             panelAraYuz.Width = 150;
-
             panelSistem.Height = 300;
             panelYardim.Height = 300;
             panelDuyuru.Height = 300;
 
             panelAraYuz.BackColor = ColorTranslator.FromHtml("#2C3E50");
             panelYardimCubugu.BackColor = ColorTranslator.FromHtml("#E67E22");
+            panelNavigasyon.BackColor = ColorTranslator.FromHtml("#E67E22");
 
             this.Icon = new Icon("cekalogokirmizi.ico");
 
+            pictureBoxGeri.Enabled = false;
+            pictureBoxIleri.Enabled = false;
         }
-        frmAnaSayfa()
-        {
-        }
+
+        private frmAnaSayfa() { }
+
         private void ShowCurrentDateTime()
         {
             string currentDate = DateTime.Now.ToString("yyyy-MM-dd");
             string currentTime = DateTime.Now.ToString("HH:mm");
-
             lblSistemTarih.Text = currentDate;
             lblSistemSaat.Text = currentTime;
         }
 
+        // Yeni metot: Dışarıdan UserControl eklemek için
+        public void NavigateToUserControl(UserControl uc)
+        {
+            UserControlEkle(uc);
+        }
+
         private void frmAnaSayfa_Load(object sender, EventArgs e)
         {
-            panelContainer.Size = new System.Drawing.Size(1696, 197);
+            panelContainer.Size = new Size(1696, 197);
 
             ButonGenelHelper.StilUygula(btnKesimPlaniEkle);
             ButonGenelHelper.StilUygula(btnKesimYap);
@@ -127,7 +143,6 @@ namespace CEKA_APP
                     btnProjeKutuk.Visible = true;
                     btnProjeFiyatlandirma.Visible = true;
                     break;
-
                 case "Destek":
                     btnKesimPlaniEkle.Visible = true;
                     btnKesimYap.Visible = true;
@@ -145,51 +160,46 @@ namespace CEKA_APP
                     btnProjeKutuk.Visible = true;
                     btnProjeFiyatlandirma.Visible = true;
                     break;
-
                 case "İş Hazırlama":
                     btnKesimPlaniEkle.Visible = true;
                     btnKesimYap.Visible = true;
                     btnYapilanKesimleriGor.Visible = true;
                     panelKesimPlaniEkleVeri.Visible = true;
                     break;
-
                 case "Muhasebe":
                     btnProjeKutuk.Visible = true;
                     btnProjeFiyatlandirma.Visible = true;
                     break;
-
                 case "Operatör":
                     btnKesimYap.Visible = true;
                     btnYapilanKesimleriGor.Visible = true;
                     break;
-
                 case "Kullanıcı":
                     lblKullaniciBilgi.Visible = true;
                     break;
-
                 case "Ressam":
                     btnAutoCad.Visible = true;
                     btnProjeOgeleri.Visible = true;
                     break;
             }
-            DuzenliButonGoster
-              (panelAraYuz,
-              btnKesimPlaniEkle,
-              btnKesimYap,
-              btnYapilanKesimleriGor,
-              btnKesimDetaylari,
-              btnKullaniciAyarlari,
-              btnIletilenSorunlar,
-              btnSistemHareketleri,
-              btnSistemBilgisiAnaSayfa,
-              btnAutoCad,
-              btnProjeOgeleri,
-              btnKarsilastirmaTablolari,
-              btnProjeKutuk,
-              btnProjeFiyatlandirma,
-              btnOturumuKapat
-              );
 
+            DuzenliButonGoster(
+                panelAraYuz,
+                btnKesimPlaniEkle,
+                btnKesimYap,
+                btnYapilanKesimleriGor,
+                btnKesimDetaylari,
+                btnKullaniciAyarlari,
+                btnIletilenSorunlar,
+                btnSistemHareketleri,
+                btnSistemBilgisiAnaSayfa,
+                btnAutoCad,
+                btnProjeOgeleri,
+                btnKarsilastirmaTablolari,
+                btnProjeKutuk,
+                btnProjeFiyatlandirma,
+                btnOturumuKapat
+            );
 
             pictureBox1.Image = Properties.Resources.kullanici;
             pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
@@ -199,19 +209,19 @@ namespace CEKA_APP
             pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBox2.Cursor = Cursors.Hand;
 
+            pictureBoxGeri.Image = Properties.Resources.navigationBack;
+            pictureBoxGeri.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxGeri.Cursor = Cursors.Hand;
+
+            pictureBoxIleri.Image = Properties.Resources.navigationForward;
+            pictureBoxIleri.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxIleri.Cursor = Cursors.Hand;
+
             panelAraYuz.Width = 170;
 
             DuyurularData duyurularData = new DuyurularData();
             Duyurular sonDuyuru = duyurularData.GetSonDuyuru();
-
-            if (sonDuyuru != null)
-            {
-                lblDuyuru.Text = $"🗨️ {sonDuyuru.duyuru}";
-            }
-            else
-            {
-                lblDuyuru.Text = "Henüz bir duyuru yok.";
-            }
+            lblDuyuru.Text = sonDuyuru != null ? $"🗨️ {sonDuyuru.duyuru}" : "Henüz bir duyuru yok.";
             ctlBaslik1.Baslik = "Ana Sayfa";
         }
 
@@ -219,17 +229,16 @@ namespace CEKA_APP
         {
             PanelGosterYardimMenu(panelSistem);
         }
+
         private void DuzenliButonGoster(Panel panel, params Button[] butonlar)
         {
             int y = 15;
-
             foreach (var btn in butonlar)
             {
                 if (btn.Visible)
                 {
                     int x = (panel.Width - btn.Width) / 2;
                     btn.Location = new Point(x, y);
-
                     y += btn.Height + 10;
                 }
             }
@@ -237,16 +246,13 @@ namespace CEKA_APP
 
         private void btnOturumuKapat_Click(object sender, EventArgs e)
         {
-            DialogResult result = MessageBox.Show("Oturumu kapatmak istiyor musunuz?", "Bilgi", MessageBoxButtons.OKCancel, MessageBoxIcon.Question);
-
-            if (result == DialogResult.OK)
+            if (MessageBox.Show("Oturumu kapatmak için onaylıyor musunuz?","Bilgi", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
                 frmKullaniciGirisi kullanicigiris = new frmKullaniciGirisi();
                 kullanicigiris.FormClosed += (s, args) => Application.Exit();
                 kullanicigiris.Show();
                 this.Hide();
             }
-
         }
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
@@ -262,221 +268,225 @@ namespace CEKA_APP
         private void Timer_Tick(object sender, EventArgs e)
         {
             timerCounter++;
-
-            TimeSpan time = TimeSpan.FromSeconds(timerCounter);
-
-            string timeFormatted = time.ToString(@"hh\:mm\:ss");
-
-            lblTimer.Text = $"{timeFormatted}\n";
+            lblTimer.Text = TimeSpan.FromSeconds(timerCounter).ToString(@"hh\:mm\:ss") + "\n";
         }
 
         private void btnGonder_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(txtSorun.Text))
             {
-                MessageBox.Show("Bildiri göndermeden önce lütfen bildiri metnini doldurunuz!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Bildiri metnini doldurunuz!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (MessageBox.Show("Bildiriyi göndermek istiyor musunuz?", "Onayla", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                string olusturan = lblSistemKullanici.Text;
+                string sorun = txtSorun.Text;
+                string tarih = lblSistemSaat.Text + " " + lblSistemTarih.Text;
+
+                SorunBildirimleriData datas = new SorunBildirimleriData();
+                if (datas.SorunBildirimEkle(olusturan, sorun, tarih))
+                {
+                    MessageBox.Show("Bildiriminiz iletildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    txtSorun.Clear();
+                }
             }
             else
             {
-                DialogResult result = MessageBox.Show(
-            "Bildiriyi göndermek istediğinize emin misiniz?",
-            "Onayla",
-            MessageBoxButtons.YesNo,
-            MessageBoxIcon.Question
-            );
+                MessageBox.Show("Gönderim iptal edildi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
 
-                if (result == DialogResult.Yes)
+        private void UserControlEkle(UserControl uc)
+        {
+            if (panelAnaSayfaContainer.Controls.Count > 0)
+            {
+                var mevcut = panelAnaSayfaContainer.Controls[0] as UserControl;
+                if (mevcut != null)
                 {
-                    string olusturan = lblSistemKullanici.Text;
-                    string sorun = txtSorun.Text;
-                    string tarih = lblSistemSaat.Text + " " + lblSistemTarih.Text;
-
-                    SorunBildirimleriData datas = new SorunBildirimleriData();
-                    bool basariliMi = datas.SorunBildirimEkle(olusturan, sorun, tarih);
-
-                    if (basariliMi)
-                    {
-                        MessageBox.Show("Bildiriminiz başarıyla iletildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        txtSorun.Clear();
-                    }
+                    geriYigin.Push(mevcut);
+                    pictureBoxGeri.Enabled = true;
+                    Console.WriteLine($"Geri yığınına eklendi: {mevcut.GetType().Name}");
                 }
-                else
+            }
+
+            panelAnaSayfaContainer.Controls.Clear();
+            uc.Dock = DockStyle.Fill;
+            panelAnaSayfaContainer.Controls.Add(uc);
+            ileriYigin.Clear();
+            pictureBoxIleri.Enabled = false;
+
+            Console.WriteLine($"Yeni UserControl eklendi: {uc.GetType().Name}");
+        }
+
+        private void pictureBoxGeri_Click(object sender, EventArgs e)
+        {
+            if (geriYigin.Count > 0)
+            {
+                var mevcut = panelAnaSayfaContainer.Controls[0] as UserControl;
+                if (mevcut != null)
                 {
-                    MessageBox.Show("Gönderim iptal edildi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    ileriYigin.Push(mevcut);
+                    Console.WriteLine($"İleri yığınına eklendi: {mevcut.GetType().Name}");
                 }
+
+                var onceki = geriYigin.Pop();
+                panelAnaSayfaContainer.Controls.Clear();
+                panelAnaSayfaContainer.Controls.Add(onceki);
+
+                pictureBoxGeri.Enabled = geriYigin.Count > 0;
+                pictureBoxIleri.Enabled = true;
+
+                Console.WriteLine($"Geri gidildi: {onceki.GetType().Name}");
+            }
+        }
+
+        private void pictureBoxIleri_Click(object sender, EventArgs e)
+        {
+            if (ileriYigin.Count > 0)
+            {
+                var mevcut = panelAnaSayfaContainer.Controls[0] as UserControl;
+                if (mevcut != null)
+                {
+                    geriYigin.Push(mevcut);
+                    Console.WriteLine($"Geri yığınına eklendi: {mevcut.GetType().Name}");
+                }
+
+                var sonraki = ileriYigin.Pop();
+                panelAnaSayfaContainer.Controls.Clear();
+                panelAnaSayfaContainer.Controls.Add(sonraki);
+
+                pictureBoxIleri.Enabled = ileriYigin.Count > 0;
+                pictureBoxGeri.Enabled = true;
+
+                Console.WriteLine($"İleri gidildi: {sonraki.GetType().Name}");
             }
         }
 
         private void btnKesimYap_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-            var kesimYap = new ctlKesimYap();
-            kesimYap.FormKullaniciAdiGetir(KullaniciAdiInterface);
-            kesimYap.Dock = DockStyle.Fill;
-            panelAnaSayfaContainer.Controls.Add(kesimYap);
+            if (kesimYap == null)
+            {
+                kesimYap = new ctlKesimYap();
+                kesimYap.FormKullaniciAdiGetir(KullaniciAdiInterface);
+            }
+            UserControlEkle(kesimYap);
         }
-
 
         private void yardımCubugunuKaldirToolStripMenuItem_Click(object sender, EventArgs e)
         {
             panelYardimCubugu.Visible = !panelYardimCubugu.Visible;
-
-            if (panelYardimCubugu.Visible == true)
+            yardımCubugunuKaldirToolStripMenuItem.Text = panelYardimCubugu.Visible ? "Yardım çubuğu kapat" : "Yardım çubuğu aç";
+            if (!panelYardimCubugu.Visible)
             {
-                yardımCubugunuKaldirToolStripMenuItem.Text = "Yardım çubuğu kapat";
-            }
-            else
-            {
-                yardımCubugunuKaldirToolStripMenuItem.Text = "Yardım çubuğu aç";
                 panelSistem.Visible = false;
                 panelYardim.Visible = false;
             }
         }
+
         private void btnKesimPlaniEkle_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-
             if (kesimPlaniEkle == null)
             {
                 kesimPlaniEkle = new ctlKesimPlaniEkle();
                 kesimPlaniEkle.FormArayuzuAyarla(FormArayuzuInterface);
-                kesimPlaniEkle.Dock = DockStyle.Fill;
             }
-
-            panelAnaSayfaContainer.Controls.Add(kesimPlaniEkle);
+            UserControlEkle(kesimPlaniEkle);
         }
-
 
         private void PanelGosterYardimMenu(Panel hedefPanel)
         {
-            if (hedefPanel.Visible)
+            panelContainer.Visible = !hedefPanel.Visible;
+            foreach (Control ctrl in panelContainer.Controls)
             {
-                panelContainer.Visible = false;
-                foreach (Control ctrl in panelContainer.Controls)
-                {
-                    if (ctrl is Panel)
-                    {
-                        ctrl.Visible = false;
-                    }
-                }
+                if (ctrl is Panel) ctrl.Visible = false;
             }
-            else
-            {
-                panelContainer.Visible = true;
-
-                foreach (Control ctrl in panelContainer.Controls)
-                {
-                    if (ctrl is Panel)
-                    {
-                        ctrl.Visible = false;
-                    }
-                }
-                hedefPanel.Visible = true;
-            }
+            hedefPanel.Visible = !hedefPanel.Visible;
         }
 
-        private void btnAktar_Click(object sender, EventArgs e)
-        {
-
-        }
         private void btnYapilanKesimleriGor_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-            var yapilanKesimleriGor = new ctlYapilanKesimleriGor();
-            yapilanKesimleriGor.FormKullaniciAdiGetir(KullaniciAdiInterface);
-            yapilanKesimleriGor.Dock = DockStyle.Fill;
-            panelAnaSayfaContainer.Controls.Add(yapilanKesimleriGor);
+            if (yapilanKesimleriGor == null)
+            {
+                yapilanKesimleriGor = new ctlYapilanKesimleriGor();
+                yapilanKesimleriGor.FormKullaniciAdiGetir(KullaniciAdiInterface);
+            }
+            UserControlEkle(yapilanKesimleriGor);
         }
 
-        private void bntKesimDetaylari_Click(object sender, EventArgs e)
+        private void btnKesimDetaylari_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-            var kesimDetaylari = new ctlKesimDetaylari();
-            kesimDetaylari.Dock = DockStyle.Fill;
-            panelAnaSayfaContainer.Controls.Add(kesimDetaylari);
+            if (kesimDetaylari == null)
+            {
+                kesimDetaylari = new ctlKesimDetaylari();
+            }
+            UserControlEkle(kesimDetaylari);
         }
 
         private void btnIletilenSorunlar_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-            var sorunlar = new ctlSorunlar();
-            sorunlar.Dock = DockStyle.Fill;
-            panelAnaSayfaContainer.Controls.Add(sorunlar);
+            if (sorunlar == null)
+            {
+                sorunlar = new ctlSorunlar();
+            }
+            UserControlEkle(sorunlar);
         }
 
         private void btnSistemHareketleri_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-            var sistemHareket = new ctlSistemHareketleri();
-            sistemHareket.Dock = DockStyle.Fill;
-            panelAnaSayfaContainer.Controls.Add(sistemHareket);
+            if (sistemHareketleri == null)
+            {
+                sistemHareketleri = new ctlSistemHareketleri();
+            }
+            UserControlEkle(sistemHareketleri);
         }
 
         private void btnKullaniciAyarlari_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-            var kullaniciAyar = new ctlKullaniciAyarlari();
-            kullaniciAyar.Dock = DockStyle.Fill;
-            panelAnaSayfaContainer.Controls.Add(kullaniciAyar);
+            if (kullaniciAyarlari == null)
+            {
+                kullaniciAyarlari = new ctlKullaniciAyarlari();
+            }
+            UserControlEkle(kullaniciAyarlari);
         }
 
         private void btnSistemBilgisiAnaSayfa_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-
             if (sistemBilgisiAnaSayfa == null)
             {
                 sistemBilgisiAnaSayfa = new ctlSistemBilgisi();
                 sistemBilgisiAnaSayfa.FormArayuzuAyarla(FormArayuzuInterface);
-                sistemBilgisiAnaSayfa.Dock = DockStyle.Fill;
             }
-
-            panelAnaSayfaContainer.Controls.Add(sistemBilgisiAnaSayfa);
+            UserControlEkle(sistemBilgisiAnaSayfa);
         }
 
         private void btnAutoCad_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-
             if (autoCadAktarim == null)
             {
                 autoCadAktarim = new ctlAutoCadAktarim();
                 autoCadAktarim.FormArayuzuAyarla(FormArayuzuInterface);
-                autoCadAktarim.Dock = DockStyle.Fill;
             }
-
-            panelAnaSayfaContainer.Controls.Add(autoCadAktarim);
+            UserControlEkle(autoCadAktarim);
         }
 
         private void btnProjeOgeleri_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-
             if (projeOgeleri == null)
             {
                 projeOgeleri = new ctlProjeOgeleri();
-                projeOgeleri.Dock = DockStyle.Fill;
             }
-
-            panelAnaSayfaContainer.Controls.Add(projeOgeleri);
+            UserControlEkle(projeOgeleri);
         }
 
         private void btnKarsilastirmaTablolari_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-
             if (karsilastirmaTablosu == null)
             {
                 karsilastirmaTablosu = new ctlKarsilastirmaTablosu();
-                karsilastirmaTablosu.Dock = DockStyle.Fill;
             }
-
-            panelAnaSayfaContainer.Controls.Add(karsilastirmaTablosu);
-        }
-
-        private void btnKullaniciAyar_Click(object sender, EventArgs e)
-        {
-
+            UserControlEkle(karsilastirmaTablosu);
         }
 
         private void pictureBox1_Click(object sender, EventArgs e)
@@ -488,7 +498,15 @@ namespace CEKA_APP
         private void pictureBox2_Click(object sender, EventArgs e)
         {
             panelAnaSayfaContainer.Controls.Clear();
-            panelAnaSayfaContainer.Controls.Add(btnMusteriler);
+            geriYigin.Clear();
+            ileriYigin.Clear();
+            pictureBoxGeri.Enabled = false;
+            pictureBoxIleri.Enabled = false;
+            if (btnMusteriler != null)
+            {
+                panelAnaSayfaContainer.Controls.Add(btnMusteriler);
+                Console.WriteLine("btnMusteriler eklendi, gezinme geçmişine dahil değil.");
+            }
         }
 
         private void btnDuyuru_Click(object sender, EventArgs e)
@@ -500,65 +518,46 @@ namespace CEKA_APP
         {
             if (string.IsNullOrEmpty(richTextDuyuru.Text))
             {
-                MessageBox.Show("Lütfen önce duyuru metni giriniz!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Duyuru metni giriniz!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (MessageBox.Show("Duyuruyu yayınlamak istiyor musunuz?", "Onayla", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                string olusturan = lblSistemKullanici.Text;
+                string duyuru = richTextDuyuru.Text;
+                string tarihStr = lblSistemSaat.Text + " " + lblSistemTarih.Text;
+                DateTime tarih = DateTime.ParseExact(tarihStr, "HH:mm yyyy-MM-dd", CultureInfo.InvariantCulture);
+
+                DuyurularData datas = new DuyurularData();
+                if (datas.DuyuruEkle(olusturan, duyuru, tarih))
+                {
+                    MessageBox.Show("Duyurunuz yayınlandı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    richTextDuyuru.Clear();
+                }
             }
             else
             {
-                DialogResult result = MessageBox.Show(
-            "Duyuruyu yayınlamak istediğinize emin misiniz?",
-            "Onayla",
-            MessageBoxButtons.YesNo,
-            MessageBoxIcon.Question
-            );
-
-                if (result == DialogResult.Yes)
-                {
-                    string olusturan = lblSistemKullanici.Text;
-                    string duyuru = richTextDuyuru.Text;
-                    string tarihStr = lblSistemSaat.Text + " " + lblSistemTarih.Text; // "14:40 2025-06-16"
-                    DateTime tarih = DateTime.ParseExact(tarihStr, "HH:mm yyyy-MM-dd", CultureInfo.InvariantCulture);
-
-
-                    DuyurularData datas = new DuyurularData();
-                    bool basariliMi = datas.DuyuruEkle(olusturan, duyuru, tarih);
-
-                    if (basariliMi)
-                    {
-                        MessageBox.Show("Duyurunuz başarıyla yayınlandı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        richTextDuyuru.Clear();
-                    }
-                }
-                else
-                {
-                    MessageBox.Show("Yayınlama iptal edildi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                }
+                MessageBox.Show("Yayınlama iptal edildi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 
         private void btnProjeKutuk_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-
             if (projeKutuk == null)
             {
                 projeKutuk = new ctlProjeKutuk();
-                projeKutuk.Dock = DockStyle.Fill;
             }
-
-            panelAnaSayfaContainer.Controls.Add(projeKutuk);
+            UserControlEkle(projeKutuk);
         }
 
         private void btnProjeFiyatlandirma_Click(object sender, EventArgs e)
         {
-            panelAnaSayfaContainer.Controls.Clear();
-
             if (projeFiyatlandirma == null)
             {
                 projeFiyatlandirma = new ctlProjeFiyatlandirma();
-                projeFiyatlandirma.Dock = DockStyle.Fill;
             }
-
-            panelAnaSayfaContainer.Controls.Add(projeFiyatlandirma);
+            UserControlEkle(projeFiyatlandirma);
         }
     }
 }
