@@ -190,9 +190,13 @@ namespace CEKA_APP.UsrControl
             MessageBox.Show("Veriler kaydedildi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
             LoadIscilikler();
         }
-        public void LoadProjeFiyatlandirma(string projeNo)
+        public void LoadProjeFiyatlandirma(string projeNo, bool autoSearch = false)
         {
-            LoadIscilikler();
+            txtProjeNo.Text = projeNo;
+            if (autoSearch)
+            {
+                LoadIscilikler();
+            }
         }
     }
 }

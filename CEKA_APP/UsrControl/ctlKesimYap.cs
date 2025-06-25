@@ -73,7 +73,7 @@ namespace CEKA_APP.UsrControl
                 }
             }
         }
-        private void VerileriYukle()
+        public void VerileriYukle()
         {
             KesimListesiPaketData kesimdatas = new KesimListesiPaketData();
             DataTable dt = kesimdatas.GetKesimListesiPaket();
@@ -111,16 +111,6 @@ namespace CEKA_APP.UsrControl
             if (dataGridKesimListesi.Columns.Contains("eklemeTarihi"))
                 dataGridKesimListesi.Columns["eklemeTarihi"].HeaderText = "Ekleme Tarihi";
 
-            if (dataGridKesimListesi.Columns.Contains("Detay"))
-                dataGridKesimListesi.Columns["Detay"].HeaderText = "Detay";
-
-            if (!dataGridKesimListesi.Columns.Contains("Detay"))
-            {
-                DataGridViewTextBoxColumn detayKolon = new DataGridViewTextBoxColumn();
-                detayKolon.Name = "Detay";
-                detayKolon.HeaderText = "Detay";
-                dataGridKesimListesi.Columns.Add(detayKolon);
-            }
         }
 
         private void btnAra_Click(object sender, EventArgs e)
@@ -188,6 +178,7 @@ namespace CEKA_APP.UsrControl
 
                 StringBuilder pozVeSondurumMesaj = new StringBuilder();
                 StringBuilder hataAyrintilari = new StringBuilder();
+                List<string> hataMesajlari = new List<string>();
 
                 foreach (DataRow row in dt.Rows)
                 {
@@ -205,6 +196,15 @@ namespace CEKA_APP.UsrControl
                         return;
                     }
 
+                    string hataMesaji;
+                    string ifsMalzeme = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
+                    if (string.IsNullOrEmpty(ifsMalzeme))
+                    {
+                        hataMesajlari.Add(hataMesaji);
+                        MessageBox.Show(hataMesaji, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     if (!int.TryParse(adetSatır, out int kpAdet))
                     {
                         MessageBox.Show("Veritabanındaki bazı adet değerleri geçerli değil.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -213,18 +213,19 @@ namespace CEKA_APP.UsrControl
 
                     int sondurum = kpAdet * carpan;
                     string kalipNoPoz = $"{kalipNo}-{poz}";
-                    string pozbilgileri = $"{ifsKalite}-{malzeme}-{kalipNoPoz}-{proje}";
+                    string pozbilgileri = $"{ifsKalite}-{ifsMalzeme}-{kalipNoPoz}-{proje}";
                     pozVeSondurumMesaj.AppendLine($"Poz: {pozbilgileri}, Sondurum: {sondurum}");
 
                     hataAyrintilari.AppendLine($"Kontrol edilen pozbilgileri: {pozbilgileri}");
 
-                    if (!KesimDetaylariData.PozExists(ifsKalite, malzeme, kalipNoPoz, proje))
+                    if (!KesimDetaylariData.PozExists(ifsKalite, ifsMalzeme, kalipNoPoz, proje))
                     {
                         MessageBox.Show($"Poz: {pozbilgileri} KesimDetaylari tablosunda bulunamadı.\nAyrıntılar:\n{hataAyrintilari.ToString()}",
                             "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
                 }
+
                 string hata;
                 bool paketSonuc = KesimListesiPaketData.KesimListesiPaketKontrolluDusme(kesimId, carpan, out hata);
                 if (!paketSonuc)
@@ -249,13 +250,22 @@ namespace CEKA_APP.UsrControl
                         return;
                     }
 
-                    int sondurum = int.Parse(adetSatır) * carpan;
-                    string kalipNoPoz = $"{kalipNo}-{poz}"; 
+                    string hataMesaji;
+                    string ifsMalzeme = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
+                    if (string.IsNullOrEmpty(ifsMalzeme))
+                    {
+                        hataMesajlari.Add(hataMesaji);
+                        MessageBox.Show(hataMesaji, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
 
-                    bool updateSuccess = KesimDetaylariData.UpdateKesilmisAdet(ifsKalite, malzeme, kalipNoPoz, proje, sondurum);
+                    int sondurum = int.Parse(adetSatır) * carpan;
+                    string kalipNoPoz = $"{kalipNo}-{poz}";
+
+                    bool updateSuccess = KesimDetaylariData.UpdateKesilmisAdet(ifsKalite, ifsMalzeme, kalipNoPoz, proje, sondurum);
                     if (!updateSuccess)
                     {
-                        MessageBox.Show($"Poz: {ifsKalite}-{malzeme}-{kalipNoPoz}-{proje} için kesilmisAdet veya kesilecekAdet güncellenemedi. Kesilecek adet yetersiz olabilir.\nSondurum: {sondurum}",
+                        MessageBox.Show($"Poz: {ifsKalite}-{ifsMalzeme}-{kalipNoPoz}-{proje} için kesilmisAdet veya kesilecekAdet güncellenemedi. Kesilecek adet yetersiz olabilir.\nSondurum: {sondurum}",
                             "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }

@@ -23,7 +23,6 @@ namespace CEKA_APP
         private Stack<UserControl> geriYigin = new Stack<UserControl>();
         private Stack<UserControl> ileriYigin = new Stack<UserControl>();
 
-        // Tüm UserControl’leri sınıf düzeyinde tut
         private ctlKesimPlaniEkle kesimPlaniEkle;
         private ctlSistemBilgisi sistemBilgisiAnaSayfa;
         private ctlAutoCadAktarim autoCadAktarim;
@@ -32,11 +31,6 @@ namespace CEKA_APP
         private ctlProjeKutuk projeKutuk;
         public ctlProjeFiyatlandirma projeFiyatlandirma;
         public ctlProjeBilgileri projeBilgileri;
-        private ctlKesimYap kesimYap;
-        private ctlYapilanKesimleriGor yapilanKesimleriGor;
-        private ctlKesimDetaylari kesimDetaylari;
-        private ctlSorunlar sorunlar;
-        private ctlSistemHareketleri sistemHareketleri;
         private ctlKullaniciAyarlari kullaniciAyarlari;
 
         public frmAnaSayfa(Kullanicilar kullanici)
@@ -104,6 +98,7 @@ namespace CEKA_APP
             ButonGenelHelper.StilUygula(btnKarsilastirmaTablolari);
             ButonGenelHelper.StilUygula(btnProjeKutuk);
             ButonGenelHelper.StilUygula(btnProjeFiyatlandirma);
+            ButonGenelHelper.StilUygula(btnYerlesimPlaniBilgileri);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnSistem);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnDuyuru);
@@ -127,6 +122,7 @@ namespace CEKA_APP
             btnDuyuru.Visible = false;
             btnProjeKutuk.Visible = false;
             btnProjeFiyatlandirma.Visible = false;
+            btnYerlesimPlaniBilgileri.Visible= false;
 
             switch (aktifKullanici.kullaniciRol)
             {
@@ -137,11 +133,13 @@ namespace CEKA_APP
                     btnKesimDetaylari.Visible = true;
                     btnKullaniciAyarlari.Visible = true;
                     btnSistemHareketleri.Visible = true;
+                    btnProjeOgeleri.Visible = true;
                     panelKesimPlaniEkleVeri.Visible = true;
                     btnKarsilastirmaTablolari.Visible = true;
                     btnDuyuru.Visible = true;
                     btnProjeKutuk.Visible = true;
                     btnProjeFiyatlandirma.Visible = true;
+                    btnYerlesimPlaniBilgileri.Visible = true;
                     break;
                 case "Destek":
                     btnKesimPlaniEkle.Visible = true;
@@ -159,12 +157,15 @@ namespace CEKA_APP
                     btnDuyuru.Visible = true;
                     btnProjeKutuk.Visible = true;
                     btnProjeFiyatlandirma.Visible = true;
+                    btnYerlesimPlaniBilgileri.Visible = true;
                     break;
                 case "İş Hazırlama":
                     btnKesimPlaniEkle.Visible = true;
                     btnKesimYap.Visible = true;
                     btnYapilanKesimleriGor.Visible = true;
                     panelKesimPlaniEkleVeri.Visible = true;
+                    btnKesimDetaylari.Visible=true;
+                    btnYerlesimPlaniBilgileri.Visible = true;
                     break;
                 case "Muhasebe":
                     btnProjeKutuk.Visible = true;
@@ -181,11 +182,13 @@ namespace CEKA_APP
                     btnAutoCad.Visible = true;
                     btnProjeOgeleri.Visible = true;
                     break;
+
             }
 
             DuzenliButonGoster(
                 panelAraYuz,
                 btnKesimPlaniEkle,
+                btnYerlesimPlaniBilgileri,
                 btnKesimYap,
                 btnYapilanKesimleriGor,
                 btnKesimDetaylari,
@@ -201,13 +204,13 @@ namespace CEKA_APP
                 btnOturumuKapat
             );
 
-            pictureBox1.Image = Properties.Resources.kullanici;
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox1.Cursor = Cursors.Hand;
+            pictureBoxKullanici.Image = Properties.Resources.kullanici;
+            pictureBoxKullanici.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxKullanici.Cursor = Cursors.Hand;
 
-            pictureBox2.Image = Properties.Resources.anasayfa;
-            pictureBox2.SizeMode = PictureBoxSizeMode.Zoom;
-            pictureBox2.Cursor = Cursors.Hand;
+            pictureBoxAnaSayfa.Image = Properties.Resources.anasayfa;
+            pictureBoxAnaSayfa.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxAnaSayfa.Cursor = Cursors.Hand;
 
             pictureBoxGeri.Image = Properties.Resources.navigationBack;
             pictureBoxGeri.SizeMode = PictureBoxSizeMode.Zoom;
@@ -217,6 +220,7 @@ namespace CEKA_APP
             pictureBoxIleri.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxIleri.Cursor = Cursors.Hand;
 
+            panelNavigasyon.Padding = new Padding(5);
             panelAraYuz.Width = 170;
 
             DuyurularData duyurularData = new DuyurularData();
@@ -224,7 +228,6 @@ namespace CEKA_APP
             lblDuyuru.Text = sonDuyuru != null ? $"🗨️ {sonDuyuru.duyuru}" : "Henüz bir duyuru yok.";
             ctlBaslik1.Baslik = "Ana Sayfa";
         }
-
         private void btnSistem_Click(object sender, EventArgs e)
         {
             PanelGosterYardimMenu(panelSistem);
@@ -366,12 +369,9 @@ namespace CEKA_APP
 
         private void btnKesimYap_Click(object sender, EventArgs e)
         {
-            if (kesimYap == null)
-            {
-                kesimYap = new ctlKesimYap();
-                kesimYap.FormKullaniciAdiGetir(KullaniciAdiInterface);
-            }
-            UserControlEkle(kesimYap);
+            var yeniKesimYap = new ctlKesimYap();
+            yeniKesimYap.FormKullaniciAdiGetir(KullaniciAdiInterface);
+            UserControlEkle(yeniKesimYap);
         }
 
         private void yardımCubugunuKaldirToolStripMenuItem_Click(object sender, EventArgs e)
@@ -407,38 +407,26 @@ namespace CEKA_APP
 
         private void btnYapilanKesimleriGor_Click(object sender, EventArgs e)
         {
-            if (yapilanKesimleriGor == null)
-            {
-                yapilanKesimleriGor = new ctlYapilanKesimleriGor();
-                yapilanKesimleriGor.FormKullaniciAdiGetir(KullaniciAdiInterface);
-            }
+            var yapilanKesimleriGor = new ctlYapilanKesimleriGor();
+            yapilanKesimleriGor.FormKullaniciAdiGetir(KullaniciAdiInterface);
             UserControlEkle(yapilanKesimleriGor);
         }
 
         private void btnKesimDetaylari_Click(object sender, EventArgs e)
         {
-            if (kesimDetaylari == null)
-            {
-                kesimDetaylari = new ctlKesimDetaylari();
-            }
+            var kesimDetaylari = new ctlKesimDetaylari();
             UserControlEkle(kesimDetaylari);
         }
 
         private void btnIletilenSorunlar_Click(object sender, EventArgs e)
         {
-            if (sorunlar == null)
-            {
-                sorunlar = new ctlSorunlar();
-            }
+            var sorunlar = new ctlSorunlar();
             UserControlEkle(sorunlar);
         }
 
         private void btnSistemHareketleri_Click(object sender, EventArgs e)
         {
-            if (sistemHareketleri == null)
-            {
-                sistemHareketleri = new ctlSistemHareketleri();
-            }
+            var sistemHareketleri = new ctlSistemHareketleri();
             UserControlEkle(sistemHareketleri);
         }
 
@@ -502,9 +490,9 @@ namespace CEKA_APP
             ileriYigin.Clear();
             pictureBoxGeri.Enabled = false;
             pictureBoxIleri.Enabled = false;
-            if (btnMusteriler != null)
+            if (panelAnaSayfa != null)
             {
-                panelAnaSayfaContainer.Controls.Add(btnMusteriler);
+                panelAnaSayfaContainer.Controls.Add(panelAnaSayfa);
                 Console.WriteLine("btnMusteriler eklendi, gezinme geçmişine dahil değil.");
             }
         }
@@ -558,6 +546,13 @@ namespace CEKA_APP
                 projeFiyatlandirma = new ctlProjeFiyatlandirma();
             }
             UserControlEkle(projeFiyatlandirma);
+        }
+
+        private void btnYerlesimPlaniBilgileri_Click(object sender, EventArgs e)
+        {
+            var yerlesimPlaniBilgileri = new ctlYerlesimPlaniBilgi();
+            yerlesimPlaniBilgileri.FormKullaniciAdiGetir(KullaniciAdiInterface);
+            UserControlEkle(yerlesimPlaniBilgileri);
         }
     }
 }

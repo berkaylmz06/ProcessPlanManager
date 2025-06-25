@@ -59,6 +59,7 @@
             // 
             // ctlBaslik1
             // 
+            this.ctlBaslik1.Baslik = "Başlık";
             this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
             this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
             this.ctlBaslik1.Name = "ctlBaslik1";

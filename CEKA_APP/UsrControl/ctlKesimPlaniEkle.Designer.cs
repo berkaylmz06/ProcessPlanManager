@@ -32,7 +32,6 @@
             this.groupBoxVeriYonetim = new System.Windows.Forms.GroupBox();
             this.button5 = new System.Windows.Forms.Button();
             this.button4 = new System.Windows.Forms.Button();
-            this.btnYeni = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.dtEklemeTarihi = new System.Windows.Forms.DateTimePicker();
             this.btnAjan = new System.Windows.Forms.Button();
@@ -43,7 +42,6 @@
             this.btnBaykal = new System.Windows.Forms.Button();
             this.txtKalite = new System.Windows.Forms.TextBox();
             this.lblId = new System.Windows.Forms.Label();
-            this.btnXmlOlustur = new System.Windows.Forms.Button();
             this.txtId = new System.Windows.Forms.TextBox();
             this.lblSite = new System.Windows.Forms.Label();
             this.lblDosya = new System.Windows.Forms.Label();
@@ -96,14 +94,13 @@
             this.panelVeriYonetim.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelVeriYonetim.Location = new System.Drawing.Point(0, 48);
             this.panelVeriYonetim.Name = "panelVeriYonetim";
-            this.panelVeriYonetim.Size = new System.Drawing.Size(672, 903);
+            this.panelVeriYonetim.Size = new System.Drawing.Size(730, 903);
             this.panelVeriYonetim.TabIndex = 326;
             // 
             // groupBoxVeriYonetim
             // 
             this.groupBoxVeriYonetim.Controls.Add(this.button5);
             this.groupBoxVeriYonetim.Controls.Add(this.button4);
-            this.groupBoxVeriYonetim.Controls.Add(this.btnYeni);
             this.groupBoxVeriYonetim.Controls.Add(this.button1);
             this.groupBoxVeriYonetim.Controls.Add(this.dtEklemeTarihi);
             this.groupBoxVeriYonetim.Controls.Add(this.btnAjan);
@@ -114,7 +111,6 @@
             this.groupBoxVeriYonetim.Controls.Add(this.btnBaykal);
             this.groupBoxVeriYonetim.Controls.Add(this.txtKalite);
             this.groupBoxVeriYonetim.Controls.Add(this.lblId);
-            this.groupBoxVeriYonetim.Controls.Add(this.btnXmlOlustur);
             this.groupBoxVeriYonetim.Controls.Add(this.txtId);
             this.groupBoxVeriYonetim.Controls.Add(this.lblSite);
             this.groupBoxVeriYonetim.Controls.Add(this.lblDosya);
@@ -126,57 +122,51 @@
             this.groupBoxVeriYonetim.Controls.Add(this.tabControl1);
             this.groupBoxVeriYonetim.Controls.Add(this.button3);
             this.groupBoxVeriYonetim.Controls.Add(this.btnSec);
-            this.groupBoxVeriYonetim.Location = new System.Drawing.Point(20, 15);
+            this.groupBoxVeriYonetim.Location = new System.Drawing.Point(15, 19);
             this.groupBoxVeriYonetim.Name = "groupBoxVeriYonetim";
-            this.groupBoxVeriYonetim.Size = new System.Drawing.Size(627, 853);
+            this.groupBoxVeriYonetim.Size = new System.Drawing.Size(700, 780);
             this.groupBoxVeriYonetim.TabIndex = 325;
             this.groupBoxVeriYonetim.TabStop = false;
             // 
             // button5
             // 
-            this.button5.Location = new System.Drawing.Point(472, 368);
+            this.button5.Location = new System.Drawing.Point(568, 310);
             this.button5.Margin = new System.Windows.Forms.Padding(4);
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(100, 28);
             this.button5.TabIndex = 326;
             this.button5.Text = "ADM";
             this.button5.UseVisualStyleBackColor = true;
+            this.button5.Visible = false;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
             // button4
             // 
-            this.button4.Location = new System.Drawing.Point(441, 228);
+            this.button4.Location = new System.Drawing.Point(537, 170);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(149, 28);
             this.button4.TabIndex = 325;
             this.button4.Text = "Tekrar Okut ADM";
             this.button4.UseVisualStyleBackColor = true;
+            this.button4.Visible = false;
             this.button4.Click += new System.EventHandler(this.button4_Click_1);
-            // 
-            // btnYeni
-            // 
-            this.btnYeni.Location = new System.Drawing.Point(30, 123);
-            this.btnYeni.Name = "btnYeni";
-            this.btnYeni.Size = new System.Drawing.Size(560, 38);
-            this.btnYeni.TabIndex = 324;
-            this.btnYeni.Text = "+";
-            this.btnYeni.UseVisualStyleBackColor = true;
-            this.btnYeni.Click += new System.EventHandler(this.button4_Click);
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(473, 299);
+            this.button1.Location = new System.Drawing.Point(569, 241);
             this.button1.Margin = new System.Windows.Forms.Padding(4);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(100, 28);
             this.button1.TabIndex = 318;
             this.button1.Text = "Baykal";
             this.button1.UseVisualStyleBackColor = true;
+            this.button1.Visible = false;
             this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // dtEklemeTarihi
             // 
-            this.dtEklemeTarihi.Location = new System.Drawing.Point(160, 400);
+            this.dtEklemeTarihi.Enabled = false;
+            this.dtEklemeTarihi.Location = new System.Drawing.Point(299, 333);
             this.dtEklemeTarihi.Margin = new System.Windows.Forms.Padding(2);
             this.dtEklemeTarihi.Name = "dtEklemeTarihi";
             this.dtEklemeTarihi.Size = new System.Drawing.Size(212, 22);
@@ -185,28 +175,30 @@
             // btnAjan
             // 
             this.btnAjan.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnAjan.Location = new System.Drawing.Point(30, 43);
+            this.btnAjan.Location = new System.Drawing.Point(25, 40);
             this.btnAjan.Margin = new System.Windows.Forms.Padding(2);
             this.btnAjan.Name = "btnAjan";
-            this.btnAjan.Size = new System.Drawing.Size(160, 58);
+            this.btnAjan.Size = new System.Drawing.Size(200, 60);
             this.btnAjan.TabIndex = 314;
             this.btnAjan.Text = "AJAN";
             this.btnAjan.UseVisualStyleBackColor = false;
+            this.btnAjan.Click += new System.EventHandler(this.btnAjan_Click);
             // 
             // button2
             // 
-            this.button2.Location = new System.Drawing.Point(474, 263);
+            this.button2.Location = new System.Drawing.Point(570, 205);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(99, 28);
             this.button2.TabIndex = 323;
             this.button2.Text = "Tekrar Okut";
             this.button2.UseVisualStyleBackColor = true;
+            this.button2.Visible = false;
             this.button2.Click += new System.EventHandler(this.button2_Click);
             // 
             // lblMalzeme
             // 
             this.lblMalzeme.AutoSize = true;
-            this.lblMalzeme.Location = new System.Drawing.Point(47, 362);
+            this.lblMalzeme.Location = new System.Drawing.Point(186, 295);
             this.lblMalzeme.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblMalzeme.Name = "lblMalzeme";
             this.lblMalzeme.Size = new System.Drawing.Size(65, 16);
@@ -216,18 +208,19 @@
             // btnAdm
             // 
             this.btnAdm.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnAdm.Location = new System.Drawing.Point(430, 43);
+            this.btnAdm.Location = new System.Drawing.Point(475, 40);
             this.btnAdm.Margin = new System.Windows.Forms.Padding(2);
             this.btnAdm.Name = "btnAdm";
-            this.btnAdm.Size = new System.Drawing.Size(160, 58);
+            this.btnAdm.Size = new System.Drawing.Size(200, 60);
             this.btnAdm.TabIndex = 313;
             this.btnAdm.Text = "ADM3";
             this.btnAdm.UseVisualStyleBackColor = false;
+            this.btnAdm.Click += new System.EventHandler(this.btnAdm_Click);
             // 
             // txtSite
             // 
             this.txtSite.Enabled = false;
-            this.txtSite.Location = new System.Drawing.Point(159, 239);
+            this.txtSite.Location = new System.Drawing.Point(298, 172);
             this.txtSite.Margin = new System.Windows.Forms.Padding(2);
             this.txtSite.Name = "txtSite";
             this.txtSite.Size = new System.Drawing.Size(212, 22);
@@ -237,17 +230,19 @@
             // btnBaykal
             // 
             this.btnBaykal.BackColor = System.Drawing.SystemColors.GrayText;
-            this.btnBaykal.Location = new System.Drawing.Point(230, 43);
+            this.btnBaykal.Location = new System.Drawing.Point(250, 40);
             this.btnBaykal.Margin = new System.Windows.Forms.Padding(2);
             this.btnBaykal.Name = "btnBaykal";
-            this.btnBaykal.Size = new System.Drawing.Size(160, 58);
+            this.btnBaykal.Size = new System.Drawing.Size(200, 60);
             this.btnBaykal.TabIndex = 315;
             this.btnBaykal.Text = "BAYKAL";
             this.btnBaykal.UseVisualStyleBackColor = false;
+            this.btnBaykal.Click += new System.EventHandler(this.btnBaykal_Click);
             // 
             // txtKalite
             // 
-            this.txtKalite.Location = new System.Drawing.Point(160, 318);
+            this.txtKalite.Enabled = false;
+            this.txtKalite.Location = new System.Drawing.Point(299, 251);
             this.txtKalite.Margin = new System.Windows.Forms.Padding(2);
             this.txtKalite.Name = "txtKalite";
             this.txtKalite.Size = new System.Drawing.Size(212, 22);
@@ -256,28 +251,17 @@
             // lblId
             // 
             this.lblId.AutoSize = true;
-            this.lblId.Location = new System.Drawing.Point(46, 279);
+            this.lblId.Location = new System.Drawing.Point(185, 212);
             this.lblId.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblId.Name = "lblId";
             this.lblId.Size = new System.Drawing.Size(23, 16);
             this.lblId.TabIndex = 317;
             this.lblId.Text = "ID:";
             // 
-            // btnXmlOlustur
-            // 
-            this.btnXmlOlustur.Location = new System.Drawing.Point(329, 769);
-            this.btnXmlOlustur.Margin = new System.Windows.Forms.Padding(2);
-            this.btnXmlOlustur.Name = "btnXmlOlustur";
-            this.btnXmlOlustur.Size = new System.Drawing.Size(243, 42);
-            this.btnXmlOlustur.TabIndex = 272;
-            this.btnXmlOlustur.Text = "Xml Dosyası Oluştur";
-            this.btnXmlOlustur.UseVisualStyleBackColor = true;
-            this.btnXmlOlustur.Click += new System.EventHandler(this.btnXmlOlustur_Click);
-            // 
             // txtId
             // 
             this.txtId.Enabled = false;
-            this.txtId.Location = new System.Drawing.Point(159, 278);
+            this.txtId.Location = new System.Drawing.Point(298, 211);
             this.txtId.Margin = new System.Windows.Forms.Padding(2);
             this.txtId.Name = "txtId";
             this.txtId.Size = new System.Drawing.Size(212, 22);
@@ -286,7 +270,7 @@
             // lblSite
             // 
             this.lblSite.AutoSize = true;
-            this.lblSite.Location = new System.Drawing.Point(46, 240);
+            this.lblSite.Location = new System.Drawing.Point(185, 173);
             this.lblSite.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblSite.Name = "lblSite";
             this.lblSite.Size = new System.Drawing.Size(33, 16);
@@ -296,7 +280,7 @@
             // lblDosya
             // 
             this.lblDosya.AutoSize = true;
-            this.lblDosya.Location = new System.Drawing.Point(46, 203);
+            this.lblDosya.Location = new System.Drawing.Point(185, 136);
             this.lblDosya.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblDosya.Name = "lblDosya";
             this.lblDosya.Size = new System.Drawing.Size(50, 16);
@@ -305,7 +289,8 @@
             // 
             // txtMalzeme
             // 
-            this.txtMalzeme.Location = new System.Drawing.Point(160, 358);
+            this.txtMalzeme.Enabled = false;
+            this.txtMalzeme.Location = new System.Drawing.Point(299, 291);
             this.txtMalzeme.Margin = new System.Windows.Forms.Padding(2);
             this.txtMalzeme.Name = "txtMalzeme";
             this.txtMalzeme.Size = new System.Drawing.Size(212, 22);
@@ -313,7 +298,7 @@
             // 
             // txtDosya
             // 
-            this.txtDosya.Location = new System.Drawing.Point(159, 202);
+            this.txtDosya.Location = new System.Drawing.Point(298, 135);
             this.txtDosya.Margin = new System.Windows.Forms.Padding(2);
             this.txtDosya.Name = "txtDosya";
             this.txtDosya.Size = new System.Drawing.Size(123, 22);
@@ -321,19 +306,19 @@
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(46, 769);
+            this.btnKaydet.Location = new System.Drawing.Point(175, 710);
             this.btnKaydet.Margin = new System.Windows.Forms.Padding(2);
             this.btnKaydet.Name = "btnKaydet";
-            this.btnKaydet.Size = new System.Drawing.Size(243, 42);
+            this.btnKaydet.Size = new System.Drawing.Size(350, 42);
             this.btnKaydet.TabIndex = 298;
-            this.btnKaydet.Text = "Kaydet";
+            this.btnKaydet.Text = "Kaydet ve XML Dosyası Oluştur";
             this.btnKaydet.UseVisualStyleBackColor = true;
             this.btnKaydet.Click += new System.EventHandler(this.btnKaydet_Click);
             // 
             // lblEklemeTarihi
             // 
             this.lblEklemeTarihi.AutoSize = true;
-            this.lblEklemeTarihi.Location = new System.Drawing.Point(47, 404);
+            this.lblEklemeTarihi.Location = new System.Drawing.Point(186, 337);
             this.lblEklemeTarihi.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblEklemeTarihi.Name = "lblEklemeTarihi";
             this.lblEklemeTarihi.Size = new System.Drawing.Size(93, 16);
@@ -343,7 +328,7 @@
             // lblKalite
             // 
             this.lblKalite.AutoSize = true;
-            this.lblKalite.Location = new System.Drawing.Point(47, 322);
+            this.lblKalite.Location = new System.Drawing.Point(186, 255);
             this.lblKalite.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.lblKalite.Name = "lblKalite";
             this.lblKalite.Size = new System.Drawing.Size(43, 16);
@@ -355,11 +340,11 @@
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
             this.tabControl1.Controls.Add(this.tabPage3);
-            this.tabControl1.Location = new System.Drawing.Point(30, 466);
+            this.tabControl1.Location = new System.Drawing.Point(7, 403);
             this.tabControl1.Margin = new System.Windows.Forms.Padding(4);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(560, 287);
+            this.tabControl1.Size = new System.Drawing.Size(688, 287);
             this.tabControl1.TabIndex = 319;
             // 
             // tabPage1
@@ -369,7 +354,7 @@
             this.tabPage1.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPage1.Size = new System.Drawing.Size(552, 258);
+            this.tabPage1.Size = new System.Drawing.Size(680, 258);
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "Toplam Poz Listesi";
             this.tabPage1.UseVisualStyleBackColor = true;
@@ -395,7 +380,7 @@
             this.dataGridView1.RowHeadersWidth = 62;
             this.dataGridView1.RowTemplate.Height = 28;
             this.dataGridView1.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView1.Size = new System.Drawing.Size(544, 250);
+            this.dataGridView1.Size = new System.Drawing.Size(672, 250);
             this.dataGridView1.TabIndex = 267;
             // 
             // gridKalite
@@ -441,7 +426,7 @@
             this.tabPage2.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPage2.Size = new System.Drawing.Size(552, 258);
+            this.tabPage2.Size = new System.Drawing.Size(680, 258);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Pozların Sayfalara Dağılımı";
             this.tabPage2.UseVisualStyleBackColor = true;
@@ -465,7 +450,7 @@
             this.dataGridView2.RowHeadersWidth = 62;
             this.dataGridView2.RowTemplate.Height = 28;
             this.dataGridView2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView2.Size = new System.Drawing.Size(544, 250);
+            this.dataGridView2.Size = new System.Drawing.Size(672, 250);
             this.dataGridView2.TabIndex = 279;
             // 
             // Column3
@@ -499,7 +484,7 @@
             this.tabPage3.Margin = new System.Windows.Forms.Padding(4);
             this.tabPage3.Name = "tabPage3";
             this.tabPage3.Padding = new System.Windows.Forms.Padding(4);
-            this.tabPage3.Size = new System.Drawing.Size(552, 258);
+            this.tabPage3.Size = new System.Drawing.Size(680, 258);
             this.tabPage3.TabIndex = 2;
             this.tabPage3.Text = "Sayfa ID leri";
             this.tabPage3.UseVisualStyleBackColor = true;
@@ -522,7 +507,7 @@
             this.dataGridView3.RowHeadersWidth = 62;
             this.dataGridView3.RowTemplate.Height = 28;
             this.dataGridView3.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridView3.Size = new System.Drawing.Size(544, 250);
+            this.dataGridView3.Size = new System.Drawing.Size(672, 250);
             this.dataGridView3.TabIndex = 280;
             // 
             // dataGridViewTextBoxColumn1
@@ -545,18 +530,19 @@
             // 
             // button3
             // 
-            this.button3.Location = new System.Drawing.Point(472, 332);
+            this.button3.Location = new System.Drawing.Point(568, 274);
             this.button3.Margin = new System.Windows.Forms.Padding(4);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(100, 28);
             this.button3.TabIndex = 320;
             this.button3.Text = "Ajan";
             this.button3.UseVisualStyleBackColor = true;
+            this.button3.Visible = false;
             this.button3.Click += new System.EventHandler(this.button3_Click);
             // 
             // btnSec
             // 
-            this.btnSec.Location = new System.Drawing.Point(290, 196);
+            this.btnSec.Location = new System.Drawing.Point(429, 129);
             this.btnSec.Margin = new System.Windows.Forms.Padding(2);
             this.btnSec.Name = "btnSec";
             this.btnSec.Size = new System.Drawing.Size(82, 34);
@@ -571,7 +557,7 @@
             this.progressBar1.Location = new System.Drawing.Point(0, 890);
             this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(672, 13);
+            this.progressBar1.Size = new System.Drawing.Size(730, 13);
             this.progressBar1.TabIndex = 101;
             this.progressBar1.Visible = false;
             // 
@@ -583,13 +569,15 @@
             this.pdfViewer1.FormFillEnabled = false;
             this.pdfViewer1.IgnoreCase = false;
             this.pdfViewer1.IsToolBarVisible = true;
-            this.pdfViewer1.Location = new System.Drawing.Point(672, 48);
+            this.pdfViewer1.Location = new System.Drawing.Point(730, 48);
             this.pdfViewer1.Margin = new System.Windows.Forms.Padding(4);
+            this.pdfViewer1.MultiPagesThreshold = 60;
             this.pdfViewer1.Name = "pdfViewer1";
             this.pdfViewer1.OnRenderPageExceptionEvent = null;
-            this.pdfViewer1.Size = new System.Drawing.Size(953, 903);
+            this.pdfViewer1.Size = new System.Drawing.Size(895, 903);
             this.pdfViewer1.TabIndex = 325;
             this.pdfViewer1.Text = "pdfViewer1";
+            this.pdfViewer1.Threshold = 60;
             this.pdfViewer1.ViewerBackgroundColor = System.Drawing.SystemColors.Window;
             // 
             // ctlBaslik1
@@ -638,7 +626,6 @@
         private System.Windows.Forms.Button btnBaykal;
         private System.Windows.Forms.TextBox txtKalite;
         private System.Windows.Forms.Label lblId;
-        private System.Windows.Forms.Button btnXmlOlustur;
         private System.Windows.Forms.TextBox txtId;
         private System.Windows.Forms.Label lblSite;
         private System.Windows.Forms.Label lblDosya;
@@ -664,7 +651,6 @@
         private System.Windows.Forms.Button btnSec;
         private System.Windows.Forms.ProgressBar progressBar1;
         private Spire.PdfViewer.Forms.PdfViewer pdfViewer1;
-        private System.Windows.Forms.Button btnYeni;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridKalite;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridMalzeme;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridKalip;

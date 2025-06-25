@@ -263,7 +263,7 @@
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(742, 726);
+            this.btnKaydet.Location = new System.Drawing.Point(479, 705);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(219, 47);
             this.btnKaydet.TabIndex = 27;
@@ -328,6 +328,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.SystemColors.Window;
             this.Controls.Add(this.lblAltProjeHata);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.btnAra);

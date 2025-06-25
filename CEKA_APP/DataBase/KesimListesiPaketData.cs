@@ -39,7 +39,37 @@ namespace CEKA_APP.DataBase
                 return false;
             }
         }
+        public static bool KesimListesiPaketSil(string kesimId)
+        {
+            try
+            {
+                using (var conn = DataBaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    // Önce KesimListesi tablosundan ilgili kesimId'ye ait tüm verileri sil
+                    string deleteKesimListesiQuery = "DELETE FROM KesimListesi WHERE kesimId = @kesimId";
+                    using (var cmdKesimListesi = new SqlCommand(deleteKesimListesiQuery, conn))
+                    {
+                        cmdKesimListesi.Parameters.AddWithValue("@kesimId", kesimId);
+                        cmdKesimListesi.ExecuteNonQuery();
+                    }
 
+                    // Ardından KesimListesiPaket tablosundan ilgili kesimId'ye ait veriyi sil
+                    string deletePaketQuery = "DELETE FROM KesimListesiPaket WHERE kesimId = @kesimId";
+                    using (var cmdPaket = new SqlCommand(deletePaketQuery, conn))
+                    {
+                        cmdPaket.Parameters.AddWithValue("@kesimId", kesimId);
+                        int rowsAffected = cmdPaket.ExecuteNonQuery();
+                        return rowsAffected > 0;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Silme işlemi sırasında hata oluştu: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+        }
         public DataTable GetKesimListesiPaket()
         {
             string query = "SELECT [olusturan], [kesimId], [kesilecekPlanSayisi], [kesilmisPlanSayisi], [toplamPlanTekrari], [eklemeTarihi] FROM [KesimListesiPaket]";

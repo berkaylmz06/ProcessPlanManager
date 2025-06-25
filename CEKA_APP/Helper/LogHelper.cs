@@ -28,6 +28,12 @@ namespace CEKA_APP.Helper
                     return Color.Orange;
                 case IslemTuru.KesimPlaniKesildi:
                     return Color.Red;
+                case IslemTuru.YerlesimPlaniSilindi:
+                    return Color.OrangeRed;
+                case IslemTuru.YerlesimPlaniIcerigiSilindi:
+                    return Color.Tomato;
+                case IslemTuru.PaftaYuklemesiYapildi:
+                    return Color.BlueViolet;
 
                 default:
                     return Color.Gray;

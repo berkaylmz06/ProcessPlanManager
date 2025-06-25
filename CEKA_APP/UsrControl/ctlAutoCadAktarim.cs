@@ -234,7 +234,7 @@ namespace CEKA_APP.UsrControl
             string gruplar = string.Join(", ", uniqueGruplar);
 
             var userController = new LogEkle(_formArayuzu.lblSistemKullaniciMetinAl());
-            userController.LogYap("PaftaYüklemesiYapıldı", "AutoCad Aktarım", $"Kullanıcı {proje} numaralı projeye {gruplar} grupları yükledi.");
+            userController.LogYap("PaftaYuklemesiYapildi", "AutoCad Aktarım", $"Kullanıcı {proje} numaralı projeye {gruplar} grupları yükledi.");
             MessageBox.Show("Veriler kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }

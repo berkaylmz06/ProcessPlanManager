@@ -6,7 +6,6 @@ namespace CEKA_APP.DataBase
 {
     public class KarsilastirmaTablosuData
     {
-        // Kalite için IFS kodunu getir
         public static string GetIfsCodeByAutoCadCodeKalite(string cekaCode)
         {
             try
@@ -27,8 +26,27 @@ namespace CEKA_APP.DataBase
                 return null;
             }
         }
+        public static string GetAutoCadCodeByIfsCodeKalite(string cekaCode)
+        {
+            try
+            {
+                using (SqlConnection connection = DataBaseHelper.GetConnection())
+                {
+                    connection.Open();
+                    var command = new SqlCommand("SELECT CekaCode FROM KarsilastirmaTablosuKalite WHERE IfsCode = @IfsCode", connection);
+                    command.Parameters.AddWithValue("@CekaCode", cekaCode);
 
-        // Kalite kaydı ekle
+                    var result = command.ExecuteScalar();
+                    return result?.ToString();
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Hata: {ex.Message}");
+                return null;
+            }
+        }
+
         public static void SaveKarsilastirmaKalite(string cekaCode, string ifsCode, string aciklama = null)
         {
             try
@@ -37,7 +55,6 @@ namespace CEKA_APP.DataBase
                 {
                     connection.Open();
 
-                    // CekaCode'un zaten var olup olmadığını kontrol et
                     var checkCommand = new SqlCommand("SELECT COUNT(*) FROM KarsilastirmaTablosuKalite WHERE CekaCode = @CekaCode", connection);
                     checkCommand.Parameters.AddWithValue("@CekaCode", cekaCode);
                     int count = (int)checkCommand.ExecuteScalar();
@@ -46,7 +63,6 @@ namespace CEKA_APP.DataBase
                         throw new Exception($"Bu Çeka Kodu zaten mevcut: {cekaCode}");
                     }
 
-                    // Yeni kaydı ekle
                     var command = new SqlCommand(
                         "INSERT INTO KarsilastirmaTablosuKalite (CekaCode, IfsCode, Aciklama) VALUES (@CekaCode, @IfsCode, @Aciklama)",
                         connection);
@@ -64,7 +80,6 @@ namespace CEKA_APP.DataBase
             }
         }
 
-        // Malzeme için IFS kodunu getir
         public static string GetIfsCodeByAutoCadCodeMalzeme(string autoCadCode)
         {
             try
@@ -86,7 +101,6 @@ namespace CEKA_APP.DataBase
             }
         }
 
-        // Malzeme kaydı ekle
         public static void SaveKarsilastirmaMalzeme(string autoCadCode, string ifsCode, string aciklama = null)
         {
             try
@@ -95,7 +109,6 @@ namespace CEKA_APP.DataBase
                 {
                     connection.Open();
 
-                    // AutoCadCode'un zaten var olup olmadığını kontrol et
                     var checkCommand = new SqlCommand("SELECT COUNT(*) FROM KarsilastirmaTablosuMalzeme WHERE AutoCadCode = @AutoCadCode", connection);
                     checkCommand.Parameters.AddWithValue("@AutoCadCode", autoCadCode);
                     int count = (int)checkCommand.ExecuteScalar();
@@ -104,7 +117,6 @@ namespace CEKA_APP.DataBase
                         throw new Exception($"Bu AutoCAD Kodu zaten mevcut: {autoCadCode}");
                     }
 
-                    // Yeni kaydı ekle
                     var command = new SqlCommand(
                         "INSERT INTO KarsilastirmaTablosuMalzeme (AutoCadCode, IfsCode, Aciklama) VALUES (@AutoCadCode, @IfsCode, @Aciklama)",
                         connection);
@@ -122,29 +134,44 @@ namespace CEKA_APP.DataBase
             }
         }
 
-        // Kesim için IFS kodunu getir
-        public static string GetIfsCodeByAutoCadCodeKesim(string kesimCode)
+        public static string GetIfsCodeByAutoCadCodeKesim(string kesimCode, out string hataMesaji)
         {
+            hataMesaji = null;
             try
             {
                 using (SqlConnection connection = DataBaseHelper.GetConnection())
                 {
                     connection.Open();
+
                     var command = new SqlCommand("SELECT IfsCode FROM KarsilastirmaTablosuKesim WHERE KesimCode = @KesimCode", connection);
                     command.Parameters.AddWithValue("@KesimCode", kesimCode);
 
                     var result = command.ExecuteScalar();
-                    return result?.ToString();
+                    if (result != null)
+                    {
+                        return result.ToString();
+                    }
+
+                    command = new SqlCommand("SELECT IfsCode FROM KarsilastirmaTablosuMalzeme WHERE AutoCadCode = @AutoCadCode", connection);
+                    command.Parameters.AddWithValue("@AutoCadCode", kesimCode);
+
+                    result = command.ExecuteScalar();
+                    if (result != null)
+                    {
+                        return result.ToString();
+                    }
+
+                    hataMesaji = $"Malzeme '{kesimCode}' için ne KarsilastirmaTablosuKesim ne de KarsilastirmaTablosuMalzeme tablosunda eşleşme bulunamadı.";
+                    return null;
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Hata: {ex.Message}");
+                hataMesaji = $"Hata: {ex.Message}";
                 return null;
             }
         }
-
-        // Kesim kaydı ekle
+        
         public static void SaveKarsilastirmaKesim(string kesimCode, string ifsCode, string aciklama = null)
         {
             try
@@ -153,7 +180,6 @@ namespace CEKA_APP.DataBase
                 {
                     connection.Open();
 
-                    // KesimCode'un zaten var olup olmadığını kontrol et
                     var checkCommand = new SqlCommand("SELECT COUNT(*) FROM KarsilastirmaTablosuKesim WHERE KesimCode = @KesimCode", connection);
                     checkCommand.Parameters.AddWithValue("@KesimCode", kesimCode);
                     int count = (int)checkCommand.ExecuteScalar();
@@ -162,7 +188,6 @@ namespace CEKA_APP.DataBase
                         throw new Exception($"Bu Kesim Kodu zaten mevcut: {kesimCode}");
                     }
 
-                    // Yeni kaydı ekle
                     var command = new SqlCommand(
                         "INSERT INTO KarsilastirmaTablosuKesim (KesimCode, IfsCode, Aciklama) VALUES (@KesimCode, @IfsCode, @Aciklama)",
                         connection);
@@ -180,7 +205,6 @@ namespace CEKA_APP.DataBase
             }
         }
 
-        // Tüm kalite karşılaştırmalarını getir (sıralı)
         public static DataTable GetAllKaliteKarsilastirmalari()
         {
             DataTable tablo = new DataTable();
@@ -199,7 +223,6 @@ namespace CEKA_APP.DataBase
             return tablo;
         }
 
-        // Tüm malzeme karşılaştırmalarını getir (sıralı)
         public static DataTable GetAllMalzemeKarsilastirmalari()
         {
             DataTable tablo = new DataTable();
@@ -218,7 +241,6 @@ namespace CEKA_APP.DataBase
             return tablo;
         }
 
-        // Tüm kesim karşılaştırmalarını getir (sıralı)
         public static DataTable GetAllKesimKarsilastirmalari()
         {
             DataTable tablo = new DataTable();

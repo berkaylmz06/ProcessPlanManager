@@ -22,6 +22,9 @@ namespace CEKA_APP.Entitys
         Ekle,
         KesimPlaniEklendi,
         XmlDosyasiOlusturuldu,
-        KesimPlaniKesildi
+        KesimPlaniKesildi,
+        YerlesimPlaniSilindi,
+        YerlesimPlaniIcerigiSilindi,
+        PaftaYuklemesiYapildi
     }
 }

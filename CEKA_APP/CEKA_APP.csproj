@@ -183,6 +183,7 @@
     <Compile Include="DataBase\AutoCadAktarimData.cs" />
     <Compile Include="DataBase\DataBaseHelper.cs" />
     <Compile Include="DataBase\DuyurularData.cs" />
+    <Compile Include="DataBase\IdUreticiData.cs" />
     <Compile Include="DataBase\KarsilastirmaTablosuData.cs" />
     <Compile Include="DataBase\KesimDetaylariData.cs" />
     <Compile Include="DataBase\KesimListesiPaketData.cs" />
@@ -203,7 +204,8 @@
     <Compile Include="Entitys\KullaniciHareket.cs" />
     <Compile Include="Entitys\MalzemeBilgisi.cs" />
     <Compile Include="Entitys\AutoCadAktarim.cs" />
-    <Compile Include="Entitys\ProjeKutuk.cs" />
+    <Compile Include="Entitys\ProjeFinans\ProjeBilgi.cs" />
+    <Compile Include="Entitys\ProjeFinans\ProjeKutuk.cs" />
     <Compile Include="Entitys\SorunBildirimleri.cs" />
     <Compile Include="Entitys\KesimListesi.cs" />
     <Compile Include="DataBase\KesimListesiData.cs" />
@@ -247,6 +249,9 @@
     <Compile Include="Helper\ButonGenelHelper.cs" />
     <Compile Include="Helper\ButonMakinaSecHelper.cs" />
     <Compile Include="Helper\ChartiTiklanmazYap.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Helper\CustomPanel.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Helper\DataGridViewHelper.cs" />
@@ -349,6 +354,12 @@
     <Compile Include="UsrControl\ctlYapilanKesimleriGor.Designer.cs">
       <DependentUpon>ctlYapilanKesimleriGor.cs</DependentUpon>
     </Compile>
+    <Compile Include="UsrControl\ctlYerlesimPlaniBilgi.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlYerlesimPlaniBilgi.Designer.cs">
+      <DependentUpon>ctlYerlesimPlaniBilgi.cs</DependentUpon>
+    </Compile>
     <EmbeddedResource Include="frmAnaSayfa.resx">
       <DependentUpon>frmAnaSayfa.cs</DependentUpon>
     </EmbeddedResource>
@@ -422,6 +433,9 @@
     <EmbeddedResource Include="UsrControl\ctlYapilanKesimleriGor.resx">
       <DependentUpon>ctlYapilanKesimleriGor.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlYerlesimPlaniBilgi.resx">
+      <DependentUpon>ctlYerlesimPlaniBilgi.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="CEKA_APP_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
@@ -439,14 +453,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="cekalogokirmizi.ico" />
-    <Content Include="image\anasayfa.png" />
-    <Content Include="image\cekalogo.png" />
-    <Content Include="image\cekalogokirmizi.png" />
-    <Content Include="image\kullanici.png" />
-    <None Include="Resources\navigationForward.png" />
-    <None Include="Resources\navigationBack.png" />
+    <None Include="Resources\cekalogo.png" />
     <None Include="Resources\kullanici.png" />
     <None Include="Resources\anasayfa.png" />
+    <None Include="Resources\navigationForward.png" />
+    <None Include="Resources\navigationBack.png" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.8">

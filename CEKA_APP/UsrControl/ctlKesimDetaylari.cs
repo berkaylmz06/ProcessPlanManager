@@ -1,18 +1,19 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Windows.Forms;
-using System.Windows.Forms.DataVisualization.Charting;
-using iText.Forms.Form.Element;
-using CEKA_APP.Abstracts;
+﻿using CEKA_APP.Abstracts;
 using CEKA_APP.Concretes;
 using CEKA_APP.DataBase;
 using CEKA_APP.Entitys;
 using CEKA_APP.Helper;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
+using iText.Forms.Form.Element;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using static iText.Commons.Utils.PlaceHolderTextUtil;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CEKA_APP.UsrControl
 {
@@ -101,17 +102,36 @@ namespace CEKA_APP.UsrControl
         }
 
 
-        private void TxtAra_TextChanged(object sender, EventArgs e)
+        private async void TxtAra_TextChanged(object sender, EventArgs e)
         {
+            await Task.Delay(300);
+
             if (txtArama.Text == placeholderText || string.IsNullOrWhiteSpace(txtArama.Text))
             {
-                PozlariListele(tumPozlar);
+                PozlariListele(tumPozlar ?? new List<KesimDetaylari>());
                 return;
             }
 
-            var filtre = txtArama.Text.ToLower();
+            var filtre = txtArama.Text.Trim().ToLower();
+
+            if (tumPozlar == null || !tumPozlar.Any())
+            {
+                PozlariListele(new List<KesimDetaylari>());
+                return;
+            }
+
             var filtrelenmis = tumPozlar
-                .Where(p => p.kalite.ToLower().Contains(filtre) || p.malzeme.ToLower().Contains(filtre) || p.malzemeKod.ToLower().Contains(filtre) || p.malzeme.ToLower().Contains(filtre))
+                .Where(p =>
+                    (p.kalite?.ToLower().Contains(filtre) ?? false) ||
+                    (p.malzeme?.ToLower().Contains(filtre) ?? false) ||
+                    (p.malzemeKod?.ToLower().Contains(filtre) ?? false) ||
+                    (p.proje?.ToLower().Contains(filtre) ?? false) ||
+                    (p.poz?.ToLower().Contains(filtre) ?? false)
+                )
+                .OrderBy(p => p.kalite)
+                .ThenBy(p => p.malzeme)
+                .ThenBy(p => p.malzemeKod)
+                .ThenBy(p => p.proje)
                 .ToList();
 
             PozlariListele(filtrelenmis);

@@ -9,7 +9,7 @@ namespace CEKA_APP.DataBase
 {
     class KesimListesiData
     {
-        public static void SaveKesimData(int id, string olusturan, string kesimId, string projeno, string malzeme, string kalite, string[] kaliplar, string[] pozlar, string[] adetler, DateTime eklemeTarihi)
+        public static void SaveKesimData(string olusturan, string kesimId, string projeno, string malzeme, string kalite, string[] kaliplar, string[] pozlar, string[] adetler, DateTime eklemeTarihi)
         {
             try
             {
@@ -30,12 +30,11 @@ namespace CEKA_APP.DataBase
 
                         if (!string.IsNullOrEmpty(temizPoz) && !string.IsNullOrEmpty(temizKalip) && !string.IsNullOrEmpty(temizAdet))
                         {
-                            string query = "INSERT INTO KesimListesi (id, olusturan, kesimId, projeNo, malzeme, kalite, kalipNo, kesilecekPozlar, kpAdetSayilari, eklemeTarihi) " +
-                                           "VALUES (@id, @olusturan, @kesimId, @projeNo, @malzeme, @kalite, @kalipNo, @kesilecekPozlar, @kpAdetSayilari, @eklemeTarihi)";
+                            string query = "INSERT INTO KesimListesi (olusturan, kesimId, projeNo, malzeme, kalite, kalipNo, kesilecekPozlar, kpAdetSayilari, eklemeTarihi) " +
+                                           "VALUES (@olusturan, @kesimId, @projeNo, @malzeme, @kalite, @kalipNo, @kesilecekPozlar, @kpAdetSayilari, @eklemeTarihi)";
 
                             using (var cmd = new SqlCommand(query, conn))
                             {
-                                cmd.Parameters.AddWithValue("@id", id);
                                 cmd.Parameters.AddWithValue("@olusturan", olusturan);
                                 cmd.Parameters.AddWithValue("@kesimId", kesimId);
                                 cmd.Parameters.AddWithValue("@projeNo", projeno);
@@ -125,56 +124,26 @@ namespace CEKA_APP.DataBase
             return dt;
         }
 
-        public static int GetSiradakiId()
+        public static bool KesimListesiSil(int id)
         {
             try
             {
-                using (SqlConnection conn = DataBaseHelper.GetConnection())
+                using (var conn = DataBaseHelper.GetConnection())
                 {
                     conn.Open();
-                    string query = @"
-                        SELECT COALESCE(SonId, 0) + 1 
-                        FROM IdUretici 
-                        WHERE TabloAdi = 'KesimListesi'";
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
-                    {
-                        object result = cmd.ExecuteScalar();
-                        return Convert.ToInt32(result);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"GetSiradakiId hatası: {ex.Message}", ex);
-            }
-        }
-
-        public static void SiradakiIdKaydet(int id)
-        {
-            try
-            {
-                using (SqlConnection conn = DataBaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    string query = @"
-                IF EXISTS (SELECT 1 FROM IdUretici WHERE TabloAdi = 'KesimListesi')
-                BEGIN
-                    UPDATE IdUretici SET SonId = @id WHERE TabloAdi = 'KesimListesi'
-                END
-                ELSE
-                BEGIN
-                    INSERT INTO IdUretici (TabloAdi, SonId) VALUES ('KesimListesi', @id)
-                END";
-                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    string query = "DELETE FROM KesimListesi WHERE id = @id";
+                    using (var cmd = new SqlCommand(query, conn))
                     {
                         cmd.Parameters.AddWithValue("@id", id);
-                        cmd.ExecuteNonQuery();
+                        int rowsAffected = cmd.ExecuteNonQuery();
+                        return rowsAffected > 0;
                     }
                 }
             }
             catch (Exception ex)
             {
-                throw new Exception($"SiradakiIdKaydet hatası: {ex.Message}", ex);
+                MessageBox.Show("Kesim listesi silme işlemi sırasında hata oluştu: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
             }
         }
 

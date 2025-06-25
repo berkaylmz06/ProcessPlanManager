@@ -28,25 +28,22 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.flowLayoutPanelProjeler = new System.Windows.Forms.FlowLayoutPanel();
+            this.panelProjeler = new System.Windows.Forms.Panel();
             this.SuspendLayout();
             // 
-            // flowLayoutPanelProjeler
+            // panelProjeler
             // 
-            this.flowLayoutPanelProjeler.AutoScroll = true;
-            this.flowLayoutPanelProjeler.BackColor = System.Drawing.SystemColors.ActiveCaption;
-            this.flowLayoutPanelProjeler.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.flowLayoutPanelProjeler.Location = new System.Drawing.Point(0, 0);
-            this.flowLayoutPanelProjeler.Name = "flowLayoutPanelProjeler";
-            this.flowLayoutPanelProjeler.Padding = new System.Windows.Forms.Padding(10);
-            this.flowLayoutPanelProjeler.Size = new System.Drawing.Size(2033, 1311);
-            this.flowLayoutPanelProjeler.TabIndex = 0;
+            this.panelProjeler.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelProjeler.Location = new System.Drawing.Point(0, 0);
+            this.panelProjeler.Name = "panelProjeler";
+            this.panelProjeler.Size = new System.Drawing.Size(2033, 1311);
+            this.panelProjeler.TabIndex = 0;
             // 
             // ctlProjeBilgileri
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.flowLayoutPanelProjeler);
+            this.Controls.Add(this.panelProjeler);
             this.Name = "ctlProjeBilgileri";
             this.Size = new System.Drawing.Size(1626, 1049);
             this.ResumeLayout(false);
@@ -55,6 +52,6 @@
 
         #endregion
 
-        private System.Windows.Forms.FlowLayoutPanel flowLayoutPanelProjeler;
+        private System.Windows.Forms.Panel panelProjeler;
     }
 }

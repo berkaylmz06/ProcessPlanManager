@@ -35,26 +35,7 @@ namespace CEKA_APP.UsrControl
             contextMenu.Items.Add(mnuProjeBilgileri);
             this.ContextMenuStrip = contextMenu;
 
-            mnuProjeFiyatlandirma.Click += (s, e) =>
-            {
-                var parentForm = this.FindForm() as frmAnaSayfa;
-                if (parentForm == null)
-                {
-                    MessageBox.Show("Ana form bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                if (parentForm.projeFiyatlandirma == null)
-                {
-                    parentForm.projeFiyatlandirma = new ctlProjeFiyatlandirma();
-                    parentForm.projeFiyatlandirma.Dock = DockStyle.Fill;
-                }
-
-                parentForm.projeFiyatlandirma.txtProjeNo.Text = txtProjeNo.Text.Trim();
-                parentForm.projeFiyatlandirma.LoadProjeFiyatlandirma(txtProjeNo.Text.Trim());
-                parentForm.NavigateToUserControl(parentForm.projeFiyatlandirma);
-            };
-
+            // Proje Bilgileri menü öğesi için olay bağlama (yalnızca bir kez)
             mnuProjeBilgileri.Click += (s, e) =>
             {
                 var parentForm = this.FindForm() as frmAnaSayfa;
@@ -68,16 +49,48 @@ namespace CEKA_APP.UsrControl
                 {
                     parentForm.projeBilgileri = new ctlProjeBilgileri();
                     parentForm.projeBilgileri.Dock = DockStyle.Fill;
+                    // Olayı sadece bir kez bağla
+                    parentForm.projeBilgileri.OnKaydet -= () => projeBilgileriKaydedildi = true; // Önceki bağlamayı kaldır
                     parentForm.projeBilgileri.OnKaydet += () => projeBilgileriKaydedildi = true;
                 }
 
-                parentForm.projeBilgileri.LoadProjects(chkAltProjeVar.Checked
+                var altProjeler = chkAltProjeVar.Checked
                     ? flpAltProjeTextBoxes.Controls.OfType<TextBox>()
                         .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
-                        .Select(txt => txt.Text.Trim()).ToList()
-                    : new List<string> { txtProjeNo.Text.Trim() });
+                        .Select(txt => txt.Text.Trim())
+                        .ToList()
+                    : new List<string> { txtProjeNo.Text.Trim() };
 
+                parentForm.projeBilgileri.LoadProjects(altProjeler, chkAltProjeVar.Checked ? txtProjeNo.Text.Trim() : null);
                 parentForm.NavigateToUserControl(parentForm.projeBilgileri);
+            };
+
+            // Proje Fiyatlandırma menü öğesi için olay bağlama
+            mnuProjeFiyatlandirma.Click += (s, e) =>
+            {
+                string projeNo = txtProjeNo.Text.Trim();
+                if (string.IsNullOrEmpty(projeNo))
+                {
+                    MessageBox.Show("Lütfen bir proje numarası girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                var parentForm = this.FindForm() as frmAnaSayfa;
+                if (parentForm == null)
+                {
+                    MessageBox.Show("Ana form bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                if (parentForm.projeFiyatlandirma == null)
+                {
+                    parentForm.projeFiyatlandirma = new ctlProjeFiyatlandirma();
+                    parentForm.projeFiyatlandirma.Dock = DockStyle.Fill;
+                }
+
+                // Proje numarasını yükle ve otomatik aratma yap
+                parentForm.projeFiyatlandirma.LoadProjeFiyatlandirma(projeNo, autoSearch: true);
+                parentForm.NavigateToUserControl(parentForm.projeFiyatlandirma);
             };
 
             flpAltProjeTextBoxes = new FlowLayoutPanel
@@ -115,7 +128,7 @@ namespace CEKA_APP.UsrControl
             var lblAltProjeler = new Label
             {
                 Text = "Alt Projeler",
-                Font = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 AutoSize = true,
                 Margin = new Padding((flpAltProjeTextBoxes.Width - 80) / 2, 0, 0, 5),
                 ForeColor = Color.FromArgb(44, 62, 80)
@@ -125,7 +138,7 @@ namespace CEKA_APP.UsrControl
             var lblIliskiProjeler = new Label
             {
                 Text = "İlişkili Projeler",
-                Font = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 AutoSize = true,
                 Margin = new Padding((flpIliskiTextBoxes.Width - 100) / 2, 0, 0, 5),
                 ForeColor = Color.FromArgb(44, 62, 80)
@@ -163,7 +176,7 @@ namespace CEKA_APP.UsrControl
                 if (!Regex.IsMatch(projeNo, @"^\d{5}$|^\d{5}\.00$"))
                 {
                     aktif.Checked = false;
-                    MessageBox.Show("Proje No 5 haneli bir sayı (ör: 12345 veya 12345.00) olmalıdır.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Proje numarası 5 basamaklı bir sayı formatında olmalıdır (örneğin: 12345 veya 12345.00).", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
             }
@@ -175,8 +188,8 @@ namespace CEKA_APP.UsrControl
                 {
                     flp.Controls.Clear();
                     flp.Controls.Add(aktif.Name == "chkAltProjeVar"
-                        ? new Label { Text = "Alt Projeler", Font = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 80) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) }
-                        : new Label { Text = "İlişkili Projeler", Font = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 100) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) });
+                        ? new Label { Text = "Alt Projeler", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 80) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) }
+                        : new Label { Text = "İlişkili Projeler", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 100) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) });
                     AddEkleButton(flp, aktif.Name == "chkAltProjeVar" ? "AltProje" : "Iliski");
                     flp.Visible = true;
                     flp.BringToFront();
@@ -194,8 +207,8 @@ namespace CEKA_APP.UsrControl
                 {
                     flp.Controls.Clear();
                     flp.Controls.Add(aktif.Name == "chkAltProjeVar"
-                        ? new Label { Text = "Alt Projeler", Font = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 80) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) }
-                        : new Label { Text = "İlişkili Projeler", Font = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 100) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) });
+                        ? new Label { Text = "Alt Projeler", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 80) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) }
+                        : new Label { Text = "İlişkili Projeler", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 100) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) });
                     flp.Visible = false;
                 }
                 else if (ilgiliKontrol != null)
@@ -219,17 +232,17 @@ namespace CEKA_APP.UsrControl
                 Width = flp.Width - 40,
                 Height = 25,
                 Margin = new Padding((flp.Width - (flp.Width - 40)) / 2, 5, 5, 5),
-                Font = new Font(FontFamily.GenericSansSerif, 9, FontStyle.Regular)
+                Font = new Font("Segoe UI", 9, FontStyle.Regular)
             };
             btnEkle.Click += (s, e) =>
             {
                 int index = flp.Controls.OfType<TextBox>().Count() + 1;
                 var txt = new TextBox
                 {
-                    Width = flp.Width,
+                    Width = flp.Width - 40,
                     Height = 40,
                     AutoSize = false,
-                    Margin = new Padding(0, 5, 5, 5),
+                    Margin = new Padding((flp.Width - (flp.Width - 40)) / 4, 5, 0, 5),
                     Name = $"txt_{prefix}_{index}",
                     ForeColor = Color.Gray,
                     Text = $"Proje #{index}",
@@ -274,7 +287,7 @@ namespace CEKA_APP.UsrControl
                             flp.Controls.Add(new Label
                             {
                                 Text = "İlişkili Projeler",
-                                Font = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold),
+                                Font = new Font("Segoe UI", 10, FontStyle.Bold),
                                 AutoSize = true,
                                 Margin = new Padding((flp.Width - 100) / 2, 0, 0, 5),
                                 ForeColor = Color.FromArgb(44, 62, 80)
@@ -300,7 +313,7 @@ namespace CEKA_APP.UsrControl
                             flp.Controls.Add(new Label
                             {
                                 Text = "İlişkili Projeler",
-                                Font = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold),
+                                Font = new Font("Segoe UI", 10, FontStyle.Bold),
                                 AutoSize = true,
                                 Margin = new Padding((flp.Width - 100) / 2, 0, 0, 5),
                                 ForeColor = Color.FromArgb(44, 62, 80)
@@ -417,7 +430,7 @@ namespace CEKA_APP.UsrControl
                 flpAltProjeTextBoxes.Controls.Add(new Label
                 {
                     Text = "Alt Projeler",
-                    Font = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold),
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
                     AutoSize = true,
                     Margin = new Padding((flpAltProjeTextBoxes.Width - 80) / 2, 0, 0, 5),
                     ForeColor = Color.FromArgb(44, 62, 80)
@@ -450,7 +463,7 @@ namespace CEKA_APP.UsrControl
                 flpIliskiTextBoxes.Controls.Add(new Label
                 {
                     Text = "İlişkili Projeler",
-                    Font = new Font(FontFamily.GenericSansSerif, 10, FontStyle.Bold),
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
                     AutoSize = true,
                     Margin = new Padding((flpIliskiTextBoxes.Width - 100) / 2, 0, 0, 5),
                     ForeColor = Color.FromArgb(44, 62, 80)
@@ -553,10 +566,12 @@ namespace CEKA_APP.UsrControl
 
             if (chkProjeIliskisiVar.Checked && flpIliskiTextBoxes.Controls.Count > 1)
             {
-                foreach (Control ctrl in flpIliskiTextBoxes.Controls)
+                foreach (var ctrl in flpIliskiTextBoxes.Controls)
                 {
                     if (ctrl is TextBox txt && (string.IsNullOrWhiteSpace(txt.Text) || txt.Text == $"Proje #{txt.Name.Split('_').Last()}"))
+                    {
                         hataMesajlari.Add($"İlişkili Proje #{txt.Name.Split('_').Last()} boş olamaz.");
+                    }
                 }
             }
 
@@ -597,22 +612,12 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            if (!ProjeKutukData.ProjeEkleProjeFinans(proje))
-            {
-                return;
-            }
-
             if (ProjeKutukData.ProjeKutukEkle(kutuk))
             {
                 if (chkAltProjeVar.Checked && kutuk.altProjeBilgileri.Any())
                 {
                     foreach (var altProje in kutuk.altProjeBilgileri)
                     {
-                        if (!ProjeKutukData.ProjeEkleProjeFinans(altProje))
-                        {
-                            return;
-                        }
-
                         if (!ProjeKutukData.AltProjeEkle(proje, altProje))
                         {
                             MessageBox.Show($"Alt Proje '{altProje}' için ilişki kaydı eklenirken hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);

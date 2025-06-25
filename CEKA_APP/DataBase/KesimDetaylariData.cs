@@ -83,7 +83,7 @@ namespace CEKA_APP.DataBase
                 Console.WriteLine($"Hata oluştu: {ex.Message}");
             }
         }
-       
+
 
         public static DataTable GetKesimDetaylari()
         {
@@ -238,6 +238,201 @@ JOIN Projeler p ON g.projeID = p.projeID";
                 }
             }
             return detaylar;
+        }
+        public static bool SilKesimDetaylari(string kalite, string malzeme, string malzemeKod, string proje, int silinecekAdet = 0, bool tamSilme = false)
+        {
+            try
+            {
+                using (var conn = DataBaseHelper.GetConnection())
+                {
+                    conn.Open();
+
+                    string selectQuery = @"SELECT kesilecekAdet, toplamAdet FROM KesimDetaylari 
+                                WHERE kalite = @kalite AND malzeme = @malzeme 
+                                AND malzemeKod = @malzemeKod AND proje = @proje";
+
+                    using (var selectCmd = new SqlCommand(selectQuery, conn))
+                    {
+                        selectCmd.Parameters.AddWithValue("@kalite", kalite);
+                        selectCmd.Parameters.AddWithValue("@malzeme", malzeme);
+                        selectCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
+                        selectCmd.Parameters.AddWithValue("@proje", proje);
+
+                        using (var reader = selectCmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                int mevcutKesilecekAdet = reader.GetInt32(0);
+                                int mevcutToplamAdet = reader.GetInt32(1);
+
+                                if (tamSilme)
+                                {
+                                    string deleteQuery = @"DELETE FROM KesimDetaylari 
+                                                WHERE kalite = @kalite AND malzeme = @malzeme 
+                                                AND malzemeKod = @malzemeKod AND proje = @proje";
+                                    using (var deleteCmd = new SqlCommand(deleteQuery, conn))
+                                    {
+                                        deleteCmd.Parameters.AddWithValue("@kalite", kalite);
+                                        deleteCmd.Parameters.AddWithValue("@malzeme", malzeme);
+                                        deleteCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
+                                        deleteCmd.Parameters.AddWithValue("@proje", proje);
+                                        int rowsAffected = deleteCmd.ExecuteNonQuery();
+                                        return rowsAffected > 0;
+                                    }
+                                }
+                                else if (silinecekAdet > 0)
+                                {
+                                    if (mevcutKesilecekAdet < silinecekAdet || mevcutToplamAdet < silinecekAdet)
+                                    {
+                                        MessageBox.Show("Silinecek adet, mevcut değerlerden fazla olamaz!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        return false;
+                                    }
+
+                                    string updateQuery = @"UPDATE KesimDetaylari 
+                                                SET kesilecekAdet = kesilecekAdet - @silinecekAdet, 
+                                                    toplamAdet = toplamAdet - @silinecekAdet
+                                                WHERE kalite = @kalite AND malzeme = @malzeme 
+                                                AND malzemeKod = @malzemeKod AND proje = @proje";
+
+                                    using (var updateCmd = new SqlCommand(updateQuery, conn))
+                                    {
+                                        updateCmd.Parameters.AddWithValue("@kalite", kalite);
+                                        updateCmd.Parameters.AddWithValue("@malzeme", malzeme);
+                                        updateCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
+                                        updateCmd.Parameters.AddWithValue("@proje", proje);
+                                        updateCmd.Parameters.AddWithValue("@silinecekAdet", silinecekAdet);
+
+                                        int rowsAffected = updateCmd.ExecuteNonQuery();
+                                        if (rowsAffected > 0)
+                                        {
+                                            Console.WriteLine($"Kayıt güncellendi: kalite={kalite}, malzeme={malzeme}, malzemeKod={malzemeKod}, proje={proje}, silinenAdet={silinecekAdet}");
+                                        }
+                                        return rowsAffected > 0;
+                                    }
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Silinecek adet belirtilmedi veya tam silme istenmedi!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show("Belirtilen kritere göre kayıt bulunamadı!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Silme işlemi sırasında hata oluştu: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"Hata oluştu: {ex.Message}");
+                return false;
+            }
+        }
+        public static bool GuncelleKesimDetaylari(string kalite, string malzeme, string kalipNo, string kesilecekPozlar, string proje, int silinecekAdet = 0, bool tamSilme = false)
+        {
+            try
+            {
+                using (var conn = DataBaseHelper.GetConnection())
+                {
+                    conn.Open();
+
+                    string malzemeKod = $"{kalipNo}-{kesilecekPozlar}";
+
+                    string selectQuery = @"SELECT kesilecekAdet, toplamAdet FROM KesimDetaylari 
+                                WHERE kalite = @kalite AND malzeme = @malzeme 
+                                AND malzemeKod = @malzemeKod AND proje = @proje";
+
+                    using (var selectCmd = new SqlCommand(selectQuery, conn))
+                    {
+                        selectCmd.Parameters.AddWithValue("@kalite", kalite);
+                        selectCmd.Parameters.AddWithValue("@malzeme", malzeme);
+                        selectCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
+                        selectCmd.Parameters.AddWithValue("@proje", proje);
+
+                        using (var reader = selectCmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                int mevcutKesilecekAdet = reader.GetInt32(0);
+                                int mevcutToplamAdet = reader.GetInt32(1);
+
+                                reader.Close();
+
+                                if (tamSilme)
+                                {
+                                    string deleteQuery = @"DELETE FROM KesimDetaylari 
+                                                WHERE kalite = @kalite AND malzeme = @malzeme 
+                                                AND malzemeKod = @malzemeKod AND proje = @proje";
+                                    using (var deleteCmd = new SqlCommand(deleteQuery, conn))
+                                    {
+                                        deleteCmd.Parameters.AddWithValue("@kalite", kalite);
+                                        deleteCmd.Parameters.AddWithValue("@malzeme", malzeme);
+                                        deleteCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
+                                        deleteCmd.Parameters.AddWithValue("@proje", proje);
+                                        int rowsAffected = deleteCmd.ExecuteNonQuery();
+                                        return rowsAffected > 0;
+                                    }
+                                }
+                                else if (silinecekAdet > 0)
+                                {
+                                    if (mevcutKesilecekAdet < silinecekAdet || mevcutToplamAdet < silinecekAdet)
+                                    {
+                                        MessageBox.Show("Silinecek adet, mevcut değerlerden fazla olamaz!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        return false;
+                                    }
+
+                                    string updateQuery = @"UPDATE KesimDetaylari 
+                                                SET kesilecekAdet = kesilecekAdet - @silinecekAdet, 
+                                                    toplamAdet = toplamAdet - @silinecekAdet
+                                                WHERE kalite = @kalite AND malzeme = @malzeme 
+                                                AND malzemeKod = @malzemeKod AND proje = @proje";
+
+                                    using (var updateCmd = new SqlCommand(updateQuery, conn))
+                                    {
+                                        updateCmd.Parameters.AddWithValue("@kalite", kalite);
+                                        updateCmd.Parameters.AddWithValue("@malzeme", malzeme);
+                                        updateCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
+                                        updateCmd.Parameters.AddWithValue("@proje", proje);
+                                        updateCmd.Parameters.AddWithValue("@silinecekAdet", silinecekAdet);
+
+                                        int rowsAffected = updateCmd.ExecuteNonQuery();
+                                        if (rowsAffected > 0)
+                                        {
+                                            Console.WriteLine($"Kayıt güncellendi: kalite={kalite}, malzeme={malzeme}, malzemeKod={malzemeKod}, proje={proje}, silinenAdet={silinecekAdet}");
+                                        }
+                                        return rowsAffected > 0;
+                                    }
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Silinecek adet belirtilmedi veya tam silme istenmedi!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                    return false;
+                                }
+                            }
+                            else
+                            {
+                                reader.Close();
+                                // Kayıt bulunamadıysa ve tam silme isteniyorsa, silme yapmadan false döndür
+                                if (tamSilme)
+                                {
+                                    MessageBox.Show($"Belirtilen kritere göre kayıt bulunamadı: kalite={kalite}, malzeme={malzeme}, malzemeKod={malzemeKod}, proje={proje}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                }
+                                return false;
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Güncelleme işlemi sırasında hata oluştu: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"Hata oluştu: {ex.Message}");
+                return false;
+            }
         }
     }
 }
