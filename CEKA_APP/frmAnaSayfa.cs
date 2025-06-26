@@ -479,7 +479,7 @@ namespace CEKA_APP
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
-            frmKullaniciBilgileri kulEkle = new frmKullaniciBilgileri(lblSistemKullanici.Text);
+            frmKullaniciAyarlari kulEkle = new frmKullaniciAyarlari(lblSistemKullanici.Text);
             kulEkle.ShowDialog();
         }
 

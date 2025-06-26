@@ -11,11 +11,11 @@ using System.Windows.Forms;
 
 namespace CEKA_APP
 {
-    public partial class frmKullaniciBilgileri : Form
+    public partial class frmKullaniciAyarlari : Form
     {
         private string kullaniciAdi;
         private Kullanicilar mevcutKullanici;
-        public frmKullaniciBilgileri(string kullaniciAdi)
+        public frmKullaniciAyarlari(string kullaniciAdi)
         {
             InitializeComponent();
             this.kullaniciAdi = kullaniciAdi;

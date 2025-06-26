@@ -90,7 +90,6 @@
             // 
             this.panelVeriYonetim.BackColor = System.Drawing.SystemColors.InactiveCaption;
             this.panelVeriYonetim.Controls.Add(this.groupBoxVeriYonetim);
-            this.panelVeriYonetim.Controls.Add(this.progressBar1);
             this.panelVeriYonetim.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelVeriYonetim.Location = new System.Drawing.Point(0, 48);
             this.panelVeriYonetim.Name = "panelVeriYonetim";
@@ -100,6 +99,7 @@
             // groupBoxVeriYonetim
             // 
             this.groupBoxVeriYonetim.Controls.Add(this.button5);
+            this.groupBoxVeriYonetim.Controls.Add(this.progressBar1);
             this.groupBoxVeriYonetim.Controls.Add(this.button4);
             this.groupBoxVeriYonetim.Controls.Add(this.button1);
             this.groupBoxVeriYonetim.Controls.Add(this.dtEklemeTarihi);
@@ -554,10 +554,10 @@
             // progressBar1
             // 
             this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.progressBar1.Location = new System.Drawing.Point(0, 890);
+            this.progressBar1.Location = new System.Drawing.Point(3, 761);
             this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
             this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(730, 13);
+            this.progressBar1.Size = new System.Drawing.Size(694, 16);
             this.progressBar1.TabIndex = 101;
             this.progressBar1.Visible = false;
             // 

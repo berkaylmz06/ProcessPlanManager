@@ -25,7 +25,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>18</ApplicationRevision>
+    <ApplicationRevision>19</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -221,11 +221,11 @@
     <Compile Include="frmAra.Designer.cs">
       <DependentUpon>frmAra.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmKullaniciBilgileri.cs">
+    <Compile Include="frmKullaniciAyarlari.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmKullaniciBilgileri.Designer.cs">
-      <DependentUpon>frmKullaniciBilgileri.cs</DependentUpon>
+    <Compile Include="frmKullaniciAyarlari.Designer.cs">
+      <DependentUpon>frmKullaniciAyarlari.cs</DependentUpon>
     </Compile>
     <Compile Include="frmKullaniciGirisi.cs">
       <SubType>Form</SubType>
@@ -366,8 +366,8 @@
     <EmbeddedResource Include="frmAra.resx">
       <DependentUpon>frmAra.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmKullaniciBilgileri.resx">
-      <DependentUpon>frmKullaniciBilgileri.cs</DependentUpon>
+    <EmbeddedResource Include="frmKullaniciAyarlari.resx">
+      <DependentUpon>frmKullaniciAyarlari.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmKullaniciGirisi.resx">
       <DependentUpon>frmKullaniciGirisi.cs</DependentUpon>

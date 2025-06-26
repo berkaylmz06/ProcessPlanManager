@@ -1,6 +1,6 @@
 ﻿namespace CEKA_APP
 {
-    partial class frmKullaniciBilgileri
+    partial class frmKullaniciAyarlari
     {
         /// <summary>
         /// Required designer variable.
@@ -138,7 +138,7 @@
             this.label1.TabIndex = 23;
             this.label1.Text = "Şifre Tekrarı:";
             // 
-            // frmKullaniciBilgileri
+            // frmKullaniciAyarlari
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
@@ -155,9 +155,9 @@
             this.Controls.Add(this.btnGüncelle);
             this.Controls.Add(this.txtAdSoyad);
             this.Controls.Add(this.label4);
-            this.Name = "frmKullaniciBilgileri";
+            this.Name = "frmKullaniciAyarlari";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Kullanıcı Bilgileri";
+            this.Text = "Kullanıcı Ayarları";
             this.Load += new System.EventHandler(this.frmKullaniciBilgileri_Load);
             this.ResumeLayout(false);
             this.PerformLayout();

@@ -83,7 +83,21 @@ namespace CEKA_APP.DataBase
                 Console.WriteLine($"Hata oluştu: {ex.Message}");
             }
         }
-
+        public static DataRow GetKesimDetaylariData(string kalite, string malzeme, string malzemeKod, string proje)
+        {
+            DataTable dt = GetKesimDetaylari();
+            foreach (DataRow row in dt.Rows)
+            {
+                if (row["kalite"].ToString() == kalite &&
+                    row["malzeme"].ToString() == malzeme &&
+                    row["malzemeKod"].ToString() == malzemeKod &&
+                    row["proje"].ToString() == proje)
+                {
+                    return row;
+                }
+            }
+            return null; 
+        }
 
         public static DataTable GetKesimDetaylari()
         {
