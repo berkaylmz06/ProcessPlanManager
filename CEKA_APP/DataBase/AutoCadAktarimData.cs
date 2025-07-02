@@ -207,27 +207,84 @@ namespace CEKA_APP.DataBase
             return tablo;
         }
 
-        public static void ProjeEkle(string projeAdi, string aciklama = null)
+        public static void ProjeEkle(string projeAdi, string aciklama, DateTime olusturmaTarihi)
         {
             using (var conn = DataBaseHelper.GetConnection())
             {
                 conn.Open();
                 string sorgu = @"
             INSERT INTO Projeler (projeAdi, olusturmaTarihi, aciklama)
-            VALUES (@projeAdi, GETDATE(), @aciklama)";
+            VALUES (@projeAdi, @olusturmaTarihi, @aciklama)";
 
-                SqlCommand komut = new SqlCommand(sorgu, conn);
-                komut.Parameters.AddWithValue("@projeAdi", projeAdi);
-                komut.Parameters.AddWithValue("@aciklama", aciklama != null ? (object)aciklama : DBNull.Value);
-                komut.ExecuteNonQuery();
+                using (SqlCommand komut = new SqlCommand(sorgu, conn))
+                {
+                    komut.Parameters.AddWithValue("@projeAdi", projeAdi);
+                    komut.Parameters.AddWithValue("@olusturmaTarihi", olusturmaTarihi);
+                    komut.Parameters.AddWithValue("@aciklama", string.IsNullOrEmpty(aciklama) ? DBNull.Value : (object)aciklama);
+
+                    komut.ExecuteNonQuery();
+                }
             }
         }
+        public static void StandartGrupEkle(string grupNo)
+        {
+            string sorgu = @"
+        INSERT INTO StandartGruplar (grupNo, olusturmaTarihi)
+        VALUES (@grupNo, GETDATE())";
+
+            using (var conn = DataBaseHelper.GetConnection())
+            {
+                conn.Open();
+                using (var komut = new SqlCommand(sorgu, conn))
+                {
+                    komut.Parameters.AddWithValue("@grupNo", grupNo);
+                    komut.ExecuteNonQuery();
+                }
+            }
+        }
+        public static List<string> GetirStandartGruplar()
+        {
+            var gruplar = new List<string>();
+
+            string query = "SELECT grupNo FROM StandartGruplar ORDER BY grupNo";
+
+            using (var conn = DataBaseHelper.GetConnection())
+            {
+                conn.Open();
+                using (var command = new SqlCommand(query, conn))
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string grupNo = reader["grupNo"]?.ToString();
+                        if (!string.IsNullOrWhiteSpace(grupNo))
+                            gruplar.Add(grupNo);
+                    }
+                }
+            }
+
+            return gruplar;
+        }
+        public static void StandartGrupSil(string grupNo)
+        {
+            string sorgu = "DELETE FROM StandartGruplar WHERE grupNo = @grupNo";
+
+            using (var conn = DataBaseHelper.GetConnection())
+            {
+                conn.Open();
+                using (var komut = new SqlCommand(sorgu, conn))
+                {
+                    komut.Parameters.AddWithValue("@grupNo", grupNo);
+                    komut.ExecuteNonQuery();
+                }
+            }
+        }
+
         public static void GrupEkleGuncelle(string projeNo, string grupAdi, string eskiGrupAdi)
         {
             using (var conn = DataBaseHelper.GetConnection())
             {
                 conn.Open();
-                // ProjeId'yi al
                 int projeId = GetProjeId(conn, projeNo);
 
                 string checkQuery = "SELECT COUNT(*) FROM Gruplar WHERE projeId = @projeId AND grupAdi = @grupAdi";
@@ -239,7 +296,6 @@ namespace CEKA_APP.DataBase
 
                     if (count > 0 && !string.IsNullOrEmpty(eskiGrupAdi))
                     {
-                        // Güncelleme işlemi
                         string updateQuery = "UPDATE Gruplar SET grupAdi = @yeniGrupAdi WHERE projeId = @projeId AND grupAdi = @eskiGrupAdi";
                         using (var updateCmd = new SqlCommand(updateQuery, conn))
                         {
@@ -251,7 +307,6 @@ namespace CEKA_APP.DataBase
                     }
                     else
                     {
-                        // Ekleme işlemi
                         string insertQuery = "INSERT INTO Gruplar (projeId, grupAdi) VALUES (@projeId, @grupAdi)";
                         using (var insertCmd = new SqlCommand(insertQuery, conn))
                         {
@@ -448,23 +503,30 @@ namespace CEKA_APP.DataBase
                 }
             }
         }
-
         public static (bool isValid, int toplamAdetIfs, int toplamAdetYuklenen) KontrolAdeta(string kalite, string malzeme, string kalip, string proje, int girilenAdet)
         {
+            string[] kalipParcalari = kalip.Split('-');
+            if (kalipParcalari.Length >= 3)
+            {
+                kalip = $"{kalipParcalari[0]}-00-{kalipParcalari[2]}";
+            }
+
             string query = @"
 SELECT 
-    SUM(m.adet) AS ToplamAdetIfs, 
-    COALESCE(SUM(KD.toplamAdet), 0) AS ToplamAdetYuklenen 
-FROM Malzemeler m 
-JOIN Gruplar g ON m.grupID = g.grupID 
-JOIN Projeler p ON g.projeID = p.projeID 
-LEFT JOIN KesimDetaylari KD ON KD.malzemeKod = m.malzemeKod 
-    AND KD.kalite = m.kalite 
-    AND KD.proje = p.projeAdi 
-WHERE m.kalite = @Kalite 
-  AND m.malzemeAd = @malzemeAd 
-  AND m.malzemeKod = @malzemeKod 
-  AND p.projeAdi = @ProjeAdi";
+    SUM(m.adet) AS ToplamAdetIfs
+FROM Malzemeler m
+JOIN Gruplar g ON m.grupID = g.grupID
+JOIN Projeler p ON g.projeID = p.projeID
+WHERE m.kalite = @Kalite
+  AND m.malzemeAd = @malzemeAd
+  AND m.malzemeKod = @malzemeKod
+  AND p.projeAdi = @ProjeAdi;
+
+SELECT SUM(KD.toplamAdet) AS ToplamAdetYuklenen
+FROM KesimDetaylari KD
+WHERE KD.kalite = @Kalite
+  AND KD.malzemeKod LIKE @malzemeKodLike
+  AND KD.proje = @ProjeAdi";
 
             using (var conn = DataBaseHelper.GetConnection())
             {
@@ -475,20 +537,119 @@ WHERE m.kalite = @Kalite
                     command.Parameters.AddWithValue("@malzemeAd", malzeme);
                     command.Parameters.AddWithValue("@malzemeKod", kalip);
                     command.Parameters.AddWithValue("@ProjeAdi", proje);
-
+                    command.Parameters.AddWithValue("@malzemeKodLike", $"{kalipParcalari[0]}-[0-9][0-9]-{kalipParcalari[2]}"); 
                     using (var reader = command.ExecuteReader())
                     {
                         int toplamAdetIfs = 0;
                         int toplamAdetYuklenen = 0;
+
                         if (reader.Read())
                         {
                             toplamAdetIfs = reader["ToplamAdetIfs"] != DBNull.Value ? Convert.ToInt32(reader["ToplamAdetIfs"]) : 0;
+                        }
+
+                        reader.NextResult();
+
+                        if (reader.Read())
+                        {
                             toplamAdetYuklenen = reader["ToplamAdetYuklenen"] != DBNull.Value ? Convert.ToInt32(reader["ToplamAdetYuklenen"]) : 0;
                         }
-                        return (girilenAdet + toplamAdetYuklenen <= toplamAdetIfs, toplamAdetIfs, toplamAdetYuklenen);
+
+                        bool isValid = girilenAdet + toplamAdetYuklenen <= toplamAdetIfs;
+                        return (isValid, toplamAdetIfs, toplamAdetYuklenen);
                     }
                 }
             }
         }
+        //        public static (bool isValid, int toplamAdetIfs, int toplamAdetYuklenen) KontrolAdeta(string kalite, string malzeme, string kalip, string proje, int girilenAdet)
+        //        {
+        //            string query = @"
+        //SELECT 
+        //    SUM(m.adet) AS ToplamAdetIfs,
+        //    (
+        //        SELECT SUM(KD.toplamAdet)
+        //        FROM KesimDetaylari KD
+        //        WHERE KD.malzemeKod = @malzemeKod
+        //          AND KD.kalite = @Kalite
+        //          AND KD.proje = @ProjeAdi
+        //    ) AS ToplamAdetYuklenen
+        //FROM Malzemeler m
+        //JOIN Gruplar g ON m.grupID = g.grupID
+        //JOIN Projeler p ON g.projeID = p.projeID
+        //WHERE m.kalite = @Kalite
+        //  AND m.malzemeAd = @malzemeAd
+        //  AND m.malzemeKod = @malzemeKod
+        //  AND p.projeAdi = @ProjeAdi";
+
+        //            using (var conn = DataBaseHelper.GetConnection())
+        //            {
+        //                conn.Open();
+        //                using (var command = new SqlCommand(query, conn))
+        //                {
+        //                    command.Parameters.AddWithValue("@Kalite", kalite);
+        //                    command.Parameters.AddWithValue("@malzemeAd", malzeme);
+        //                    command.Parameters.AddWithValue("@malzemeKod", kalip);
+        //                    command.Parameters.AddWithValue("@ProjeAdi", proje);
+
+        //                    using (var reader = command.ExecuteReader())
+        //                    {
+        //                        int toplamAdetIfs = 0;
+        //                        int toplamAdetYuklenen = 0;
+
+        //                        if (reader.Read())
+        //                        {
+        //                            toplamAdetIfs = reader["ToplamAdetIfs"] != DBNull.Value ? Convert.ToInt32(reader["ToplamAdetIfs"]) : 0;
+        //                            toplamAdetYuklenen = reader["ToplamAdetYuklenen"] != DBNull.Value ? Convert.ToInt32(reader["ToplamAdetYuklenen"]) : 0;
+        //                        }
+
+        //                        bool isValid = girilenAdet + toplamAdetYuklenen <= toplamAdetIfs;
+        //                        return (isValid, toplamAdetIfs, toplamAdetYuklenen);
+        //                    }
+        //                }
+        //            }
+        //        }
+
+        //        public static (bool isValid, int toplamAdetIfs, int toplamAdetYuklenen) KontrolAdeta(string kalite, string malzeme, string kalip, string proje, int girilenAdet)
+        //        {
+        //            string query = @"
+        //SELECT 
+        //    SUM(m.adet) AS ToplamAdetIfs, 
+        //    COALESCE(SUM(KD.toplamAdet), 0) AS ToplamAdetYuklenen 
+        //FROM Malzemeler m 
+        //JOIN Gruplar g ON m.grupID = g.grupID 
+        //JOIN Projeler p ON g.projeID = p.projeID 
+        //LEFT JOIN KesimDetaylari KD ON KD.malzemeKod = m.malzemeKod 
+        //    AND KD.kalite = m.kalite 
+        //    AND KD.proje = p.projeAdi 
+        //WHERE m.kalite = @Kalite 
+        //  AND m.malzemeAd = @malzemeAd 
+        //  AND m.malzemeKod = @malzemeKod 
+        //  AND p.projeAdi = @ProjeAdi";
+
+        //            using (var conn = DataBaseHelper.GetConnection())
+        //            {
+        //                conn.Open();
+        //                using (var command = new SqlCommand(query, conn))
+        //                {
+        //                    command.Parameters.AddWithValue("@Kalite", kalite);
+        //                    command.Parameters.AddWithValue("@malzemeAd", malzeme);
+        //                    command.Parameters.AddWithValue("@malzemeKod", kalip);
+        //                    command.Parameters.AddWithValue("@ProjeAdi", proje);
+
+        //                    using (var reader = command.ExecuteReader())
+        //                    {
+        //                        int toplamAdetIfs = 0;
+        //                        int toplamAdetYuklenen = 0;
+        //                        if (reader.Read())
+        //                        {
+        //                            toplamAdetIfs = reader["ToplamAdetIfs"] != DBNull.Value ? Convert.ToInt32(reader["ToplamAdetIfs"]) : 0;
+        //                            toplamAdetYuklenen = reader["ToplamAdetYuklenen"] != DBNull.Value ? Convert.ToInt32(reader["ToplamAdetYuklenen"]) : 0;
+        //                        }
+        //                        return (girilenAdet + toplamAdetYuklenen <= toplamAdetIfs, toplamAdetIfs, toplamAdetYuklenen);
+        //                    }
+        //                }
+        //            }
+        //        }
+        //    }
     }
 }

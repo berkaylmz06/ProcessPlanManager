@@ -25,7 +25,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>19</ApplicationRevision>
+    <ApplicationRevision>26</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -240,6 +240,12 @@
       <DependentUpon>frmKullaniciEkle.cs</DependentUpon>
     </Compile>
     <Compile Include="Entitys\Kullanicilar.cs" />
+    <Compile Include="frmStandartProjeler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="frmStandartProjeler.Designer.cs">
+      <DependentUpon>frmStandartProjeler.cs</DependentUpon>
+    </Compile>
     <Compile Include="frmYeniIscilikEkle.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -374,6 +380,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="frmKullaniciEkle.resx">
       <DependentUpon>frmKullaniciEkle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="frmStandartProjeler.resx">
+      <DependentUpon>frmStandartProjeler.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="frmYeniIscilikEkle.resx">
       <DependentUpon>frmYeniIscilikEkle.cs</DependentUpon>

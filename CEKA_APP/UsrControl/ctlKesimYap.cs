@@ -211,14 +211,23 @@ namespace CEKA_APP.UsrControl
                         return;
                     }
 
-                    int sondurum = kpAdet * carpan;
                     string kalipNoPoz = $"{kalipNo}-{poz}";
-                    string pozbilgileri = $"{ifsKalite}-{ifsMalzeme}-{kalipNoPoz}-{proje}";
+                    string kalipNoPozForValidation = kalipNoPoz;
+
+                    int tireSayisi = kalipNoPoz.Count(c => c == '-');
+                    if (tireSayisi >= 3)
+                    {
+                        int ucuncuTireIndex = kalipNoPoz.IndexOf('-', kalipNoPoz.IndexOf('-', kalipNoPoz.IndexOf('-') + 1) + 1);
+                        kalipNoPozForValidation = kalipNoPoz.Substring(0, ucuncuTireIndex);
+                    }
+
+                    int sondurum = kpAdet * carpan;
+                    string pozbilgileri = $"{ifsKalite}-{ifsMalzeme}-{kalipNoPozForValidation}-{proje}";
                     pozVeSondurumMesaj.AppendLine($"Poz: {pozbilgileri}, Sondurum: {sondurum}");
 
                     hataAyrintilari.AppendLine($"Kontrol edilen pozbilgileri: {pozbilgileri}");
 
-                    if (!KesimDetaylariData.PozExists(ifsKalite, ifsMalzeme, kalipNoPoz, proje))
+                    if (!KesimDetaylariData.PozExists(ifsKalite, ifsMalzeme, kalipNoPozForValidation, proje))
                     {
                         MessageBox.Show($"Poz: {pozbilgileri} KesimDetaylari tablosunda bulunamadı.\nAyrıntılar:\n{hataAyrintilari.ToString()}",
                             "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -261,11 +270,16 @@ namespace CEKA_APP.UsrControl
 
                     int sondurum = int.Parse(adetSatır) * carpan;
                     string kalipNoPoz = $"{kalipNo}-{poz}";
+                    string kalipNoPozForValidation = kalipNoPoz;
+                    if (kalipNoPoz.Contains("-EK"))
+                    {
+                        kalipNoPozForValidation = kalipNoPoz.Substring(0, kalipNoPoz.IndexOf("-EK"));
+                    }
 
-                    bool updateSuccess = KesimDetaylariData.UpdateKesilmisAdet(ifsKalite, ifsMalzeme, kalipNoPoz, proje, sondurum);
+                    bool updateSuccess = KesimDetaylariData.UpdateKesilmisAdet(ifsKalite, ifsMalzeme, kalipNoPozForValidation, proje, sondurum);
                     if (!updateSuccess)
                     {
-                        MessageBox.Show($"Poz: {ifsKalite}-{ifsMalzeme}-{kalipNoPoz}-{proje} için kesilmisAdet veya kesilecekAdet güncellenemedi. Kesilecek adet yetersiz olabilir.\nSondurum: {sondurum}",
+                        MessageBox.Show($"Poz: {ifsKalite}-{ifsMalzeme}-{kalipNoPozForValidation}-{proje} için kesilmisAdet veya kesilecekAdet güncellenemedi. Kesilecek adet yetersiz olabilir.\nSondurum: {sondurum}",
                             "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }

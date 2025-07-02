@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -41,7 +42,7 @@ namespace CEKA_APP
                 }
                 else
                 {
-                    MessageBox.Show("Kullanıcı bulunamadı!","Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    MessageBox.Show("Kullanıcı bulunamadı!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     this.Close();
                 }
             }
@@ -49,13 +50,14 @@ namespace CEKA_APP
             {
                 MessageBox.Show($"Hata: {ex.Message}");
             }
+            txtKlasorYolu.Text = Properties.Settings.Default.KlasorYolu;
         }
 
         private void btnGüncelle_Click(object sender, EventArgs e)
         {
             if (txtSifre.Text != txtSifreTekrar.Text)
             {
-                MessageBox.Show("Şifreler eşleşmiyor!","Hata",MessageBoxButtons.OK,MessageBoxIcon.Error);
+                MessageBox.Show("Şifreler eşleşmiyor!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -84,7 +86,7 @@ namespace CEKA_APP
                 }
                 else
                 {
-                    MessageBox.Show("Herhangi bir değişiklik yapılmadı.","Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    MessageBox.Show("Herhangi bir değişiklik yapılmadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
             }
             catch (Exception ex)
@@ -97,6 +99,28 @@ namespace CEKA_APP
             return mevcut.adSoyad != yeni.adSoyad ||
                    mevcut.sifre != yeni.sifre ||
                    mevcut.email != yeni.email;
+        }
+
+        private void btnDosyaSec_Click(object sender, EventArgs e)
+        {
+            using (var folderDialog = new System.Windows.Forms.FolderBrowserDialog())
+            {
+                folderDialog.SelectedPath = @"\\fileserver\proje";
+                folderDialog.Description = "Lütfen bir klasör seçin";
+
+                if (folderDialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    txtKlasorYolu.Text = folderDialog.SelectedPath;
+                    Properties.Settings.Default.KlasorYolu = folderDialog.SelectedPath;
+                    Properties.Settings.Default.Save();
+
+                    MessageBox.Show($"Seçilen klasör: {folderDialog.SelectedPath}\n başarıyla kaydedildi.");
+                }
+                else
+                {
+                    MessageBox.Show("Klasör seçimi iptal edildi.");
+                }
+            }
         }
     }
 }

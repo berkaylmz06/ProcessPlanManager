@@ -7,6 +7,7 @@ using iText.Forms.Form.Element;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;
@@ -20,27 +21,33 @@ namespace CEKA_APP.UsrControl
     public partial class ctlKesimDetaylari : UserControl
     {
         private List<KesimDetaylari> tumPozlar;
-        private string placeholderText = "Ara"; 
+        private string placeholderText = "Ara";
+        private readonly int unlemGenislik = 20; // Ünlem işaretinin genişliği
 
         public ctlKesimDetaylari()
         {
             InitializeComponent();
 
+            // ListBox ayarları
+            lstPozlar.DrawMode = DrawMode.OwnerDrawFixed;
+            lstPozlar.ItemHeight = 25;
+            lstPozlar.MouseDown += LstPozlar_MouseDown;
+
             YukleVeListele();
 
             txtArama.TextChanged += TxtAra_TextChanged;
             lstPozlar.SelectedIndexChanged += LstPozlar_SelectedIndexChanged;
-            ListBoxHelper.StilUygula(lstPozlar);
+            ListBoxHelper.StilUygula(lstPozlar); // Stil uygulanıyor
 
             panelKart1.BackColor = Color.FromArgb(0, 95, 107);
             panelKart2.BackColor = Color.FromArgb(191, 128, 255);
             panelKart3.BackColor = Color.FromArgb(255, 83, 97);
-            panelKart3.BackColor = Color.FromArgb(15, 48, 56);
+            panelKart4.BackColor = Color.FromArgb(15, 48, 56);
 
             OrtalaLabel(lblKesilecekPoz, panelKart1);
             OrtalaLabel(lblKesilmisPoz, panelKart2);
             OrtalaLabel(lblToplamPoz, panelKart3);
-            OrtalaLabel(lblToplamPozIfsKarsiligi,panelKart4);
+            OrtalaLabel(lblToplamPozIfsKarsiligi, panelKart4);
 
             PanelRoundHelper.RoundCorners(panelKart1, 20);
             PanelRoundHelper.RoundCorners(panelKart2, 20);
@@ -62,9 +69,10 @@ namespace CEKA_APP.UsrControl
             txtArama.Height = 35;
             txtArama.Font = new Font("Segoe UI", 14F);
         }
+
         private void YukleVeListele()
         {
-            var dt = KesimDetaylariData.GetKesimDetaylari();
+            var dt = KesimDetaylariData.GetKesimDetaylariBilgi();
             if (dt == null || dt.Rows.Count == 0)
                 return;
 
@@ -84,7 +92,11 @@ namespace CEKA_APP.UsrControl
                     proje = gr.Key.proje,
                     toplamAdet = gr.Sum(r => Convert.ToInt32(r["toplamAdet"])),
                     kesilecekAdet = gr.Sum(r => Convert.ToInt32(r["kesilecekAdet"])),
-                    kesilmisAdet = gr.Sum(r => Convert.ToInt32(r["kesilmisAdet"]))
+                    kesilmisAdet = gr.Sum(r => Convert.ToInt32(r["kesilmisAdet"])),
+                    ekBilgi = gr.Any(r => r["ekBilgi"] != DBNull.Value && Convert.ToBoolean(r["ekBilgi"])),
+                    ekBilgiMesaji = gr.Any(r => r["ekBilgi"] != DBNull.Value && Convert.ToBoolean(r["ekBilgi"]))
+                        ? "Bu poz, Ek'lere ayrıldığı için Toplam Poz miktarı IFS’e göre toplam poz miktarından fazla olabilir. Toplam poz miktarı, Ek adetlerinin toplamını içermektedir."
+                        : ""
                 })
                 .OrderBy(x => x.kalite)
                 .ThenBy(x => x.malzeme)
@@ -98,9 +110,33 @@ namespace CEKA_APP.UsrControl
         private void PozlariListele(List<KesimDetaylari> kesimDetaylari)
         {
             lstPozlar.DataSource = null;
-            lstPozlar.DataSource = kesimDetaylari; 
+            lstPozlar.DataSource = kesimDetaylari;
         }
 
+        private void LstPozlar_MouseDown(object sender, MouseEventArgs e)
+        {
+            int index = lstPozlar.IndexFromPoint(e.Location);
+            if (index < 0 || index >= lstPozlar.Items.Count) return;
+
+            KesimDetaylari veri = (KesimDetaylari)lstPozlar.Items[index];
+            if (!veri.ekBilgi) return;
+
+            Rectangle itemRect = lstPozlar.GetItemRectangle(index);
+            // Kaydırma çubuğu varlığını kontrol et
+            bool hasScrollBar = lstPozlar.Items.Count * lstPozlar.ItemHeight > lstPozlar.ClientSize.Height;
+            int scrollBarWidth = hasScrollBar ? SystemInformation.VerticalScrollBarWidth : 0;
+            Rectangle unlemRect = new Rectangle(
+                lstPozlar.ClientSize.Width - unlemGenislik - scrollBarWidth,
+                itemRect.Top,
+                unlemGenislik,
+                itemRect.Height
+            );
+
+            if (unlemRect.Contains(e.Location))
+            {
+                MessageBox.Show(veri.ekBilgiMesaji, "Ek Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
 
         private async void TxtAra_TextChanged(object sender, EventArgs e)
         {
@@ -166,11 +202,12 @@ namespace CEKA_APP.UsrControl
                 panelKart3.BackColor = Color.FromArgb(255, 83, 97);
 
                 string[] pozParcalari = secilen.poz.Split('-');
-                if (pozParcalari.Length == 6) 
+                if (pozParcalari.Length == 6)
                 {
                     string kalite = pozParcalari[0];
                     string malzeme = pozParcalari[1];
-                    string malzemeKod = $"{pozParcalari[2]}-{pozParcalari[3]}-{pozParcalari[4]}";
+                    string orijinalMalzemeKod = $"{pozParcalari[2]}-{pozParcalari[3]}-{pozParcalari[4]}";
+                    string malzemeKod = NormalizeMalzemeKod(orijinalMalzemeKod);
                     string proje = pozParcalari[5];
 
                     var (uygunMu, toplamAdet) = AutoCadAktarimData.KontrolAdet(
@@ -192,12 +229,22 @@ namespace CEKA_APP.UsrControl
                 }
             }
         }
+        private string NormalizeMalzemeKod(string malzemeKod)
+        {
+            if (string.IsNullOrWhiteSpace(malzemeKod)) return malzemeKod;
+
+            var parts = malzemeKod.Split('-');
+            if (parts.Length != 3) return malzemeKod;
+
+            return $"{parts[0]}-00-{parts[2]}";
+        }
         private void OrtalaLabel(Label lbl, Panel pnl)
         {
             int x = (pnl.Width - lbl.Width) / 2;
             int y = (pnl.Height - lbl.Height) / 2;
             lbl.Location = new Point(Math.Max(x, 0), Math.Max(y, 0));
         }
+
         private void panel3_Resize(object sender, EventArgs e)
         {
             int spacing = 60;
@@ -215,11 +262,10 @@ namespace CEKA_APP.UsrControl
             panelKart4.Location = new Point(startX + panelKart1.Width + spacing + panelKart2.Width + spacing + panelKart3.Width + spacing, y4);
         }
 
-
         private void ctlKesimDetaylari_Load(object sender, EventArgs e)
         {
             txtArama.Text = placeholderText;
-            txtArama.ForeColor = Color.Gray; 
+            txtArama.ForeColor = Color.Gray;
             txtArama.GotFocus += TextBox1_GotFocus;
             txtArama.LostFocus += TextBox1_LostFocus;
 
@@ -227,6 +273,7 @@ namespace CEKA_APP.UsrControl
 
             ctlBaslik1.Baslik = "Kesim Detayları";
         }
+
         private void ChartiTiklanmazYap()
         {
             ChartiTiklanmazYap engelleyici = new ChartiTiklanmazYap();
@@ -236,6 +283,7 @@ namespace CEKA_APP.UsrControl
 
             chartKesim.SendToBack();
         }
+
         private void TextBox1_GotFocus(object sender, EventArgs e)
         {
             if (txtArama.Text == placeholderText)

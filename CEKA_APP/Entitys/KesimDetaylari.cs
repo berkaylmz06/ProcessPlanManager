@@ -26,6 +26,8 @@ namespace CEKA_APP.Entitys
         {
             return poz;
         }
+        public bool ekBilgi { get; set; }
+        public string ekBilgiMesaji { get; set; }
     }
 
 }

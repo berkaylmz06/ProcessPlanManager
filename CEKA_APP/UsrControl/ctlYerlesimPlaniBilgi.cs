@@ -123,6 +123,12 @@ namespace CEKA_APP.UsrControl
                                         hataMesajlari.Add(hataMesaji);
                                     }
 
+                                    string kesilecekPozlarForValidation = kesilecekPozlar;
+                                    if (kesilecekPozlar.Contains("-"))
+                                    {
+                                        kesilecekPozlarForValidation = kesilecekPozlar.Substring(0, kesilecekPozlar.IndexOf("-"));
+                                    }
+
                                     if (hataMesajlari.Count > 0)
                                     {
                                         tumDetaylarGuncellendi = false;
@@ -131,9 +137,9 @@ namespace CEKA_APP.UsrControl
 
                                     if (ifsKalite != null && ifsMalzeme != null)
                                     {
-                                        if (!KesimDetaylariData.GuncelleKesimDetaylari(ifsKalite, ifsMalzeme, kalipNo, kesilecekPozlar, proje, silinecekAdet, false))
+                                        if (!KesimDetaylariData.GuncelleKesimDetaylari(ifsKalite, ifsMalzeme, kalipNo, kesilecekPozlarForValidation, proje, silinecekAdet, false))
                                         {
-                                            hataMesajlari.Add($"Kesim detayı ({kalite}, {malzeme}, {kalipNo}, {kesilecekPozlar}, {proje}) adet düşürme işlemi başarısız. Silinecek adet: {silinecekAdet}");
+                                            hataMesajlari.Add($"Kesim detayı ({kalite}, {malzeme}, {kalipNo}, {kesilecekPozlarForValidation}, {proje}) adet düşürme işlemi başarısız. Silinecek adet: {silinecekAdet}");
                                             tumDetaylarGuncellendi = false;
                                             break;
                                         }
@@ -220,13 +226,19 @@ namespace CEKA_APP.UsrControl
                                     hataMesajlari.Add(hataMesaji);
                                 }
 
+                                string kesilecekPozlarForValidation = kesilecekPozlar;
+                                if (kesilecekPozlar.Contains("-"))
+                                {
+                                    kesilecekPozlarForValidation = kesilecekPozlar.Substring(0, kesilecekPozlar.IndexOf("-"));
+                                }
+
                                 if (hataMesajlari.Count > 0)
                                 {
                                     MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                 }
                                 else if (ifsKalite != null && ifsMalzeme != null)
                                 {
-                                    if (KesimDetaylariData.GuncelleKesimDetaylari(ifsKalite, ifsMalzeme, kalipNo, kesilecekPozlar, proje, silinecekAdet, false))
+                                    if (KesimDetaylariData.GuncelleKesimDetaylari(ifsKalite, ifsMalzeme, kalipNo, kesilecekPozlarForValidation, proje, silinecekAdet, false))
                                     {
                                         MessageBox.Show($"Kesim detayı satırının {silinecekAdet} adet düşürüldü.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                         var kesimId = dataGridKesimListesi.CurrentRow?.Cells["kesimId"].Value?.ToString();
@@ -236,12 +248,12 @@ namespace CEKA_APP.UsrControl
 
                                             var userController = new LogEkle(_kullaniciAdi.lblSistemKullaniciMetinAl());
                                             userController.LogYap("YerlesimPlaniIcerigiSilindi", "Yerleşim Planı Bilgi",
-                                                $"Kullanıcı {kesimId} numaralı kesimden içerik sildi. Kalite: {ifsKalite}, Malzeme: {ifsMalzeme}, MalzemeKod: {kalipNo}-{kesilecekPozlar}, Proje: {proje} Silinen Adet: {silinecekAdet}");
+                                                $"Kullanıcı {kesimId} numaralı kesimden içerik sildi. Kalite: {ifsKalite}, Malzeme: {ifsMalzeme}, MalzemeKod: {kalipNo}-{kesilecekPozlarForValidation}, Proje: {proje} Silinen Adet: {silinecekAdet}");
                                         }
                                     }
                                     else
                                     {
-                                        hataMesajlari.Add($"Kesim detayı satırı adet düşürme işlemi başarısız. Kalite: {ifsKalite}, Malzeme: {ifsMalzeme}, Silinecek Adet: {silinecekAdet}");
+                                        hataMesajlari.Add($"Kesim detayı satırı adet düşürme işlemi başarısız. Kalite: {ifsKalite}, Malzeme: {ifsMalzeme}, MalzemeKod: {kalipNo}-{kesilecekPozlarForValidation}, Silinecek Adet: {silinecekAdet}");
                                         MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                     }
                                 }
@@ -276,7 +288,33 @@ namespace CEKA_APP.UsrControl
             {
                 var dt = KesimListesiData.GetirKesimListesi(kesimId);
 
-                dataGridDetay.Columns.Clear(); 
+                // dataGridKesimListesi'nden toplamPlanTekrari değerini al
+                int toplamPlanTekrari = 1; // Varsayılan değer, hata durumunda 1
+                foreach (DataGridViewRow row in dataGridKesimListesi.Rows)
+                {
+                    if (row.Cells["kesimId"].Value?.ToString() == kesimId)
+                    {
+                        if (row.Cells["toplamPlanTekrari"].Value != null && int.TryParse(row.Cells["toplamPlanTekrari"].Value.ToString(), out int planTekrari))
+                        {
+                            toplamPlanTekrari = planTekrari;
+                        }
+                        break;
+                    }
+                }
+
+                // kpAdetSayilari sütununu toplamPlanTekrari ile çarp
+                if (dt != null && dt.Rows.Count > 0)
+                {
+                    foreach (DataRow row in dt.Rows)
+                    {
+                        if (row["kpAdetSayilari"] != null && int.TryParse(row["kpAdetSayilari"].ToString(), out int kpAdet))
+                        {
+                            row["kpAdetSayilari"] = kpAdet * toplamPlanTekrari;
+                        }
+                    }
+                }
+
+                dataGridDetay.Columns.Clear();
                 dataGridDetay.DataSource = dt;
 
                 if (dt != null && dt.Rows.Count > 0)
@@ -292,7 +330,7 @@ namespace CEKA_APP.UsrControl
                 { "kesilenPozlar", "Kesilen Pozlar" },
                 { "kesilenPozAdetSayilari", "Kesilen Pozların Adet Sayıları" },
                 { "eklemeTarihi", "Ekleme Tarihi" },
-                { "kpAdetSayilari", "KP Adet Sayıları" }
+                { "kpAdetSayilari", "KP Adet Sayıları (Toplam)" }
             };
 
                     foreach (var kolon in kolonBasliklari)
@@ -328,7 +366,6 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show(ex.ToString(), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
 
         public void VerileriYukle()
         {

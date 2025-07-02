@@ -510,18 +510,16 @@ namespace CEKA_APP.UsrControl
                 var kayitlar = AutoCadAktarimData.GetAutoCadKayitlari(proje);
                 if (kayitlar.Count == 0)
                 {
-                    DialogResult result = MessageBox.Show(
-                        $"Proje '{proje}' bulunamadı. Yeni proje oluşturulsun mu?",
-                        "Proje Bulunamadı",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Question);
-                    if (result == DialogResult.Yes)
-                    {
-                        AutoCadAktarimData.ProjeEkle(proje);
-                    }
+                    MessageBox.Show(
+                        $"'{proje}' adlı proje bulunamadı.\nİşlem iptal edildi.",
+                        "Bilgi",
+                        MessageBoxButtons.OK,
+                        MessageBoxIcon.Information);
+
                     treeView1.Nodes.Clear();
                     return;
                 }
+
                 TreeViewYukle(proje);
             }
             catch (Exception ex)
@@ -572,7 +570,7 @@ namespace CEKA_APP.UsrControl
                     }
                     _pendingNode = e.Node;
                 }
-                else 
+                else
                 {
                     e.Cancel = true;
                 }
@@ -668,9 +666,9 @@ namespace CEKA_APP.UsrControl
                     dataGridOgeDetay.AllowUserToDeleteRows = true;
                     dataGridOgeDetay.ClearSelection();
                     bindingSource.DataSource = tempTablo;
-                    dataGridOgeDetay.DataSource = bindingSource; 
-                    dataGridOgeDetay.AutoGenerateColumns = false; 
-                    Application.DoEvents(); 
+                    dataGridOgeDetay.DataSource = bindingSource;
+                    dataGridOgeDetay.AutoGenerateColumns = false;
+                    Application.DoEvents();
                     var sutunlar = dataGridOgeDetay.Columns.Cast<DataGridViewColumn>().Select(c => c.DataPropertyName).ToList();
                     if (sutunlar.Contains("projeAdi") && sutunlar.Contains("grupAdi") &&
                         sutunlar.Contains("malzemeKod") && sutunlar.Contains("adet") &&
@@ -853,166 +851,6 @@ namespace CEKA_APP.UsrControl
                 UpdateSaveButtonState();
             }
         }
-        //private void btnKaydet_Click(object sender, EventArgs e)
-        //{
-        //    if (treeView1.SelectedNode == null)
-        //    {
-        //        MessageBox.Show("Lütfen bir düğüm seçin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //        return;
-        //    }
-
-        //    if (!ValidateTableData(treeView1.SelectedNode))
-        //        return;
-
-        //    bool saveSuccess = true; 
-        //    try
-        //    {
-        //        TreeNode seciliDugum = treeView1.SelectedNode;
-        //        string projeNo = seciliDugum.Parent == null ? seciliDugum.Text :
-        //                        seciliDugum.Parent.Parent == null ? seciliDugum.Parent.Text :
-        //                        seciliDugum.Parent.Parent.Text;
-        //        string seciliYol = seciliDugum.FullPath;
-
-        //        foreach (var silinen in silinenSatirlar)
-        //        {
-        //            if (seciliDugum.Parent == null && !string.IsNullOrEmpty(silinen.GrupAdi))
-        //            {
-        //                AutoCadAktarimData.GrupSil(projeNo, silinen.GrupAdi);
-        //            }
-        //            else if (!string.IsNullOrEmpty(silinen.MalzemeKod))
-        //            {
-        //                string grup = seciliDugum.Parent != null && seciliDugum.Parent.Parent != null ? seciliDugum.Parent.Text : seciliDugum.Text;
-        //                AutoCadAktarimData.MalzemeSil(projeNo, grup, silinen.MalzemeKod);
-        //            }
-        //        }
-
-        //        if (seciliDugum.Parent == null)
-        //        {
-        //            foreach (DataRow row in tempTablo.Rows.Cast<DataRow>()
-        //                .Where(r => r.RowState == DataRowState.Added || r.RowState == DataRowState.Modified).ToList())
-        //            {
-        //                string grupAdi = row["grupAdi"]?.ToString()?.Trim();
-        //                if (!string.IsNullOrEmpty(grupAdi))
-        //                {
-        //                    AutoCadAktarimData.GrupEkleGuncelle(projeNo, grupAdi, null);
-        //                    var gruplar = AutoCadAktarimData.GruplariGetir(projeNo);
-        //                    if (!gruplar.AsEnumerable().Any(r => r.Field<string>("grupAdi")?.Trim() == grupAdi))
-        //                    {
-        //                        saveSuccess = false;
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    saveSuccess = false;
-        //                }
-        //            }
-        //        }
-        //        else 
-        //        {
-        //            string grup = seciliDugum.Parent != null && seciliDugum.Parent.Parent != null ? seciliDugum.Parent.Text : seciliDugum.Text;
-        //            foreach (DataRow row in tempTablo.Rows.Cast<DataRow>()
-        //                .Where(r => r.RowState == DataRowState.Added || r.RowState == DataRowState.Modified).ToList())
-        //            {
-        //                if (tempTablo.Columns.Contains("malzemeKod"))
-        //                {
-        //                    string malzemeKod = row["malzemeKod"]?.ToString()?.Trim();
-        //                    if (!string.IsNullOrEmpty(malzemeKod) && row["adet"] != DBNull.Value && int.TryParse(row["adet"]?.ToString(), out int adet) && adet > 0)
-        //                    {
-        //                        string malzemeAd = row["malzemeAd"]?.ToString()?.Trim();
-        //                        string kalite = row["kalite"]?.ToString()?.Trim();
-
-        //                        AutoCadAktarimData.MalzemeEkleGuncelle(projeNo, grup, malzemeKod, adet, malzemeAd, kalite);
-        //                        var malzemeler = AutoCadAktarimData.MalzemeleriGetir(projeNo, grup);
-        //                        if (!malzemeler.AsEnumerable().Any(r => r.Field<string>("malzemeKod")?.Trim() == malzemeKod))
-        //                        {
-        //                            saveSuccess = false;
-        //                        }
-        //                    }
-        //                    else
-        //                    {
-        //                        saveSuccess = false;
-        //                    }
-        //                }
-        //            }
-        //        }
-
-        //        string seviye = seciliDugum.Parent == null ? "Proje" :
-        //                        seciliDugum.Parent.Parent == null ? "Grup" : "Malzeme";
-        //        InitializeTempTablo(seviye);
-        //        if (seviye == "Proje")
-        //        {
-        //            var gruplar = AutoCadAktarimData.GruplariGetir(projeNo);
-        //            foreach (DataRow row in gruplar.Rows)
-        //            {
-        //                tempTablo.Rows.Add(row["projeAdi"], row["grupAdi"]);
-        //            }
-        //        }
-        //        else if (seviye == "Grup")
-        //        {
-        //            var malzemeler = AutoCadAktarimData.MalzemeleriGetir(projeNo, seciliDugum.Text);
-        //            foreach (DataRow row in malzemeler.Rows)
-        //            {
-        //                tempTablo.Rows.Add(
-        //                    row["projeAdi"],
-        //                    row["grupAdi"],
-        //                    row["malzemeKod"],
-        //                    row["adet"],
-        //                    row["malzemeAd"],
-        //                    row["kalite"]);
-        //            }
-        //        }
-        //        else if (seviye == "Malzeme")
-        //        {
-        //            var detaylar = AutoCadAktarimData.MalzemeDetaylariniGetir(projeNo, seciliDugum.Parent.Text, seciliDugum.Text);
-        //            foreach (DataRow row in detaylar.Rows)
-        //            {
-        //                tempTablo.Rows.Add(
-        //                    row["projeAdi"],
-        //                    row["grupAdi"],
-        //                    row["malzemeKod"],
-        //                    row["adet"],
-        //                    row["malzemeAd"],
-        //                    row["kalite"]);
-        //            }
-        //        }
-
-        //        tempTablo.AcceptChanges();
-        //        silinenSatirlar.Clear();
-        //        silinenSatirSayisi = 0;
-        //        TreeViewYukle(projeNo);
-
-        //        TreeNode[] dugumler = treeView1.Nodes.FindByFullPath(seciliYol);
-        //        if (dugumler.Length > 0)
-        //        {
-        //            treeView1.SelectedNode = dugumler[0];
-        //            treeView1_AfterSelect(this, new TreeViewEventArgs(dugumler[0]));
-        //        }
-        //        else
-        //        {
-        //            treeView1.SelectedNode = treeView1.Nodes[0];
-        //            treeView1_AfterSelect(this, new TreeViewEventArgs(treeView1.Nodes[0]));
-        //        }
-
-        //        if (saveSuccess)
-        //        {
-        //            MessageBox.Show("Veriler başarıyla kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        //            isDirty = false;
-        //            ColorRows();
-        //        }
-        //        else
-        //        {
-        //            MessageBox.Show("Veriler kaydedilmedi. Lütfen zorunlu alanları kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //            isDirty = true;
-        //        }
-        //        UpdateSaveButtonState();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"Hata oluştu: {ex.Message}\nDetay: {ex.StackTrace}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        isDirty = true;
-        //        UpdateSaveButtonState();
-        //    }
-        //}
 
         private void btnYeni_Click(object sender, EventArgs e)
         {
@@ -1060,7 +898,8 @@ namespace CEKA_APP.UsrControl
 
         private void btnStandartProje_Click(object sender, EventArgs e)
         {
-          
+            frmStandartProjeler standartProjeler = new frmStandartProjeler();
+            standartProjeler.ShowDialog();
         }
 
         public bool OnUserControlExit()
@@ -1091,6 +930,9 @@ namespace CEKA_APP.UsrControl
             }
             return true;
         }
+
+
+
         private void ColorRows()
         {
             if (treeView1.SelectedNode == null)

@@ -58,5 +58,17 @@ namespace CEKA_APP.Properties {
                 this["BeniHatirla"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string KlasorYolu {
+            get {
+                return ((string)(this["KlasorYolu"]));
+            }
+            set {
+                this["KlasorYolu"] = value;
+            }
+        }
     }
 }

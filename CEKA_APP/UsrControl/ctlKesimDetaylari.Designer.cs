@@ -251,9 +251,9 @@
             this.label4.ForeColor = System.Drawing.SystemColors.Control;
             this.label4.Location = new System.Drawing.Point(3, 18);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(202, 20);
+            this.label4.Size = new System.Drawing.Size(193, 20);
             this.label4.TabIndex = 3;
-            this.label4.Text = "IFS’ye göre toplam poz";
+            this.label4.Text = "IFS’e göre toplam poz";
             // 
             // lblToplamPozIfsKarsiligi
             // 
