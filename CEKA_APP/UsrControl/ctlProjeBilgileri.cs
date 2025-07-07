@@ -29,7 +29,9 @@ namespace CEKA_APP.UsrControl
             panelProjeler.Controls.Clear();
             hasNewData = false;
             projeInputs.Clear();
+            panelProjeler.AutoScroll = true; // AutoScroll özelliğini aç
 
+            // Tümünü Kaydet butonu
             var btnKaydetHepsi = new Button
             {
                 Text = "Tümünü Kaydet",
@@ -38,7 +40,6 @@ namespace CEKA_APP.UsrControl
                 FlatStyle = FlatStyle.Flat,
                 FlatAppearance = { BorderSize = 0 },
                 Size = new Size(150, 40),
-                Location = new Point(20, panelProjeler.Height - 60),
                 Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 Cursor = Cursors.Hand
             };
@@ -59,7 +60,7 @@ namespace CEKA_APP.UsrControl
                     Size = new Size(panelProjeler.Width - 40, 300),
                     Location = new Point(20, 320),
                     Visible = false,
-                    BackColor = Color.FromArgb(240, 240, 240) // Tutarlı arka plan rengi
+                    BackColor = Color.FromArgb(240, 240, 240)
                 };
 
                 var lblOk = new Label
@@ -69,7 +70,7 @@ namespace CEKA_APP.UsrControl
                     AutoSize = true,
                     Location = new Point(280, 20),
                     ForeColor = Color.FromArgb(44, 62, 80),
-                    BackColor = Color.Transparent // Şeffaf arka plan
+                    BackColor = Color.Transparent
                 };
                 anaKart.Controls.Add(lblOk);
 
@@ -103,7 +104,7 @@ namespace CEKA_APP.UsrControl
                 }
 
                 panelProjeler.Controls.Add(altProjelerPanel);
-                CopyToSubProjects(anaProjeNo, altProjelerPanel); // İlk yüklemede kopyala
+                CopyToSubProjects(anaProjeNo, altProjelerPanel);
             }
             else
             {
@@ -118,7 +119,14 @@ namespace CEKA_APP.UsrControl
                 }
             }
 
+            // Butonu panelin sonuna ekle ve görünür alanda olmasını sağla
+            int yPosition = panelProjeler.Controls.OfType<Control>().Any()
+                ? panelProjeler.Controls.OfType<Control>().Max(c => c.Bottom) + 20
+                : 20;
+            btnKaydetHepsi.Location = new Point(20, yPosition);
             panelProjeler.Controls.Add(btnKaydetHepsi);
+            panelProjeler.ScrollControlIntoView(btnKaydetHepsi); // Butonu görünür alana kaydır
+            panelProjeler.Refresh(); // Paneli yeniden çiz
         }
 
         private CustomPanel CreateProjectCard(string projeNo, ProjeBilgi projeBilgi, bool isAnaProje)

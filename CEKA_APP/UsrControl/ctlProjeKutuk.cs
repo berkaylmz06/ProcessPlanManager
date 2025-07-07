@@ -1,4 +1,5 @@
 ﻿using CEKA_APP.DataBase;
+using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Entitys;
 using System;
 using System.Collections.Generic;
@@ -74,21 +75,64 @@ namespace CEKA_APP.UsrControl
                     return;
                 }
 
-                var parentForm = this.FindForm() as frmAnaSayfa;
-                if (parentForm == null)
+                // Alt projeleri metodun başında tanımla
+                List<string> altProjeler = chkAltProjeVar.Checked
+                    ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
+                        .SelectMany(p => p.Controls.OfType<TextBox>())
+                        .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
+                        .Select(txt => txt.Text.Trim())
+                        .ToList()
+                    : null;
+
+                // Projenin ProjeFinans_Projeler tablosunda olup olmadığını kontrol et
+                var projeBilgi = ProjeKutukData.GetProjeBilgileri(projeNo);
+                if (projeBilgi == null)
+                {
+                    MessageBox.Show("Bu proje için önce proje bilgileri kaydedilmelidir. Lütfen Proje Bilgileri ekranına gidin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+
+                    var parentForm = this.FindForm() as frmAnaSayfa;
+                    if (parentForm == null)
+                    {
+                        MessageBox.Show("Ana form bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
+                    if (parentForm.projeBilgileri == null)
+                    {
+                        parentForm.projeBilgileri = new ctlProjeBilgileri();
+                        parentForm.projeBilgileri.Dock = DockStyle.Fill;
+                        parentForm.projeBilgileri.OnKaydet += () => projeBilgileriKaydedildi = true;
+                    }
+
+                    // Aynı altProjeler değişkenini kullan
+                    parentForm.projeBilgileri.LoadProjects(altProjeler, chkAltProjeVar.Checked ? projeNo : null);
+                    parentForm.NavigateToUserControl(parentForm.projeBilgileri);
+                    return;
+                }
+
+                var parentFormFiyat = this.FindForm() as frmAnaSayfa;
+                if (parentFormFiyat == null)
                 {
                     MessageBox.Show("Ana form bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
 
-                if (parentForm.projeFiyatlandirma == null)
+                if (parentFormFiyat.projeFiyatlandirma == null)
                 {
-                    parentForm.projeFiyatlandirma = new ctlProjeFiyatlandirma();
-                    parentForm.projeFiyatlandirma.Dock = DockStyle.Fill;
+                    parentFormFiyat.projeFiyatlandirma = new ctlProjeFiyatlandirma();
+                    parentFormFiyat.projeFiyatlandirma.Dock = DockStyle.Fill;
+                    parentFormFiyat.projeFiyatlandirma.OnFiyatlandirmaKaydedildi += (projeAdi) =>
+                    {
+                        // Aynı altProjeler değişkenini kullan
+                        var fiyatlandirmaData = new ProjeFiyatlandirmaData();
+                        decimal toplamBedel = fiyatlandirmaData.GetToplamBedel(projeAdi, altProjeler);
+                        txtToplamBedel.Text = toplamBedel.ToString("F2");
+                    };
                 }
 
-                parentForm.projeFiyatlandirma.LoadProjeFiyatlandirma(projeNo, autoSearch: true);
-                parentForm.NavigateToUserControl(parentForm.projeFiyatlandirma);
+                // Aynı altProjeler değişkenini LoadProjeFiyatlandirma'ya geçir
+                parentFormFiyat.projeFiyatlandirma.LoadProjeFiyatlandirma(projeNo, autoSearch: true, altProjeler: altProjeler);
+                parentFormFiyat.NavigateToUserControl(parentFormFiyat.projeFiyatlandirma);
             };
 
             // FlowLayoutPanel ayarları
@@ -208,8 +252,8 @@ namespace CEKA_APP.UsrControl
                     flp.Controls.Add(aktif.Name == "chkAltProjeVar"
                         ? new Label { Text = "Alt Projeler", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 80) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) }
                         : new Label { Text = "İlişkili Projeler", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 100) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) });
-                    AddEkleButton(flp, prefix);
-                    // İlk TextBox'ı otomatik ekle (çarpı butonu olmadan)
+
+                    // İlk TextBox'ı ekle
                     int index = flp.Controls.OfType<TextBox>().Count() + 1;
                     var txt = new TextBox
                     {
@@ -249,6 +293,15 @@ namespace CEKA_APP.UsrControl
                     panel.Controls.Add(txt);
                     txt.Location = new Point(0, 0);
                     flp.Controls.Add(panel);
+
+                    // Ekle butonunu ekle ve en alta yerleştir
+                    AddEkleButton(flp, prefix);
+                    var btnEkle = flp.Controls.OfType<Button>().FirstOrDefault(b => b.Text == "Ekle");
+                    if (btnEkle != null)
+                    {
+                        flp.Controls.SetChildIndex(btnEkle, flp.Controls.Count - 1); // Butonu en alta taşı
+                    }
+
                     flp.Visible = true;
                     flp.BringToFront();
                     txt.Focus();
@@ -270,7 +323,7 @@ namespace CEKA_APP.UsrControl
             UpdatePanelLayout();
             UpdateContextMenu();
         }
-
+       
         private void AddEkleButton(FlowLayoutPanel flp, string prefix)
         {
             var btnEkle = new Button

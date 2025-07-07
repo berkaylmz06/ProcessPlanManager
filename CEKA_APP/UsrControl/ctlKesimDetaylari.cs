@@ -22,13 +22,11 @@ namespace CEKA_APP.UsrControl
     {
         private List<KesimDetaylari> tumPozlar;
         private string placeholderText = "Ara";
-        private readonly int unlemGenislik = 20; // Ünlem işaretinin genişliği
-
+        private readonly int unlemGenislik = 20; 
         public ctlKesimDetaylari()
         {
             InitializeComponent();
 
-            // ListBox ayarları
             lstPozlar.DrawMode = DrawMode.OwnerDrawFixed;
             lstPozlar.ItemHeight = 25;
             lstPozlar.MouseDown += LstPozlar_MouseDown;
@@ -37,7 +35,7 @@ namespace CEKA_APP.UsrControl
 
             txtArama.TextChanged += TxtAra_TextChanged;
             lstPozlar.SelectedIndexChanged += LstPozlar_SelectedIndexChanged;
-            ListBoxHelper.StilUygula(lstPozlar); // Stil uygulanıyor
+            ListBoxHelper.StilUygula(lstPozlar); 
 
             panelKart1.BackColor = Color.FromArgb(0, 95, 107);
             panelKart2.BackColor = Color.FromArgb(191, 128, 255);
@@ -122,7 +120,6 @@ namespace CEKA_APP.UsrControl
             if (!veri.ekBilgi) return;
 
             Rectangle itemRect = lstPozlar.GetItemRectangle(index);
-            // Kaydırma çubuğu varlığını kontrol et
             bool hasScrollBar = lstPozlar.Items.Count * lstPozlar.ItemHeight > lstPozlar.ClientSize.Height;
             int scrollBarWidth = hasScrollBar ? SystemInformation.VerticalScrollBarWidth : 0;
             Rectangle unlemRect = new Rectangle(
@@ -229,6 +226,16 @@ namespace CEKA_APP.UsrControl
                 }
             }
         }
+        //private string NormalizeMalzemeKod(string malzemeKod)
+        //{
+        //    if (string.IsNullOrWhiteSpace(malzemeKod)) return malzemeKod;
+
+        //    var parts = malzemeKod.Split('-');
+        //    if (parts.Length != 3) return malzemeKod;
+
+        //    return $"{parts[0]}-00-{parts[2]}";
+        //}
+
         private string NormalizeMalzemeKod(string malzemeKod)
         {
             if (string.IsNullOrWhiteSpace(malzemeKod)) return malzemeKod;
@@ -236,7 +243,16 @@ namespace CEKA_APP.UsrControl
             var parts = malzemeKod.Split('-');
             if (parts.Length != 3) return malzemeKod;
 
-            return $"{parts[0]}-00-{parts[2]}";
+            // İlk iki parçayı birleştir (örneğin, ABC-12)
+            string kalipKodu = $"{parts[0]}-{parts[1]}";
+
+            // StandartGruplar kontrolü
+            if (AutoCadAktarimData.GetirStandartGruplar(kalipKodu))
+            {
+                return malzemeKod; // StandartGruplar'da varsa orijinal haliyle dön
+            }
+
+            return $"{parts[0]}-00-{parts[2]}"; // StandartGruplar'da yoksa 00 formatına çevir
         }
         private void OrtalaLabel(Label lbl, Panel pnl)
         {

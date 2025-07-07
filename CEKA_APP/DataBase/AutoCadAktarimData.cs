@@ -242,7 +242,7 @@ namespace CEKA_APP.DataBase
                 }
             }
         }
-        public static List<string> GetirStandartGruplar()
+        public static List<string> GetirStandartGruplarListe()
         {
             var gruplar = new List<string>();
 
@@ -264,6 +264,21 @@ namespace CEKA_APP.DataBase
             }
 
             return gruplar;
+        }
+        public static bool GetirStandartGruplar(string kalip)
+        {
+          
+            using (var conn = DataBaseHelper.GetConnection())
+            {
+                conn.Open();
+                string query = "SELECT COUNT(*) FROM StandartGruplar WHERE grupNo = @grupNo";
+                using (var command = new SqlCommand(query, conn))
+                {
+                    command.Parameters.AddWithValue("@grupNo", kalip);
+                    int count = (int)command.ExecuteScalar();
+                    return count > 0;
+                }
+            }
         }
         public static void StandartGrupSil(string grupNo)
         {
@@ -506,7 +521,9 @@ namespace CEKA_APP.DataBase
         public static (bool isValid, int toplamAdetIfs, int toplamAdetYuklenen) KontrolAdeta(string kalite, string malzeme, string kalip, string proje, int girilenAdet)
         {
             string[] kalipParcalari = kalip.Split('-');
-            if (kalipParcalari.Length >= 3)
+            string originalKalip = kalip;
+
+            if (kalipParcalari.Length >= 3 && GetirStandartGruplar(kalip))
             {
                 kalip = $"{kalipParcalari[0]}-00-{kalipParcalari[2]}";
             }
@@ -537,7 +554,7 @@ WHERE KD.kalite = @Kalite
                     command.Parameters.AddWithValue("@malzemeAd", malzeme);
                     command.Parameters.AddWithValue("@malzemeKod", kalip);
                     command.Parameters.AddWithValue("@ProjeAdi", proje);
-                    command.Parameters.AddWithValue("@malzemeKodLike", $"{kalipParcalari[0]}-[0-9][0-9]-{kalipParcalari[2]}"); 
+                    command.Parameters.AddWithValue("@malzemeKodLike", $"{kalipParcalari[0]}-[0-9][0-9]-{kalipParcalari[2]}");
                     using (var reader = command.ExecuteReader())
                     {
                         int toplamAdetIfs = 0;
@@ -561,6 +578,64 @@ WHERE KD.kalite = @Kalite
                 }
             }
         }
+        //        public static (bool isValid, int toplamAdetIfs, int toplamAdetYuklenen) KontrolAdeta(string kalite, string malzeme, string kalip, string proje, int girilenAdet)
+        //        {
+        //            string[] kalipParcalari = kalip.Split('-');
+        //            if (kalipParcalari.Length >= 3)
+        //            {
+        //                kalip = $"{kalipParcalari[0]}-00-{kalipParcalari[2]}";
+        //            }
+
+        //            string query = @"
+        //SELECT 
+        //    SUM(m.adet) AS ToplamAdetIfs
+        //FROM Malzemeler m
+        //JOIN Gruplar g ON m.grupID = g.grupID
+        //JOIN Projeler p ON g.projeID = p.projeID
+        //WHERE m.kalite = @Kalite
+        //  AND m.malzemeAd = @malzemeAd
+        //  AND m.malzemeKod = @malzemeKod
+        //  AND p.projeAdi = @ProjeAdi;
+
+        //SELECT SUM(KD.toplamAdet) AS ToplamAdetYuklenen
+        //FROM KesimDetaylari KD
+        //WHERE KD.kalite = @Kalite
+        //  AND KD.malzemeKod LIKE @malzemeKodLike
+        //  AND KD.proje = @ProjeAdi";
+
+        //            using (var conn = DataBaseHelper.GetConnection())
+        //            {
+        //                conn.Open();
+        //                using (var command = new SqlCommand(query, conn))
+        //                {
+        //                    command.Parameters.AddWithValue("@Kalite", kalite);
+        //                    command.Parameters.AddWithValue("@malzemeAd", malzeme);
+        //                    command.Parameters.AddWithValue("@malzemeKod", kalip);
+        //                    command.Parameters.AddWithValue("@ProjeAdi", proje);
+        //                    command.Parameters.AddWithValue("@malzemeKodLike", $"{kalipParcalari[0]}-[0-9][0-9]-{kalipParcalari[2]}"); 
+        //                    using (var reader = command.ExecuteReader())
+        //                    {
+        //                        int toplamAdetIfs = 0;
+        //                        int toplamAdetYuklenen = 0;
+
+        //                        if (reader.Read())
+        //                        {
+        //                            toplamAdetIfs = reader["ToplamAdetIfs"] != DBNull.Value ? Convert.ToInt32(reader["ToplamAdetIfs"]) : 0;
+        //                        }
+
+        //                        reader.NextResult();
+
+        //                        if (reader.Read())
+        //                        {
+        //                            toplamAdetYuklenen = reader["ToplamAdetYuklenen"] != DBNull.Value ? Convert.ToInt32(reader["ToplamAdetYuklenen"]) : 0;
+        //                        }
+
+        //                        bool isValid = girilenAdet + toplamAdetYuklenen <= toplamAdetIfs;
+        //                        return (isValid, toplamAdetIfs, toplamAdetYuklenen);
+        //                    }
+        //                }
+        //            }
+        //        }
         //        public static (bool isValid, int toplamAdetIfs, int toplamAdetYuklenen) KontrolAdeta(string kalite, string malzeme, string kalip, string proje, int girilenAdet)
         //        {
         //            string query = @"

@@ -38,11 +38,13 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.btnSil = new System.Windows.Forms.Button();
             this.txtGrupNo = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.btnEkle = new System.Windows.Forms.Button();
             this.listGruplar = new System.Windows.Forms.ListBox();
-            this.btnSil = new System.Windows.Forms.Button();
+            this.btnProjeBagla = new System.Windows.Forms.Button();
+            this.txtProjeBagla = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -139,6 +141,8 @@
             // tabPage2
             // 
             this.tabPage2.BackColor = System.Drawing.Color.White;
+            this.tabPage2.Controls.Add(this.txtProjeBagla);
+            this.tabPage2.Controls.Add(this.btnProjeBagla);
             this.tabPage2.Controls.Add(this.btnSil);
             this.tabPage2.Controls.Add(this.txtGrupNo);
             this.tabPage2.Controls.Add(this.label4);
@@ -151,9 +155,19 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Standart Grup Oluştur";
             // 
+            // btnSil
+            // 
+            this.btnSil.Location = new System.Drawing.Point(315, 98);
+            this.btnSil.Name = "btnSil";
+            this.btnSil.Size = new System.Drawing.Size(83, 41);
+            this.btnSil.TabIndex = 3;
+            this.btnSil.Text = "Sil";
+            this.btnSil.UseVisualStyleBackColor = true;
+            this.btnSil.Click += new System.EventHandler(this.btnSil_Click);
+            // 
             // txtGrupNo
             // 
-            this.txtGrupNo.Location = new System.Drawing.Point(226, 81);
+            this.txtGrupNo.Location = new System.Drawing.Point(226, 49);
             this.txtGrupNo.Name = "txtGrupNo";
             this.txtGrupNo.Size = new System.Drawing.Size(172, 22);
             this.txtGrupNo.TabIndex = 1;
@@ -161,7 +175,7 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(264, 52);
+            this.label4.Location = new System.Drawing.Point(264, 20);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(87, 16);
             this.label4.TabIndex = 2;
@@ -169,7 +183,7 @@
             // 
             // btnEkle
             // 
-            this.btnEkle.Location = new System.Drawing.Point(226, 130);
+            this.btnEkle.Location = new System.Drawing.Point(226, 98);
             this.btnEkle.Name = "btnEkle";
             this.btnEkle.Size = new System.Drawing.Size(83, 41);
             this.btnEkle.TabIndex = 2;
@@ -188,15 +202,22 @@
             this.listGruplar.Size = new System.Drawing.Size(200, 241);
             this.listGruplar.TabIndex = 0;
             // 
-            // btnSil
+            // btnProjeBagla
             // 
-            this.btnSil.Location = new System.Drawing.Point(315, 130);
-            this.btnSil.Name = "btnSil";
-            this.btnSil.Size = new System.Drawing.Size(83, 41);
-            this.btnSil.TabIndex = 3;
-            this.btnSil.Text = "Sil";
-            this.btnSil.UseVisualStyleBackColor = true;
-            this.btnSil.Click += new System.EventHandler(this.btnSil_Click);
+            this.btnProjeBagla.Location = new System.Drawing.Point(226, 186);
+            this.btnProjeBagla.Name = "btnProjeBagla";
+            this.btnProjeBagla.Size = new System.Drawing.Size(172, 41);
+            this.btnProjeBagla.TabIndex = 4;
+            this.btnProjeBagla.Text = "Projeye Bağla";
+            this.btnProjeBagla.UseVisualStyleBackColor = true;
+            this.btnProjeBagla.Click += new System.EventHandler(this.btnProjeBagla_Click);
+            // 
+            // txtProjeBagla
+            // 
+            this.txtProjeBagla.Location = new System.Drawing.Point(226, 158);
+            this.txtProjeBagla.Name = "txtProjeBagla";
+            this.txtProjeBagla.Size = new System.Drawing.Size(172, 22);
+            this.txtProjeBagla.TabIndex = 5;
             // 
             // frmStandartProjeler
             // 
@@ -235,5 +256,7 @@
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Button btnEkle;
         private System.Windows.Forms.Button btnSil;
+        private System.Windows.Forms.Button btnProjeBagla;
+        private System.Windows.Forms.TextBox txtProjeBagla;
     }
 }

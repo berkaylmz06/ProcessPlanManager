@@ -704,7 +704,6 @@ namespace CEKA_APP.UsrControl
                                 seciliDugum.Parent.Parent.Text;
                 string seciliYol = seciliDugum.FullPath;
 
-                // Silinen satırları işle
                 foreach (var silinen in silinenSatirlar)
                 {
                     if (seciliDugum.Parent == null && !string.IsNullOrEmpty(silinen.GrupAdi))
@@ -718,7 +717,6 @@ namespace CEKA_APP.UsrControl
                     }
                 }
 
-                // Değiştirilen ve eklenen satırları işle
                 if (seciliDugum.Parent == null)
                 {
                     foreach (DataRow row in tempTablo.Rows.Cast<DataRow>()
@@ -773,7 +771,6 @@ namespace CEKA_APP.UsrControl
                     }
                 }
 
-                // Tabloyu güncelle
                 string seviye = seciliDugum.Parent == null ? "Proje" :
                                 seciliDugum.Parent.Parent == null ? "Grup" : "Malzeme";
                 InitializeTempTablo(seviye);
@@ -833,7 +830,6 @@ namespace CEKA_APP.UsrControl
 
                 if (saveSuccess)
                 {
-                    MessageBox.Show("Veriler başarıyla kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     isDirty = false;
                     ColorRows();
                 }
@@ -930,9 +926,6 @@ namespace CEKA_APP.UsrControl
             }
             return true;
         }
-
-
-
         private void ColorRows()
         {
             if (treeView1.SelectedNode == null)
@@ -981,12 +974,12 @@ namespace CEKA_APP.UsrControl
                 {
                     try
                     {
-                        string projeAdi = row.Cells[projeAdiIndex].Value?.ToString()?.Trim();
-                        string grupAdi = row.Cells[grupAdiIndex].Value?.ToString()?.Trim();
-                        string malzemeKod = row.Cells[malzemeKodIndex].Value?.ToString()?.Trim();
+                        string projeAdi = row.Cells[projeAdiIndex].Value?.ToString()?.Trim().ToLowerInvariant() ?? "";
+                        string grupAdi = row.Cells[grupAdiIndex].Value?.ToString()?.Trim().ToLowerInvariant() ?? "";
+                        string malzemeKod = row.Cells[malzemeKodIndex].Value?.ToString()?.Trim() ?? "";
                         string adet = row.Cells[adetIndex].Value?.ToString()?.Trim();
-                        string malzemeAd = row.Cells[malzemeAdIndex].Value?.ToString()?.Trim();
-                        string kalite = row.Cells[kaliteIndex].Value?.ToString()?.Trim();
+                        string malzemeAd = row.Cells[malzemeAdIndex].Value?.ToString()?.Trim().ToLowerInvariant() ?? "";
+                        string kalite = row.Cells[kaliteIndex].Value?.ToString()?.Trim().ToLowerInvariant() ?? "";
 
                         if (string.IsNullOrEmpty(projeAdi) || string.IsNullOrEmpty(grupAdi) ||
                             string.IsNullOrEmpty(malzemeKod) || string.IsNullOrEmpty(adet) ||
@@ -996,7 +989,20 @@ namespace CEKA_APP.UsrControl
                             continue;
                         }
 
+                        string[] parts = malzemeKod.Split('-');
+                        if (parts.Length >= 3)
+                        {
+                            string kalipKodu = $"{parts[0]}-{parts[1]}";
+                            if (!AutoCadAktarimData.GetirStandartGruplar(kalipKodu))
+                            {
+                                parts[1] = "00";
+                                malzemeKod = string.Join("-", parts);
+                            }
+                        }
+                        malzemeKod = malzemeKod.ToLowerInvariant();
+
                         string key = $"{kalite}_{malzemeAd}_{malzemeKod}_{projeAdi}";
+
                         var kesimDetayi = kesimDetaylari.FirstOrDefault(k => k.Key == key);
 
                         if (kesimDetayi != null)
@@ -1026,5 +1032,99 @@ namespace CEKA_APP.UsrControl
                 }
             }
         }
+
+        //private void ColorRows()
+        //{
+        //    if (treeView1.SelectedNode == null)
+        //    {
+        //        return;
+        //    }
+
+        //    string seviye = treeView1.SelectedNode.Parent == null ? "Proje" :
+        //                    treeView1.SelectedNode.Parent.Parent == null ? "Grup" : "Malzeme";
+
+        //    if (seviye != "Grup" && seviye != "Malzeme")
+        //    {
+        //        return;
+        //    }
+
+        //    var kesimDetaylari = KesimDetaylariData.GetKesimDetaylariBilgileri();
+        //    var mevcutSutunlar = dataGridOgeDetay.Columns.Cast<DataGridViewColumn>().Select(c => c.DataPropertyName).ToList();
+        //    var sutunAdlari = dataGridOgeDetay.Columns.Cast<DataGridViewColumn>()
+        //        .ToDictionary(c => c.DataPropertyName.ToLowerInvariant(), c => c.Index, StringComparer.OrdinalIgnoreCase);
+        //    var eksikSutunlar = new List<string>();
+
+        //    string[] gerekliSutunlar = { "projeadi", "grupadi", "malzemekod", "adet", "malzemead", "kalite" };
+        //    foreach (var sutun in gerekliSutunlar)
+        //    {
+        //        if (!sutunAdlari.ContainsKey(sutun))
+        //        {
+        //            eksikSutunlar.Add(sutun);
+        //        }
+        //    }
+        //    if (eksikSutunlar.Any())
+        //    {
+        //        MessageBox.Show($"DataGridView sütunları eksik: {string.Join(", ", eksikSutunlar)}. Lütfen destek ekibine başvurun.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        return;
+        //    }
+
+        //    int projeAdiIndex = sutunAdlari["projeadi"];
+        //    int grupAdiIndex = sutunAdlari["grupadi"];
+        //    int malzemeKodIndex = sutunAdlari["malzemekod"];
+        //    int adetIndex = sutunAdlari["adet"];
+        //    int malzemeAdIndex = sutunAdlari["malzemead"];
+        //    int kaliteIndex = sutunAdlari["kalite"];
+
+        //    foreach (DataGridViewRow row in dataGridOgeDetay.Rows)
+        //    {
+        //        if (!row.IsNewRow)
+        //        {
+        //            try
+        //            {
+        //                string projeAdi = row.Cells[projeAdiIndex].Value?.ToString()?.Trim();
+        //                string grupAdi = row.Cells[grupAdiIndex].Value?.ToString()?.Trim();
+        //                string malzemeKod = row.Cells[malzemeKodIndex].Value?.ToString()?.Trim();
+        //                string adet = row.Cells[adetIndex].Value?.ToString()?.Trim();
+        //                string malzemeAd = row.Cells[malzemeAdIndex].Value?.ToString()?.Trim();
+        //                string kalite = row.Cells[kaliteIndex].Value?.ToString()?.Trim();
+
+        //                if (string.IsNullOrEmpty(projeAdi) || string.IsNullOrEmpty(grupAdi) ||
+        //                    string.IsNullOrEmpty(malzemeKod) || string.IsNullOrEmpty(adet) ||
+        //                    string.IsNullOrEmpty(malzemeAd) || string.IsNullOrEmpty(kalite))
+        //                {
+        //                    row.DefaultCellStyle.BackColor = Color.Empty;
+        //                    continue;
+        //                }
+
+        //                string key = $"{kalite}_{malzemeAd}_{malzemeKod}_{projeAdi}";
+        //                var kesimDetayi = kesimDetaylari.FirstOrDefault(k => k.Key == key);
+
+        //                if (kesimDetayi != null)
+        //                {
+        //                    if (kesimDetayi.kesilmisAdet == kesimDetayi.toplamAdet && kesimDetayi.toplamAdet > 0)
+        //                    {
+        //                        row.DefaultCellStyle.BackColor = Color.Red;
+        //                    }
+        //                    else if (kesimDetayi.kesilmisAdet > 0)
+        //                    {
+        //                        row.DefaultCellStyle.BackColor = Color.Orange;
+        //                    }
+        //                    else
+        //                    {
+        //                        row.DefaultCellStyle.BackColor = Color.Green;
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    row.DefaultCellStyle.BackColor = Color.Empty;
+        //                }
+        //            }
+        //            catch (Exception ex)
+        //            {
+        //                MessageBox.Show($"ColorRows: Satır {row.Index} için hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //            }
+        //        }
+        //    }
+        //}
     }
 }

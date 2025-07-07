@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -88,7 +89,7 @@ namespace CEKA_APP
         private void ListeleGruplar()
         {
             listGruplar.Items.Clear();
-            var gruplar = AutoCadAktarimData.GetirStandartGruplar();
+            var gruplar = AutoCadAktarimData.GetirStandartGruplarListe();
             listGruplar.Items.AddRange(gruplar.ToArray());
         }
 
@@ -121,6 +122,45 @@ namespace CEKA_APP
                 {
                     MessageBox.Show("Silme işlemi sırasında hata oluştu:\n" + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
+            }
+        }
+
+        private void btnProjeBagla_Click(object sender, EventArgs e)
+        {
+            if (listGruplar.SelectedItem == null || string.IsNullOrWhiteSpace(txtProjeBagla.Text))
+            {
+                MessageBox.Show("Lütfen bir grup ve proje numarası girin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                string secilenGrup = listGruplar.SelectedItem.ToString();
+                string projeAdi = txtProjeBagla.Text.Trim();
+
+                // Proje numarasının varlığını kontrol et
+                using (var conn = DataBaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    string checkProjeQuery = "SELECT COUNT(*) FROM Projeler WHERE projeAdi = @projeAdi";
+                    using (var checkCmd = new SqlCommand(checkProjeQuery, conn))
+                    {
+                        checkCmd.Parameters.AddWithValue("@projeAdi", projeAdi);
+                        int projeCount = (int)checkCmd.ExecuteScalar();
+                        if (projeCount == 0)
+                        {
+                            MessageBox.Show("Girilen proje numarası mevcut değil.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                    }
+                }
+
+                AutoCadAktarimData.GrupEkleGuncelle(projeAdi, secilenGrup, null);
+                MessageBox.Show("Grup başarıyla projeye bağlandı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

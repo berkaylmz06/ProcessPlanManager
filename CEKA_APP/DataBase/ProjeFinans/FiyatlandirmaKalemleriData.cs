@@ -7,39 +7,38 @@ using System.Threading.Tasks;
 
 namespace CEKA_APP.DataBase.ProjeFinans
 {
-    public class IscilikData
+    public class FiyatlandirmaKalemleriData
     {
-        
-
-        public List<(int Id, string Adi, DateTime Tarih)> GetIscilikler()
+        public List<(int Id, string Adi,string Birim, DateTime Tarih)> GetFiyatlandirmaKalemleri()
         {
-            var iscilikler = new List<(int Id, string Adi, DateTime Tarih)>();
+            var fiyatlandirmaKalemleri = new List<(int Id, string Adi, string Birim, DateTime Tarih)>();
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
-                string query = "SELECT iscilikId, iscilikAdi, olusturmaTarihi FROM ProjeFinans_Iscilikler";
+                string query = "SELECT fiyatlandirmaKalemId, kalemAdi, kalemBirim, olusturmaTarihi FROM ProjeFinans_FiyatlandirmaKalemleri";
                 using (var cmd = new SqlCommand(query, connection))
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        iscilikler.Add((reader.GetInt32(0), reader.GetString(1), reader.GetDateTime(2)));
+                        fiyatlandirmaKalemleri.Add((reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetDateTime(3)));
                     }
                 }
                 connection.Close();
             }
-            return iscilikler;
+            return fiyatlandirmaKalemleri;
         }
 
-        public int IscilikEkle(string iscilikAdi)
+        public int FiyatlandirmaKalemleriEkle(string kalemAdi, string kalemBirim)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
-                string query = "INSERT INTO ProjeFinans_Iscilikler (iscilikAdi, olusturmaTarihi) VALUES (@iscilikAdi, @olusturmaTarihi)";
+                string query = "INSERT INTO ProjeFinans_FiyatlandirmaKalemleri (kalemAdi, kalemBirim, olusturmaTarihi) VALUES (@kalemAdi, @kalemBirim, @olusturmaTarihi)";
                 using (var cmd = new SqlCommand(query, connection))
                 {
-                    cmd.Parameters.AddWithValue("@iscilikAdi", iscilikAdi);
+                    cmd.Parameters.AddWithValue("@kalemAdi", kalemAdi);
+                    cmd.Parameters.AddWithValue("@kalemBirim", kalemBirim);
                     cmd.Parameters.AddWithValue("@olusturmaTarihi", DateTime.Now);
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 }
