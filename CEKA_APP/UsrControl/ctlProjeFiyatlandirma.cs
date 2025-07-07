@@ -15,6 +15,10 @@ namespace CEKA_APP.UsrControl
         private ComboBox cmbProjeNo;
         private List<string> altProjeler;
 
+        private Button btnYeniKalemEkle;
+        private Label lblToplamTeklif;
+        private Label lblToplamGerceklesen;
+
         public ctlProjeFiyatlandirma()
         {
             InitializeComponent();
@@ -40,12 +44,59 @@ namespace CEKA_APP.UsrControl
             btnKaydet.Location = new Point(panelUst.Width - btnKaydet.Width - 10, 10);
 
             btnProjeAra.Click += btnProjeAra_Click;
+
+            btnYeniKalemEkle = new Button
+            {
+                Text = "+ Kalem Ekle",
+                BackColor = Color.Gainsboro,
+                Font = new Font("Segoe UI", 8),
+                AutoSize = true,
+                Padding = new Padding(5),
+                Anchor = AnchorStyles.Right
+            };
+            btnYeniKalemEkle.Click += BtnYeniKalemEkle_Click;
+
+            lblToplamTeklif = new Label
+            {
+                Text = "Toplam Teklif: 0.00",
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                ForeColor = Color.DarkBlue,
+                Anchor = AnchorStyles.Left
+            };
+
+            lblToplamGerceklesen = new Label
+            {
+                Text = "Toplam Gerçekleşen: 0.00",
+                AutoSize = true,
+                Font = new Font("Segoe UI", 9, FontStyle.Bold),
+                ForeColor = Color.DarkGreen,
+                Anchor = AnchorStyles.Left
+            };
+
+            var altPanel = new FlowLayoutPanel
+            {
+                Dock = DockStyle.Bottom,
+                Height = 40,
+                Padding = new Padding(10),
+                FlowDirection = FlowDirection.LeftToRight,
+                AutoSize = true
+            };
+            altPanel.Controls.Add(lblToplamTeklif);
+            altPanel.Controls.Add(lblToplamGerceklesen);
+            altPanel.Controls.Add(btnYeniKalemEkle);
+
+            Controls.Add(altPanel);
         }
 
         private void ctlProjeFiyatlandirma_Load(object sender, EventArgs e)
         {
             ctlBaslik1.Baslik = "Proje Fiyatlandırma";
             panelUst.AutoScroll = true;
+
+            tableLayoutPanel1.Dock = DockStyle.Fill;
+            tableLayoutPanel1.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
+            tableLayoutPanel1.AutoScroll = true;
         }
 
         public void LoadProjeFiyatlandirma(string projeNo, bool autoSearch = false, List<string> altProjeler = null)
@@ -87,11 +138,8 @@ namespace CEKA_APP.UsrControl
             if (!string.IsNullOrEmpty(projeNo))
             {
                 var fiyatlandirmalar = fiyatlandirmaData.GetFiyatlandirmaByProje(projeNo);
-                // foreach (var kalem in fiyatlandirmalar)
-                //     AddYeniKalemSatiri(kalem.KalemAdi);
+                // Eğer hazır veri varsa burada eklersiniz
             }
-
-            AddYeniKalemEkleButonu();
         }
 
         private void AddHeaderRow()
@@ -121,27 +169,6 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-        private void AddYeniKalemEkleButonu()
-        {
-            Button btnYeniKalemEkle = new Button
-            {
-                Text = "+ Kalem Ekle",
-                BackColor = Color.Gainsboro,
-                Dock = DockStyle.Right,
-                Font = new Font("Segoe UI", 8, FontStyle.Regular),
-                Margin = new Padding(5),
-                Padding = new Padding(5),
-                AutoSize = true
-            };
-
-            btnYeniKalemEkle.Click += BtnYeniKalemEkle_Click;
-
-            tableLayoutPanel1.RowCount++;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.AutoSize));
-            tableLayoutPanel1.Controls.Add(btnYeniKalemEkle, 0, tableLayoutPanel1.RowCount - 1);
-            tableLayoutPanel1.SetColumnSpan(btnYeniKalemEkle, 8);
-        }
-
         private void BtnYeniKalemEkle_Click(object sender, EventArgs e)
         {
             var frm = new frmYeniFiyatlandirmaKalemiEkle();
@@ -153,28 +180,19 @@ namespace CEKA_APP.UsrControl
 
         private void AddYeniKalemSatiri(string kalemAdi)
         {
-            int btnRowIndex = tableLayoutPanel1.RowCount - 1;
-            int newRowIndex = btnRowIndex;
-
+            int newRowIndex = tableLayoutPanel1.RowCount;
             tableLayoutPanel1.RowCount++;
-            tableLayoutPanel1.RowStyles.Insert(newRowIndex, new RowStyle(SizeType.AutoSize));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.AutoSize));
 
-            var btn = tableLayoutPanel1.GetControlFromPosition(0, btnRowIndex);
-            if (btn != null)
-            {
-                tableLayoutPanel1.Controls.Remove(btn);
-                tableLayoutPanel1.Controls.Add(btn, 0, btnRowIndex + 1);
-                tableLayoutPanel1.SetColumnSpan(btn, 8);
-            }
-
-            var lbl = new Label
+            // Kalem Adı TextBox olarak eklendi
+            var txtKalemAdi = new TextBox
             {
                 Text = kalemAdi,
                 Dock = DockStyle.Fill,
-                TextAlign = ContentAlignment.MiddleLeft,
+                TextAlign = HorizontalAlignment.Left,
                 Margin = new Padding(3)
             };
-            tableLayoutPanel1.Controls.Add(lbl, 0, newRowIndex);
+            tableLayoutPanel1.Controls.Add(txtKalemAdi, 0, newRowIndex);
 
             for (int i = 1; i < 8; i++)
             {
@@ -218,7 +236,7 @@ namespace CEKA_APP.UsrControl
                 var pos = tableLayoutPanel1.GetPositionFromControl(txtChanged);
                 int row = pos.Row;
 
-                if (row < 1 || row >= tableLayoutPanel1.RowCount - 1) return;
+                if (row < 1 || row >= tableLayoutPanel1.RowCount) return;
 
                 var txtTeklifAdet = GetTextBoxAt(row, 1);
                 var txtTeklifBirimFiyat = GetTextBoxAt(row, 2);
@@ -248,6 +266,17 @@ namespace CEKA_APP.UsrControl
                     lblSonDurum.Text = fark.ToString("N2");
                     lblSonDurum.ForeColor = fark < 0 ? Color.Red : Color.Green;
                 }
+
+                decimal toplamTeklif = 0, toplamGerceklesen = 0;
+
+                for (int i = 1; i < tableLayoutPanel1.RowCount; i++)
+                {
+                    toplamTeklif += decimal.TryParse(GetTextBoxAt(i, 3)?.Text, out decimal tt) ? tt : 0;
+                    toplamGerceklesen += decimal.TryParse(GetTextBoxAt(i, 6)?.Text, out decimal gm) ? gm : 0;
+                }
+
+                lblToplamTeklif.Text = $"Toplam Teklif: {toplamTeklif:N2}";
+                lblToplamGerceklesen.Text = $"Toplam Gerçekleşen: {toplamGerceklesen:N2}";
             }
         }
 
