@@ -1,6 +1,6 @@
 # CEKA_APP
 
-Bu proje, PDF dosyalarını işlemek ve kesim planları oluşturmak için geliştirilmiş bir Windows Forms uygulamasıdır. PDF dosyalarından metin çıkarma, veri işleme ve XML dışa aktarma gibi özellikler sunar.
+Bu proje, Kurumsal kaynak planlaması için geliştirilmiş bir Windows Forms uygulamasıdır. PDF dosyalarından metin çıkarma, veri işleme ve XML dışa aktarma vs. gibi özellikler sunar.
 
 ## Dependencies and Licenses
 Bu proje aşağıdaki kütüphaneleri kullanır:
@@ -11,7 +11,7 @@ Bu proje aşağıdaki kütüphaneleri kullanır:
 - **Newtonsoft.Json**: Licensed under MIT. See `/LICENSES/LICENSE_Newtonsoft.Json.txt`.
 
 ## Installation
-1. Projeyi GitHub'dan klonlayın: `git clone https://github.com/[kullanıcı_adın]/CEKA_APP.git`
+1. Projeyi GitHub'dan klonlayın: `git clone https://github.com/berkaylmz06/ProcessPlanManager/tree/master`
 2. Gerekli bağımlılıkları yükleyin (NuGet paketleri: iText, PDFium, PDFsharp, Newtonsoft.Json).
 3. Visual Studio'da projeyi derleyin ve çalıştırın.
 
