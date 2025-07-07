@@ -31,6 +31,7 @@
             this.panelVeriYonetim = new System.Windows.Forms.Panel();
             this.groupBoxVeriYonetim = new System.Windows.Forms.GroupBox();
             this.button5 = new System.Windows.Forms.Button();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.button4 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.dtEklemeTarihi = new System.Windows.Forms.DateTimePicker();
@@ -72,9 +73,9 @@
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button3 = new System.Windows.Forms.Button();
             this.btnSec = new System.Windows.Forms.Button();
-            this.progressBar1 = new System.Windows.Forms.ProgressBar();
-            this.pdfViewer1 = new Spire.PdfViewer.Forms.PdfViewer();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
+            this.btnYazdir = new System.Windows.Forms.Button();
+            this.pdfViewer1 = new PdfiumViewer.PdfViewer();
             this.panelVeriYonetim.SuspendLayout();
             this.groupBoxVeriYonetim.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -93,11 +94,12 @@
             this.panelVeriYonetim.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelVeriYonetim.Location = new System.Drawing.Point(0, 48);
             this.panelVeriYonetim.Name = "panelVeriYonetim";
-            this.panelVeriYonetim.Size = new System.Drawing.Size(730, 903);
+            this.panelVeriYonetim.Size = new System.Drawing.Size(730, 899);
             this.panelVeriYonetim.TabIndex = 326;
             // 
             // groupBoxVeriYonetim
             // 
+            this.groupBoxVeriYonetim.Controls.Add(this.btnYazdir);
             this.groupBoxVeriYonetim.Controls.Add(this.button5);
             this.groupBoxVeriYonetim.Controls.Add(this.progressBar1);
             this.groupBoxVeriYonetim.Controls.Add(this.button4);
@@ -139,6 +141,16 @@
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Visible = false;
             this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.progressBar1.Location = new System.Drawing.Point(3, 761);
+            this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(694, 16);
+            this.progressBar1.TabIndex = 101;
+            this.progressBar1.Visible = false;
             // 
             // button4
             // 
@@ -551,43 +563,33 @@
             this.btnSec.UseVisualStyleBackColor = true;
             this.btnSec.Click += new System.EventHandler(this.btnSec_Click);
             // 
-            // progressBar1
-            // 
-            this.progressBar1.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.progressBar1.Location = new System.Drawing.Point(3, 761);
-            this.progressBar1.Margin = new System.Windows.Forms.Padding(2);
-            this.progressBar1.Name = "progressBar1";
-            this.progressBar1.Size = new System.Drawing.Size(694, 16);
-            this.progressBar1.TabIndex = 101;
-            this.progressBar1.Visible = false;
-            // 
-            // pdfViewer1
-            // 
-            this.pdfViewer1.BackColor = System.Drawing.SystemColors.Window;
-            this.pdfViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pdfViewer1.FindTextHighLightColor = System.Drawing.Color.FromArgb(((int)(((byte)(200)))), ((int)(((byte)(153)))), ((int)(((byte)(193)))), ((int)(((byte)(218)))));
-            this.pdfViewer1.FormFillEnabled = false;
-            this.pdfViewer1.IgnoreCase = false;
-            this.pdfViewer1.IsToolBarVisible = true;
-            this.pdfViewer1.Location = new System.Drawing.Point(730, 48);
-            this.pdfViewer1.Margin = new System.Windows.Forms.Padding(4);
-            this.pdfViewer1.MultiPagesThreshold = 60;
-            this.pdfViewer1.Name = "pdfViewer1";
-            this.pdfViewer1.OnRenderPageExceptionEvent = null;
-            this.pdfViewer1.Size = new System.Drawing.Size(895, 903);
-            this.pdfViewer1.TabIndex = 325;
-            this.pdfViewer1.Text = "pdfViewer1";
-            this.pdfViewer1.Threshold = 60;
-            this.pdfViewer1.ViewerBackgroundColor = System.Drawing.SystemColors.Window;
-            // 
             // ctlBaslik1
             // 
             this.ctlBaslik1.Baslik = "Başlık";
             this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
             this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
             this.ctlBaslik1.Name = "ctlBaslik1";
-            this.ctlBaslik1.Size = new System.Drawing.Size(1625, 48);
+            this.ctlBaslik1.Size = new System.Drawing.Size(1612, 48);
             this.ctlBaslik1.TabIndex = 327;
+            // 
+            // btnYazdir
+            // 
+            this.btnYazdir.Location = new System.Drawing.Point(600, 710);
+            this.btnYazdir.Name = "btnYazdir";
+            this.btnYazdir.Size = new System.Drawing.Size(79, 42);
+            this.btnYazdir.TabIndex = 327;
+            this.btnYazdir.Text = "Yazdır";
+            this.btnYazdir.UseVisualStyleBackColor = true;
+            this.btnYazdir.Click += new System.EventHandler(this.btnYazdir_Click);
+            // 
+            // pdfViewer1
+            // 
+            this.pdfViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pdfViewer1.Location = new System.Drawing.Point(730, 48);
+            this.pdfViewer1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.pdfViewer1.Name = "pdfViewer1";
+            this.pdfViewer1.Size = new System.Drawing.Size(882, 899);
+            this.pdfViewer1.TabIndex = 328;
             // 
             // ctlKesimPlaniEkle
             // 
@@ -597,7 +599,7 @@
             this.Controls.Add(this.panelVeriYonetim);
             this.Controls.Add(this.ctlBaslik1);
             this.Name = "ctlKesimPlaniEkle";
-            this.Size = new System.Drawing.Size(1625, 951);
+            this.Size = new System.Drawing.Size(1612, 947);
             this.Load += new System.EventHandler(this.ctlKesimPlaniEkle_Load);
             this.panelVeriYonetim.ResumeLayout(false);
             this.groupBoxVeriYonetim.ResumeLayout(false);
@@ -650,7 +652,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.Button btnSec;
         private System.Windows.Forms.ProgressBar progressBar1;
-        private Spire.PdfViewer.Forms.PdfViewer pdfViewer1;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridKalite;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridMalzeme;
         private System.Windows.Forms.DataGridViewTextBoxColumn gridKalip;
@@ -662,5 +663,7 @@
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.Button button5;
         private ctlBaslik ctlBaslik1;
+        private System.Windows.Forms.Button btnYazdir;
+        private PdfiumViewer.PdfViewer pdfViewer1;
     }
 }

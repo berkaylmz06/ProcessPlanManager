@@ -7,12 +7,14 @@ using CEKA_APP.Helper;
 using iText.Kernel.Pdf;
 using iText.Kernel.Pdf.Canvas.Parser;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
-using Spire.Additions.Html;
+using PdfSharp.Fonts;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Printing;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -328,23 +330,24 @@ namespace CEKA_APP.UsrControl
 
                 await Task.Run(() =>
                 {
-                    Spire.Pdf.PdfDocument pdfDoc = new Spire.Pdf.PdfDocument();
-                    pdfDoc.LoadFromFile(filePath);
-                    pageCount = pdfDoc.Pages.Count;
-
-                    for (int i = 0; i < pageCount; i++)
+                    using (var pdfDoc = PdfiumViewer.PdfDocument.Load(filePath))
                     {
-                        int progressValue = (i + 1) * 100 / pageCount;
-                        Invoke(new Action(() => progressBar1.Value = progressValue));
-                        Thread.Sleep(20);
+                        pageCount = pdfDoc.PageCount;
+
+                        for (int i = 0; i < pageCount; i++)
+                        {
+                            int progressValue = (i + 1) * 100 / pageCount;
+                            Invoke(new Action(() => progressBar1.Value = progressValue));
+                            System.Threading.Thread.Sleep(20);
+                        }
                     }
                 });
 
-                pdfViewer1.LoadFromFile(filePath);
+                pdfViewer1.Document = PdfiumViewer.PdfDocument.Load(filePath);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("PDF yükleme hatası: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"PDF yükleme hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -791,7 +794,7 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show("Hiçbir geçerli satır bulunamadı, kayıt yapılmadı!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-      
+
         private void Temizle()
         {
             txtId.Clear();
@@ -816,7 +819,7 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show("Hata: _seciliButon null olmadı!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-       
+
         public string IslenmisVeriAjan()
         {
             if (_formArayuzu.RichTextBox1BosMu())
@@ -2182,6 +2185,113 @@ namespace CEKA_APP.UsrControl
         private void btnAdm_Click(object sender, EventArgs e)
         {
             IDVer();
+        }
+
+
+        private async void btnYazdir_Click(object sender, EventArgs e)
+        {
+            GlobalFontSettings.FontResolver = new CEKA_APP.Helper.PlatformFontResolver();
+
+            if (string.IsNullOrEmpty(txtDosya.Text) || !File.Exists(txtDosya.Text))
+            {
+                MessageBox.Show("Önce PDF seçiniz!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(txtId.Text))
+            {
+                MessageBox.Show("Lütfen txtId alanını doldurun!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (dataGridView3.Rows.Count == 0 || dataGridView3.Rows[0].IsNewRow)
+            {
+                MessageBox.Show("DataGridView3'te veri bulunamadı!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            try
+            {
+                var swTotal = Stopwatch.StartNew();
+
+                using (var memoryStream = new MemoryStream())
+                {
+                    using (var input = PdfSharp.Pdf.IO.PdfReader.Open(txtDosya.Text, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Modify))
+                    {
+                        foreach (DataGridViewRow row in dataGridView3.Rows)
+                        {
+                            if (row.IsNewRow || row.Cells[1].Value == null || row.Cells[0].Value == null) continue;
+
+                            string sayfaNoStr = row.Cells[1].Value.ToString().Trim();
+                            string metin = row.Cells[0].Value.ToString().Trim();
+
+                            if (!int.TryParse(sayfaNoStr, out int sayfaNo) || sayfaNo < 1 || sayfaNo > input.PageCount)
+                            {
+                                Invoke(new Action(() => MessageBox.Show($"Geçersiz sayfa numarası: {sayfaNoStr}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error)));
+                                continue;
+                            }
+
+                            var gfx = PdfSharp.Drawing.XGraphics.FromPdfPage(input.Pages[sayfaNo - 1], PdfSharp.Drawing.XGraphicsPdfPageOptions.Append);
+                            var font = new PdfSharp.Drawing.XFont("Arial", 20);
+                            gfx.DrawString(metin, font, PdfSharp.Drawing.XBrushes.Black, new PdfSharp.Drawing.XPoint(400, 40));
+                        }
+
+                        input.Save(memoryStream);
+                        memoryStream.Position = 0;
+                    }
+
+                    using (var printDialog = new PrintDialog())
+                    {
+                        printDialog.AllowSomePages = true;
+                        printDialog.ShowHelp = true;
+
+                        if (printDialog.ShowDialog() == DialogResult.OK)
+                        {
+                            var swPrint = Stopwatch.StartNew();
+
+                            using (var pdfDoc = await Task.Run(() => PdfiumViewer.PdfDocument.Load(memoryStream)))
+                            {
+                                PrintDocument printDoc = new PrintDocument();
+                                printDoc.PrinterSettings = printDialog.PrinterSettings;
+
+                                int pageCount = pdfDoc.PageCount;
+                                int currentPage = 0;
+
+                                printDoc.PrintPage += (s, ev) =>
+                                {
+                                    using (var image = pdfDoc.Render(currentPage, 96, 96, false)) 
+                                    {
+                                        Rectangle pageBounds = ev.PageBounds; 
+                                        float width = pageBounds.Width;
+                                        float height = pageBounds.Height;
+
+                                        ev.Graphics.DrawImage(image, 0, 0, width, height);
+                                    }
+
+                                    currentPage++;
+                                    ev.HasMorePages = currentPage < pageCount;
+                                };
+
+                                printDoc.PrintController = new StandardPrintController();
+                                printDoc.Print();
+                            }
+
+                            swPrint.Stop();
+                            Debug.WriteLine($"Yazdırma süresi: {swPrint.ElapsedMilliseconds} ms");
+                            MessageBox.Show("PDF başarıyla yazdırıldı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                }
+
+                swTotal.Stop();
+                Debug.WriteLine($"Toplam işlem süresi: {swTotal.ElapsedMilliseconds} ms");
+            }
+            catch (Exception ex)
+            {
+                string logPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "YazdirmaHata.txt");
+                File.AppendAllText(logPath, $"[{DateTime.Now}] Hata: {ex.Message}\n{ex.StackTrace}\n");
+                MessageBox.Show($"Hata oluştu: {ex.Message}\nDetaylar: {logPath}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }
