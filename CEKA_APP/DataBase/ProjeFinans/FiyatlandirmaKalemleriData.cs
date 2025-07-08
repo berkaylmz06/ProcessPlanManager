@@ -44,5 +44,19 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
+        public int GetFiyatlandirmaKalemIdByAdi(string kalemAdi)
+        {
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                connection.Open();
+                string query = "SELECT fiyatlandirmaKalemId FROM ProjeFinans_FiyatlandirmaKalemleri WHERE kalemAdi = @kalemAdi";
+                using (var cmd = new SqlCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("@kalemAdi", kalemAdi);
+                    object result = cmd.ExecuteScalar();
+                    return result != null ? Convert.ToInt32(result) : 0;
+                }
+            }
+        }
     }
 }

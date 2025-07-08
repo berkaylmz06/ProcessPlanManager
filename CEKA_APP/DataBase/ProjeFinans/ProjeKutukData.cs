@@ -184,7 +184,6 @@ namespace CEKA_APP.DataBase
                         return false;
                     }
 
-                    // Veriler farklıysa güncelle
                     string sorgu = @"
                         UPDATE ProjeFinans_Projeler
                         SET aciklama = @aciklama, 
@@ -318,6 +317,30 @@ namespace CEKA_APP.DataBase
                 {
                     MessageBox.Show($"Proje aranırken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return null;
+                }
+            }
+        }
+        public static void UpdateToplamBedel(string projeNo, decimal toplamBedel)
+        {
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    string query = @"
+                UPDATE ProjeFinans_ProjeKutuk
+                SET toplamBedel = @toplamBedel
+                WHERE projeNo = @projeNo";
+                    using (var cmd = new SqlCommand(query, connection))
+                    {
+                        cmd.Parameters.AddWithValue("@projeNo", projeNo);
+                        cmd.Parameters.AddWithValue("@toplamBedel", toplamBedel);
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Toplam bedel güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
         }

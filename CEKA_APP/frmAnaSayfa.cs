@@ -541,10 +541,7 @@ namespace CEKA_APP
 
         private void btnProjeFiyatlandirma_Click(object sender, EventArgs e)
         {
-            if (projeFiyatlandirma == null)
-            {
-                projeFiyatlandirma = new ctlProjeFiyatlandirma();
-            }
+            var projeFiyatlandirma = new ctlProjeFiyatlandirma();
             UserControlEkle(projeFiyatlandirma);
         }
 

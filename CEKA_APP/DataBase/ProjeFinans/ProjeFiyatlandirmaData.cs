@@ -8,13 +8,13 @@ namespace CEKA_APP.DataBase.ProjeFinans
 {
     public class ProjeFiyatlandirmaData
     {
-        public List<(int fiyatlandirmaKalemId, string kalemAdi, decimal teklifBirimMiktar, decimal teklifBirimFiyat, decimal teklifToplam, decimal gerceklesenBirimMiktar, decimal gerceklesenBirimFiyat, decimal gerceklesenMaliyet)> GetFiyatlandirmaByProje(string projeNo)
+        public List<(int fiyatlandirmaKalemId, string kalemAdi, decimal teklifBirimMiktar, decimal teklifBirimFiyat, decimal gerceklesenBirimMiktar, decimal gerceklesenBirimFiyat)> GetFiyatlandirmaByProje(string projeNo)
         {
-            var result = new List<(int, string, decimal, decimal, decimal, decimal, decimal, decimal)>();
+            var result = new List<(int, string, decimal, decimal, decimal, decimal)>();
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
-                string query = @"SELECT f.fiyatlandirmaKalemId, i.kalemAdi, f.teklifBirimMiktar, f.teklifBirimFiyat, f.teklifToplam, f.gerceklesenBirimMiktar, f.gerceklesenBirimFiyat, f.gerceklesenMaliyet
+                string query = @"SELECT f.fiyatlandirmaKalemId, i.kalemAdi, f.teklifBirimMiktar, f.teklifBirimFiyat, f.gerceklesenBirimMiktar, f.gerceklesenBirimFiyat
                                 FROM ProjeFinans_Fiyatlandirma f
                                 JOIN ProjeFinans_FiyatlandirmaKalemleri i ON f.fiyatlandirmaKalemId = i.fiyatlandirmaKalemId
                                 WHERE f.projeNo = @projeNo";
@@ -30,10 +30,8 @@ namespace CEKA_APP.DataBase.ProjeFinans
                                 reader["kalemAdi"].ToString(),
                                 Convert.ToDecimal(reader["teklifBirimMiktar"]),
                                 Convert.ToDecimal(reader["teklifBirimFiyat"]),
-                                Convert.ToDecimal(reader["teklifToplam"]),
                                 Convert.ToDecimal(reader["gerceklesenBirimMiktar"]),
-                                Convert.ToDecimal(reader["gerceklesenBirimFiyat"]),
-                                Convert.ToDecimal(reader["gerceklesenMaliyet"])
+                                Convert.ToDecimal(reader["gerceklesenBirimFiyat"])
                             ));
                         }
                     }
@@ -42,7 +40,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
             return result;
         }
 
-        public void FiyatlandirmaKaydet(string projeNo, int fiyatlandirmaKalemId, decimal teklifBirimMiktar, decimal teklifBirimFiyat, decimal teklifToplam, decimal gerceklesenBirimMiktar, decimal gerceklesenBirimFiyat, decimal gerceklesenMaliyet)
+        public void FiyatlandirmaKaydet(string projeNo, int fiyatlandirmaKalemId, decimal teklifBirimMiktar, decimal teklifBirimFiyat, decimal gerceklesenBirimMiktar, decimal gerceklesenBirimFiyat)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {
@@ -51,22 +49,20 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     connection.Open();
                     string query = @"
                         INSERT INTO ProjeFinans_Fiyatlandirma 
-                        (projeNo, fiyatlandirmaKalemId, teklifBirimMiktar, teklifBirimFiyat, teklifToplam, gerceklesenBirimMiktar, gerceklesenBirimFiyat, gerceklesenMaliyet)
-                        VALUES (@projeNo, @fiyatlandirmaKalemId, @teklifBirimMiktar, @teklifBirimFiyat, @teklifToplam, @gerceklesenBirimMiktar, @gerceklesenBirimFiyat, @gerceklesenMaliyet)";
+                        (projeNo, fiyatlandirmaKalemId, teklifBirimMiktar, teklifBirimFiyat, gerceklesenBirimMiktar, gerceklesenBirimFiyat)
+                        VALUES (@projeNo, @fiyatlandirmaKalemId, @teklifBirimMiktar, @teklifBirimFiyat, @gerceklesenBirimMiktar, @gerceklesenBirimFiyat)";
                     using (var cmd = new SqlCommand(query, connection))
                     {
                         cmd.Parameters.AddWithValue("@projeNo", projeNo);
                         cmd.Parameters.AddWithValue("@fiyatlandirmaKalemId", fiyatlandirmaKalemId);
                         cmd.Parameters.AddWithValue("@teklifBirimMiktar", teklifBirimMiktar);
                         cmd.Parameters.AddWithValue("@teklifBirimFiyat", teklifBirimFiyat);
-                        cmd.Parameters.AddWithValue("@teklifToplam", teklifToplam);
                         cmd.Parameters.AddWithValue("@gerceklesenBirimMiktar", gerceklesenBirimMiktar);
                         cmd.Parameters.AddWithValue("@gerceklesenBirimFiyat", gerceklesenBirimFiyat);
-                        cmd.Parameters.AddWithValue("@gerceklesenMaliyet", gerceklesenMaliyet);
                         cmd.ExecuteNonQuery();
                     }
                 }
-                catch (SqlException ex) when (ex.Number == 547) // Foreign key violation
+                catch (SqlException ex) when (ex.Number == 547)
                 {
                     MessageBox.Show($"Proje '{projeNo}' için proje bilgileri kaydedilmelidir. Lütfen önce proje bilgilerini kaydedin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
@@ -77,7 +73,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
         }
 
-        public void FiyatlandirmaGuncelle(string projeNo, int fiyatlandirmaKalemId, decimal teklifBirimMiktar, decimal teklifBirimFiyat, decimal teklifToplam, decimal gerceklesenBirimMiktar, decimal gerceklesenBirimFiyat, decimal gerceklesenMaliyet)
+        public void FiyatlandirmaGuncelle(string projeNo, int fiyatlandirmaKalemId, decimal teklifBirimMiktar, decimal teklifBirimFiyat, decimal gerceklesenBirimMiktar, decimal gerceklesenBirimFiyat)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {
@@ -88,10 +84,8 @@ namespace CEKA_APP.DataBase.ProjeFinans
                         UPDATE ProjeFinans_Fiyatlandirma 
                         SET teklifBirimMiktar = @teklifBirimMiktar, 
                             teklifBirimFiyat = @teklifBirimFiyat, 
-                            teklifToplam = @teklifToplam, 
                             gerceklesenBirimMiktar = @gerceklesenBirimMiktar, 
-                            gerceklesenBirimFiyat = @gerceklesenBirimFiyat, 
-                            gerceklesenMaliyet = @gerceklesenMaliyet
+                            gerceklesenBirimFiyat = @gerceklesenBirimFiyat
                         WHERE projeNo = @projeNo AND fiyatlandirmaKalemId = @fiyatlandirmaKalemId";
                     using (var cmd = new SqlCommand(query, connection))
                     {
@@ -99,10 +93,8 @@ namespace CEKA_APP.DataBase.ProjeFinans
                         cmd.Parameters.AddWithValue("@fiyatlandirmaKalemId", fiyatlandirmaKalemId);
                         cmd.Parameters.AddWithValue("@teklifBirimMiktar", teklifBirimMiktar);
                         cmd.Parameters.AddWithValue("@teklifBirimFiyat", teklifBirimFiyat);
-                        cmd.Parameters.AddWithValue("@teklifToplam", teklifToplam);
                         cmd.Parameters.AddWithValue("@gerceklesenBirimMiktar", gerceklesenBirimMiktar);
                         cmd.Parameters.AddWithValue("@gerceklesenBirimFiyat", gerceklesenBirimFiyat);
-                        cmd.Parameters.AddWithValue("@gerceklesenMaliyet", gerceklesenMaliyet);
                         cmd.ExecuteNonQuery();
                     }
                 }
@@ -113,34 +105,51 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
         }
 
-        public decimal GetToplamBedel(string projeNo, List<string> altProjeler = null)
+        public (decimal toplamBedel, List<string> eksikFiyatlandirmaProjeler) GetToplamBedel(string projeNo, List<string> altProjeler = null)
         {
             decimal toplamBedel = 0;
+            var eksikFiyatlandirmaProjeler = new List<string>();
             var projeler = new List<string> { projeNo };
-            if (altProjeler != null)
+            if (altProjeler != null && altProjeler.Any())
+            {
                 projeler.AddRange(altProjeler);
+            }
 
             using (var connection = DataBaseHelper.GetConnection())
             {
-                connection.Open();
-                string query = @"
-                    SELECT SUM(teklifToplam) as ToplamTeklif
-                    FROM ProjeFinans_Fiyatlandirma
-                    WHERE projeNo IN ({0})";
-                string projeNoParams = string.Join(",", projeler.Select((_, index) => $"@projeNo{index}"));
-                query = string.Format(query, projeNoParams);
-
-                using (var cmd = new SqlCommand(query, connection))
+                try
                 {
-                    for (int i = 0; i < projeler.Count; i++)
+                    connection.Open();
+                    // Her proje için fiyatlandırma kontrolü
+                    foreach (var proje in projeler)
                     {
-                        cmd.Parameters.AddWithValue($"@projeNo{i}", projeler[i]);
+                        string query = @"
+                            SELECT SUM(teklifBirimMiktar * teklifBirimFiyat) as ToplamTeklif
+                            FROM ProjeFinans_Fiyatlandirma
+                            WHERE projeNo = @projeNo AND teklifBirimMiktar IS NOT NULL AND teklifBirimFiyat IS NOT NULL";
+                        using (var cmd = new SqlCommand(query, connection))
+                        {
+                            cmd.Parameters.AddWithValue("@projeNo", proje);
+                            object result = cmd.ExecuteScalar();
+                            if (result != DBNull.Value && result != null)
+                            {
+                                toplamBedel += Convert.ToDecimal(result);
+                            }
+                            else
+                            {
+                                eksikFiyatlandirmaProjeler.Add(proje);
+                            }
+                        }
                     }
-                    object result = cmd.ExecuteScalar();
-                    toplamBedel = result != DBNull.Value ? Convert.ToDecimal(result) : 0;
+                    // Hata ayıklama için
+                    MessageBox.Show($"GetToplamBedel: ProjeNo={projeNo}, AltProjeler={string.Join(",", projeler)}, ToplamBedel={toplamBedel}, EksikFiyatlandirma={string.Join(",", eksikFiyatlandirmaProjeler)}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Toplam bedel hesaplanırken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 }
             }
-            return toplamBedel;
+            return (toplamBedel, eksikFiyatlandirmaProjeler);
         }
     }
 }

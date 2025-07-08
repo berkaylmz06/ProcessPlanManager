@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -75,7 +76,6 @@ namespace CEKA_APP.UsrControl
                     return;
                 }
 
-                // Alt projeleri metodun başında tanımla
                 List<string> altProjeler = chkAltProjeVar.Checked
                     ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
                         .SelectMany(p => p.Controls.OfType<TextBox>())
@@ -83,32 +83,6 @@ namespace CEKA_APP.UsrControl
                         .Select(txt => txt.Text.Trim())
                         .ToList()
                     : null;
-
-                // Projenin ProjeFinans_Projeler tablosunda olup olmadığını kontrol et
-                var projeBilgi = ProjeKutukData.GetProjeBilgileri(projeNo);
-                if (projeBilgi == null)
-                {
-                    MessageBox.Show("Bu proje için önce proje bilgileri kaydedilmelidir. Lütfen Proje Bilgileri ekranına gidin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-
-                    var parentForm = this.FindForm() as frmAnaSayfa;
-                    if (parentForm == null)
-                    {
-                        MessageBox.Show("Ana form bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    if (parentForm.projeBilgileri == null)
-                    {
-                        parentForm.projeBilgileri = new ctlProjeBilgileri();
-                        parentForm.projeBilgileri.Dock = DockStyle.Fill;
-                        parentForm.projeBilgileri.OnKaydet += () => projeBilgileriKaydedildi = true;
-                    }
-
-                    // Aynı altProjeler değişkenini kullan
-                    parentForm.projeBilgileri.LoadProjects(altProjeler, chkAltProjeVar.Checked ? projeNo : null);
-                    parentForm.NavigateToUserControl(parentForm.projeBilgileri);
-                    return;
-                }
 
                 var parentFormFiyat = this.FindForm() as frmAnaSayfa;
                 if (parentFormFiyat == null)
@@ -121,18 +95,87 @@ namespace CEKA_APP.UsrControl
                 {
                     parentFormFiyat.projeFiyatlandirma = new ctlProjeFiyatlandirma();
                     parentFormFiyat.projeFiyatlandirma.Dock = DockStyle.Fill;
+
                     parentFormFiyat.projeFiyatlandirma.OnFiyatlandirmaKaydedildi += (projeAdi) =>
                     {
-                        // Aynı altProjeler değişkenini kullan
-                        var fiyatlandirmaData = new ProjeFiyatlandirmaData();
-                        decimal toplamBedel = fiyatlandirmaData.GetToplamBedel(projeAdi, altProjeler);
-                        txtToplamBedel.Text = toplamBedel.ToString("F2");
+                        try
+                        {
+                            var fiyatlandirmaData = new ProjeFiyatlandirmaData();
+                            var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeAdi, altProjeler);
+                            UpdateToplamBedelUI(projeAdi, toplamBedel, eksikFiyatlandirmaProjeler);
+                        }
+                        catch (Exception ex)
+                        {
+                            MessageBox.Show($"OnFiyatlandirmaKaydedildi sırasında hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
                     };
                 }
 
-                // Aynı altProjeler değişkenini LoadProjeFiyatlandirma'ya geçir
-                parentFormFiyat.projeFiyatlandirma.LoadProjeFiyatlandirma(projeNo, autoSearch: true, altProjeler: altProjeler);
-                parentFormFiyat.NavigateToUserControl(parentFormFiyat.projeFiyatlandirma);
+                // Alt projeler varsa, kullanıcıdan bir alt proje seçmesini iste
+                if (chkAltProjeVar.Checked && altProjeler != null && altProjeler.Any())
+                {
+                    using (var form = new Form
+                    {
+                        Text = "Alt Proje Seç",
+                        Size = new Size(300, 150),
+                        StartPosition = FormStartPosition.CenterParent,
+                        FormBorderStyle = FormBorderStyle.FixedDialog,
+                        MaximizeBox = false,
+                        MinimizeBox = false
+                    })
+                    {
+                        var comboBox = new ComboBox
+                        {
+                            Location = new Point(20, 20),
+                            Width = 240,
+                            DropDownStyle = ComboBoxStyle.DropDownList
+                        };
+                        comboBox.Items.AddRange(altProjeler.ToArray());
+                        form.Controls.Add(comboBox);
+
+                        var btnTamam = new Button
+                        {
+                            Text = "Tamam",
+                            Location = new Point(20, 60),
+                            Width = 100
+                        };
+                        btnTamam.Click += (s2, e2) =>
+                        {
+                            if (comboBox.SelectedItem != null)
+                            {
+                                form.Tag = comboBox.SelectedItem.ToString();
+                                form.DialogResult = DialogResult.OK;
+                                form.Close();
+                            }
+                            else
+                            {
+                                MessageBox.Show("Lütfen bir alt proje seçin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            }
+                        };
+                        form.Controls.Add(btnTamam);
+
+                        var btnIptal = new Button
+                        {
+                            Text = "İptal",
+                            Location = new Point(160, 60),
+                            Width = 100
+                        };
+                        btnIptal.Click += (s2, e2) => form.Close();
+                        form.Controls.Add(btnIptal);
+
+                        if (form.ShowDialog() == DialogResult.OK && form.Tag != null)
+                        {
+                            parentFormFiyat.projeFiyatlandirma.LoadProjeFiyatlandirma(form.Tag.ToString(), autoSearch: true, altProjeler: altProjeler);
+                            parentFormFiyat.NavigateToUserControl(parentFormFiyat.projeFiyatlandirma);
+                        }
+                    }
+                }
+                else
+                {
+                    // Alt proje yoksa doğrudan projeNo ile devam et
+                    parentFormFiyat.projeFiyatlandirma.LoadProjeFiyatlandirma(projeNo, autoSearch: true, altProjeler: altProjeler);
+                    parentFormFiyat.NavigateToUserControl(parentFormFiyat.projeFiyatlandirma);
+                }
             };
 
             // FlowLayoutPanel ayarları
@@ -223,6 +266,43 @@ namespace CEKA_APP.UsrControl
             txtProjeNo.TextChanged += (s, e) => UpdateContextMenu();
         }
 
+        private void UpdateToplamBedelUI(string projeNo, decimal toplamBedel, List<string> eksikFiyatlandirmaProjeler)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(() =>
+                {
+                    if (eksikFiyatlandirmaProjeler.Any())
+                    {
+                        txtToplamBedel.Text = $"{toplamBedel:F2} ({string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma yok)";
+                        txtToplamBedel.ForeColor = Color.Red;
+                    }
+                    else
+                    {
+                        txtToplamBedel.Text = toplamBedel.ToString("F2");
+                        txtToplamBedel.ForeColor = Color.Black;
+                    }
+                    ProjeKutukData.UpdateToplamBedel(projeNo, toplamBedel);
+                    MessageBox.Show($"UI Güncellendi: ProjeNo={projeNo}, ToplamBedel={toplamBedel}, EksikFiyatlandirma={string.Join(",", eksikFiyatlandirmaProjeler)}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }));
+            }
+            else
+            {
+                if (eksikFiyatlandirmaProjeler.Any())
+                {
+                    txtToplamBedel.Text = $"{toplamBedel:F2} ({string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma yok)";
+                    txtToplamBedel.ForeColor = Color.Red;
+                }
+                else
+                {
+                    txtToplamBedel.Text = toplamBedel.ToString("F2");
+                    txtToplamBedel.ForeColor = Color.Black;
+                }
+                ProjeKutukData.UpdateToplamBedel(projeNo, toplamBedel);
+                MessageBox.Show($"UI Güncellendi: ProjeNo={projeNo}, ToplamBedel={toplamBedel}, EksikFiyatlandirma={string.Join(",", eksikFiyatlandirmaProjeler)}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
         private void CheckBoxKontrol(CheckBox aktif, CheckBox pasif, Control ilgiliKontrol, string prefix, bool goster = true)
         {
             if (aktif.Checked)
@@ -253,7 +333,6 @@ namespace CEKA_APP.UsrControl
                         ? new Label { Text = "Alt Projeler", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 80) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) }
                         : new Label { Text = "İlişkili Projeler", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 100) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) });
 
-                    // İlk TextBox'ı ekle
                     int index = flp.Controls.OfType<TextBox>().Count() + 1;
                     var txt = new TextBox
                     {
@@ -294,12 +373,11 @@ namespace CEKA_APP.UsrControl
                     txt.Location = new Point(0, 0);
                     flp.Controls.Add(panel);
 
-                    // Ekle butonunu ekle ve en alta yerleştir
                     AddEkleButton(flp, prefix);
                     var btnEkle = flp.Controls.OfType<Button>().FirstOrDefault(b => b.Text == "Ekle");
                     if (btnEkle != null)
                     {
-                        flp.Controls.SetChildIndex(btnEkle, flp.Controls.Count - 1); // Butonu en alta taşı
+                        flp.Controls.SetChildIndex(btnEkle, flp.Controls.Count - 1);
                     }
 
                     flp.Visible = true;
@@ -323,7 +401,7 @@ namespace CEKA_APP.UsrControl
             UpdatePanelLayout();
             UpdateContextMenu();
         }
-       
+
         private void AddEkleButton(FlowLayoutPanel flp, string prefix)
         {
             var btnEkle = new Button
@@ -433,7 +511,7 @@ namespace CEKA_APP.UsrControl
                     .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                     .Select(txt => txt.Text.Trim()).ToList();
                 mnuProjeBilgileri.Enabled = altProjeler.Any();
-                mnuProjeFiyatlandirma.Enabled = isProjeKayitli;
+                mnuProjeFiyatlandirma.Enabled = isProjeKayitli && altProjeler.Any();
             }
             else if (chkAltProjeYok.Checked && !string.IsNullOrWhiteSpace(txtProjeNo.Text.Trim()))
             {
@@ -468,7 +546,6 @@ namespace CEKA_APP.UsrControl
                 chkAltProjeVar.Checked = proje.altProjeVarMi;
                 chkProjeIliskisiVar.Checked = proje.digerProjeIliskisiVarMi != "0";
                 dtpSiparisSozlesmeTarihi.Value = proje.siparisSozlesmeTarihi;
-                txtToplamBedel.Text = proje.toplamBedel.ToString();
                 chkNakliyeVar.Checked = proje.nakliyeVarMi;
 
                 flpAltProjeTextBoxes.Controls.Clear();
@@ -593,6 +670,18 @@ namespace CEKA_APP.UsrControl
 
                 UpdateContextMenu();
                 UpdatePanelLayout();
+
+                var fiyatlandirmaData = new ProjeFiyatlandirmaData();
+                var altProjeler = chkAltProjeVar.Checked
+                    ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
+                        .SelectMany(p => p.Controls.OfType<TextBox>())
+                        .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
+                        .Select(txt => txt.Text.Trim())
+                        .ToList()
+                    : null;
+                var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
+                UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler);
+
                 MessageBox.Show("Proje bulundu ve bilgiler yüklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
@@ -635,8 +724,7 @@ namespace CEKA_APP.UsrControl
                     hataMesajlari.Add("Proje No 5 haneli bir sayı (ör: 12345 veya 12345.00) olmalıdır.");
             }
 
-            if (!decimal.TryParse(txtToplamBedel.Text.Trim(), out var bedel) || bedel < 0)
-                hataMesajlari.Add("Toplam Bedel geçerli bir sayı olmalı ve negatif olamaz.");
+            decimal bedel = decimal.TryParse(txtToplamBedel.Text.Trim(), out var parsedBedel) ? parsedBedel : 0;
 
             if (chkAltProjeVar.Checked)
             {
@@ -649,10 +737,6 @@ namespace CEKA_APP.UsrControl
                     lblAltProjeHata.Text = "Alt proje var işaretlediniz fakat alt proje bilgisi girmediniz.";
                     lblAltProjeHata.Visible = true;
                     hataMesajlari.Add("Alt proje var işaretlendiniz fakat alt proje bilgisi girmediniz.");
-                }
-                else if (!projeBilgileriKaydedildi)
-                {
-                    hataMesajlari.Add("Alt projeler için proje bilgileri kaydedilmedi. Lütfen önce Proje Bilgileri'ni kaydedin.");
                 }
                 else
                 {
@@ -732,6 +816,17 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show("Kayıt başarıyla eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 projeBilgileriKaydedildi = false;
                 UpdateContextMenu();
+
+                var fiyatlandirmaData = new ProjeFiyatlandirmaData();
+                var altProjeler = chkAltProjeVar.Checked
+                    ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
+                        .SelectMany(p => p.Controls.OfType<TextBox>())
+                        .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
+                        .Select(txt => txt.Text.Trim())
+                        .ToList()
+                    : null;
+                var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(proje, altProjeler);
+                UpdateToplamBedelUI(proje, toplamBedel, eksikFiyatlandirmaProjeler);
             }
             else
             {
