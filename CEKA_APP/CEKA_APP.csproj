@@ -52,7 +52,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>cekalogokirmizi.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\cekalogokirmizi.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
     <ManifestCertificateThumbprint>1267E13D776421A46548D8F320D5ED8683979BC1</ManifestCertificateThumbprint>
@@ -218,6 +218,8 @@
     <Compile Include="DataBase\KullaniciHareketLogData.cs" />
     <Compile Include="DataBase\KullanicilarData.cs" />
     <Compile Include="DataBase\ProjeFinans\FiyatlandirmaKalemleriData.cs" />
+    <Compile Include="DataBase\ProjeFinans\FiyatlandirmaKilometreTaslariData.cs" />
+    <Compile Include="DataBase\ProjeFinans\ProjeFinans_OdemeSekilleriData.cs" />
     <Compile Include="DataBase\ProjeFinans\ProjeFiyatlandirmaData.cs" />
     <Compile Include="DataBase\ProjeFinans\ProjeKutukData.cs" />
     <Compile Include="DataBase\SorunBildirimleriData.cs" />
@@ -235,48 +237,54 @@
     <Compile Include="Entitys\SorunBildirimleri.cs" />
     <Compile Include="Entitys\KesimListesi.cs" />
     <Compile Include="DataBase\KesimListesiData.cs" />
-    <Compile Include="frmAnaSayfa.cs">
+    <Compile Include="Forms\frmAnaSayfa.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmAnaSayfa.Designer.cs">
+    <Compile Include="Forms\frmAnaSayfa.Designer.cs">
       <DependentUpon>frmAnaSayfa.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmAra.cs">
+    <Compile Include="Forms\frmAra.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmAra.Designer.cs">
+    <Compile Include="Forms\frmAra.Designer.cs">
       <DependentUpon>frmAra.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmKullaniciAyarlari.cs">
+    <Compile Include="Forms\frmKullaniciAyarlari.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmKullaniciAyarlari.Designer.cs">
+    <Compile Include="Forms\frmKullaniciAyarlari.Designer.cs">
       <DependentUpon>frmKullaniciAyarlari.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmKullaniciGirisi.cs">
+    <Compile Include="Forms\frmKullaniciGirisi.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmKullaniciGirisi.Designer.cs">
+    <Compile Include="Forms\frmKullaniciGirisi.Designer.cs">
       <DependentUpon>frmKullaniciGirisi.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmKullaniciEkle.cs">
+    <Compile Include="Forms\frmKullaniciEkle.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmKullaniciEkle.Designer.cs">
+    <Compile Include="Forms\frmKullaniciEkle.Designer.cs">
       <DependentUpon>frmKullaniciEkle.cs</DependentUpon>
     </Compile>
     <Compile Include="Entitys\Kullanicilar.cs" />
-    <Compile Include="frmStandartProjeler.cs">
+    <Compile Include="Forms\frmStandartProjeler.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmStandartProjeler.Designer.cs">
+    <Compile Include="Forms\frmStandartProjeler.Designer.cs">
       <DependentUpon>frmStandartProjeler.cs</DependentUpon>
     </Compile>
-    <Compile Include="frmYeniFiyatlandirmaKalemiEkle.cs">
+    <Compile Include="Forms\frmYeniFiyatlandirmaKalemiEkle.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="frmYeniFiyatlandirmaKalemiEkle.Designer.cs">
+    <Compile Include="Forms\frmYeniFiyatlandirmaKalemiEkle.Designer.cs">
       <DependentUpon>frmYeniFiyatlandirmaKalemiEkle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmYeniKilometreTasi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmYeniKilometreTasi.Designer.cs">
+      <DependentUpon>frmYeniKilometreTasi.cs</DependentUpon>
     </Compile>
     <Compile Include="Helper\ButonGenelHelper.cs" />
     <Compile Include="Helper\ButonMakinaSecHelper.cs" />
@@ -339,6 +347,12 @@
     <Compile Include="UsrControl\ctlKullaniciAyarlari.Designer.cs">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
     </Compile>
+    <Compile Include="UsrControl\ctlOdemeSartlari.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlOdemeSartlari.Designer.cs">
+      <DependentUpon>ctlOdemeSartlari.cs</DependentUpon>
+    </Compile>
     <Compile Include="UsrControl\ctlProjeBilgileri.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -393,26 +407,29 @@
     <Compile Include="UsrControl\ctlYerlesimPlaniBilgi.Designer.cs">
       <DependentUpon>ctlYerlesimPlaniBilgi.cs</DependentUpon>
     </Compile>
-    <EmbeddedResource Include="frmAnaSayfa.resx">
+    <EmbeddedResource Include="Forms\frmAnaSayfa.resx">
       <DependentUpon>frmAnaSayfa.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmAra.resx">
+    <EmbeddedResource Include="Forms\frmAra.resx">
       <DependentUpon>frmAra.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmKullaniciAyarlari.resx">
+    <EmbeddedResource Include="Forms\frmKullaniciAyarlari.resx">
       <DependentUpon>frmKullaniciAyarlari.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmKullaniciGirisi.resx">
+    <EmbeddedResource Include="Forms\frmKullaniciGirisi.resx">
       <DependentUpon>frmKullaniciGirisi.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmKullaniciEkle.resx">
+    <EmbeddedResource Include="Forms\frmKullaniciEkle.resx">
       <DependentUpon>frmKullaniciEkle.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmStandartProjeler.resx">
+    <EmbeddedResource Include="Forms\frmStandartProjeler.resx">
       <DependentUpon>frmStandartProjeler.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="frmYeniFiyatlandirmaKalemiEkle.resx">
+    <EmbeddedResource Include="Forms\frmYeniFiyatlandirmaKalemiEkle.resx">
       <DependentUpon>frmYeniFiyatlandirmaKalemiEkle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmYeniKilometreTasi.resx">
+      <DependentUpon>frmYeniKilometreTasi.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -444,6 +461,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlKullaniciAyarlari.resx">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlOdemeSartlari.resx">
+      <DependentUpon>ctlOdemeSartlari.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlProjeBilgileri.resx">
       <DependentUpon>ctlProjeBilgileri.cs</DependentUpon>
@@ -488,7 +508,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="cekalogokirmizi.ico" />
+    <Content Include="Resources\cekalogokirmizi.ico" />
     <None Include="Resources\cekalogo.png" />
     <None Include="Resources\kullanici.png" />
     <None Include="Resources\anasayfa.png" />

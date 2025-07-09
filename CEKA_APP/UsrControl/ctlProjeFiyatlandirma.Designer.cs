@@ -33,12 +33,12 @@
             this.btnKaydet = new System.Windows.Forms.Button();
             this.btnProjeAra = new System.Windows.Forms.Button();
             this.panelAlt = new System.Windows.Forms.Panel();
+            this.btnYeniKalemEkle = new System.Windows.Forms.Button();
             this.panelUst = new System.Windows.Forms.Panel();
             this.panelFill = new System.Windows.Forms.Panel();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.btnYeniKalemEkle = new System.Windows.Forms.Button();
-            this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.panelAlt.SuspendLayout();
             this.panelUst.SuspendLayout();
             this.panelFill.SuspendLayout();
@@ -91,6 +91,16 @@
             this.panelAlt.Size = new System.Drawing.Size(1765, 92);
             this.panelAlt.TabIndex = 5;
             // 
+            // btnYeniKalemEkle
+            // 
+            this.btnYeniKalemEkle.Location = new System.Drawing.Point(3, 41);
+            this.btnYeniKalemEkle.Name = "btnYeniKalemEkle";
+            this.btnYeniKalemEkle.Size = new System.Drawing.Size(146, 48);
+            this.btnYeniKalemEkle.TabIndex = 4;
+            this.btnYeniKalemEkle.Text = "+ Kalem Ekle";
+            this.btnYeniKalemEkle.UseVisualStyleBackColor = true;
+            this.btnYeniKalemEkle.Click += new System.EventHandler(this.btnYeniKalemEkle_Click);
+            // 
             // panelUst
             // 
             this.panelUst.Controls.Add(this.btnProjeAra);
@@ -112,6 +122,25 @@
             this.panelFill.Size = new System.Drawing.Size(1765, 787);
             this.panelFill.TabIndex = 7;
             // 
+            // tableLayoutPanel2
+            // 
+            this.tableLayoutPanel2.ColumnCount = 8;
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.06931F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56.93069F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 221F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 239F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 251F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 230F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 237F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 189F));
+            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 718);
+            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
+            this.tableLayoutPanel2.RowCount = 1;
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1765, 69);
+            this.tableLayoutPanel2.TabIndex = 1;
+            // 
             // tableLayoutPanel1
             // 
             this.tableLayoutPanel1.ColumnCount = 8;
@@ -132,16 +161,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1765, 787);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // btnYeniKalemEkle
-            // 
-            this.btnYeniKalemEkle.Location = new System.Drawing.Point(3, 41);
-            this.btnYeniKalemEkle.Name = "btnYeniKalemEkle";
-            this.btnYeniKalemEkle.Size = new System.Drawing.Size(146, 48);
-            this.btnYeniKalemEkle.TabIndex = 4;
-            this.btnYeniKalemEkle.Text = "+ Kalem Ekle";
-            this.btnYeniKalemEkle.UseVisualStyleBackColor = true;
-            this.btnYeniKalemEkle.Click += new System.EventHandler(this.btnYeniKalemEkle_Click);
-            // 
             // ctlBaslik1
             // 
             this.ctlBaslik1.Baslik = "Başlık";
@@ -150,25 +169,6 @@
             this.ctlBaslik1.Name = "ctlBaslik1";
             this.ctlBaslik1.Size = new System.Drawing.Size(1765, 50);
             this.ctlBaslik1.TabIndex = 0;
-            // 
-            // tableLayoutPanel2
-            // 
-            this.tableLayoutPanel2.ColumnCount = 8;
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 43.06931F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 56.93069F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 221F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 239F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 251F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 230F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 237F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 188F));
-            this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 718);
-            this.tableLayoutPanel2.Name = "tableLayoutPanel2";
-            this.tableLayoutPanel2.RowCount = 1;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1765, 69);
-            this.tableLayoutPanel2.TabIndex = 1;
             // 
             // ctlProjeFiyatlandirma
             // 

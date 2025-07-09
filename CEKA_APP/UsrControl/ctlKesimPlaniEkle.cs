@@ -658,14 +658,12 @@ namespace CEKA_APP.UsrControl
                     kalipPozForValidation = kalipPoz.Substring(0, ucuncuTireIndex);
                 }
 
-                // Adet kontrolü
                 if (!int.TryParse(adetStr, out int adet))
                 {
                     hataMesajlari.Add($"Satır {i + 1}: Geçersiz adet formatı: {adetStr}");
                     continue;
                 }
 
-                // Aynı kalıp, poz ve proje için adetleri topla
                 var key = (kalip, poz, proje);
                 if (kalipPozProjeAdet.ContainsKey(key))
                 {
@@ -686,7 +684,6 @@ namespace CEKA_APP.UsrControl
                 islenmisPaketIdSet.Add(dKesimId);
             }
 
-            // Toplam adetlerle KontrolAdeta metodunu çağır
             foreach (var entry in kalipPozProjeAdet)
             {
                 var (kalip, poz, proje) = entry.Key;
@@ -1432,7 +1429,6 @@ namespace CEKA_APP.UsrControl
 
             ExportToXml(dgv, dosyaYolu);
         }
-
         public void ExportToXml(DataGridView dgv, string dosyaYolu)
         {
             if (string.IsNullOrWhiteSpace(txtId.Text) || string.IsNullOrWhiteSpace(txtSite.Text))
@@ -1495,7 +1491,17 @@ namespace CEKA_APP.UsrControl
 
                     var parcaBySayfaId = dataGridView2.Rows.Cast<DataGridViewRow>()
                         .Where(row => !row.IsNewRow && row.Cells[1].Value != null)
-                        .GroupBy(row => row.Cells[1].Value.ToString().Trim())
+                        .GroupBy(row => (SayfaId: row.Cells[1].Value.ToString().Trim(), Poz: ExtractPoz(row.Cells[0].Value?.ToString()?.Trim())))
+                        .Select(g => new
+                        {
+                            g.Key.SayfaId,
+                            g.Key.Poz,
+                            ParcaRows = g.ToList(),
+                            ToplamAdet = g.Sum(row => double.TryParse(row.Cells[2].Value?.ToString()?.Trim(), out double adet) ? adet : 0),
+                            ToplamEkOran = g.Sum(row => double.TryParse(row.Cells[4].Value?.ToString()?.Trim(), out double oran) ? oran : 0),
+                            EkAdi = g.FirstOrDefault(row => row.Cells[0].Value?.ToString().Contains("EK") == true)?.Cells[0].Value?.ToString().Split('-').LastOrDefault(p => p.Contains("EK")) ?? "-"
+                        })
+                        .GroupBy(x => x.SayfaId)
                         .ToDictionary(g => g.Key, g => g.ToList());
 
                     foreach (DataGridViewRow sayfaRow in dataGridView3.Rows)
@@ -1509,15 +1515,15 @@ namespace CEKA_APP.UsrControl
                         string tekrarAdeti = (sayfaRow.Cells[2].Value?.ToString() ?? "1").Trim();
                         writer.WriteElementString("TekrarAdeti", tekrarAdeti);
 
-                        if (parcaBySayfaId.TryGetValue(sayfaId, out var parcaRows))
+                        if (parcaBySayfaId.TryGetValue(sayfaId, out var parcaGroups))
                         {
-                            foreach (var parcaRow in parcaRows)
+                            foreach (var parcaGroup in parcaGroups)
                             {
                                 writer.WriteStartElement("Parca");
 
-                                string kalipVerisi = (parcaRow.Cells[0].Value?.ToString() ?? "").Trim();
+                                string kalipVerisi = parcaGroup.ParcaRows.First().Cells[0].Value?.ToString() ?? "";
                                 string[] parcalar = kalipVerisi.Split('-');
-                                string kalip = kalipVerisi, poz = "", proje = "";
+                                string kalip = kalipVerisi, poz = parcaGroup.Poz, proje = "";
 
                                 if (parcalar.Length >= 5)
                                 {
@@ -1531,7 +1537,6 @@ namespace CEKA_APP.UsrControl
                                         kalip = $"{sifirParca}-{birParca}";
                                     }
 
-                                    poz = parcalar[2].Trim();
                                     proje = parcalar[4].Trim();
 
                                     if (poz.StartsWith("P"))
@@ -1548,28 +1553,9 @@ namespace CEKA_APP.UsrControl
                                 writer.WriteElementString("Poz", poz);
                                 writer.WriteElementString("Proje", proje);
 
-                                string ekAdi = "-";
-                                string ekOran = "-";
-                                string adetToWrite = (parcaRow.Cells[2].Value?.ToString() ?? "0").Trim();
-
-                                if (parcaRow.Cells[4].Value != null &&
-                                    double.TryParse(parcaRow.Cells[4].Value.ToString().Trim(), out double oran) &&
-                                    parcaRow.Cells[2].Value != null &&
-                                    double.TryParse(parcaRow.Cells[2].Value.ToString().Trim(), out double adet))
-                                {
-                                    ekOran = oran.ToString(CultureInfo.InvariantCulture).Trim();
-                                    adetToWrite = "0";
-
-                                    List<string> parcaList = parcaRow.Cells[0].Value?.ToString()
-                                        .Split('-')
-                                        .Select(p => p.Trim())
-                                        .ToList() ?? new List<string>();
-
-                                    if (parcaList.Any(p => p.Contains("EK")))
-                                    {
-                                        ekAdi = parcaList.First(p => p.Contains("EK"));
-                                    }
-                                }
+                                string ekAdi = parcaGroup.EkAdi;
+                                string ekOran = parcaGroup.ToplamEkOran > 0 ? parcaGroup.ToplamEkOran.ToString("F6", CultureInfo.InvariantCulture) : "-";
+                                string adetToWrite = parcaGroup.ToplamEkOran > 0 ? "0" : parcaGroup.ToplamAdet.ToString(CultureInfo.InvariantCulture);
 
                                 writer.WriteElementString("Adet", adetToWrite);
                                 writer.WriteElementString("EkAdi", ekAdi);
@@ -1594,6 +1580,180 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show($"XML oluşturma sırasında hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+        private string ExtractPoz(string kalipVerisi)
+        {
+            if (string.IsNullOrEmpty(kalipVerisi)) return "";
+            var parcalar = kalipVerisi.Split('-');
+            if (parcalar.Length >= 3)
+            {
+                string poz = parcalar[2].Trim();
+                return poz.StartsWith("P") ? poz : $"P{poz}";
+            }
+            return "";
+        }
+
+        //public void ExportToXml(DataGridView dgv, string dosyaYolu)
+        //{
+        //    if (string.IsNullOrWhiteSpace(txtId.Text) || string.IsNullOrWhiteSpace(txtSite.Text))
+        //    {
+        //        MessageBox.Show("ID veya Site alanı boş olamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        return;
+        //    }
+
+        //    if (dgv.Rows.Count == 0 || dgv.Rows[0].IsNewRow)
+        //    {
+        //        MessageBox.Show("DataGridView'de veri bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        return;
+        //    }
+
+        //    XmlWriterSettings ayarlar = new XmlWriterSettings { Indent = true };
+
+        //    try
+        //    {
+        //        string directory = Path.GetDirectoryName(dosyaYolu);
+        //        if (!Directory.Exists(directory))
+        //        {
+        //            Directory.CreateDirectory(directory);
+        //        }
+
+        //        using (XmlWriter writer = XmlWriter.Create(dosyaYolu, ayarlar))
+        //        {
+        //            writer.WriteStartDocument();
+        //            writer.WriteStartElement("YerlesimPlaniBilgileri");
+
+        //            writer.WriteElementString("ID", txtId.Text.Trim());
+        //            writer.WriteElementString("Site", txtSite.Text.Trim());
+
+        //            string stokKodu = (dgv.Rows[0].Cells[1].Value?.ToString() ?? "").Trim();
+        //            string stokKoduXml = stokKodu;
+        //            if (!string.IsNullOrEmpty(stokKodu) && Regex.IsMatch(stokKodu, @"MM$", RegexOptions.IgnoreCase))
+        //            {
+        //                string sayiKismi = Regex.Replace(stokKodu, @"MM$", "", RegexOptions.IgnoreCase).Trim();
+        //                if (int.TryParse(sayiKismi, out int sayi))
+        //                {
+        //                    stokKoduXml = $"KPL{sayi:D3}";
+        //                }
+        //            }
+        //            writer.WriteElementString("StokKodu", stokKoduXml);
+
+        //            string kalite = (dgv.Rows[0].Cells[0].Value?.ToString() ?? "").Trim();
+        //            string kaliteXml = kalite;
+        //            var kaliteDonusumleri = new Dictionary<string, string>
+        //    {
+        //        { "ST37", "S235JR" },
+        //        { "ST44", "S275JR" },
+        //        { "ST52", "S355J2" }
+        //    };
+        //            if (kaliteDonusumleri.TryGetValue(kalite, out var donusum))
+        //            {
+        //                kaliteXml = donusum;
+        //            }
+        //            writer.WriteElementString("Kalite", kaliteXml);
+
+        //            writer.WriteElementString("EklemeTarihi", dtEklemeTarihi.Value.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture).Trim());
+
+        //            var parcaBySayfaId = dataGridView2.Rows.Cast<DataGridViewRow>()
+        //                .Where(row => !row.IsNewRow && row.Cells[1].Value != null)
+        //                .GroupBy(row => row.Cells[1].Value.ToString().Trim())
+        //                .ToDictionary(g => g.Key, g => g.ToList());
+
+        //            foreach (DataGridViewRow sayfaRow in dataGridView3.Rows)
+        //            {
+        //                if (sayfaRow.IsNewRow || sayfaRow.Cells[0].Value == null) continue;
+
+        //                string sayfaId = sayfaRow.Cells[0].Value.ToString().Trim();
+        //                writer.WriteStartElement("Sayfa");
+        //                writer.WriteElementString("ID", sayfaId);
+
+        //                string tekrarAdeti = (sayfaRow.Cells[2].Value?.ToString() ?? "1").Trim();
+        //                writer.WriteElementString("TekrarAdeti", tekrarAdeti);
+
+        //                if (parcaBySayfaId.TryGetValue(sayfaId, out var parcaRows))
+        //                {
+        //                    foreach (var parcaRow in parcaRows)
+        //                    {
+        //                        writer.WriteStartElement("Parca");
+
+        //                        string kalipVerisi = (parcaRow.Cells[0].Value?.ToString() ?? "").Trim();
+        //                        string[] parcalar = kalipVerisi.Split('-');
+        //                        string kalip = kalipVerisi, poz = "", proje = "";
+
+        //                        if (parcalar.Length >= 5)
+        //                        {
+        //                            string sifirParca = parcalar[0].Trim();
+        //                            string birParca = parcalar[1].Trim();
+
+        //                            kalip = $"{sifirParca}-{birParca}";
+        //                            if (!AutoCadAktarimData.GetirStandartGruplar(kalip))
+        //                            {
+        //                                birParca = "00";
+        //                                kalip = $"{sifirParca}-{birParca}";
+        //                            }
+
+        //                            poz = parcalar[2].Trim();
+        //                            proje = parcalar[4].Trim();
+
+        //                            if (poz.StartsWith("P"))
+        //                            {
+        //                                poz = poz.Substring(1);
+        //                                if (poz.Length == 1 && int.TryParse(poz, out int pozSayi))
+        //                                {
+        //                                    poz = pozSayi.ToString("D2");
+        //                                }
+        //                            }
+        //                        }
+
+        //                        writer.WriteElementString("Kalip", kalip);
+        //                        writer.WriteElementString("Poz", poz);
+        //                        writer.WriteElementString("Proje", proje);
+
+        //                        string ekAdi = "-";
+        //                        string ekOran = "-";
+        //                        string adetToWrite = (parcaRow.Cells[2].Value?.ToString() ?? "0").Trim();
+
+        //                        if (parcaRow.Cells[4].Value != null &&
+        //                            double.TryParse(parcaRow.Cells[4].Value.ToString().Trim(), out double oran) &&
+        //                            parcaRow.Cells[2].Value != null &&
+        //                            double.TryParse(parcaRow.Cells[2].Value.ToString().Trim(), out double adet))
+        //                        {
+        //                            ekOran = oran.ToString(CultureInfo.InvariantCulture).Trim();
+        //                            adetToWrite = "0";
+
+        //                            List<string> parcaList = parcaRow.Cells[0].Value?.ToString()
+        //                                .Split('-')
+        //                                .Select(p => p.Trim())
+        //                                .ToList() ?? new List<string>();
+
+        //                            if (parcaList.Any(p => p.Contains("EK")))
+        //                            {
+        //                                ekAdi = parcaList.First(p => p.Contains("EK"));
+        //                            }
+        //                        }
+
+        //                        writer.WriteElementString("Adet", adetToWrite);
+        //                        writer.WriteElementString("EkAdi", ekAdi);
+        //                        writer.WriteElementString("EkOran", ekOran);
+
+        //                        writer.WriteEndElement();
+        //                    }
+        //                }
+
+        //                writer.WriteEndElement();
+        //            }
+
+        //            writer.WriteEndElement();
+        //            writer.WriteEndDocument();
+        //        }
+
+        //        var userController = new LogEkle(_formArayuzu.lblSistemKullaniciMetinAl());
+        //        userController.LogYap("XmlDosyasiOlusturuldu", "Kesim Planı Ekle", $"Kullanıcı {txtId.Text.Trim()} numaralı kesim planı XML dosyası oluşturdu.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"XML oluşturma sırasında hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //}
 
         private void button2_Click(object sender, EventArgs e)
         {

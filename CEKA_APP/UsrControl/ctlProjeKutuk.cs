@@ -3,14 +3,10 @@ using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Entitys;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
-using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CEKA_APP.UsrControl
@@ -29,7 +25,6 @@ namespace CEKA_APP.UsrControl
             InitializeComponent();
             projeBilgileriKaydedildi = false;
 
-            // ContextMenu ayarları
             contextMenu = new ContextMenuStrip();
             mnuProjeFiyatlandirma = new ToolStripMenuItem("Proje Fiyatlandırma") { Enabled = false };
             mnuProjeBilgileri = new ToolStripMenuItem("Proje Bilgileri") { Enabled = false };
@@ -37,7 +32,6 @@ namespace CEKA_APP.UsrControl
             contextMenu.Items.Add(mnuProjeBilgileri);
             this.ContextMenuStrip = contextMenu;
 
-            // ContextMenu olayları
             mnuProjeBilgileri.Click += (s, e) =>
             {
                 var parentForm = this.FindForm() as frmAnaSayfa;
@@ -111,7 +105,6 @@ namespace CEKA_APP.UsrControl
                     };
                 }
 
-                // Alt projeler varsa, kullanıcıdan bir alt proje seçmesini iste
                 if (chkAltProjeVar.Checked && altProjeler != null && altProjeler.Any())
                 {
                     using (var form = new Form
@@ -172,13 +165,11 @@ namespace CEKA_APP.UsrControl
                 }
                 else
                 {
-                    // Alt proje yoksa doğrudan projeNo ile devam et
                     parentFormFiyat.projeFiyatlandirma.LoadProjeFiyatlandirma(projeNo, autoSearch: true, altProjeler: altProjeler);
                     parentFormFiyat.NavigateToUserControl(parentFormFiyat.projeFiyatlandirma);
                 }
             };
 
-            // FlowLayoutPanel ayarları
             flpAltProjeTextBoxes = new FlowLayoutPanel
             {
                 AutoSize = false,
@@ -237,7 +228,6 @@ namespace CEKA_APP.UsrControl
             this.Controls.Add(flpAltProjeTextBoxes);
             this.Controls.Add(flpIliskiTextBoxes);
 
-            // Checkbox olayları
             chkAltProjeVar.CheckedChanged += (s, e) =>
             {
                 CheckBoxKontrol(chkAltProjeVar, chkAltProjeYok, flpAltProjeTextBoxes, "AltProje");
@@ -272,9 +262,34 @@ namespace CEKA_APP.UsrControl
             {
                 this.Invoke(new Action(() =>
                 {
+                    UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler);
+                }));
+            }
+            else
+            {
+                var projeKutuk = ProjeKutukData.ProjeKutukAra(projeNo);
+                if (projeKutuk != null && projeKutuk.altProjeVarMi)
+                {
+                    // Alt projeler varsa, ana proje fiyatlandırma kontrolünden hariç tutulur
                     if (eksikFiyatlandirmaProjeler.Any())
                     {
-                        txtToplamBedel.Text = $"{toplamBedel:F2} ({string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma yok)";
+                        // Sadece alt projeler için eksik fiyatlandırma mesajı göster
+                        txtToplamBedel.Text = $"{toplamBedel:F2} (Alt projeler: {string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma yok)";
+                        txtToplamBedel.ForeColor = Color.Red;
+                    }
+                    else
+                    {
+                        // Eksik fiyatlandırma yoksa sadece toplam bedel göster
+                        txtToplamBedel.Text = toplamBedel.ToString("F2");
+                        txtToplamBedel.ForeColor = Color.Black;
+                    }
+                }
+                else
+                {
+                    // Alt proje yoksa ana proje için fiyatlandırma kontrolü yapılır
+                    if (eksikFiyatlandirmaProjeler.Any() && eksikFiyatlandirmaProjeler.Contains(projeNo))
+                    {
+                        txtToplamBedel.Text = $"{toplamBedel:F2} ({projeNo} için fiyatlandırma yok)";
                         txtToplamBedel.ForeColor = Color.Red;
                     }
                     else
@@ -282,24 +297,8 @@ namespace CEKA_APP.UsrControl
                         txtToplamBedel.Text = toplamBedel.ToString("F2");
                         txtToplamBedel.ForeColor = Color.Black;
                     }
-                    ProjeKutukData.UpdateToplamBedel(projeNo, toplamBedel);
-                    MessageBox.Show($"UI Güncellendi: ProjeNo={projeNo}, ToplamBedel={toplamBedel}, EksikFiyatlandirma={string.Join(",", eksikFiyatlandirmaProjeler)}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }));
-            }
-            else
-            {
-                if (eksikFiyatlandirmaProjeler.Any())
-                {
-                    txtToplamBedel.Text = $"{toplamBedel:F2} ({string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma yok)";
-                    txtToplamBedel.ForeColor = Color.Red;
-                }
-                else
-                {
-                    txtToplamBedel.Text = toplamBedel.ToString("F2");
-                    txtToplamBedel.ForeColor = Color.Black;
                 }
                 ProjeKutukData.UpdateToplamBedel(projeNo, toplamBedel);
-                MessageBox.Show($"UI Güncellendi: ProjeNo={projeNo}, ToplamBedel={toplamBedel}, EksikFiyatlandirma={string.Join(",", eksikFiyatlandirmaProjeler)}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
 
@@ -543,10 +542,15 @@ namespace CEKA_APP.UsrControl
                 txtTeklifNo.Text = proje.teklifNo ?? "";
                 txtIsFirsatiNo.Text = proje.isFirsatiNo ?? "";
                 txtProjeNo.Text = proje.projeNo ?? "";
+
+                // Alt proje kontrolü
                 chkAltProjeVar.Checked = proje.altProjeVarMi;
+                chkAltProjeYok.Checked = !proje.altProjeVarMi; // altProjeNo 0 ise chkAltProjeYok işaretlenir
                 chkProjeIliskisiVar.Checked = proje.digerProjeIliskisiVarMi != "0";
+                chkProjeIliskisiYok.Checked = proje.digerProjeIliskisiVarMi == "0";
                 dtpSiparisSozlesmeTarihi.Value = proje.siparisSozlesmeTarihi;
                 chkNakliyeVar.Checked = proje.nakliyeVarMi;
+                chkNakliyeYok.Checked = !proje.nakliyeVarMi;
 
                 flpAltProjeTextBoxes.Controls.Clear();
                 flpAltProjeTextBoxes.Controls.Add(new Label
@@ -606,6 +610,10 @@ namespace CEKA_APP.UsrControl
                     }
                     AddEkleButton(flpAltProjeTextBoxes, "AltProje");
                 }
+                else
+                {
+                    AddEkleButton(flpAltProjeTextBoxes, "AltProje");
+                }
                 flpAltProjeTextBoxes.Visible = proje.altProjeVarMi;
 
                 flpIliskiTextBoxes.Controls.Clear();
@@ -643,6 +651,7 @@ namespace CEKA_APP.UsrControl
                             Margin = new Padding(0, 0, 0, 0),
                             BackColor = Color.FromArgb(231, 76, 60),
                             ForeColor = Color.White,
+                            FlatStyle = FlatStyle.Flat,
                             FlatAppearance = { BorderSize = 0 },
                             Font = new Font("Segoe UI", 8, FontStyle.Bold)
                         };
@@ -666,6 +675,10 @@ namespace CEKA_APP.UsrControl
                     }
                     AddEkleButton(flpIliskiTextBoxes, "Iliski");
                 }
+                else
+                {
+                    AddEkleButton(flpIliskiTextBoxes, "Iliski");
+                }
                 flpIliskiTextBoxes.Visible = proje.digerProjeIliskisiVarMi != "0";
 
                 UpdateContextMenu();
@@ -681,8 +694,6 @@ namespace CEKA_APP.UsrControl
                     : null;
                 var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
                 UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler);
-
-                MessageBox.Show("Proje bulundu ve bilgiler yüklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             else
             {

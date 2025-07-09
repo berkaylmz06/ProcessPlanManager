@@ -1,4 +1,5 @@
-﻿using CEKA_APP.DataBase.ProjeFinans;
+﻿using CEKA_APP.DataBase;
+using CEKA_APP.DataBase.ProjeFinans;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -38,6 +39,7 @@ namespace CEKA_APP.UsrControl
             panelUst.Controls.Add(cmbProjeNo);
             cmbProjeNo.BringToFront();
 
+            btnYeniKalemEkle.Enabled = false; // Başlangıçta devre dışı
             btnKaydet.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         }
 
@@ -52,6 +54,8 @@ namespace CEKA_APP.UsrControl
             tableLayoutPanel1.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
             tableLayoutPanel1.AutoScroll = true;
             tableLayoutPanel1.MinimumSize = new Size(tableLayoutPanel1.Width, 200);
+            tableLayoutPanel1.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single; // Fiyatlandırma ile uyumlu çerçeve
+
 
             tableLayoutPanel2.Dock = DockStyle.Bottom;
             tableLayoutPanel2.AutoSize = true;
@@ -68,6 +72,23 @@ namespace CEKA_APP.UsrControl
         public void LoadProjeFiyatlandirma(string projeNo, bool autoSearch = false, List<string> altProjeler = null)
         {
             this.altProjeler = altProjeler;
+
+            // ProjeFinans_Projeler'de proje var mı kontrol et
+            var projeBilgi = ProjeKutukData.GetProjeBilgileri(projeNo);
+            if (projeBilgi == null)
+            {
+                MessageBox.Show($"Proje '{projeNo}' ProjeFinans_Projeler tablosunda bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            // ProjeFinans_ProjeKutuk'da alt proje kontrolü
+            var projeKutuk = ProjeKutukData.ProjeKutukAra(projeNo);
+            if (projeKutuk != null && projeKutuk.altProjeVarMi && altProjeler == null)
+            {
+                MessageBox.Show($"Proje '{projeNo}' alt projelere sahip. Lütfen bir alt proje seçin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             txtProjeNo.Text = projeNo;
 
             if (altProjeler != null && altProjeler.Any())
@@ -75,8 +96,9 @@ namespace CEKA_APP.UsrControl
                 txtProjeNo.Visible = false;
                 cmbProjeNo.Visible = true;
                 cmbProjeNo.Items.Clear();
-                cmbProjeNo.Items.AddRange(altProjeler.ToArray()); // Sadece alt projeler ekleniyor
-                cmbProjeNo.SelectedIndex = altProjeler.Contains(projeNo) ? altProjeler.IndexOf(projeNo) : 0; // İlk alt proje varsayılan
+                cmbProjeNo.Items.AddRange(altProjeler.ToArray());
+                // Seçilen alt projeyi göster
+                cmbProjeNo.SelectedIndex = altProjeler.Contains(projeNo) ? altProjeler.IndexOf(projeNo) : 0;
                 cmbProjeNo.BringToFront();
             }
             else
@@ -112,7 +134,6 @@ namespace CEKA_APP.UsrControl
                 AddSpacerRow();
                 UpdateTotalsRow();
 
-                // Veritabanından verileri çek
                 var fiyatlandirmaVerileri = fiyatlandirmaData.GetFiyatlandirmaByProje(projeNo);
                 if (fiyatlandirmaVerileri.Any())
                 {
@@ -518,10 +539,18 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            // Ana proje için fiyatlandırma engelleme
-            if (altProjeler != null && altProjeler.Any() && projeNo == txtProjeNo.Text.Trim())
+            var projeBilgi = ProjeKutukData.GetProjeBilgileri(projeNo);
+            if (projeBilgi == null)
             {
-                MessageBox.Show("Ana proje için fiyatlandırma girilemez. Lütfen bir alt proje seçin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Aranan proje '{projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtProjeNo.Text = null;
+                return;
+            }
+
+            var projeKutuk = ProjeKutukData.ProjeKutukAra(projeNo);
+            if (projeKutuk != null && projeKutuk.altProjeVarMi)
+            {
+                MessageBox.Show($"Proje '{projeNo}' alt projelere sahip. Ana proje için fiyatlandırma yapılamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -577,9 +606,7 @@ namespace CEKA_APP.UsrControl
                     }
                 }
 
-                // Toplam bedel hesapla ve eventi tetikle
                 var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
-                MessageBox.Show($"btnKaydet_Click: ProjeNo={projeNo}, ToplamBedel={toplamBedel}, AltProjeler={(altProjeler != null ? string.Join(",", altProjeler) : "Yok")}, EksikFiyatlandirma={string.Join(",", eksikFiyatlandirmaProjeler)}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 OnFiyatlandirmaKaydedildi?.Invoke(projeNo);
                 MessageBox.Show("Fiyatlandırma kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
@@ -595,6 +622,24 @@ namespace CEKA_APP.UsrControl
             if (string.IsNullOrEmpty(arananProjeNo))
             {
                 MessageBox.Show("Lütfen bir proje numarası giriniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                btnYeniKalemEkle.Enabled = false; // Proje numarası boşsa buton devre dışı
+                return;
+            }
+
+            var projeBilgi = ProjeKutukData.GetProjeBilgileri(arananProjeNo);
+            if (projeBilgi == null)
+            {
+                MessageBox.Show($"Aranan proje '{arananProjeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtProjeNo.Text = null;
+                btnYeniKalemEkle.Enabled = false; // Proje bulunamazsa buton devre dışı
+                return;
+            }
+
+            var projeKutuk = ProjeKutukData.ProjeKutukAra(arananProjeNo);
+            if (projeKutuk != null && projeKutuk.altProjeVarMi)
+            {
+                MessageBox.Show($"Proje '{arananProjeNo}' alt projelere sahip. Ana proje için fiyatlandırma yapılamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                btnYeniKalemEkle.Enabled = false; // Alt proje varsa buton devre dışı
                 return;
             }
 
@@ -602,7 +647,6 @@ namespace CEKA_APP.UsrControl
             tableLayoutPanel2.SuspendLayout();
             try
             {
-                // Tabloyu sıfırla
                 tableLayoutPanel1.Controls.Clear();
                 tableLayoutPanel1.RowCount = 0;
                 tableLayoutPanel1.RowStyles.Clear();
@@ -612,19 +656,17 @@ namespace CEKA_APP.UsrControl
                     tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 12.5f));
                 }
 
-                // Başlık satırını ekle
                 tableLayoutPanel1.RowCount = 1;
                 AddHeaderRow();
 
-                // Veritabanından verileri çek
                 var fiyatlandirmaVerileri = fiyatlandirmaData.GetFiyatlandirmaByProje(arananProjeNo);
                 if (fiyatlandirmaVerileri.Any())
                 {
                     foreach (var veri in fiyatlandirmaVerileri)
                     {
-                        if (string.IsNullOrEmpty(veri.kalemAdi)) continue; // Null kalemAdi kontrolü
+                        if (string.IsNullOrEmpty(veri.kalemAdi)) continue;
                         AddYeniKalemSatiri(veri.kalemAdi);
-                        int row = tableLayoutPanel1.RowCount - 1; // Son eklenen veri satırı
+                        int row = tableLayoutPanel1.RowCount - 1;
 
                         var txtTeklifAdet = GetTextBoxAt(row, 1);
                         var txtTeklifBirimFiyat = GetTextBoxAt(row, 2);
@@ -639,7 +681,6 @@ namespace CEKA_APP.UsrControl
                         if (txtGerceklesenAdet != null) txtGerceklesenAdet.Text = veri.gerceklesenBirimMiktar.ToString("N2");
                         if (txtGerceklesenBirimFiyat != null) txtGerceklesenBirimFiyat.Text = veri.gerceklesenBirimFiyat.ToString("N2");
 
-                        // Teklif toplam ve gerçekleşen maliyet hesaplanıyor
                         decimal teklifToplam = veri.teklifBirimMiktar * veri.teklifBirimFiyat;
                         decimal gerceklesenMaliyet = veri.gerceklesenBirimMiktar * veri.gerceklesenBirimFiyat;
 
@@ -653,7 +694,6 @@ namespace CEKA_APP.UsrControl
                     }
                 }
 
-                // En sonda bir boş satır ekle
                 AddSpacerRow();
                 UpdateTotalsRow();
             }
@@ -662,6 +702,8 @@ namespace CEKA_APP.UsrControl
                 tableLayoutPanel1.ResumeLayout(true);
                 tableLayoutPanel2.ResumeLayout(true);
             }
+
+            UpdateKalemEkleButtonState();
         }
 
         private void btnYeniKalemEkle_Click(object sender, EventArgs e)
@@ -673,6 +715,19 @@ namespace CEKA_APP.UsrControl
                 AddSpacerRow();
                 UpdateTotalsRow();
             }
+        }
+
+        private void UpdateKalemEkleButtonState()
+        {
+            string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeNo.Text.Trim();
+            if (string.IsNullOrEmpty(projeNo))
+            {
+                btnYeniKalemEkle.Enabled = false;
+                return;
+            }
+
+            var projeBilgi = ProjeKutukData.GetProjeBilgileri(projeNo);
+            btnYeniKalemEkle.Enabled = projeBilgi != null;
         }
     }
 }

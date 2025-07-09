@@ -74,7 +74,6 @@ namespace CEKA_APP
             lblSistemSaat.Text = currentTime;
         }
 
-        // Yeni metot: Dışarıdan UserControl eklemek için
         public void NavigateToUserControl(UserControl uc)
         {
             UserControlEkle(uc);
@@ -99,6 +98,7 @@ namespace CEKA_APP
             ButonGenelHelper.StilUygula(btnProjeKutuk);
             ButonGenelHelper.StilUygula(btnProjeFiyatlandirma);
             ButonGenelHelper.StilUygula(btnYerlesimPlaniBilgileri);
+            ButonGenelHelper.StilUygula(btnOdemeSartlari);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnSistem);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnDuyuru);
@@ -123,6 +123,7 @@ namespace CEKA_APP
             btnProjeKutuk.Visible = false;
             btnProjeFiyatlandirma.Visible = false;
             btnYerlesimPlaniBilgileri.Visible= false;
+            btnOdemeSartlari.Visible = false;
 
             switch (aktifKullanici.kullaniciRol)
             {
@@ -140,6 +141,7 @@ namespace CEKA_APP
                     btnProjeKutuk.Visible = true;
                     btnProjeFiyatlandirma.Visible = true;
                     btnYerlesimPlaniBilgileri.Visible = true;
+                    btnOdemeSartlari.Visible = true;
                     break;
                 case "Destek":
                     btnKesimPlaniEkle.Visible = true;
@@ -158,6 +160,7 @@ namespace CEKA_APP
                     btnProjeKutuk.Visible = true;
                     btnProjeFiyatlandirma.Visible = true;
                     btnYerlesimPlaniBilgileri.Visible = true;
+                    btnOdemeSartlari.Visible = true;
                     break;
                 case "İş Hazırlama":
                     btnKesimPlaniEkle.Visible = true;
@@ -201,6 +204,7 @@ namespace CEKA_APP
                 btnKarsilastirmaTablolari,
                 btnProjeKutuk,
                 btnProjeFiyatlandirma,
+                btnOdemeSartlari,
                 btnOturumuKapat
             );
 
@@ -550,6 +554,12 @@ namespace CEKA_APP
             var yerlesimPlaniBilgileri = new ctlYerlesimPlaniBilgi();
             yerlesimPlaniBilgileri.FormKullaniciAdiGetir(KullaniciAdiInterface);
             UserControlEkle(yerlesimPlaniBilgileri);
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var projeFiyatlandirmaOdemeSartlari = new ctlOdemeSartlari();
+            UserControlEkle(projeFiyatlandirmaOdemeSartlari);
         }
     }
 }

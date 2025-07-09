@@ -33,8 +33,6 @@
             this.btnEkle = new System.Windows.Forms.Button();
             this.txtYeniKalem = new System.Windows.Forms.TextBox();
             this.lblYeniKalemBilgi = new System.Windows.Forms.Label();
-            this.txtYeniKalemBirim = new System.Windows.Forms.TextBox();
-            this.lblYeniKalemBirim = new System.Windows.Forms.Label();
             this.lblYeniKalemAdi = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
@@ -49,7 +47,7 @@
             // 
             // btnSec
             // 
-            this.btnSec.Location = new System.Drawing.Point(37, 378);
+            this.btnSec.Location = new System.Drawing.Point(35, 353);
             this.btnSec.Name = "btnSec";
             this.btnSec.Size = new System.Drawing.Size(116, 38);
             this.btnSec.TabIndex = 1;
@@ -59,7 +57,7 @@
             // 
             // btnEkle
             // 
-            this.btnEkle.Location = new System.Drawing.Point(196, 378);
+            this.btnEkle.Location = new System.Drawing.Point(209, 353);
             this.btnEkle.Name = "btnEkle";
             this.btnEkle.Size = new System.Drawing.Size(116, 38);
             this.btnEkle.TabIndex = 2;
@@ -85,24 +83,6 @@
             this.lblYeniKalemBilgi.Text = "Lütfen yeni kalem giriniz.";
             this.lblYeniKalemBilgi.Visible = false;
             // 
-            // txtYeniKalemBirim
-            // 
-            this.txtYeniKalemBirim.Location = new System.Drawing.Point(164, 344);
-            this.txtYeniKalemBirim.Name = "txtYeniKalemBirim";
-            this.txtYeniKalemBirim.Size = new System.Drawing.Size(176, 22);
-            this.txtYeniKalemBirim.TabIndex = 5;
-            this.txtYeniKalemBirim.Visible = false;
-            // 
-            // lblYeniKalemBirim
-            // 
-            this.lblYeniKalemBirim.AutoSize = true;
-            this.lblYeniKalemBirim.Location = new System.Drawing.Point(23, 350);
-            this.lblYeniKalemBirim.Name = "lblYeniKalemBirim";
-            this.lblYeniKalemBirim.Size = new System.Drawing.Size(84, 16);
-            this.lblYeniKalemBirim.TabIndex = 6;
-            this.lblYeniKalemBirim.Text = "Kalem Birimi:";
-            this.lblYeniKalemBirim.Visible = false;
-            // 
             // lblYeniKalemAdi
             // 
             this.lblYeniKalemAdi.AutoSize = true;
@@ -118,10 +98,8 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(369, 428);
+            this.ClientSize = new System.Drawing.Size(369, 404);
             this.Controls.Add(this.lblYeniKalemAdi);
-            this.Controls.Add(this.lblYeniKalemBirim);
-            this.Controls.Add(this.txtYeniKalemBirim);
             this.Controls.Add(this.lblYeniKalemBilgi);
             this.Controls.Add(this.txtYeniKalem);
             this.Controls.Add(this.btnEkle);
@@ -143,8 +121,6 @@
         private System.Windows.Forms.Button btnEkle;
         private System.Windows.Forms.TextBox txtYeniKalem;
         private System.Windows.Forms.Label lblYeniKalemBilgi;
-        private System.Windows.Forms.TextBox txtYeniKalemBirim;
-        private System.Windows.Forms.Label lblYeniKalemBirim;
         private System.Windows.Forms.Label lblYeniKalemAdi;
     }
 }

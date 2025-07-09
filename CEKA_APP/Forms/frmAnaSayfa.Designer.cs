@@ -87,6 +87,7 @@
             this.btnKarsilastirmaTablolari = new System.Windows.Forms.Button();
             this.btnProjeKutuk = new System.Windows.Forms.Button();
             this.panelAraYuz = new System.Windows.Forms.Panel();
+            this.btnYerlesimPlaniBilgileri = new System.Windows.Forms.Button();
             this.btnProjeFiyatlandirma = new System.Windows.Forms.Button();
             this.btnOturumuKapat = new System.Windows.Forms.Button();
             this.panelAnaSayfa = new System.Windows.Forms.Panel();
@@ -96,7 +97,7 @@
             this.lblDuyuru = new System.Windows.Forms.Label();
             this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.btnYerlesimPlaniBilgileri = new System.Windows.Forms.Button();
+            this.btnOdemeSartlari = new System.Windows.Forms.Button();
             this.panelNavigasyon.SuspendLayout();
             this.p2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGeri)).BeginInit();
@@ -750,6 +751,7 @@
             // 
             this.panelAraYuz.AutoScroll = true;
             this.panelAraYuz.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.panelAraYuz.Controls.Add(this.btnOdemeSartlari);
             this.panelAraYuz.Controls.Add(this.btnYerlesimPlaniBilgileri);
             this.panelAraYuz.Controls.Add(this.btnProjeFiyatlandirma);
             this.panelAraYuz.Controls.Add(this.btnProjeKutuk);
@@ -771,6 +773,17 @@
             this.panelAraYuz.Name = "panelAraYuz";
             this.panelAraYuz.Size = new System.Drawing.Size(215, 1155);
             this.panelAraYuz.TabIndex = 212;
+            // 
+            // btnYerlesimPlaniBilgileri
+            // 
+            this.btnYerlesimPlaniBilgileri.Location = new System.Drawing.Point(15, 87);
+            this.btnYerlesimPlaniBilgileri.Margin = new System.Windows.Forms.Padding(2);
+            this.btnYerlesimPlaniBilgileri.Name = "btnYerlesimPlaniBilgileri";
+            this.btnYerlesimPlaniBilgileri.Size = new System.Drawing.Size(160, 58);
+            this.btnYerlesimPlaniBilgileri.TabIndex = 127;
+            this.btnYerlesimPlaniBilgileri.Text = "Yerleşim Planı Bilgileri";
+            this.btnYerlesimPlaniBilgileri.UseVisualStyleBackColor = true;
+            this.btnYerlesimPlaniBilgileri.Click += new System.EventHandler(this.btnYerlesimPlaniBilgileri_Click);
             // 
             // btnProjeFiyatlandirma
             // 
@@ -861,16 +874,16 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // btnYerlesimPlaniBilgileri
+            // btnOdemeSartlari
             // 
-            this.btnYerlesimPlaniBilgileri.Location = new System.Drawing.Point(15, 87);
-            this.btnYerlesimPlaniBilgileri.Margin = new System.Windows.Forms.Padding(2);
-            this.btnYerlesimPlaniBilgileri.Name = "btnYerlesimPlaniBilgileri";
-            this.btnYerlesimPlaniBilgileri.Size = new System.Drawing.Size(160, 58);
-            this.btnYerlesimPlaniBilgileri.TabIndex = 127;
-            this.btnYerlesimPlaniBilgileri.Text = "Yerleşim Planı Bilgileri";
-            this.btnYerlesimPlaniBilgileri.UseVisualStyleBackColor = true;
-            this.btnYerlesimPlaniBilgileri.Click += new System.EventHandler(this.btnYerlesimPlaniBilgileri_Click);
+            this.btnOdemeSartlari.Location = new System.Drawing.Point(15, 896);
+            this.btnOdemeSartlari.Margin = new System.Windows.Forms.Padding(2);
+            this.btnOdemeSartlari.Name = "btnOdemeSartlari";
+            this.btnOdemeSartlari.Size = new System.Drawing.Size(160, 58);
+            this.btnOdemeSartlari.TabIndex = 128;
+            this.btnOdemeSartlari.Text = "Fiyatlandırma Ödeme Şartları";
+            this.btnOdemeSartlari.UseVisualStyleBackColor = true;
+            this.btnOdemeSartlari.Click += new System.EventHandler(this.button1_Click);
             // 
             // frmAnaSayfa
             // 
@@ -991,5 +1004,6 @@
         private System.Windows.Forms.Panel p2;
         private System.Windows.Forms.PictureBox pictureBoxIleri;
         private System.Windows.Forms.Button btnYerlesimPlaniBilgileri;
+        private System.Windows.Forms.Button btnOdemeSartlari;
     }
 }

@@ -8,8 +8,6 @@ namespace CEKA_APP
     public partial class frmYeniFiyatlandirmaKalemiEkle : Form
     {
         public string KalemAdi { get; private set; }
-        public string KalemBirimi { get; private set; }
-
         private FiyatlandirmaKalemleriData kalemData = new FiyatlandirmaKalemleriData();
 
         public frmYeniFiyatlandirmaKalemiEkle()
@@ -25,7 +23,7 @@ namespace CEKA_APP
         {
             var kalemler = kalemData.GetFiyatlandirmaKalemleri();
             listKalemler.Items.Clear();
-            foreach (var (Id, Adi, Birim, Tarih) in kalemler)
+            foreach (var (Id, Adi, Tarih) in kalemler)
             {
                 listKalemler.Items.Add(Adi);
             }
@@ -50,12 +48,9 @@ namespace CEKA_APP
             if (!txtYeniKalem.Visible)
             {
                 txtYeniKalem.Clear();
-                txtYeniKalemBirim.Clear();
                 txtYeniKalem.Visible = true;
-                txtYeniKalemBirim.Visible = true;
                 lblYeniKalemAdi.Visible = true;
                 lblYeniKalemBilgi.Visible = true;
-                lblYeniKalemBirim.Visible = true;
                 
                 btnEkle.Text = "Onayla";
                 this.Height += 30;
@@ -63,10 +58,10 @@ namespace CEKA_APP
             else if (!string.IsNullOrEmpty(txtYeniKalem.Text))
             {
                 KalemAdi = txtYeniKalem.Text;
-                KalemBirimi = txtYeniKalemBirim.Text;
-                kalemData.FiyatlandirmaKalemleriEkle(KalemAdi, KalemBirimi);
+                kalemData.FiyatlandirmaKalemleriEkle(KalemAdi);
                 LoadKalemler();
                 txtYeniKalem.Visible = false;
+                lblYeniKalemAdi.Visible = false;
                 lblYeniKalemBilgi.Visible = false;
                 btnEkle.Text = "Yeni Ekle";
                 this.Height -= 30;

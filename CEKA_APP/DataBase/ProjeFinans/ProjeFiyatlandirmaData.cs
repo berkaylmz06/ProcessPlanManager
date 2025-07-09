@@ -109,19 +109,36 @@ namespace CEKA_APP.DataBase.ProjeFinans
         {
             decimal toplamBedel = 0;
             var eksikFiyatlandirmaProjeler = new List<string>();
-            var projeler = new List<string> { projeNo };
-            if (altProjeler != null && altProjeler.Any())
-            {
-                projeler.AddRange(altProjeler);
-            }
 
             using (var connection = DataBaseHelper.GetConnection())
             {
                 try
                 {
                     connection.Open();
-                    // Her proje için fiyatlandırma kontrolü
-                    foreach (var proje in projeler)
+                    if (altProjeler != null && altProjeler.Any())
+                    {
+                        foreach (var altProje in altProjeler)
+                        {
+                            string query = @"
+                                SELECT SUM(teklifBirimMiktar * teklifBirimFiyat) as ToplamTeklif
+                                FROM ProjeFinans_Fiyatlandirma
+                                WHERE projeNo = @projeNo AND teklifBirimMiktar IS NOT NULL AND teklifBirimFiyat IS NOT NULL";
+                            using (var cmd = new SqlCommand(query, connection))
+                            {
+                                cmd.Parameters.AddWithValue("@projeNo", altProje);
+                                object result = cmd.ExecuteScalar();
+                                if (result != DBNull.Value && result != null)
+                                {
+                                    toplamBedel += Convert.ToDecimal(result);
+                                }
+                                else
+                                {
+                                    eksikFiyatlandirmaProjeler.Add(altProje);
+                                }
+                            }
+                        }
+                    }
+                    else
                     {
                         string query = @"
                             SELECT SUM(teklifBirimMiktar * teklifBirimFiyat) as ToplamTeklif
@@ -129,7 +146,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                             WHERE projeNo = @projeNo AND teklifBirimMiktar IS NOT NULL AND teklifBirimFiyat IS NOT NULL";
                         using (var cmd = new SqlCommand(query, connection))
                         {
-                            cmd.Parameters.AddWithValue("@projeNo", proje);
+                            cmd.Parameters.AddWithValue("@projeNo", projeNo);
                             object result = cmd.ExecuteScalar();
                             if (result != DBNull.Value && result != null)
                             {
@@ -137,12 +154,10 @@ namespace CEKA_APP.DataBase.ProjeFinans
                             }
                             else
                             {
-                                eksikFiyatlandirmaProjeler.Add(proje);
+                                eksikFiyatlandirmaProjeler.Add(projeNo);
                             }
                         }
                     }
-                    // Hata ayıklama için
-                    MessageBox.Show($"GetToplamBedel: ProjeNo={projeNo}, AltProjeler={string.Join(",", projeler)}, ToplamBedel={toplamBedel}, EksikFiyatlandirma={string.Join(",", eksikFiyatlandirmaProjeler)}", "Debug", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 catch (Exception ex)
                 {

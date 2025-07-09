@@ -164,7 +164,6 @@ namespace CEKA_APP.DataBase
                 {
                     connection.Open();
 
-                    // Mevcut verileri al
                     ProjeBilgi mevcutBilgi = GetProjeBilgileri(projeNo);
                     if (mevcutBilgi == null)
                     {
@@ -172,7 +171,6 @@ namespace CEKA_APP.DataBase
                         return false;
                     }
 
-                    // Verileri karşılaştır
                     bool degisiklikVar =
                         (mevcutBilgi.Aciklama ?? "") != (aciklama ?? "") ||
                         (mevcutBilgi.ProjeAdi ?? "") != (projeAdi ?? "") ||
@@ -341,6 +339,31 @@ namespace CEKA_APP.DataBase
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Toplam bedel güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+        public static bool CheckAltProje(string projeNo)
+        {
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    string sql = @"
+                SELECT COUNT(*)
+                FROM ProjeFinans_ProjeIliski
+                WHERE altProjeNo = @projeNo";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@projeNo", projeNo.Trim());
+                        int count = (int)command.ExecuteScalar();
+                        return count > 0; // Alt proje ise true
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Alt proje kontrolü sırasında hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
                 }
             }
         }
