@@ -57,13 +57,17 @@
             this.label11 = new System.Windows.Forms.Label();
             this.lblAltProjeHata = new System.Windows.Forms.Label();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
+            this.chkEuro = new System.Windows.Forms.CheckBox();
+            this.chkDolar = new System.Windows.Forms.CheckBox();
+            this.chkTL = new System.Windows.Forms.CheckBox();
+            this.label12 = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // label1
             // 
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label1.Location = new System.Drawing.Point(307, 186);
+            this.label1.Location = new System.Drawing.Point(44, 170);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(107, 20);
             this.label1.TabIndex = 0;
@@ -73,7 +77,7 @@
             // 
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label2.Location = new System.Drawing.Point(307, 236);
+            this.label2.Location = new System.Drawing.Point(44, 220);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(111, 20);
             this.label2.TabIndex = 1;
@@ -83,7 +87,7 @@
             // 
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label3.Location = new System.Drawing.Point(307, 286);
+            this.label3.Location = new System.Drawing.Point(44, 270);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(90, 20);
             this.label3.TabIndex = 2;
@@ -93,7 +97,7 @@
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label4.Location = new System.Drawing.Point(307, 336);
+            this.label4.Location = new System.Drawing.Point(44, 320);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(119, 20);
             this.label4.TabIndex = 3;
@@ -103,7 +107,7 @@
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label5.Location = new System.Drawing.Point(307, 391);
+            this.label5.Location = new System.Drawing.Point(44, 375);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(88, 20);
             this.label5.TabIndex = 4;
@@ -113,7 +117,7 @@
             // 
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label6.Location = new System.Drawing.Point(307, 440);
+            this.label6.Location = new System.Drawing.Point(44, 424);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(154, 20);
             this.label6.TabIndex = 5;
@@ -123,7 +127,7 @@
             // 
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label7.Location = new System.Drawing.Point(307, 486);
+            this.label7.Location = new System.Drawing.Point(44, 470);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(280, 20);
             this.label7.TabIndex = 6;
@@ -133,7 +137,7 @@
             // 
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label8.Location = new System.Drawing.Point(307, 536);
+            this.label8.Location = new System.Drawing.Point(44, 520);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(216, 20);
             this.label8.TabIndex = 7;
@@ -143,7 +147,7 @@
             // 
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label9.Location = new System.Drawing.Point(307, 586);
+            this.label9.Location = new System.Drawing.Point(44, 613);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(130, 20);
             this.label9.TabIndex = 8;
@@ -153,7 +157,7 @@
             // 
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.label10.Location = new System.Drawing.Point(307, 636);
+            this.label10.Location = new System.Drawing.Point(44, 663);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(144, 20);
             this.label10.TabIndex = 9;
@@ -161,50 +165,50 @@
             // 
             // txtMusteriNo
             // 
-            this.txtMusteriNo.Location = new System.Drawing.Point(636, 185);
+            this.txtMusteriNo.Location = new System.Drawing.Point(373, 169);
             this.txtMusteriNo.Name = "txtMusteriNo";
-            this.txtMusteriNo.Size = new System.Drawing.Size(313, 22);
+            this.txtMusteriNo.Size = new System.Drawing.Size(402, 22);
             this.txtMusteriNo.TabIndex = 10;
             // 
             // txtMusteriAdi
             // 
-            this.txtMusteriAdi.Location = new System.Drawing.Point(636, 235);
+            this.txtMusteriAdi.Location = new System.Drawing.Point(373, 219);
             this.txtMusteriAdi.Name = "txtMusteriAdi";
-            this.txtMusteriAdi.Size = new System.Drawing.Size(313, 22);
+            this.txtMusteriAdi.Size = new System.Drawing.Size(402, 22);
             this.txtMusteriAdi.TabIndex = 11;
             // 
             // txtTeklifNo
             // 
-            this.txtTeklifNo.Location = new System.Drawing.Point(636, 285);
+            this.txtTeklifNo.Location = new System.Drawing.Point(373, 269);
             this.txtTeklifNo.Name = "txtTeklifNo";
-            this.txtTeklifNo.Size = new System.Drawing.Size(313, 22);
+            this.txtTeklifNo.Size = new System.Drawing.Size(402, 22);
             this.txtTeklifNo.TabIndex = 12;
             // 
             // txtIsFirsatiNo
             // 
-            this.txtIsFirsatiNo.Location = new System.Drawing.Point(636, 335);
+            this.txtIsFirsatiNo.Location = new System.Drawing.Point(373, 319);
             this.txtIsFirsatiNo.Name = "txtIsFirsatiNo";
-            this.txtIsFirsatiNo.Size = new System.Drawing.Size(313, 22);
+            this.txtIsFirsatiNo.Size = new System.Drawing.Size(402, 22);
             this.txtIsFirsatiNo.TabIndex = 13;
             // 
             // txtProjeNo
             // 
-            this.txtProjeNo.Location = new System.Drawing.Point(636, 390);
+            this.txtProjeNo.Location = new System.Drawing.Point(373, 374);
             this.txtProjeNo.Name = "txtProjeNo";
-            this.txtProjeNo.Size = new System.Drawing.Size(313, 22);
+            this.txtProjeNo.Size = new System.Drawing.Size(402, 22);
             this.txtProjeNo.TabIndex = 14;
             // 
             // txtToplamBedel
             // 
-            this.txtToplamBedel.Location = new System.Drawing.Point(636, 585);
+            this.txtToplamBedel.Location = new System.Drawing.Point(373, 612);
             this.txtToplamBedel.Name = "txtToplamBedel";
-            this.txtToplamBedel.Size = new System.Drawing.Size(313, 22);
+            this.txtToplamBedel.Size = new System.Drawing.Size(402, 22);
             this.txtToplamBedel.TabIndex = 18;
             // 
             // chkAltProjeVar
             // 
             this.chkAltProjeVar.AutoSize = true;
-            this.chkAltProjeVar.Location = new System.Drawing.Point(636, 440);
+            this.chkAltProjeVar.Location = new System.Drawing.Point(373, 424);
             this.chkAltProjeVar.Name = "chkAltProjeVar";
             this.chkAltProjeVar.Size = new System.Drawing.Size(50, 20);
             this.chkAltProjeVar.TabIndex = 20;
@@ -214,7 +218,7 @@
             // chkAltProjeYok
             // 
             this.chkAltProjeYok.AutoSize = true;
-            this.chkAltProjeYok.Location = new System.Drawing.Point(753, 440);
+            this.chkAltProjeYok.Location = new System.Drawing.Point(490, 424);
             this.chkAltProjeYok.Name = "chkAltProjeYok";
             this.chkAltProjeYok.Size = new System.Drawing.Size(53, 20);
             this.chkAltProjeYok.TabIndex = 21;
@@ -224,7 +228,7 @@
             // chkProjeIliskisiYok
             // 
             this.chkProjeIliskisiYok.AutoSize = true;
-            this.chkProjeIliskisiYok.Location = new System.Drawing.Point(753, 486);
+            this.chkProjeIliskisiYok.Location = new System.Drawing.Point(490, 470);
             this.chkProjeIliskisiYok.Name = "chkProjeIliskisiYok";
             this.chkProjeIliskisiYok.Size = new System.Drawing.Size(53, 20);
             this.chkProjeIliskisiYok.TabIndex = 23;
@@ -234,7 +238,7 @@
             // chkProjeIliskisiVar
             // 
             this.chkProjeIliskisiVar.AutoSize = true;
-            this.chkProjeIliskisiVar.Location = new System.Drawing.Point(636, 486);
+            this.chkProjeIliskisiVar.Location = new System.Drawing.Point(373, 470);
             this.chkProjeIliskisiVar.Name = "chkProjeIliskisiVar";
             this.chkProjeIliskisiVar.Size = new System.Drawing.Size(50, 20);
             this.chkProjeIliskisiVar.TabIndex = 22;
@@ -244,7 +248,7 @@
             // chkNakliyeYok
             // 
             this.chkNakliyeYok.AutoSize = true;
-            this.chkNakliyeYok.Location = new System.Drawing.Point(753, 638);
+            this.chkNakliyeYok.Location = new System.Drawing.Point(490, 665);
             this.chkNakliyeYok.Name = "chkNakliyeYok";
             this.chkNakliyeYok.Size = new System.Drawing.Size(53, 20);
             this.chkNakliyeYok.TabIndex = 25;
@@ -254,7 +258,7 @@
             // chkNakliyeVar
             // 
             this.chkNakliyeVar.AutoSize = true;
-            this.chkNakliyeVar.Location = new System.Drawing.Point(636, 638);
+            this.chkNakliyeVar.Location = new System.Drawing.Point(373, 665);
             this.chkNakliyeVar.Name = "chkNakliyeVar";
             this.chkNakliyeVar.Size = new System.Drawing.Size(50, 20);
             this.chkNakliyeVar.TabIndex = 24;
@@ -263,7 +267,7 @@
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(479, 705);
+            this.btnKaydet.Location = new System.Drawing.Point(218, 727);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(219, 47);
             this.btnKaydet.TabIndex = 27;
@@ -273,9 +277,9 @@
             // 
             // dtpSiparisSozlesmeTarihi
             // 
-            this.dtpSiparisSozlesmeTarihi.Location = new System.Drawing.Point(636, 536);
+            this.dtpSiparisSozlesmeTarihi.Location = new System.Drawing.Point(373, 520);
             this.dtpSiparisSozlesmeTarihi.Name = "dtpSiparisSozlesmeTarihi";
-            this.dtpSiparisSozlesmeTarihi.Size = new System.Drawing.Size(313, 22);
+            this.dtpSiparisSozlesmeTarihi.Size = new System.Drawing.Size(402, 22);
             this.dtpSiparisSozlesmeTarihi.TabIndex = 314;
             // 
             // txtProjeAra
@@ -324,11 +328,55 @@
             this.ctlBaslik1.Size = new System.Drawing.Size(1297, 50);
             this.ctlBaslik1.TabIndex = 26;
             // 
+            // chkEuro
+            // 
+            this.chkEuro.AutoSize = true;
+            this.chkEuro.Location = new System.Drawing.Point(375, 570);
+            this.chkEuro.Name = "chkEuro";
+            this.chkEuro.Size = new System.Drawing.Size(75, 20);
+            this.chkEuro.TabIndex = 321;
+            this.chkEuro.Text = "Euro (€)";
+            this.chkEuro.UseVisualStyleBackColor = true;
+            // 
+            // chkDolar
+            // 
+            this.chkDolar.AutoSize = true;
+            this.chkDolar.Location = new System.Drawing.Point(518, 570);
+            this.chkDolar.Name = "chkDolar";
+            this.chkDolar.Size = new System.Drawing.Size(80, 20);
+            this.chkDolar.TabIndex = 320;
+            this.chkDolar.Text = "Dolar ($)";
+            this.chkDolar.UseVisualStyleBackColor = true;
+            // 
+            // chkTL
+            // 
+            this.chkTL.AutoSize = true;
+            this.chkTL.Location = new System.Drawing.Point(666, 570);
+            this.chkTL.Name = "chkTL";
+            this.chkTL.Size = new System.Drawing.Size(109, 20);
+            this.chkTL.TabIndex = 319;
+            this.chkTL.Text = "Türk Lirası (₺)";
+            this.chkTL.UseVisualStyleBackColor = true;
+            // 
+            // label12
+            // 
+            this.label12.AutoSize = true;
+            this.label12.Font = new System.Drawing.Font("Microsoft Sans Serif", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.label12.Location = new System.Drawing.Point(44, 568);
+            this.label12.Name = "label12";
+            this.label12.Size = new System.Drawing.Size(110, 20);
+            this.label12.TabIndex = 322;
+            this.label12.Text = "Para Birimi:";
+            // 
             // ctlProjeKutuk
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
+            this.Controls.Add(this.label12);
+            this.Controls.Add(this.chkEuro);
+            this.Controls.Add(this.chkDolar);
+            this.Controls.Add(this.chkTL);
             this.Controls.Add(this.lblAltProjeHata);
             this.Controls.Add(this.label11);
             this.Controls.Add(this.btnAra);
@@ -397,5 +445,9 @@
         private System.Windows.Forms.Button btnAra;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label lblAltProjeHata;
+        private System.Windows.Forms.CheckBox chkEuro;
+        private System.Windows.Forms.CheckBox chkDolar;
+        private System.Windows.Forms.CheckBox chkTL;
+        private System.Windows.Forms.Label label12;
     }
 }

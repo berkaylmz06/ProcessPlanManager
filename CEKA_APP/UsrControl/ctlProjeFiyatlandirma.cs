@@ -27,7 +27,8 @@ namespace CEKA_APP.UsrControl
                 Size = txtProjeNo.Size,
                 Location = txtProjeNo.Location,
                 DropDownStyle = ComboBoxStyle.DropDownList,
-                Visible = false
+                Visible = false,
+                Font = new Font("Segoe UI", 10)
             };
             cmbProjeNo.SelectedIndexChanged += (s, e) =>
             {
@@ -39,7 +40,7 @@ namespace CEKA_APP.UsrControl
             panelUst.Controls.Add(cmbProjeNo);
             cmbProjeNo.BringToFront();
 
-            btnYeniKalemEkle.Enabled = false; // Başlangıçta devre dışı
+            btnYeniKalemEkle.Enabled = false;
             btnKaydet.Anchor = AnchorStyles.Top | AnchorStyles.Right;
         }
 
@@ -48,15 +49,26 @@ namespace CEKA_APP.UsrControl
             ctlBaslik1.Baslik = "Proje Fiyatlandırma";
             panelUst.AutoScroll = true;
 
+            // Tablo ayarları
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.AutoSize = false;
             tableLayoutPanel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             tableLayoutPanel1.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
             tableLayoutPanel1.AutoScroll = true;
             tableLayoutPanel1.MinimumSize = new Size(tableLayoutPanel1.Width, 200);
-            tableLayoutPanel1.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single; // Fiyatlandırma ile uyumlu çerçeve
 
+            // Sütun ayarları
+            tableLayoutPanel1.ColumnCount = 8;
+            tableLayoutPanel1.ColumnStyles.Clear();
+            for (int i = 0; i < 8; i++)
+            {
+                tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 12.5f));
+            }
 
+            // Başlangıçta başlık ve boş satır ekle
+            InitializeTableStructure();
+
+            // Alt panel ayarları
             tableLayoutPanel2.Dock = DockStyle.Bottom;
             tableLayoutPanel2.AutoSize = true;
             tableLayoutPanel2.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -69,11 +81,32 @@ namespace CEKA_APP.UsrControl
             }
         }
 
+        private void InitializeTableStructure()
+        {
+            tableLayoutPanel1.SuspendLayout();
+            try
+            {
+                // Tüm kontrolleri temizle
+                tableLayoutPanel1.Controls.Clear();
+                tableLayoutPanel1.RowStyles.Clear();
+                tableLayoutPanel1.RowCount = 0;
+
+                // Başlık satırını ekle
+                AddHeaderRow();
+
+                // Boş spacer satırını ekle
+                AddSpacerRow();
+            }
+            finally
+            {
+                tableLayoutPanel1.ResumeLayout(true);
+            }
+        }
+
         public void LoadProjeFiyatlandirma(string projeNo, bool autoSearch = false, List<string> altProjeler = null)
         {
             this.altProjeler = altProjeler;
 
-            // ProjeFinans_Projeler'de proje var mı kontrol et
             var projeBilgi = ProjeKutukData.GetProjeBilgileri(projeNo);
             if (projeBilgi == null)
             {
@@ -81,7 +114,6 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            // ProjeFinans_ProjeKutuk'da alt proje kontrolü
             var projeKutuk = ProjeKutukData.ProjeKutukAra(projeNo);
             if (projeKutuk != null && projeKutuk.altProjeVarMi && altProjeler == null)
             {
@@ -97,7 +129,6 @@ namespace CEKA_APP.UsrControl
                 cmbProjeNo.Visible = true;
                 cmbProjeNo.Items.Clear();
                 cmbProjeNo.Items.AddRange(altProjeler.ToArray());
-                // Seçilen alt projeyi göster
                 cmbProjeNo.SelectedIndex = altProjeler.Contains(projeNo) ? altProjeler.IndexOf(projeNo) : 0;
                 cmbProjeNo.BringToFront();
             }
@@ -180,17 +211,19 @@ namespace CEKA_APP.UsrControl
 
         private void AddHeaderRow()
         {
+            tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+
             string[] headers = {
-                "Üretim ve Montaj Kalemleri",
-                "Teklif Adet/Ağırlık",
-                "Teklif Birim Fiyat",
-                "Teklif Toplam",
-                "Gerçekleşen Adet/Ağırlık",
-                "Gerçekleşen Birim Fiyat",
-                "Gerçekleşen Maliyet",
-                "Son Durum"
-            };
+        "Üretim ve Montaj Kalemleri",
+        "Teklif Adet/Ağırlık",
+        "Teklif Birim Fiyat",
+        "Teklif Toplam",
+        "Gerçekleşen Adet/Ağırlık",
+        "Gerçekleşen Birim Fiyat",
+        "Gerçekleşen Maliyet",
+        "Son Durum"
+    };
 
             for (int i = 0; i < headers.Length; i++)
             {
@@ -203,7 +236,8 @@ namespace CEKA_APP.UsrControl
                     Margin = new Padding(0),
                     Padding = new Padding(2),
                     Height = 23,
-                    AutoSize = false
+                    AutoSize = false,
+                    BackColor = Color.LightGray
                 };
                 tableLayoutPanel1.Controls.Add(lbl, i, 0);
             }
@@ -240,7 +274,7 @@ namespace CEKA_APP.UsrControl
                 }
 
                 tableLayoutPanel1.RowCount++;
-                tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
                 for (int col = 0; col < tableLayoutPanel1.ColumnCount; col++)
                 {
                     var emptyLabel = new Label
@@ -249,8 +283,8 @@ namespace CEKA_APP.UsrControl
                         Dock = DockStyle.Fill,
                         Margin = new Padding(0),
                         AutoSize = false,
-                        Height = 23,
-                        Font = new Font("Segoe UI", 8)
+                        Height = 30,
+                        Font = new Font("Segoe UI", 10)
                     };
                     tableLayoutPanel1.Controls.Add(emptyLabel, col, tableLayoutPanel1.RowCount - 1);
                 }
@@ -292,7 +326,7 @@ namespace CEKA_APP.UsrControl
                 }
 
                 tableLayoutPanel1.RowCount++;
-                tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
                 int newRowIndex = tableLayoutPanel1.RowCount - 1;
 
                 var lblKalemAdi = new Label
@@ -302,8 +336,8 @@ namespace CEKA_APP.UsrControl
                     TextAlign = ContentAlignment.MiddleCenter,
                     Margin = new Padding(2),
                     AutoSize = false,
-                    Height = 23,
-                    Font = new Font("Segoe UI", 8)
+                    Height = 30,
+                    Font = new Font("Segoe UI", 10)
                 };
                 tableLayoutPanel1.Controls.Add(lblKalemAdi, 0, newRowIndex);
 
@@ -318,8 +352,8 @@ namespace CEKA_APP.UsrControl
                             Margin = new Padding(2),
                             ForeColor = Color.Black,
                             AutoSize = false,
-                            Height = 23,
-                            Font = new Font("Segoe UI", 8)
+                            Height = 30,
+                            Font = new Font("Segoe UI", 10)
                         };
                         tableLayoutPanel1.Controls.Add(lblSonDurum, i, newRowIndex);
                         continue;
@@ -331,8 +365,8 @@ namespace CEKA_APP.UsrControl
                         TextAlign = HorizontalAlignment.Center,
                         Margin = new Padding(2),
                         AutoSize = false,
-                        Height = 23,
-                        Font = new Font("Segoe UI", 8),
+                        Height = 30,
+                        Font = new Font("Segoe UI", 10),
                         BorderStyle = BorderStyle.FixedSingle
                     };
 
@@ -430,17 +464,17 @@ namespace CEKA_APP.UsrControl
                 tableLayoutPanel2.RowCount = 1;
 
                 int totalRowIndex = 0;
-                tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
 
                 var lblToplam = new Label
                 {
                     Text = "Toplam",
-                    Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
                     TextAlign = ContentAlignment.MiddleCenter,
                     Dock = DockStyle.Fill,
                     Margin = new Padding(0),
                     AutoSize = false,
-                    Height = 23,
+                    Height = 30,
                     BackColor = Color.LightYellow
                 };
                 tableLayoutPanel2.Controls.Add(lblToplam, 0, totalRowIndex);
@@ -458,12 +492,12 @@ namespace CEKA_APP.UsrControl
                 var lblToplamTeklifHesap = new Label
                 {
                     Text = toplamTeklif.ToString("N2"),
-                    Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
                     TextAlign = ContentAlignment.MiddleCenter,
                     Dock = DockStyle.Fill,
                     Margin = new Padding(0),
                     AutoSize = false,
-                    Height = 23,
+                    Height = 30,
                     BackColor = Color.LightYellow
                 };
                 tableLayoutPanel2.Controls.Add(lblToplamTeklifHesap, 3, totalRowIndex);
@@ -471,12 +505,12 @@ namespace CEKA_APP.UsrControl
                 var lblToplamGerceklesenHesap = new Label
                 {
                     Text = toplamGerceklesen.ToString("N2"),
-                    Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
                     TextAlign = ContentAlignment.MiddleCenter,
                     Dock = DockStyle.Fill,
                     Margin = new Padding(0),
                     AutoSize = false,
-                    Height = 23,
+                    Height = 30,
                     BackColor = Color.LightYellow
                 };
                 tableLayoutPanel2.Controls.Add(lblToplamGerceklesenHesap, 6, totalRowIndex);
@@ -484,12 +518,12 @@ namespace CEKA_APP.UsrControl
                 var lblToplamSonDurumHesap = new Label
                 {
                     Text = toplamSonDurum.ToString("N2"),
-                    Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
                     TextAlign = ContentAlignment.MiddleCenter,
                     Dock = DockStyle.Fill,
                     Margin = new Padding(0),
                     AutoSize = false,
-                    Height = 23,
+                    Height = 30,
                     ForeColor = toplamSonDurum < 0 ? Color.Red : Color.Green,
                     BackColor = Color.LightYellow
                 };
@@ -504,8 +538,8 @@ namespace CEKA_APP.UsrControl
                         Dock = DockStyle.Fill,
                         Margin = new Padding(0),
                         AutoSize = false,
-                        Height = 23,
-                        Font = new Font("Segoe UI", 8),
+                        Height = 30,
+                        Font = new Font("Segoe UI", 10),
                         BackColor = Color.LightYellow
                     };
                     tableLayoutPanel2.Controls.Add(emptyLabel, col, totalRowIndex);
@@ -622,7 +656,7 @@ namespace CEKA_APP.UsrControl
             if (string.IsNullOrEmpty(arananProjeNo))
             {
                 MessageBox.Show("Lütfen bir proje numarası giriniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                btnYeniKalemEkle.Enabled = false; // Proje numarası boşsa buton devre dışı
+                btnYeniKalemEkle.Enabled = false;
                 return;
             }
 
@@ -631,7 +665,7 @@ namespace CEKA_APP.UsrControl
             {
                 MessageBox.Show($"Aranan proje '{arananProjeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 txtProjeNo.Text = null;
-                btnYeniKalemEkle.Enabled = false; // Proje bulunamazsa buton devre dışı
+                btnYeniKalemEkle.Enabled = false;
                 return;
             }
 
@@ -639,7 +673,7 @@ namespace CEKA_APP.UsrControl
             if (projeKutuk != null && projeKutuk.altProjeVarMi)
             {
                 MessageBox.Show($"Proje '{arananProjeNo}' alt projelere sahip. Ana proje için fiyatlandırma yapılamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                btnYeniKalemEkle.Enabled = false; // Alt proje varsa buton devre dışı
+                btnYeniKalemEkle.Enabled = false;
                 return;
             }
 

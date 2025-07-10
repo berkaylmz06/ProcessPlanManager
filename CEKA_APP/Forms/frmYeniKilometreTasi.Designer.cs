@@ -34,7 +34,7 @@
             this.btnEkle = new System.Windows.Forms.Button();
             this.btnSec = new System.Windows.Forms.Button();
             this.listKilometreTaslari = new System.Windows.Forms.ListBox();
-            this.label1 = new System.Windows.Forms.Label();
+            this.lblOran = new System.Windows.Forms.Label();
             this.cmbOran = new System.Windows.Forms.ComboBox();
             this.SuspendLayout();
             // 
@@ -95,15 +95,14 @@
             this.listKilometreTaslari.Size = new System.Drawing.Size(345, 244);
             this.listKilometreTaslari.TabIndex = 8;
             // 
-            // label1
+            // lblOran
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(19, 344);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(49, 20);
-            this.label1.TabIndex = 15;
-            this.label1.Text = "Oran:";
-            this.label1.Visible = false;
+            this.lblOran.AutoSize = true;
+            this.lblOran.Location = new System.Drawing.Point(19, 344);
+            this.lblOran.Name = "lblOran";
+            this.lblOran.Size = new System.Drawing.Size(39, 16);
+            this.lblOran.TabIndex = 15;
+            this.lblOran.Text = "Oran:";
             // 
             // cmbOran
             // 
@@ -119,7 +118,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(391, 436);
             this.Controls.Add(this.cmbOran);
-            this.Controls.Add(this.label1);
+            this.Controls.Add(this.lblOran);
             this.Controls.Add(this.lblYeniKilometreTasi);
             this.Controls.Add(this.lblYeniKilometreTasiBilgi);
             this.Controls.Add(this.txtKilometreTasi);
@@ -143,7 +142,7 @@
         private System.Windows.Forms.Button btnEkle;
         private System.Windows.Forms.Button btnSec;
         private System.Windows.Forms.ListBox listKilometreTaslari;
-        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblOran;
         private System.Windows.Forms.ComboBox cmbOran;
     }
 }

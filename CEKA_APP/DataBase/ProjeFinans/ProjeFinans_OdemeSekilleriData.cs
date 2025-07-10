@@ -11,7 +11,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
 {
     public class ProjeFinans_OdemeSekilleriData
     {
-        public void OdemeBilgiKaydet(string projeNo, string kilometreTasiId, int siralama, string oran, string tutar, string tarih, string aciklama, string durum)
+        public void OdemeBilgiKaydet(string projeNo, string kilometreTasiId, int siralama, string oran, string tutar, string tarih, string aciklama, bool teminatMektubu, string durum)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {
@@ -19,9 +19,9 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 {
                     connection.Open();
                     string query = @"
-                        INSERT INTO ProjeFinans_OdemeSekilleri 
-                        (projeNo, kilometreTasiId, siralama, oran, tutar, tarih, aciklama, durum)
-                        VALUES (@projeNo, @kilometreTasiId, @siralama, @oran, @tutar, @tarih, @aciklama, @durum)";
+                INSERT INTO ProjeFinans_OdemeSekilleri 
+                (projeNo, kilometreTasiId, siralama, oran, tutar, tarih, aciklama, teminatMektubu, durum)
+                VALUES (@projeNo, @kilometreTasiId, @siralama, @oran, @tutar, @tarih, @aciklama, @teminatMektubu, @durum)";
                     using (var cmd = new SqlCommand(query, connection))
                     {
                         cmd.Parameters.Add("@projeNo", SqlDbType.NVarChar, 50).Value = projeNo?.Trim() ?? throw new ArgumentNullException(nameof(projeNo));
@@ -31,6 +31,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                         cmd.Parameters.Add("@tutar", SqlDbType.Decimal).Value = decimal.Parse(tutar, System.Globalization.CultureInfo.InvariantCulture);
                         cmd.Parameters.Add("@tarih", SqlDbType.DateTime2).Value = string.IsNullOrWhiteSpace(tarih) ? (object)DBNull.Value : DateTime.Parse(tarih);
                         cmd.Parameters.Add("@aciklama", SqlDbType.NVarChar, 250).Value = string.IsNullOrWhiteSpace(aciklama) ? (object)DBNull.Value : aciklama;
+                        cmd.Parameters.Add("@teminatMektubu", SqlDbType.Bit).Value = teminatMektubu; 
                         cmd.Parameters.Add("@durum", SqlDbType.NVarChar, 50).Value = string.IsNullOrWhiteSpace(durum) ? (object)DBNull.Value : durum;
 
                         cmd.ExecuteNonQuery();

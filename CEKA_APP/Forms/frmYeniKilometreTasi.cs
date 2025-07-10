@@ -62,29 +62,34 @@ namespace CEKA_APP.Forms
                 txtKilometreTasi.Visible = true;
                 lblYeniKilometreTasi.Visible = true;
                 lblYeniKilometreTasiBilgi.Visible = true;
-                cmbOran.Visible = true;
+
+                lblOran.Visible = false;
+                cmbOran.Visible = false;
 
                 btnEkle.Text = "Onayla";
-                this.Height += 40; 
+                this.Height += 40;
             }
-            else if (!string.IsNullOrEmpty(txtKilometreTasi.Text) && cmbOran.SelectedIndex >= 0)
+            else if (!string.IsNullOrEmpty(txtKilometreTasi.Text))
             {
                 KilometreTasiAdi = txtKilometreTasi.Text;
-                Oran = cmbOran.SelectedItem.ToString();
+
                 kilometreTasiData.FiyatlandirmaKilometreTasiEkle(KilometreTasiAdi);
                 LoadKilometreTasi();
+
                 txtKilometreTasi.Visible = false;
                 lblYeniKilometreTasi.Visible = false;
                 lblYeniKilometreTasiBilgi.Visible = false;
-                cmbOran.Visible = false;
+
+                lblOran.Visible = true;
+                cmbOran.Visible = true;
+
                 btnEkle.Text = "Yeni Ekle";
                 this.Height -= 40;
                 MessageBox.Show("Yeni kilometre taşı eklendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                this.DialogResult = DialogResult.OK;
             }
             else
             {
-                MessageBox.Show("Lütfen yeni kilometre taşı adını ve oran girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Lütfen yeni kilometre taşı adını girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
 

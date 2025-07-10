@@ -67,14 +67,20 @@
     <SignManifests>true</SignManifests>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.Cryptography.2.4.0\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
     <Reference Include="itext.barcodes, Version=9.1.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\itext.9.1.0\lib\net461\itext.barcodes.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.bouncy-castle-adapter, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.bouncy-castle-adapter.9.2.0\lib\net461\itext.bouncy-castle-adapter.dll</HintPath>
     </Reference>
     <Reference Include="itext.bouncy-castle-connector, Version=9.1.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\itext.9.1.0\lib\net461\itext.bouncy-castle-connector.dll</HintPath>
     </Reference>
-    <Reference Include="itext.commons, Version=9.1.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
-      <HintPath>..\packages\itext.commons.9.1.0\lib\net461\itext.commons.dll</HintPath>
+    <Reference Include="itext.commons, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.commons.9.2.0\lib\net461\itext.commons.dll</HintPath>
     </Reference>
     <Reference Include="itext.forms, Version=9.1.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
       <HintPath>..\packages\itext.9.1.0\lib\net461\itext.forms.dll</HintPath>
@@ -249,6 +255,12 @@
     <Compile Include="Forms\frmAra.Designer.cs">
       <DependentUpon>frmAra.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frmFaturaOlustur.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmFaturaOlustur.Designer.cs">
+      <DependentUpon>frmFaturaOlustur.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\frmKullaniciAyarlari.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -273,6 +285,12 @@
     </Compile>
     <Compile Include="Forms\frmStandartProjeler.Designer.cs">
       <DependentUpon>frmStandartProjeler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmTeminatMektubuEkle.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmTeminatMektubuEkle.Designer.cs">
+      <DependentUpon>frmTeminatMektubuEkle.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmYeniFiyatlandirmaKalemiEkle.cs">
       <SubType>Form</SubType>
@@ -395,6 +413,12 @@
     <Compile Include="UsrControl\ctlSorunlar.Designer.cs">
       <DependentUpon>ctlSorunlar.cs</DependentUpon>
     </Compile>
+    <Compile Include="UsrControl\ctlTeminatMektuplari.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ctlTeminatMektuplari.Designer.cs">
+      <DependentUpon>ctlTeminatMektuplari.cs</DependentUpon>
+    </Compile>
     <Compile Include="UsrControl\ctlYapilanKesimleriGor.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -413,6 +437,9 @@
     <EmbeddedResource Include="Forms\frmAra.resx">
       <DependentUpon>frmAra.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmFaturaOlustur.resx">
+      <DependentUpon>frmFaturaOlustur.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmKullaniciAyarlari.resx">
       <DependentUpon>frmKullaniciAyarlari.cs</DependentUpon>
     </EmbeddedResource>
@@ -424,6 +451,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmStandartProjeler.resx">
       <DependentUpon>frmStandartProjeler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmTeminatMektubuEkle.resx">
+      <DependentUpon>frmTeminatMektubuEkle.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmYeniFiyatlandirmaKalemiEkle.resx">
       <DependentUpon>frmYeniFiyatlandirmaKalemiEkle.cs</DependentUpon>
@@ -485,6 +515,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlSorunlar.resx">
       <DependentUpon>ctlSorunlar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ctlTeminatMektuplari.resx">
+      <DependentUpon>ctlTeminatMektuplari.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ctlYapilanKesimleriGor.resx">
       <DependentUpon>ctlYapilanKesimleriGor.cs</DependentUpon>

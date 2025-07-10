@@ -27,17 +27,13 @@ namespace CEKA_APP.UsrControl
             tableLayoutPanel1.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
             tableLayoutPanel1.AutoScroll = true;
             tableLayoutPanel1.MinimumSize = new Size(tableLayoutPanel1.Width, 200);
-            tableLayoutPanel1.ColumnCount = 6;
+            tableLayoutPanel1.ColumnCount = 10;
             tableLayoutPanel1.ColumnStyles.Clear();
-            tableLayoutPanel1.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
-
-            for (int i = 0; i < 6; i++)
+            for (int i = 0; i < 10; i++)
             {
-                tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 16.666f));
+                tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 10f));
             }
 
-            AddHeaderRow();
-            AddSpacerRow();
             btnKilometreTasiEkle.Enabled = false;
         }
 
@@ -138,71 +134,96 @@ namespace CEKA_APP.UsrControl
         private void ctlOdemeSartlari_Load(object sender, EventArgs e)
         {
             ctlBaslik1.Baslik = "Ödeme Şartları";
+            AddHeaderRow();
+            AddBottomSpacer();
         }
 
         private void AddHeaderRow()
         {
-            tableLayoutPanel1.RowCount = 1;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
-
-            string[] headers = {
-                "Proje Kilometre Taşları",
-                "Oran (%)",
-                "Tutar",
-                "Tarih",
-                "Açıklama",
-                "Durum"
-            };
-
-            for (int i = 0; i < headers.Length; i++)
-            {
-                var lbl = new Label
-                {
-                    Text = headers[i],
-                    Font = new Font("Segoe UI", 8, FontStyle.Bold),
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Dock = DockStyle.Fill,
-                    Margin = new Padding(0),
-                    Padding = new Padding(2),
-                    AutoSize = false,
-                    Height = 23
-                };
-                tableLayoutPanel1.Controls.Add(lbl, i, 0);
-            }
-        }
-
-        private void AddSpacerRow()
-        {
             tableLayoutPanel1.SuspendLayout();
             try
             {
-                int spacerRowIndex = -1;
-                for (int row = 1; row < tableLayoutPanel1.RowCount; row++)
-                {
-                    var ctl = tableLayoutPanel1.GetControlFromPosition(0, row);
-                    if (ctl is Label lbl && lbl.Text == "")
-                    {
-                        spacerRowIndex = row;
-                        break;
-                    }
-                }
-
-                if (spacerRowIndex >= 0)
+                int headerRowIndex = 0;
+                if (tableLayoutPanel1.RowCount > 0)
                 {
                     for (int col = 0; col < tableLayoutPanel1.ColumnCount; col++)
                     {
-                        var ctl = tableLayoutPanel1.GetControlFromPosition(col, spacerRowIndex);
+                        var ctl = tableLayoutPanel1.GetControlFromPosition(col, headerRowIndex);
                         if (ctl != null)
                         {
                             tableLayoutPanel1.Controls.Remove(ctl);
                         }
                     }
-                    tableLayoutPanel1.RowStyles.RemoveAt(spacerRowIndex);
+                    if (tableLayoutPanel1.RowStyles.Count > headerRowIndex)
+                    {
+                        tableLayoutPanel1.RowStyles.RemoveAt(headerRowIndex);
+                    }
+                    tableLayoutPanel1.RowCount = 1;
+                }
+
+                tableLayoutPanel1.RowCount = 1;
+                tableLayoutPanel1.RowStyles.Clear();
+                tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
+                headerRowIndex = 0;
+
+                string[] headers = {
+                    "Proje Kilometre Taşları",
+                    "Oran (%)",
+                    "Tutar",
+                    "Tahmini Tarih",
+                    "Gerçekleşen Tarih",
+                    "Açıklama",
+                    "Durum",
+                    "Teminat Mektubu",
+                    "Teminat Durumu",
+                    "Faturalama"
+                };
+
+                for (int i = 0; i < headers.Length; i++)
+                {
+                    var lbl = new Label
+                    {
+                        Text = headers[i],
+                        Font = new Font("Segoe UI", 8, FontStyle.Bold),
+                        TextAlign = ContentAlignment.MiddleCenter,
+                        Dock = DockStyle.Fill,
+                        Margin = new Padding(2),
+                        AutoSize = false,
+                        Height = 30,
+                        MaximumSize = new Size(0, 30),
+                        BackColor = Color.LightGray
+                    };
+                    tableLayoutPanel1.Controls.Add(lbl, i, headerRowIndex);
+                }
+            }
+            finally
+            {
+                tableLayoutPanel1.ResumeLayout(true);
+            }
+        }
+
+        private void AddBottomSpacer()
+        {
+            tableLayoutPanel1.SuspendLayout();
+            try
+            {
+                int bottomSpacerIndex = tableLayoutPanel1.RowCount - 1;
+                if (bottomSpacerIndex > 0 && tableLayoutPanel1.GetControlFromPosition(0, bottomSpacerIndex) is Label lbl && lbl.Text == "")
+                {
+                    for (int col = 0; col < tableLayoutPanel1.ColumnCount; col++)
+                    {
+                        var ctl = tableLayoutPanel1.GetControlFromPosition(col, bottomSpacerIndex);
+                        if (ctl != null)
+                        {
+                            tableLayoutPanel1.Controls.Remove(ctl);
+                        }
+                    }
+                    tableLayoutPanel1.RowStyles.RemoveAt(bottomSpacerIndex);
                     tableLayoutPanel1.RowCount--;
                 }
 
                 tableLayoutPanel1.RowCount++;
-                tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
+                tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 10));
                 int newSpacerRowIndex = tableLayoutPanel1.RowCount - 1;
 
                 for (int col = 0; col < tableLayoutPanel1.ColumnCount; col++)
@@ -213,7 +234,7 @@ namespace CEKA_APP.UsrControl
                         Dock = DockStyle.Fill,
                         Margin = new Padding(0),
                         AutoSize = false,
-                        Height = 23,
+                        Height = 10,
                         Font = new Font("Segoe UI", 8)
                     };
                     tableLayoutPanel1.Controls.Add(emptyLabel, col, newSpacerRowIndex);
@@ -244,116 +265,172 @@ namespace CEKA_APP.UsrControl
                     return;
                 }
 
-                // Başlık satırından sonra yeni satır ekle
-                int newRowIndex = 1; // Başlık satırı 0. indeks
-
-                // Tüm satırları bir aşağı kaydır
+                int newRowIndex = tableLayoutPanel1.RowCount - 1;
                 tableLayoutPanel1.RowCount++;
-                for (int row = tableLayoutPanel1.RowCount - 2; row >= newRowIndex; row--)
+                tableLayoutPanel1.RowStyles.Insert(newRowIndex, new RowStyle(SizeType.Absolute, 30));
+
+                for (int col = 0; col < tableLayoutPanel1.ColumnCount; col++)
                 {
-                    for (int col = 0; col < tableLayoutPanel1.ColumnCount; col++)
+                    var spacerControl = tableLayoutPanel1.GetControlFromPosition(col, tableLayoutPanel1.RowCount - 2);
+                    if (spacerControl != null)
                     {
-                        var ctl = tableLayoutPanel1.GetControlFromPosition(col, row);
-                        if (ctl != null)
-                        {
-                            tableLayoutPanel1.SetRow(ctl, row + 1);
-                        }
+                        tableLayoutPanel1.SetRow(spacerControl, tableLayoutPanel1.RowCount - 1);
                     }
                 }
 
-                // Yeni satır için row style ekle
-                tableLayoutPanel1.RowStyles.Insert(newRowIndex, new RowStyle(SizeType.Absolute, 23));
-
-                var lblKilometreTasiAdi = new Label
+                var controls = new Control[]
                 {
-                    Text = kilometreTasiAdi,
-                    Dock = DockStyle.Fill,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Margin = new Padding(2),
-                    AutoSize = false,
-                    Height = 23,
-                    Font = new Font("Segoe UI", 8)
+            new Label { Text = kilometreTasiAdi, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, Margin = new Padding(2), AutoSize = false, Height = 30, MaximumSize = new Size(0, 30), Font = new Font("Segoe UI", 10) },
+            new Label { Text = $"%{cleanOran}", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, Margin = new Padding(2), AutoSize = false, Height = 30, MaximumSize = new Size(0, 30), Font = new Font("Segoe UI", 10) },
+            new TextBox { Dock = DockStyle.Fill, TextAlign = HorizontalAlignment.Center, Margin = new Padding(2), AutoSize = false, Height = 30, MaximumSize = new Size(0, 30), Font = new Font("Segoe UI", 10), BorderStyle = BorderStyle.FixedSingle, Enabled = false, BackColor = Color.LightGray },
+            new DateTimePicker { Dock = DockStyle.Fill, Format = DateTimePickerFormat.Short, ShowCheckBox = true, Checked = false, Margin = new Padding(2), Font = new Font("Segoe UI", 10), Height = 30, MaximumSize = new Size(0, 30) },
+            new DateTimePicker { Dock = DockStyle.Fill, Format = DateTimePickerFormat.Short, ShowCheckBox = true, Checked = false, Margin = new Padding(2), Font = new Font("Segoe UI", 10), Height = 30, MaximumSize = new Size(0, 30) },
+            new TextBox { Dock = DockStyle.Fill, TextAlign = HorizontalAlignment.Center, Margin = new Padding(2), AutoSize = false, Height = 30, MaximumSize = new Size(0, 30), Font = new Font("Segoe UI", 10), BorderStyle = BorderStyle.FixedSingle, Multiline = true },
+            new Label { Text = "Bekliyor", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, Margin = new Padding(2), ForeColor = Color.Black, AutoSize = false, Height = 30, MaximumSize = new Size(0, 30), Font = new Font("Segoe UI", 10) }
                 };
-                tableLayoutPanel1.Controls.Add(lblKilometreTasiAdi, 0, newRowIndex);
 
-                var lblOran = new Label
+                for (int col = 0; col < 7; col++)
                 {
-                    Text = $"%{cleanOran}",
-                    Dock = DockStyle.Fill,
-                    TextAlign = ContentAlignment.MiddleCenter,
-                    Margin = new Padding(2),
-                    AutoSize = false,
-                    Height = 23,
-                    Font = new Font("Segoe UI", 8)
-                };
-                tableLayoutPanel1.Controls.Add(lblOran, 1, newRowIndex);
+                    tableLayoutPanel1.Controls.Add(controls[col], col, newRowIndex);
+                }
 
-                var txtTutar = new TextBox
+                var pnlTeminatMektubu = new Panel { Dock = DockStyle.Fill, Margin = new Padding(2), Height = 30 };
+                var chkTeminatMektubuVar = new CheckBox
                 {
-                    Dock = DockStyle.Fill,
-                    TextAlign = HorizontalAlignment.Center,
-                    Margin = new Padding(2),
-                    AutoSize = false,
-                    Height = 23,
-                    Font = new Font("Segoe UI", 8),
-                    BorderStyle = BorderStyle.FixedSingle,
-                    Enabled = false,
-                    BackColor = Color.LightGray
-                };
-                txtTutar.KeyPress += (s, e) =>
-                {
-                    if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
-                    {
-                        e.Handled = true;
-                    }
-                    if (e.KeyChar == '.' && (s as TextBox).Text.Contains("."))
-                    {
-                        e.Handled = true;
-                    }
-                };
-                tableLayoutPanel1.Controls.Add(txtTutar, 2, newRowIndex);
-
-                var dtpTarih = new DateTimePicker
-                {
-                    Dock = DockStyle.Fill,
-                    Format = DateTimePickerFormat.Short,
-                    ShowCheckBox = true,
+                    Text = "Var",
                     Checked = false,
+                    Dock = DockStyle.Left,
                     Margin = new Padding(2),
-                    Font = new Font("Segoe UI", 8),
-                    Height = 23
+                    Width = 50,
+                    Font = new Font("Segoe UI", 10)
                 };
-                tableLayoutPanel1.Controls.Add(dtpTarih, 3, newRowIndex);
-
-                var txtAciklama = new TextBox
+                var chkTeminatMektubuYok = new CheckBox
                 {
-                    Dock = DockStyle.Fill,
-                    TextAlign = HorizontalAlignment.Center,
+                    Text = "Yok",
+                    Checked = true,
+                    Dock = DockStyle.Right,
                     Margin = new Padding(2),
-                    AutoSize = false,
-                    Height = 23,
-                    Font = new Font("Segoe UI", 8),
-                    BorderStyle = BorderStyle.FixedSingle,
-                    Multiline = true
+                    Width = 50,
+                    Font = new Font("Segoe UI", 10)
                 };
-                tableLayoutPanel1.Controls.Add(txtAciklama, 4, newRowIndex);
+                pnlTeminatMektubu.Controls.Add(chkTeminatMektubuVar);
+                pnlTeminatMektubu.Controls.Add(chkTeminatMektubuYok);
+                tableLayoutPanel1.Controls.Add(pnlTeminatMektubu, 7, newRowIndex);
 
-                var lblDurum = new Label
+                chkTeminatMektubuVar.CheckedChanged += (s, e) =>
                 {
-                    Text = "Bekliyor",
+                    if (chkTeminatMektubuVar.Checked)
+                    {
+                        chkTeminatMektubuYok.Checked = false;
+                        var lblTeminatDurum = GetLabelAt(newRowIndex, 8);
+                        if (lblTeminatDurum != null)
+                        {
+                            lblTeminatDurum.Text = "Aktif";
+                            lblTeminatDurum.ForeColor = Color.Green;
+                            var frm = new frmTeminatMektubuEkle();
+                            frm.ShowDialog();
+                        }
+                    }
+                };
+
+                chkTeminatMektubuYok.CheckedChanged += (s, e) =>
+                {
+                    if (chkTeminatMektubuYok.Checked)
+                    {
+                        chkTeminatMektubuVar.Checked = false;
+                        var lblTeminatDurum = GetLabelAt(newRowIndex, 8);
+                        if (lblTeminatDurum != null)
+                        {
+                            lblTeminatDurum.Text = "Pasif";
+                            lblTeminatDurum.ForeColor = Color.Red;
+                        }
+                    }
+                };
+
+                var newLblTeminatDurum = new Label
+                {
+                    Text = "Pasif",
                     Dock = DockStyle.Fill,
                     TextAlign = ContentAlignment.MiddleCenter,
                     Margin = new Padding(2),
-                    ForeColor = Color.Black,
+                    ForeColor = Color.Red,
                     AutoSize = false,
-                    Height = 23,
-                    Font = new Font("Segoe UI", 8)
+                    Height = 30,
+                    MaximumSize = new Size(0, 30),
+                    Font = new Font("Segoe UI", 12, FontStyle.Bold)
                 };
-                tableLayoutPanel1.Controls.Add(lblDurum, 5, newRowIndex);
+                tableLayoutPanel1.Controls.Add(newLblTeminatDurum, 8, newRowIndex);
+
+                var btnFaturalama = new Button
+                {
+                    Text = "Fatura Oluştur",
+                    Dock = DockStyle.Fill,
+                    Margin = new Padding(2),
+                    AutoSize = true,
+                    Height = 30,
+                    Font = new Font("Segoe UI", 10)
+                };
+                btnFaturalama.Click += (s, e) =>
+                {
+                    var button = s as Button;
+                    int rowIndex = tableLayoutPanel1.GetRow(button);
+
+                    var lblKilometreTasiAdi = GetLabelAt(rowIndex, 0);
+                    var txtTutar = GetTextBoxAt(rowIndex, 2);
+                    var txtAciklama = GetTextBoxAt(rowIndex, 5);
+                    var dtpTahminiTarih = tableLayoutPanel1.GetControlFromPosition(3, rowIndex) as DateTimePicker;
+                    var dtpGerceklesenTarih = tableLayoutPanel1.GetControlFromPosition(4, rowIndex) as DateTimePicker;
+
+                    if (lblKilometreTasiAdi == null || txtTutar == null || txtAciklama == null ||
+                        string.IsNullOrWhiteSpace(lblKilometreTasiAdi.Text) ||
+                        string.IsNullOrWhiteSpace(txtTutar.Text) ||
+                        string.IsNullOrWhiteSpace(txtAciklama.Text))
+                    {
+                        MessageBox.Show("Seçili satırda gerekli bilgiler eksik veya boş.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    string selectedTarih = "Belirtilmemiş";
+                    if (dtpTahminiTarih != null && dtpGerceklesenTarih != null)
+                    {
+                        if (dtpTahminiTarih.Checked && dtpGerceklesenTarih.Checked)
+                        {
+                            if (dtpTahminiTarih.Value.Date == dtpGerceklesenTarih.Value.Date)
+                            {
+                                selectedTarih = dtpTahminiTarih.Value.ToString("yyyy-MM-dd");
+                            }
+                            else
+                            {
+                                selectedTarih = dtpGerceklesenTarih.Value.ToString("yyyy-MM-dd");
+                            }
+                        }
+                        else if (dtpTahminiTarih.Checked)
+                        {
+                            selectedTarih = dtpTahminiTarih.Value.ToString("yyyy-MM-dd");
+                        }
+                        else if (dtpGerceklesenTarih.Checked)
+                        {
+                            selectedTarih = dtpGerceklesenTarih.Value.ToString("yyyy-MM-dd");
+                        }
+                    }
+
+                    var frm = new frmFaturaOlustur(
+                        lblKilometreTasiAdi.Text,
+                        txtTutar.Text,
+                        txtAciklama.Text,
+                        selectedTarih
+                    );
+                    frm.ShowDialog();
+                };
+                tableLayoutPanel1.Controls.Add(btnFaturalama, 9, newRowIndex);
 
                 if (ParseToplamBedel(out decimal toplamBedel))
                 {
                     UpdateTutarColumn(toplamBedel);
+                }
+                else
+                {
+                    UpdateTutarColumn(1000m);
                 }
 
                 btnKilometreTasiEkle.Enabled = HesaplaOranToplami() < 100;
@@ -367,10 +444,13 @@ namespace CEKA_APP.UsrControl
         private decimal HesaplaOranToplami()
         {
             decimal oranToplami = 0;
-            for (int row = 0; row < tableLayoutPanel1.RowCount - 2; row++) // Spacer ve başlık satırlarını hariç tut
+            var culture = new System.Globalization.CultureInfo("tr-TR");
+
+            for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
             {
                 var lblOran = GetLabelAt(row, 1);
-                if (lblOran != null && decimal.TryParse(lblOran.Text.Replace("%", "").Trim(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal oran))
+                if (lblOran != null && decimal.TryParse(lblOran.Text.Replace("%", "").Trim(),
+                    System.Globalization.NumberStyles.Any, culture, out decimal oran))
                 {
                     oranToplami += oran;
                 }
@@ -384,23 +464,38 @@ namespace CEKA_APP.UsrControl
             if (string.IsNullOrWhiteSpace(txtToplamBedel.Text))
                 return false;
 
-            string cleanText = txtToplamBedel.Text.Split(' ')[0];
-            return decimal.TryParse(cleanText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out toplamBedel);
+            string cleanText = txtToplamBedel.Text.Split('(')[0].Trim();
+
+            return decimal.TryParse(cleanText,
+                                  System.Globalization.NumberStyles.Any,
+                                  new System.Globalization.CultureInfo("tr-TR"),
+                                  out toplamBedel);
         }
 
         private void UpdateTutarColumn(decimal toplamBedel)
         {
+            var culture = new System.Globalization.CultureInfo("tr-TR");
+
             tableLayoutPanel1.SuspendLayout();
             try
             {
-                for (int row = 0; row < tableLayoutPanel1.RowCount - 2; row++) // Spacer ve başlık satırlarını hariç tut
+                for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
                 {
                     var lblOran = GetLabelAt(row, 1);
                     var txtTutar = GetTextBoxAt(row, 2);
-                    if (lblOran != null && txtTutar != null && decimal.TryParse(lblOran.Text.Replace("%", "").Trim(), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal oran))
+
+                    if (lblOran != null && txtTutar != null)
                     {
-                        decimal tutar = toplamBedel * (oran / 100);
-                        txtTutar.Text = tutar.ToString("N2");
+                        string oranText = lblOran.Text.Replace("%", "").Trim();
+                        if (decimal.TryParse(oranText,
+                                           System.Globalization.NumberStyles.Any,
+                                           culture,
+                                           out decimal oran))
+                        {
+                            decimal tutar = (toplamBedel * oran) / 100m;
+                            string formattedTutar = Math.Round(tutar, 2).ToString("N2", culture);
+                            txtTutar.Text = formattedTutar;
+                        }
                     }
                 }
             }
@@ -451,23 +546,27 @@ namespace CEKA_APP.UsrControl
             var kilometreTasiData = new FiyatlandirmaKilometreTaslariData();
             try
             {
-                for (int row = 0; row < tableLayoutPanel1.RowCount - 2; row++) // Spacer ve başlık satırlarını hariç tut
+                for (int row = 2; row < tableLayoutPanel1.RowCount - 1; row++)
                 {
                     var lblKilometreTasiAdi = GetLabelAt(row, 0);
                     var lblOran = GetLabelAt(row, 1);
                     var txtTutar = GetTextBoxAt(row, 2);
-                    var dtpTarih = tableLayoutPanel1.GetControlFromPosition(3, row) as DateTimePicker;
-                    var txtAciklama = GetTextBoxAt(row, 4);
-                    var lblDurum = GetLabelAt(row, 5);
+                    var dtpTahminiTarih = tableLayoutPanel1.GetControlFromPosition(3, row) as DateTimePicker;
+                    var dtpGerceklesenTarih = tableLayoutPanel1.GetControlFromPosition(4, row) as DateTimePicker;
+                    var txtAciklama = GetTextBoxAt(row, 5);
+                    var lblDurum = GetLabelAt(row, 6);
+                    var pnlTeminatMektubu = tableLayoutPanel1.GetControlFromPosition(7, row) as Panel;
+                    var chkTeminatMektubuVar = pnlTeminatMektubu?.Controls[0] as CheckBox;
+                    var lblTeminatDurum = GetLabelAt(row, 8);
 
                     if (lblKilometreTasiAdi == null || string.IsNullOrWhiteSpace(lblKilometreTasiAdi.Text) ||
                         lblOran == null || string.IsNullOrWhiteSpace(lblOran.Text) ||
                         txtTutar == null || string.IsNullOrWhiteSpace(txtTutar.Text) ||
-                        dtpTarih == null || !dtpTarih.Checked ||
+                        dtpTahminiTarih == null || !dtpTahminiTarih.Checked ||
                         txtAciklama == null || string.IsNullOrWhiteSpace(txtAciklama.Text) ||
                         lblDurum == null || string.IsNullOrWhiteSpace(lblDurum.Text))
                     {
-                        MessageBox.Show($"Satır {row + 1}: Tüm alanlar doldurulmalıdır.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show($"Satır {row}: Tüm alanlar doldurulmalıdır.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
@@ -480,62 +579,67 @@ namespace CEKA_APP.UsrControl
                     }
 
                     string oranText = lblOran.Text.Replace("%", "").Trim();
-                    if (!decimal.TryParse(oranText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal oran))
+                    if (!decimal.TryParse(oranText, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out decimal oran))
                     {
                         MessageBox.Show($"Geçersiz oran formatı: {oranText}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
-                    string tutarText = txtTutar.Text;
-                    if (!decimal.TryParse(tutarText, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal tutar))
+                    string tutarText = txtTutar.Text.Trim();
+                    tutarText = tutarText.Replace(".", "").Replace(",", ".");
+                    if (!decimal.TryParse(tutarText, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out decimal tutar))
                     {
                         MessageBox.Show($"Geçersiz tutar formatı: {tutarText}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
-                    string tarih = dtpTarih.Checked ? dtpTarih.Value.ToString("d", System.Globalization.CultureInfo.InvariantCulture) : "";
+                    string tahminiTarih = dtpTahminiTarih.Checked ? dtpTahminiTarih.Value.ToString("yyyy-MM-dd") : "";
+                    string gerceklesenTarih = dtpGerceklesenTarih.Checked ? dtpGerceklesenTarih.Value.ToString("yyyy-MM-dd") : "";
                     string aciklama = txtAciklama.Text;
                     string durum = lblDurum.Text;
-                    int siralama = row + 1;
+                    bool teminatMektubu = chkTeminatMektubuVar != null && chkTeminatMektubuVar.Checked; 
+                    int siralama = row;
 
                     odemeSekilleriData.OdemeBilgiKaydet(
                         projeNo,
                         kilometreTasiId.ToString(),
                         siralama,
                         oran.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
-                        Math.Floor(tutar).ToString("F0", System.Globalization.CultureInfo.InvariantCulture),
-                        tarih,
+                        tutar.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
+                        tahminiTarih,
                         aciklama,
+                        teminatMektubu,
                         durum
                     );
 
-                    if (proje.altProjeVarMi && proje.altProjeBilgileri != null)
+                    if (proje.altProjeVarMi && proje.altProjeBilgileri != null && !IsAltProje(projeNo, proje))
                     {
                         foreach (var altProjeNo in proje.altProjeBilgileri)
                         {
                             var altProje = ProjeKutukData.ProjeKutukAra(altProjeNo);
-                            decimal altToplamBedel = 0;
                             if (altProje != null)
                             {
+                                decimal altToplamBedel = 0;
                                 var fiyatlandirmaData = new ProjeFiyatlandirmaData();
                                 var (bedel, _) = fiyatlandirmaData.GetToplamBedel(altProjeNo, null);
                                 altToplamBedel = bedel;
+
+                                string altTutar = altToplamBedel > 0
+                                    ? (altToplamBedel * (oran / 100)).ToString("F2", System.Globalization.CultureInfo.InvariantCulture)
+                                    : tutar.ToString("F2", System.Globalization.CultureInfo.InvariantCulture);
+
+                                odemeSekilleriData.OdemeBilgiKaydet(
+                                    altProjeNo,
+                                    kilometreTasiId.ToString(),
+                                    siralama,
+                                    oran.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
+                                    altTutar,
+                                    tahminiTarih,
+                                    aciklama,
+                                    teminatMektubu,
+                                    durum
+                                );
                             }
-
-                            string altTutar = altToplamBedel > 0
-                                ? Math.Floor(altToplamBedel * (oran / 100)).ToString("F0", System.Globalization.CultureInfo.InvariantCulture)
-                                : tutarText;
-
-                            odemeSekilleriData.OdemeBilgiKaydet(
-                                altProjeNo,
-                                kilometreTasiId.ToString(),
-                                siralama,
-                                oran.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
-                                altTutar,
-                                tarih,
-                                aciklama,
-                                durum
-                            );
                         }
                     }
                 }

@@ -87,6 +87,7 @@
             this.btnKarsilastirmaTablolari = new System.Windows.Forms.Button();
             this.btnProjeKutuk = new System.Windows.Forms.Button();
             this.panelAraYuz = new System.Windows.Forms.Panel();
+            this.btnOdemeSartlari = new System.Windows.Forms.Button();
             this.btnYerlesimPlaniBilgileri = new System.Windows.Forms.Button();
             this.btnProjeFiyatlandirma = new System.Windows.Forms.Button();
             this.btnOturumuKapat = new System.Windows.Forms.Button();
@@ -97,7 +98,7 @@
             this.lblDuyuru = new System.Windows.Forms.Label();
             this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.btnOdemeSartlari = new System.Windows.Forms.Button();
+            this.btnTeminatMektuplari = new System.Windows.Forms.Button();
             this.panelNavigasyon.SuspendLayout();
             this.p2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGeri)).BeginInit();
@@ -751,6 +752,7 @@
             // 
             this.panelAraYuz.AutoScroll = true;
             this.panelAraYuz.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.panelAraYuz.Controls.Add(this.btnTeminatMektuplari);
             this.panelAraYuz.Controls.Add(this.btnOdemeSartlari);
             this.panelAraYuz.Controls.Add(this.btnYerlesimPlaniBilgileri);
             this.panelAraYuz.Controls.Add(this.btnProjeFiyatlandirma);
@@ -773,6 +775,17 @@
             this.panelAraYuz.Name = "panelAraYuz";
             this.panelAraYuz.Size = new System.Drawing.Size(215, 1155);
             this.panelAraYuz.TabIndex = 212;
+            // 
+            // btnOdemeSartlari
+            // 
+            this.btnOdemeSartlari.Location = new System.Drawing.Point(15, 896);
+            this.btnOdemeSartlari.Margin = new System.Windows.Forms.Padding(2);
+            this.btnOdemeSartlari.Name = "btnOdemeSartlari";
+            this.btnOdemeSartlari.Size = new System.Drawing.Size(160, 58);
+            this.btnOdemeSartlari.TabIndex = 128;
+            this.btnOdemeSartlari.Text = "Fiyatlandırma Ödeme Şartları";
+            this.btnOdemeSartlari.UseVisualStyleBackColor = true;
+            this.btnOdemeSartlari.Click += new System.EventHandler(this.button1_Click);
             // 
             // btnYerlesimPlaniBilgileri
             // 
@@ -874,16 +887,16 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // btnOdemeSartlari
+            // btnTeminatMektuplari
             // 
-            this.btnOdemeSartlari.Location = new System.Drawing.Point(15, 896);
-            this.btnOdemeSartlari.Margin = new System.Windows.Forms.Padding(2);
-            this.btnOdemeSartlari.Name = "btnOdemeSartlari";
-            this.btnOdemeSartlari.Size = new System.Drawing.Size(160, 58);
-            this.btnOdemeSartlari.TabIndex = 128;
-            this.btnOdemeSartlari.Text = "Fiyatlandırma Ödeme Şartları";
-            this.btnOdemeSartlari.UseVisualStyleBackColor = true;
-            this.btnOdemeSartlari.Click += new System.EventHandler(this.button1_Click);
+            this.btnTeminatMektuplari.Location = new System.Drawing.Point(15, 958);
+            this.btnTeminatMektuplari.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTeminatMektuplari.Name = "btnTeminatMektuplari";
+            this.btnTeminatMektuplari.Size = new System.Drawing.Size(160, 58);
+            this.btnTeminatMektuplari.TabIndex = 129;
+            this.btnTeminatMektuplari.Text = "Teminat Mektupları";
+            this.btnTeminatMektuplari.UseVisualStyleBackColor = true;
+            this.btnTeminatMektuplari.Click += new System.EventHandler(this.button1_Click_1);
             // 
             // frmAnaSayfa
             // 
@@ -1005,5 +1018,6 @@
         private System.Windows.Forms.PictureBox pictureBoxIleri;
         private System.Windows.Forms.Button btnYerlesimPlaniBilgileri;
         private System.Windows.Forms.Button btnOdemeSartlari;
+        private System.Windows.Forms.Button btnTeminatMektuplari;
     }
 }
