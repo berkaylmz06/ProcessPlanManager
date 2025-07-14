@@ -415,10 +415,10 @@ namespace CEKA_APP.UsrControl
                     }
 
                     var frm = new frmFaturaOlustur(
-                        lblKilometreTasiAdi.Text,
                         txtTutar.Text,
                         txtAciklama.Text,
-                        selectedTarih
+                        selectedTarih,
+                        txtProjeAra.Text.Trim()
                     );
                     frm.ShowDialog();
                 };
