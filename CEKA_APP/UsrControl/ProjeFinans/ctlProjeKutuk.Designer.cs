@@ -169,6 +169,7 @@
             this.txtMusteriNo.Name = "txtMusteriNo";
             this.txtMusteriNo.Size = new System.Drawing.Size(402, 22);
             this.txtMusteriNo.TabIndex = 10;
+            this.txtMusteriNo.Leave += new System.EventHandler(this.txtMusteriNo_Leave);
             // 
             // txtMusteriAdi
             // 

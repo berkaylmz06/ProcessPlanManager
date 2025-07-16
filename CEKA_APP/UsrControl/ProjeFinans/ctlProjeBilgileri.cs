@@ -1,4 +1,5 @@
 ﻿using CEKA_APP.DataBase;
+using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Entitys.ProjeFinans;
 using System;
 using System.Collections.Generic;
@@ -49,7 +50,7 @@ namespace CEKA_APP.UsrControl
 
             if (!string.IsNullOrEmpty(anaProjeNo) && projects.Any())
             {
-                var anaProjeBilgi = ProjeKutukData.GetProjeBilgileri(anaProjeNo);
+                var anaProjeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(anaProjeNo);
                 var anaKart = CreateProjectCard(anaProjeNo, anaProjeBilgi, true);
                 anaKart.Location = new Point(20, 20);
                 panelProjeler.Controls.Add(anaKart);
@@ -96,7 +97,7 @@ namespace CEKA_APP.UsrControl
                 int xOffset = 20;
                 foreach (var proje in projects)
                 {
-                    var projeBilgi = ProjeKutukData.GetProjeBilgileri(proje);
+                    var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(proje);
                     var card = CreateProjectCard(proje, projeBilgi, false);
                     card.Location = new Point(xOffset, 20);
                     altProjelerPanel.Controls.Add(card);
@@ -111,7 +112,7 @@ namespace CEKA_APP.UsrControl
                 int xOffset = 20;
                 foreach (var proje in projects)
                 {
-                    var projeBilgi = ProjeKutukData.GetProjeBilgileri(proje);
+                    var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(proje);
                     var card = CreateProjectCard(proje, projeBilgi, false);
                     card.Location = new Point(xOffset, 20);
                     panelProjeler.Controls.Add(card);
@@ -320,16 +321,16 @@ namespace CEKA_APP.UsrControl
 
                 string projeAdi = txtProjeAdi.Text == ProjeAdiPlaceholder ? "" : txtProjeAdi.Text;
                 string aciklama = txtAciklama.Text == PlaceholderText ? "" : txtAciklama.Text;
-                var projeBilgi = ProjeKutukData.GetProjeBilgileri(projeNo);
+                var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
                 bool success;
 
                 if (projeBilgi != null)
                 {
-                    success = ProjeKutukData.UpdateProjeFinans(projeNo, aciklama, projeAdi, dtpOlusturmaTarihi.Value);
+                    success = ProjeFinans_Projeler.UpdateProjeFinans(projeNo, aciklama, projeAdi, dtpOlusturmaTarihi.Value);
                 }
                 else
                 {
-                    success = ProjeKutukData.ProjeEkleProjeFinans(projeNo, aciklama, projeAdi, dtpOlusturmaTarihi.Value);
+                    success = ProjeFinans_Projeler.ProjeEkleProjeFinans(projeNo, aciklama, projeAdi, dtpOlusturmaTarihi.Value);
                 }
 
                 if (success)

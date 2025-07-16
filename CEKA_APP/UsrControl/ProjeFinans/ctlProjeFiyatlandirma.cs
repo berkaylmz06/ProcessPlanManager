@@ -10,8 +10,8 @@ namespace CEKA_APP.UsrControl
 {
     public partial class ctlProjeFiyatlandirma : UserControl
     {
-        private FiyatlandirmaKalemleriData iscilikData = new FiyatlandirmaKalemleriData();
-        private ProjeFiyatlandirmaData fiyatlandirmaData = new ProjeFiyatlandirmaData();
+        private ProjeFinans_FiyatlandirmaKalemleriData iscilikData = new ProjeFinans_FiyatlandirmaKalemleriData();
+        private ProjeFinans_FiyatlandirmaData fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
         public event Action<string> OnFiyatlandirmaKaydedildi;
         private ComboBox cmbProjeNo;
         private List<string> altProjeler;
@@ -107,14 +107,14 @@ namespace CEKA_APP.UsrControl
         {
             this.altProjeler = altProjeler;
 
-            var projeBilgi = ProjeKutukData.GetProjeBilgileri(projeNo);
+            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
             if (projeBilgi == null)
             {
                 MessageBox.Show($"Proje '{projeNo}' ProjeFinans_Projeler tablosunda bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            var projeKutuk = ProjeKutukData.ProjeKutukAra(projeNo);
+            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
             if (projeKutuk != null && projeKutuk.altProjeVarMi && altProjeler == null)
             {
                 MessageBox.Show($"Proje '{projeNo}' alt projelere sahip. Lütfen bir alt proje seçin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -573,7 +573,7 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            var projeBilgi = ProjeKutukData.GetProjeBilgileri(projeNo);
+            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
             if (projeBilgi == null)
             {
                 MessageBox.Show($"Aranan proje '{projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -581,7 +581,7 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            var projeKutuk = ProjeKutukData.ProjeKutukAra(projeNo);
+            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
             if (projeKutuk != null && projeKutuk.altProjeVarMi)
             {
                 MessageBox.Show($"Proje '{projeNo}' alt projelere sahip. Ana proje için fiyatlandırma yapılamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -660,7 +660,7 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            var projeBilgi = ProjeKutukData.GetProjeBilgileri(arananProjeNo);
+            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(arananProjeNo);
             if (projeBilgi == null)
             {
                 MessageBox.Show($"Aranan proje '{arananProjeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -669,7 +669,7 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            var projeKutuk = ProjeKutukData.ProjeKutukAra(arananProjeNo);
+            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(arananProjeNo);
             if (projeKutuk != null && projeKutuk.altProjeVarMi)
             {
                 MessageBox.Show($"Proje '{arananProjeNo}' alt projelere sahip. Ana proje için fiyatlandırma yapılamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -760,7 +760,7 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            var projeBilgi = ProjeKutukData.GetProjeBilgileri(projeNo);
+            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
             btnYeniKalemEkle.Enabled = projeBilgi != null;
         }
     }

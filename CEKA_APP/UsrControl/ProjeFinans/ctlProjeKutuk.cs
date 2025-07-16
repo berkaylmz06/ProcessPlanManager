@@ -1,6 +1,7 @@
 ﻿using CEKA_APP.DataBase;
 using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Entitys;
+using CEKA_APP.Entitys.ProjeFinans;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -94,7 +95,7 @@ namespace CEKA_APP.UsrControl
                     {
                         try
                         {
-                            var fiyatlandirmaData = new ProjeFiyatlandirmaData();
+                            var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
                             var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeAdi, altProjeler);
                             UpdateToplamBedelUI(projeAdi, toplamBedel, eksikFiyatlandirmaProjeler);
                         }
@@ -267,7 +268,7 @@ namespace CEKA_APP.UsrControl
             }
             else
             {
-                var projeKutuk = ProjeKutukData.ProjeKutukAra(projeNo);
+                var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
                 if (projeKutuk != null && projeKutuk.altProjeVarMi)
                 {
                     // Alt projeler varsa, ana proje fiyatlandırma kontrolünden hariç tutulur
@@ -298,7 +299,7 @@ namespace CEKA_APP.UsrControl
                         txtToplamBedel.ForeColor = Color.Black;
                     }
                 }
-                ProjeKutukData.UpdateToplamBedel(projeNo, toplamBedel);
+                ProjeFinans_ProjeKutukData.UpdateToplamBedel(projeNo, toplamBedel);
             }
         }
 
@@ -501,7 +502,7 @@ namespace CEKA_APP.UsrControl
 
         private void UpdateContextMenu()
         {
-            bool isProjeKayitli = !string.IsNullOrWhiteSpace(txtProjeNo.Text.Trim()) && ProjeKutukData.ProjeKutukAra(txtProjeNo.Text.Trim()) != null;
+            bool isProjeKayitli = !string.IsNullOrWhiteSpace(txtProjeNo.Text.Trim()) && ProjeFinans_ProjeKutukData.ProjeKutukAra(txtProjeNo.Text.Trim()) != null;
 
             if (chkAltProjeVar.Checked)
             {
@@ -533,7 +534,7 @@ namespace CEKA_APP.UsrControl
             }
 
             var projeNo = txtProjeAra.Text.Trim();
-            var proje = ProjeKutukData.ProjeKutukAra(projeNo);
+            var proje = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
 
             if (proje != null)
             {
@@ -684,7 +685,7 @@ namespace CEKA_APP.UsrControl
                 UpdateContextMenu();
                 UpdatePanelLayout();
 
-                var fiyatlandirmaData = new ProjeFiyatlandirmaData();
+                var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
                 var altProjeler = chkAltProjeVar.Checked
                     ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
                         .SelectMany(p => p.Controls.OfType<TextBox>())
@@ -804,19 +805,19 @@ namespace CEKA_APP.UsrControl
 
             string proje = txtProjeNo.Text.Trim();
 
-            if (ProjeKutukData.ProjeKutukAra(proje) != null)
+            if (ProjeFinans_ProjeKutukData.ProjeKutukAra(proje) != null)
             {
                 MessageBox.Show($"Proje No '{proje}' zaten kayıtlı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            if (ProjeKutukData.ProjeKutukEkle(kutuk))
+            if (ProjeFinans_ProjeKutukData.ProjeKutukEkle(kutuk))
             {
                 if (chkAltProjeVar.Checked && kutuk.altProjeBilgileri.Any())
                 {
                     foreach (var altProje in kutuk.altProjeBilgileri)
                     {
-                        if (!ProjeKutukData.AltProjeEkle(proje, altProje))
+                        if (!ProjeFinans_ProjeIliskiData.AltProjeEkle(proje, altProje))
                         {
                             MessageBox.Show($"Alt Proje '{altProje}' için ilişki kaydı eklenirken hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
@@ -828,7 +829,7 @@ namespace CEKA_APP.UsrControl
                 projeBilgileriKaydedildi = false;
                 UpdateContextMenu();
 
-                var fiyatlandirmaData = new ProjeFiyatlandirmaData();
+                var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
                 var altProjeler = chkAltProjeVar.Checked
                     ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
                         .SelectMany(p => p.Controls.OfType<TextBox>())
@@ -842,6 +843,30 @@ namespace CEKA_APP.UsrControl
             else
             {
                 MessageBox.Show("Kayıt eklenirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void txtMusteriNo_Leave(object sender, EventArgs e)
+        {
+            string musteriNo = txtMusteriNo.Text.Trim();
+            if (!string.IsNullOrEmpty(musteriNo))
+            {
+                ProjeFinans_MusterilerData musteriData = new ProjeFinans_MusterilerData();
+                Musteriler musteri = musteriData.GetMusteriByMusteriNo(musteriNo);
+
+                if (musteri != null)
+                {
+                    txtMusteriAdi.Text = musteri.musteriAdi;
+                }
+                else
+                {
+                    txtMusteriAdi.Text = ""; 
+                    MessageBox.Show("Belirtilen müşteri numarası ile bir müşteri bulunamadı.", "Müşteri Bulunamadı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                txtMusteriAdi.Text = ""; 
             }
         }
     }

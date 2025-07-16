@@ -15,7 +15,7 @@ namespace CEKA_APP.Forms
     {
         public string KilometreTasiAdi { get; private set; }
         public string Oran { get; private set; }
-        private FiyatlandirmaKilometreTaslariData kilometreTasiData = new FiyatlandirmaKilometreTaslariData();
+        private ProjeFinans_FiyatlandirmaKilometreTaslariData kilometreTasiData = new ProjeFinans_FiyatlandirmaKilometreTaslariData();
 
         public frmYeniKilometreTasi()
         {

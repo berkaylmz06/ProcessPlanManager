@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace CEKA_APP.DataBase.ProjeFinans
 {
-    public class ProjeFiyatlandirmaData
+    public class ProjeFinans_FiyatlandirmaData
     {
         public List<(int fiyatlandirmaKalemId, string kalemAdi, decimal teklifBirimMiktar, decimal teklifBirimFiyat, decimal gerceklesenBirimMiktar, decimal gerceklesenBirimFiyat)> GetFiyatlandirmaByProje(string projeNo)
         {

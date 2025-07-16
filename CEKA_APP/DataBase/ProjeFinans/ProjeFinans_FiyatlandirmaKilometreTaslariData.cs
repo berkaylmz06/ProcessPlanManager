@@ -5,7 +5,7 @@ using System.Windows.Forms;
 
 namespace CEKA_APP.DataBase.ProjeFinans
 {
-    public class FiyatlandirmaKilometreTaslariData
+    public class ProjeFinans_FiyatlandirmaKilometreTaslariData
     {
         public List<(int Id, string Adi, DateTime Tarih)> GetFiyatlandirmaKilometreTasi()
         {
@@ -41,6 +41,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
+
         public int GetFiyatlandirmaKilometreTasiIdByAdi(string kilometreTasiAdi)
         {
             using (var connection = DataBaseHelper.GetConnection())
@@ -54,6 +55,25 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     return result != null ? Convert.ToInt32(result) : 0;
                 }
             }
+        }
+        public string GetKilometreTasiAdi(int kilometreTasiId)
+        {
+            string kilometreTasiAdi = "";
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                connection.Open();
+                string query = "SELECT KalemAdi FROM ProjeFinans_FiyatlandirmaKilometreTaslari WHERE FiyatlandirmaKilometreTasiId = @id";
+                using (var cmd = new SqlCommand(query, connection))
+                {
+                    cmd.Parameters.AddWithValue("@id", kilometreTasiId);
+                    object result = cmd.ExecuteScalar();
+                    if (result != null && result != DBNull.Value)
+                    {
+                        kilometreTasiAdi = result.ToString();
+                    }
+                }
+            }
+            return kilometreTasiAdi;
         }
         public int GetKilometreTasiId(string kilometreTasiAdi)
         {

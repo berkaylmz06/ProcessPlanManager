@@ -100,6 +100,7 @@ namespace CEKA_APP
             ButonGenelHelper.StilUygula(btnYerlesimPlaniBilgileri);
             ButonGenelHelper.StilUygula(btnOdemeSartlari);
             ButonGenelHelper.StilUygula(btnTeminatMektuplari);
+            ButonGenelHelper.StilUygula(btnMusteriler);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnSistem);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnDuyuru);
@@ -126,6 +127,7 @@ namespace CEKA_APP
             btnYerlesimPlaniBilgileri.Visible= false;
             btnOdemeSartlari.Visible = false;
             btnTeminatMektuplari.Visible = false;
+            btnMusteriler.Visible = false;
 
             switch (aktifKullanici.kullaniciRol)
             {
@@ -145,6 +147,7 @@ namespace CEKA_APP
                     btnYerlesimPlaniBilgileri.Visible = true;
                     btnOdemeSartlari.Visible = true;
                     btnTeminatMektuplari.Visible = true;
+                    btnMusteriler.Visible = true;
                     break;
                 case "Destek":
                     btnKesimPlaniEkle.Visible = true;
@@ -165,6 +168,7 @@ namespace CEKA_APP
                     btnYerlesimPlaniBilgileri.Visible = true;
                     btnOdemeSartlari.Visible = true;
                     btnTeminatMektuplari.Visible = true;
+                    btnMusteriler.Visible = true;
                     break;
                 case "İş Hazırlama":
                     btnKesimPlaniEkle.Visible = true;
@@ -179,6 +183,7 @@ namespace CEKA_APP
                     btnProjeFiyatlandirma.Visible = true;
                     btnOdemeSartlari.Visible = true;
                     btnTeminatMektuplari.Visible = true;
+                    btnMusteriler.Visible = true;
                     break;
                 case "Operatör":
                     btnKesimYap.Visible = true;
@@ -208,6 +213,7 @@ namespace CEKA_APP
                 btnAutoCad,
                 btnProjeOgeleri,
                 btnKarsilastirmaTablolari,
+                btnMusteriler,
                 btnProjeKutuk,
                 btnProjeFiyatlandirma,
                 btnOdemeSartlari,
@@ -563,13 +569,19 @@ namespace CEKA_APP
             UserControlEkle(yerlesimPlaniBilgileri);
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void btnMusteriler_Click(object sender, EventArgs e)
+        {
+            var musteriler = new ctlMusteriler();
+            UserControlEkle(musteriler);
+        }
+
+        private void btnOdemeSartlari_Click(object sender, EventArgs e)
         {
             var projeFiyatlandirmaOdemeSartlari = new ctlOdemeSartlari();
             UserControlEkle(projeFiyatlandirmaOdemeSartlari);
         }
 
-        private void button1_Click_1(object sender, EventArgs e)
+        private void btnTeminatMektuplari_Click(object sender, EventArgs e)
         {
             var teminatMektuplari = new ctlTeminatMektuplari();
             UserControlEkle(teminatMektuplari);

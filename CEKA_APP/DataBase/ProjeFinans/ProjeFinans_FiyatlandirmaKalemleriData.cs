@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace CEKA_APP.DataBase.ProjeFinans
 {
-    public class FiyatlandirmaKalemleriData
+    public class ProjeFinans_FiyatlandirmaKalemleriData
     {
         public List<(int Id, string Adi, DateTime Tarih)> GetFiyatlandirmaKalemleri()
         {

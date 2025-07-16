@@ -143,6 +143,44 @@ namespace CEKA_APP.Helper
                 }
             }
         }
+       
+        public static void StilUygulaMusteriler(DataGridView dgvMusteriler)
+        {
+            typeof(DataGridView).InvokeMember("DoubleBuffered",
+                System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,
+                null, dgvMusteriler, new object[] { true });
 
+            dgvMusteriler.RowTemplate.Height = 35; 
+            dgvMusteriler.DefaultCellStyle.Font = new Font("Segoe UI", 9.5F);
+            dgvMusteriler.EnableHeadersVisualStyles = false; 
+
+            dgvMusteriler.ColumnHeadersDefaultCellStyle.Font = new Font("Segoe UI", 10.5F, FontStyle.Bold); 
+            dgvMusteriler.ColumnHeadersDefaultCellStyle.BackColor = Color.FromArgb(45, 45, 48); 
+            dgvMusteriler.ColumnHeadersDefaultCellStyle.ForeColor = Color.White; 
+            dgvMusteriler.ColumnHeadersBorderStyle = DataGridViewHeaderBorderStyle.None; 
+            dgvMusteriler.ColumnHeadersHeight = 40;
+            dgvMusteriler.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing;
+            dgvMusteriler.ColumnHeadersDefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft;
+
+            dgvMusteriler.BorderStyle = BorderStyle.None; 
+            dgvMusteriler.CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal; 
+            dgvMusteriler.GridColor = Color.FromArgb(230, 230, 230); 
+            dgvMusteriler.BackgroundColor = Color.White; 
+
+            dgvMusteriler.DefaultCellStyle.BackColor = Color.White;
+            dgvMusteriler.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(248, 248, 248);
+
+            dgvMusteriler.DefaultCellStyle.SelectionBackColor = Color.FromArgb(29, 161, 242);
+            dgvMusteriler.DefaultCellStyle.SelectionForeColor = Color.White;
+
+            dgvMusteriler.DefaultCellStyle.Alignment = DataGridViewContentAlignment.MiddleLeft; 
+
+            dgvMusteriler.ReadOnly = true;
+            dgvMusteriler.AllowUserToAddRows = false;
+            dgvMusteriler.AllowUserToDeleteRows = false; 
+            dgvMusteriler.AllowUserToResizeRows = false; 
+            dgvMusteriler.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill; 
+            dgvMusteriler.SelectionMode = DataGridViewSelectionMode.FullRowSelect; 
+        }
     }
 }

@@ -8,7 +8,7 @@ namespace CEKA_APP
     public partial class frmYeniFiyatlandirmaKalemiEkle : Form
     {
         public string KalemAdi { get; private set; }
-        private FiyatlandirmaKalemleriData kalemData = new FiyatlandirmaKalemleriData();
+        private ProjeFinans_FiyatlandirmaKalemleriData kalemData = new ProjeFinans_FiyatlandirmaKalemleriData();
 
         public frmYeniFiyatlandirmaKalemiEkle()
         {

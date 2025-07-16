@@ -264,38 +264,83 @@ namespace CEKA_APP.Forms
             var result = new System.Text.StringBuilder();
             string[] words = text.Split(' ');
 
+            double currentLineLength = 0;
+            double spaceWidth = gfx.MeasureString(" ", font).Width;
+
             foreach (string word in words)
             {
                 if (string.IsNullOrEmpty(word))
                 {
-                    result.Append(" ");
+                    if (currentLineLength + spaceWidth > maxWidth)
+                    {
+                        result.Append(Environment.NewLine);
+                        currentLineLength = 0;
+                    }
+                    else
+                    {
+                        result.Append(" ");
+                        currentLineLength += spaceWidth;
+                    }
                     continue;
                 }
 
-                if (gfx.MeasureString(word, font).Width > maxWidth)
+                double wordWidth = gfx.MeasureString(word, font).Width;
+
+                if (currentLineLength + wordWidth + (currentLineLength > 0 ? spaceWidth : 0) > maxWidth)
                 {
-                    var currentSegment = new System.Text.StringBuilder();
-                    foreach (char c in word)
+                    // Word itself is too long for a single line, or it causes overflow
+                    if (wordWidth > maxWidth)
                     {
-                        currentSegment.Append(c);
-                        if (gfx.MeasureString(currentSegment.ToString(), font).Width > maxWidth)
+                        var currentSegment = new System.Text.StringBuilder();
+                        foreach (char c in word)
                         {
-                            result.Append(currentSegment.ToString(0, currentSegment.Length - 1));
-                            result.Append(" ");
-                            currentSegment.Clear();
                             currentSegment.Append(c);
+                            if (gfx.MeasureString(currentSegment.ToString(), font).Width > maxWidth)
+                            {
+                                result.Append(Environment.NewLine);
+                                result.Append(currentSegment.ToString(0, currentSegment.Length - 1));
+                                result.Append(Environment.NewLine);
+                                currentSegment.Clear();
+                                currentSegment.Append(c);
+                                currentLineLength = gfx.MeasureString(currentSegment.ToString(), font).Width;
+                            }
+                        }
+                        if (currentSegment.Length > 0)
+                        {
+                            if (currentLineLength + gfx.MeasureString(currentSegment.ToString(), font).Width > maxWidth && currentLineLength > 0)
+                            {
+                                result.Append(Environment.NewLine);
+                                result.Append(currentSegment.ToString());
+                                currentLineLength = gfx.MeasureString(currentSegment.ToString(), font).Width;
+                            }
+                            else
+                            {
+                                result.Append(currentSegment.ToString());
+                                currentLineLength += gfx.MeasureString(currentSegment.ToString(), font).Width;
+                            }
                         }
                     }
-                    result.Append(currentSegment.ToString());
+                    else // Word fits on a line, but not with current line content
+                    {
+                        result.Append(Environment.NewLine);
+                        result.Append(word);
+                        currentLineLength = wordWidth;
+                    }
                 }
                 else
                 {
+                    if (currentLineLength > 0)
+                    {
+                        result.Append(" ");
+                        currentLineLength += spaceWidth;
+                    }
                     result.Append(word);
+                    currentLineLength += wordWidth;
                 }
-                result.Append(" ");
             }
             return result.ToString().Trim();
         }
+
 
         private double MeasureTextWidth(XGraphics gfx, string text, XFont font)
         {
@@ -916,10 +961,12 @@ namespace CEKA_APP.Forms
             gfx.DrawRectangle(XBrushes.Black, panel1HeaderRect);
             DrawCenteredHeaderText("DESCRIPTION - SERIAL NUMBER", panel1HeaderRect, boldHeaderFont, XBrushes.White);
 
-            double descriptionHeight = MeasureTextHeightWithFormatter(gfx, textDescriptionData, panelFont, panel1Rect.Width - (2 * cellPadding));
+            // Açıklama metnini ForceWordWrap ile sarmala
+            string wrappedDescriptionData = ForceWordWrap(gfx, textDescriptionData, panelFont, panel1Rect.Width - (2 * cellPadding));
+            double descriptionHeight = MeasureTextHeightWithFormatter(gfx, wrappedDescriptionData, panelFont, panel1Rect.Width - (2 * cellPadding));
             XRect descriptionDataRect = new XRect(panel1Rect.X + cellPadding, panel1HeaderRect.Bottom + cellPadding,
                                                   panel1Rect.Width - (2 * cellPadding), descriptionHeight);
-            tf.DrawString(textDescriptionData, panelFont, XBrushes.Black, descriptionDataRect, XStringFormats.TopLeft);
+            tf.DrawString(wrappedDescriptionData, panelFont, XBrushes.Black, descriptionDataRect, XStringFormats.TopLeft);
 
             double notesWidth = panel1Rect.Width;
             double totalNotesHeight = 0;
