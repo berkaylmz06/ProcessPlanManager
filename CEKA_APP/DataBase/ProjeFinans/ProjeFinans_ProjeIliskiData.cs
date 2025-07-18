@@ -65,5 +65,40 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
+        public static List<string> GetAltProjeler(string projeNo)
+        {
+            var altProjeler = new List<string>();
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    string sql = @"
+                SELECT altProjeNo
+                FROM ProjeFinans_ProjeIliski
+                WHERE ustProjeNo = @projeNo OR altProjeNo = @projeNo";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@projeNo", projeNo.Trim());
+                        using (var reader = command.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                string altProjeNo = reader.IsDBNull(0) ? null : reader.GetString(0);
+                                if (!string.IsNullOrEmpty(altProjeNo))
+                                {
+                                    altProjeler.Add(altProjeNo);
+                                }
+                            }
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Alt projeler alınırken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            return altProjeler;
+        }
     }
 }

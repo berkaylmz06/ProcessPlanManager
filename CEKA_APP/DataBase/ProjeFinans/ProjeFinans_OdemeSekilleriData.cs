@@ -9,7 +9,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
 {
     public class ProjeFinans_OdemeSekilleriData
     {
-        public void SaveOrUpdateOdemeBilgi(string projeNo, string kilometreTasiId, int siralama, string oran, string tutar, string tahminiTarih, string gerceklesenTarih, string aciklama, bool teminatMektubu, string durum)
+        public void SaveOrUpdateOdemeBilgi(string projeNo, string kilometreTasiId, int siralama, string oran, string tutar, string tahminiTarih, string gerceklesenTarih, string aciklama, bool teminatMektubu, string teminatDurumu, string durum)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {
@@ -38,6 +38,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                                     gerceklesenTarih = @gerceklesenTarih,
                                     aciklama = @aciklama,
                                     teminatMektubu = @teminatMektubu,
+                                    teminatDurumu = @teminatDurumu,
                                     durum = @durum
                                 WHERE projeNo = @projeNo AND kilometreTasiId = @kilometreTasiId";
                         }
@@ -46,8 +47,8 @@ namespace CEKA_APP.DataBase.ProjeFinans
                             // Kayıt yoksa ekle
                             query = @"
                                 INSERT INTO ProjeFinans_OdemeSekilleri
-                                (projeNo, kilometreTasiId, siralama, oran, tutar, tahminiTarih, gerceklesenTarih, aciklama, teminatMektubu, durum)
-                                VALUES (@projeNo, @kilometreTasiId, @siralama, @oran, @tutar, @tahminiTarih, @gerceklesenTarih, @aciklama, @teminatMektubu, @durum)";
+                                (projeNo, kilometreTasiId, siralama, oran, tutar, tahminiTarih, gerceklesenTarih, aciklama, teminatMektubu, teminatDurumu, durum)
+                                VALUES (@projeNo, @kilometreTasiId, @siralama, @oran, @tutar, @tahminiTarih, @gerceklesenTarih, @aciklama, @teminatMektubu, @teminatDurumu, @durum)";
                         }
 
                         using (var cmd = new SqlCommand(query, connection))
@@ -61,6 +62,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                             cmd.Parameters.Add("@gerceklesenTarih", SqlDbType.DateTime2).Value = string.IsNullOrWhiteSpace(gerceklesenTarih) ? (object)DBNull.Value : DateTime.Parse(gerceklesenTarih);
                             cmd.Parameters.Add("@aciklama", SqlDbType.NVarChar, 500).Value = string.IsNullOrWhiteSpace(aciklama) ? (object)DBNull.Value : aciklama;
                             cmd.Parameters.Add("@teminatMektubu", SqlDbType.Bit).Value = teminatMektubu;
+                            cmd.Parameters.Add("@teminatDurumu", SqlDbType.NVarChar, 50).Value = string.IsNullOrWhiteSpace(teminatDurumu) ? (object)DBNull.Value : teminatDurumu;
                             cmd.Parameters.Add("@durum", SqlDbType.NVarChar, 50).Value = string.IsNullOrWhiteSpace(durum) ? (object)DBNull.Value : durum;
 
                             cmd.ExecuteNonQuery();
@@ -136,6 +138,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
             return odemeBilgileriList;
         }
+
         public void UpdateOrder(List<Tuple<string, int, int>> reorderedData) // Tuple: ProjeNo, KilometreTasiId, NewSiralama
         {
             using (var connection = DataBaseHelper.GetConnection())
@@ -162,6 +165,30 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Sıralama güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    throw;
+                }
+            }
+        }
+
+        // Yeni eklenecek DeleteOdemeBilgi metodu
+        public void DeleteOdemeBilgi(string projeNo, int kilometreTasiId)
+        {
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    string query = "DELETE FROM ProjeFinans_OdemeSekilleri WHERE projeNo = @projeNo AND kilometreTasiId = @kilometreTasiId";
+                    using (var cmd = new SqlCommand(query, connection))
+                    {
+                        cmd.Parameters.Add("@projeNo", SqlDbType.NVarChar, 50).Value = projeNo;
+                        cmd.Parameters.Add("@kilometreTasiId", SqlDbType.Int).Value = kilometreTasiId;
+                        cmd.ExecuteNonQuery();
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ödeme bilgisi silinirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     throw;
                 }
             }

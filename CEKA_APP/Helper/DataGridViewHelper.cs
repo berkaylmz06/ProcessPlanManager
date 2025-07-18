@@ -144,7 +144,7 @@ namespace CEKA_APP.Helper
             }
         }
        
-        public static void StilUygulaMusteriler(DataGridView dgvMusteriler)
+        public static void StilUygulaProjeFinans(DataGridView dgvMusteriler)
         {
             typeof(DataGridView).InvokeMember("DoubleBuffered",
                 System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance | System.Reflection.BindingFlags.SetProperty,

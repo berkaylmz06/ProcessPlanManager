@@ -31,12 +31,12 @@
             this.components = new System.ComponentModel.Container();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.dataGridMusteriler = new System.Windows.Forms.DataGridView();
-            this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
+            this.cmsMusteriIslemleri = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmiMusteriEkle = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiMusteriGuncelle = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiMusteriSil = new System.Windows.Forms.ToolStripMenuItem();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridMusteriler)).BeginInit();
-            this.contextMenuStrip1.SuspendLayout();
+            this.cmsMusteriIslemleri.SuspendLayout();
             this.SuspendLayout();
             // 
             // ctlBaslik1
@@ -52,7 +52,7 @@
             // 
             this.dataGridMusteriler.BackgroundColor = System.Drawing.SystemColors.Window;
             this.dataGridMusteriler.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridMusteriler.ContextMenuStrip = this.contextMenuStrip1;
+            this.dataGridMusteriler.ContextMenuStrip = this.cmsMusteriIslemleri;
             this.dataGridMusteriler.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridMusteriler.Location = new System.Drawing.Point(0, 50);
             this.dataGridMusteriler.Name = "dataGridMusteriler";
@@ -63,15 +63,16 @@
             this.dataGridMusteriler.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridMusteriler_CellMouseDown);
             this.dataGridMusteriler.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridMusteriler_DataBindingComplete);
             // 
-            // contextMenuStrip1
+            // cmsMusteriIslemleri
             // 
-            this.contextMenuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.contextMenuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.cmsMusteriIslemleri.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.cmsMusteriIslemleri.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmiMusteriEkle,
             this.tsmiMusteriGuncelle,
             this.tsmiMusteriSil});
-            this.contextMenuStrip1.Name = "contextMenuStrip1";
-            this.contextMenuStrip1.Size = new System.Drawing.Size(189, 76);
+            this.cmsMusteriIslemleri.Name = "contextMenuStrip1";
+            this.cmsMusteriIslemleri.Size = new System.Drawing.Size(211, 104);
+            this.cmsMusteriIslemleri.Opening += new System.ComponentModel.CancelEventHandler(this.cmsMusteriIslemleri_Opening);
             // 
             // tsmiMusteriEkle
             // 
@@ -104,7 +105,7 @@
             this.Size = new System.Drawing.Size(1412, 941);
             this.Load += new System.EventHandler(this.ctlMusteriler_Load);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridMusteriler)).EndInit();
-            this.contextMenuStrip1.ResumeLayout(false);
+            this.cmsMusteriIslemleri.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -112,7 +113,7 @@
         #endregion
         private ctlBaslik ctlBaslik1;
         private System.Windows.Forms.DataGridView dataGridMusteriler;
-        private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
+        private System.Windows.Forms.ContextMenuStrip cmsMusteriIslemleri;
         private System.Windows.Forms.ToolStripMenuItem tsmiMusteriEkle;
         private System.Windows.Forms.ToolStripMenuItem tsmiMusteriGuncelle;
         private System.Windows.Forms.ToolStripMenuItem tsmiMusteriSil;

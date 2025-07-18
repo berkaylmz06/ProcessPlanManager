@@ -231,6 +231,7 @@
     <Compile Include="DataBase\ProjeFinans\ProjeFinans_FiyatlandirmaData.cs" />
     <Compile Include="DataBase\ProjeFinans\ProjeFinans_ProjeKutukData.cs" />
     <Compile Include="DataBase\ProjeFinans\ProjeFinans_Projeler.cs" />
+    <Compile Include="DataBase\ProjeFinans\ProjeFinans_TeminatMektuplariData.cs" />
     <Compile Include="DataBase\SorunBildirimleriData.cs" />
     <Compile Include="Entitys\AutoCadAktarimDetay.cs" />
     <Compile Include="Entitys\Duyurular.cs" />
@@ -245,6 +246,7 @@
     <Compile Include="Entitys\ProjeFinans\OdemeSekilleri.cs" />
     <Compile Include="Entitys\ProjeFinans\ProjeBilgi.cs" />
     <Compile Include="Entitys\ProjeFinans\ProjeKutuk.cs" />
+    <Compile Include="Entitys\ProjeFinans\TeminatMektuplari.cs" />
     <Compile Include="Entitys\SorunBildirimleri.cs" />
     <Compile Include="Entitys\KesimListesi.cs" />
     <Compile Include="DataBase\KesimListesiData.cs" />
@@ -565,6 +567,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\cekalogokirmizi.ico" />
+    <None Include="Resources\copKutusu.png" />
     <None Include="Resources\cekalogo.png" />
     <None Include="Resources\kullanici.png" />
     <None Include="Resources\anasayfa.png" />

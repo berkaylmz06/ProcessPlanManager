@@ -99,17 +99,19 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 {
                     connection.Open();
                     string sql = @"
-                        SELECT projeNo, projeAdi, aciklama, olusturmaTarihi
-                        FROM ProjeFinans_Projeler
-                        WHERE TRIM(projeNo) = @projeNo";
+                SELECT projeNo, projeAdi, aciklama, olusturmaTarihi
+                FROM ProjeFinans_Projeler
+                WHERE projeNo = @projeNo";
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@projeNo", projeNo.Trim());
+                        Console.WriteLine($"SQL Sorgusu için projeNo: '{projeNo}'"); // Log
                         using (var reader = command.ExecuteReader())
                         {
                             if (reader.Read())
                             {
+                                Console.WriteLine("Kayıt bulundu.");
                                 return new ProjeBilgi
                                 {
                                     ProjeNo = reader.IsDBNull(0) ? null : reader.GetString(0),
@@ -118,12 +120,17 @@ namespace CEKA_APP.DataBase.ProjeFinans
                                     OlusturmaTarihi = reader.IsDBNull(3) ? DateTime.Now : reader.GetDateTime(3)
                                 };
                             }
+                            else
+                            {
+                                Console.WriteLine("Kayıt bulunamadı.");
+                            }
                         }
                     }
                     return null;
                 }
                 catch (Exception ex)
                 {
+                    Console.WriteLine($"Hata: {ex.Message}");
                     MessageBox.Show($"Proje bilgileri alınırken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return null;
                 }

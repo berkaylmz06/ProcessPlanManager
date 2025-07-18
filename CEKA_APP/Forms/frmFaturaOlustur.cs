@@ -264,83 +264,40 @@ namespace CEKA_APP.Forms
             var result = new System.Text.StringBuilder();
             string[] words = text.Split(' ');
 
-            double currentLineLength = 0;
-            double spaceWidth = gfx.MeasureString(" ", font).Width;
-
             foreach (string word in words)
             {
                 if (string.IsNullOrEmpty(word))
                 {
-                    if (currentLineLength + spaceWidth > maxWidth)
-                    {
-                        result.Append(Environment.NewLine);
-                        currentLineLength = 0;
-                    }
-                    else
-                    {
-                        result.Append(" ");
-                        currentLineLength += spaceWidth;
-                    }
+                    result.Append(" ");
                     continue;
                 }
 
-                double wordWidth = gfx.MeasureString(word, font).Width;
-
-                if (currentLineLength + wordWidth + (currentLineLength > 0 ? spaceWidth : 0) > maxWidth)
+                if (gfx.MeasureString(word, font).Width > maxWidth)
                 {
-                    // Word itself is too long for a single line, or it causes overflow
-                    if (wordWidth > maxWidth)
+                    // Kelime tek başına çok uzunsa harf harf böl
+                    var currentSegment = new System.Text.StringBuilder();
+                    foreach (char c in word)
                     {
-                        var currentSegment = new System.Text.StringBuilder();
-                        foreach (char c in word)
+                        currentSegment.Append(c);
+                        if (gfx.MeasureString(currentSegment.ToString(), font).Width > maxWidth)
                         {
-                            currentSegment.Append(c);
-                            if (gfx.MeasureString(currentSegment.ToString(), font).Width > maxWidth)
-                            {
-                                result.Append(Environment.NewLine);
-                                result.Append(currentSegment.ToString(0, currentSegment.Length - 1));
-                                result.Append(Environment.NewLine);
-                                currentSegment.Clear();
-                                currentSegment.Append(c);
-                                currentLineLength = gfx.MeasureString(currentSegment.ToString(), font).Width;
-                            }
-                        }
-                        if (currentSegment.Length > 0)
-                        {
-                            if (currentLineLength + gfx.MeasureString(currentSegment.ToString(), font).Width > maxWidth && currentLineLength > 0)
-                            {
-                                result.Append(Environment.NewLine);
-                                result.Append(currentSegment.ToString());
-                                currentLineLength = gfx.MeasureString(currentSegment.ToString(), font).Width;
-                            }
-                            else
-                            {
-                                result.Append(currentSegment.ToString());
-                                currentLineLength += gfx.MeasureString(currentSegment.ToString(), font).Width;
-                            }
+                            // Bir önceki karaktere kadar olan kısmı ekle
+                            result.Append(currentSegment.ToString(0, currentSegment.Length - 1));
+                            result.Append(" "); // Bir boşluk ekleyerek sonraki parçayı yeni bir kelime gibi başlat
+                            currentSegment.Clear();
+                            currentSegment.Append(c); // Mevcut karakterle yeni parçayı başlat
                         }
                     }
-                    else // Word fits on a line, but not with current line content
-                    {
-                        result.Append(Environment.NewLine);
-                        result.Append(word);
-                        currentLineLength = wordWidth;
-                    }
+                    result.Append(currentSegment.ToString()); // Kalan son parçayı ekle
                 }
                 else
                 {
-                    if (currentLineLength > 0)
-                    {
-                        result.Append(" ");
-                        currentLineLength += spaceWidth;
-                    }
                     result.Append(word);
-                    currentLineLength += wordWidth;
                 }
+                result.Append(" "); // Her kelimeden sonra bir boşluk ekle
             }
-            return result.ToString().Trim();
+            return result.ToString().Trim(); // En sondaki boşluğu temizle
         }
-
 
         private double MeasureTextWidth(XGraphics gfx, string text, XFont font)
         {
@@ -377,23 +334,29 @@ namespace CEKA_APP.Forms
                 andWord = "and";
             }
 
-            tutar = tutar.Replace('.', ',');
-
-            string tamKisimStr = "";
-            string ondalikKisimStr = "";
-
-            if (tutar.Contains(','))
+            decimal parsedTutar;
+            if (dil == "tr")
             {
-                string[] parcalar = tutar.Split(',');
-                tamKisimStr = parcalar[0];
-                ondalikKisimStr = (parcalar.Length > 1 ? parcalar[1] : "").PadRight(2, '0').Substring(0, 2);
+                if (!decimal.TryParse(tutar, System.Globalization.NumberStyles.Any, new System.Globalization.CultureInfo("tr-TR"), out parsedTutar))
+                {
+                    MessageBox.Show(dil == "tr" ? "Geçersiz sayı formatı." : "Invalid number format.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return "HATA: Geçersiz Sayı!";
+                }
             }
             else
             {
-                tamKisimStr = tutar;
+                if (!decimal.TryParse(tutar, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out parsedTutar))
+                {
+                    MessageBox.Show(dil == "tr" ? "Geçersiz sayı formatı." : "Invalid number format.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return "HATA: Geçersiz Sayı!";
+                }
             }
 
-            if (string.IsNullOrEmpty(tamKisimStr)) tamKisimStr = "0";
+            long tamKisim = (long)Math.Truncate(parsedTutar);
+            int ondalikKisim = (int)((parsedTutar - tamKisim) * 100);
+
+            string tamKisimStr = tamKisim.ToString();
+            string ondalikKisimStr = ondalikKisim.ToString("D2");
 
             if (tamKisimStr.Length > 18)
             {
@@ -403,7 +366,7 @@ namespace CEKA_APP.Forms
 
             string sonuc = "";
 
-            if (tamKisimStr == "0")
+            if (tamKisim == 0)
             {
                 sonuc = zeroWord;
             }
@@ -414,9 +377,9 @@ namespace CEKA_APP.Forms
 
             sonuc += " " + currencyMain;
 
-            if (!string.IsNullOrEmpty(ondalikKisimStr) && int.Parse(ondalikKisimStr) > 0)
+            if (ondalikKisim > 0)
             {
-                if (dil == "en" && tamKisimStr != "0")
+                if (dil == "en" && tamKisim != 0)
                 {
                     sonuc += " " + andWord;
                 }
@@ -424,7 +387,6 @@ namespace CEKA_APP.Forms
                 string ondalikMetin = ConvertNumberGroup(ondalikKisimStr.TrimStart('0'), dil, birler, onlar, binler, hundredWord);
                 sonuc += " " + ondalikMetin + " " + currencySub;
             }
-
             return sonuc.Trim();
         }
 
@@ -508,7 +470,6 @@ namespace CEKA_APP.Forms
 
             return System.Text.RegularExpressions.Regex.Replace(sonuc.Trim(), @"\s+", " ");
         }
-
         private string GenerateInvoiceNumber(string projeNo)
         {
             if (string.IsNullOrEmpty(projeNo))
@@ -606,6 +567,12 @@ namespace CEKA_APP.Forms
             if (chkTurkish == null || chkEnglish == null || (!chkTurkish.Checked && !chkEnglish.Checked))
             {
                 MessageBox.Show("Lütfen bir dil seçin (Türkçe veya İngilizce).", "Dil Seçimi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (string.IsNullOrEmpty(txtProjeNo.Text))
+            {
+                MessageBox.Show("Lütfen bir Proje Numarası giriniz. Fatura numarası oluşturulamaz.", "Proje Numarası Eksik", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 

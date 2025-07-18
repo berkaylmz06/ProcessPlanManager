@@ -28,116 +28,118 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.lblMusteriNo = new System.Windows.Forms.Label();
-            this.lblMusteri = new System.Windows.Forms.Label();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.txtMektupNo = new System.Windows.Forms.TextBox();
+            this.lblMektupNo = new System.Windows.Forms.Label();
+            this.lblMusteriAdi = new System.Windows.Forms.Label();
+            this.txtMusteriNo = new System.Windows.Forms.TextBox();
             this.lblTutar = new System.Windows.Forms.Label();
-            this.textBox3 = new System.Windows.Forms.TextBox();
+            this.txtTutar = new System.Windows.Forms.TextBox();
             this.lblBanka = new System.Windows.Forms.Label();
-            this.textBox4 = new System.Windows.Forms.TextBox();
+            this.txtBanka = new System.Windows.Forms.TextBox();
             this.lblMektupTur = new System.Windows.Forms.Label();
-            this.textBox5 = new System.Windows.Forms.TextBox();
+            this.txtMektupTuru = new System.Windows.Forms.TextBox();
             this.chkTL = new System.Windows.Forms.CheckBox();
             this.chkDolar = new System.Windows.Forms.CheckBox();
             this.chkEuro = new System.Windows.Forms.CheckBox();
-            this.lblVade = new System.Windows.Forms.Label();
-            this.dateTimePicker1 = new System.Windows.Forms.DateTimePicker();
-            this.dateTimePicker2 = new System.Windows.Forms.DateTimePicker();
+            this.lblVadeTarihi = new System.Windows.Forms.Label();
+            this.dtVadeTarihi = new System.Windows.Forms.DateTimePicker();
+            this.dtIadeTarihi = new System.Windows.Forms.DateTimePicker();
             this.lblIadeTarihi = new System.Windows.Forms.Label();
             this.lblKomisyonTutari = new System.Windows.Forms.Label();
-            this.textBox6 = new System.Windows.Forms.TextBox();
+            this.txtKomisyonTutari = new System.Windows.Forms.TextBox();
             this.lblKomisyonOrani = new System.Windows.Forms.Label();
-            this.textBox7 = new System.Windows.Forms.TextBox();
+            this.txtKomisyonOrani = new System.Windows.Forms.TextBox();
             this.lblKomisyonVadesi = new System.Windows.Forms.Label();
-            this.textBox8 = new System.Windows.Forms.TextBox();
+            this.txtKomisyonVadesi = new System.Windows.Forms.TextBox();
             this.btnKaydet = new System.Windows.Forms.Button();
+            this.llbMusteriNo = new System.Windows.Forms.Label();
+            this.txtMusteriAdi = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // textBox1
+            // txtMektupNo
             // 
-            this.textBox1.Location = new System.Drawing.Point(192, 56);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(279, 22);
-            this.textBox1.TabIndex = 0;
+            this.txtMektupNo.Location = new System.Drawing.Point(192, 56);
+            this.txtMektupNo.Name = "txtMektupNo";
+            this.txtMektupNo.Size = new System.Drawing.Size(279, 22);
+            this.txtMektupNo.TabIndex = 0;
             // 
-            // lblMusteriNo
+            // lblMektupNo
             // 
-            this.lblMusteriNo.AutoSize = true;
-            this.lblMusteriNo.Location = new System.Drawing.Point(68, 59);
-            this.lblMusteriNo.Name = "lblMusteriNo";
-            this.lblMusteriNo.Size = new System.Drawing.Size(77, 16);
-            this.lblMusteriNo.TabIndex = 1;
-            this.lblMusteriNo.Text = "Mektup NO:";
+            this.lblMektupNo.AutoSize = true;
+            this.lblMektupNo.Location = new System.Drawing.Point(68, 59);
+            this.lblMektupNo.Name = "lblMektupNo";
+            this.lblMektupNo.Size = new System.Drawing.Size(77, 16);
+            this.lblMektupNo.TabIndex = 1;
+            this.lblMektupNo.Text = "Mektup NO:";
             // 
-            // lblMusteri
+            // lblMusteriAdi
             // 
-            this.lblMusteri.AutoSize = true;
-            this.lblMusteri.Location = new System.Drawing.Point(68, 106);
-            this.lblMusteri.Name = "lblMusteri";
-            this.lblMusteri.Size = new System.Drawing.Size(53, 16);
-            this.lblMusteri.TabIndex = 3;
-            this.lblMusteri.Text = "Müşteri:";
+            this.lblMusteriAdi.AutoSize = true;
+            this.lblMusteriAdi.Location = new System.Drawing.Point(68, 160);
+            this.lblMusteriAdi.Name = "lblMusteriAdi";
+            this.lblMusteriAdi.Size = new System.Drawing.Size(95, 20);
+            this.lblMusteriAdi.TabIndex = 3;
+            this.lblMusteriAdi.Text = "Müşteri Adi:";
             // 
-            // textBox2
+            // txtMusteriNo
             // 
-            this.textBox2.Location = new System.Drawing.Point(192, 103);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(279, 22);
-            this.textBox2.TabIndex = 2;
+            this.txtMusteriNo.Location = new System.Drawing.Point(192, 103);
+            this.txtMusteriNo.Name = "txtMusteriNo";
+            this.txtMusteriNo.Size = new System.Drawing.Size(279, 22);
+            this.txtMusteriNo.TabIndex = 2;
             // 
             // lblTutar
             // 
             this.lblTutar.AutoSize = true;
-            this.lblTutar.Location = new System.Drawing.Point(68, 209);
+            this.lblTutar.Location = new System.Drawing.Point(68, 250);
             this.lblTutar.Name = "lblTutar";
             this.lblTutar.Size = new System.Drawing.Size(41, 16);
             this.lblTutar.TabIndex = 5;
             this.lblTutar.Text = "Tutar:";
             // 
-            // textBox3
+            // txtTutar
             // 
-            this.textBox3.Location = new System.Drawing.Point(192, 206);
-            this.textBox3.Name = "textBox3";
-            this.textBox3.Size = new System.Drawing.Size(279, 22);
-            this.textBox3.TabIndex = 4;
+            this.txtTutar.Location = new System.Drawing.Point(192, 247);
+            this.txtTutar.Name = "txtTutar";
+            this.txtTutar.Size = new System.Drawing.Size(279, 22);
+            this.txtTutar.TabIndex = 4;
             // 
             // lblBanka
             // 
             this.lblBanka.AutoSize = true;
-            this.lblBanka.Location = new System.Drawing.Point(68, 266);
+            this.lblBanka.Location = new System.Drawing.Point(68, 307);
             this.lblBanka.Name = "lblBanka";
             this.lblBanka.Size = new System.Drawing.Size(49, 16);
             this.lblBanka.TabIndex = 7;
             this.lblBanka.Text = "Banka:";
             // 
-            // textBox4
+            // txtBanka
             // 
-            this.textBox4.Location = new System.Drawing.Point(192, 263);
-            this.textBox4.Name = "textBox4";
-            this.textBox4.Size = new System.Drawing.Size(279, 22);
-            this.textBox4.TabIndex = 6;
+            this.txtBanka.Location = new System.Drawing.Point(192, 304);
+            this.txtBanka.Name = "txtBanka";
+            this.txtBanka.Size = new System.Drawing.Size(279, 22);
+            this.txtBanka.TabIndex = 6;
             // 
             // lblMektupTur
             // 
             this.lblMektupTur.AutoSize = true;
-            this.lblMektupTur.Location = new System.Drawing.Point(68, 325);
+            this.lblMektupTur.Location = new System.Drawing.Point(68, 366);
             this.lblMektupTur.Name = "lblMektupTur";
             this.lblMektupTur.Size = new System.Drawing.Size(84, 16);
             this.lblMektupTur.TabIndex = 9;
             this.lblMektupTur.Text = "Mektup Türü:";
             // 
-            // textBox5
+            // txtMektupTuru
             // 
-            this.textBox5.Location = new System.Drawing.Point(192, 322);
-            this.textBox5.Name = "textBox5";
-            this.textBox5.Size = new System.Drawing.Size(279, 22);
-            this.textBox5.TabIndex = 8;
+            this.txtMektupTuru.Location = new System.Drawing.Point(192, 363);
+            this.txtMektupTuru.Name = "txtMektupTuru";
+            this.txtMektupTuru.Size = new System.Drawing.Size(279, 22);
+            this.txtMektupTuru.TabIndex = 8;
             // 
             // chkTL
             // 
             this.chkTL.AutoSize = true;
-            this.chkTL.Location = new System.Drawing.Point(362, 158);
+            this.chkTL.Location = new System.Drawing.Point(362, 199);
             this.chkTL.Name = "chkTL";
             this.chkTL.Size = new System.Drawing.Size(109, 20);
             this.chkTL.TabIndex = 10;
@@ -147,7 +149,7 @@
             // chkDolar
             // 
             this.chkDolar.AutoSize = true;
-            this.chkDolar.Location = new System.Drawing.Point(214, 158);
+            this.chkDolar.Location = new System.Drawing.Point(214, 199);
             this.chkDolar.Name = "chkDolar";
             this.chkDolar.Size = new System.Drawing.Size(80, 20);
             this.chkDolar.TabIndex = 11;
@@ -157,40 +159,40 @@
             // chkEuro
             // 
             this.chkEuro.AutoSize = true;
-            this.chkEuro.Location = new System.Drawing.Point(71, 158);
+            this.chkEuro.Location = new System.Drawing.Point(71, 199);
             this.chkEuro.Name = "chkEuro";
             this.chkEuro.Size = new System.Drawing.Size(75, 20);
             this.chkEuro.TabIndex = 12;
             this.chkEuro.Text = "Euro (€)";
             this.chkEuro.UseVisualStyleBackColor = true;
             // 
-            // lblVade
+            // lblVadeTarihi
             // 
-            this.lblVade.AutoSize = true;
-            this.lblVade.Location = new System.Drawing.Point(68, 386);
-            this.lblVade.Name = "lblVade";
-            this.lblVade.Size = new System.Drawing.Size(43, 16);
-            this.lblVade.TabIndex = 14;
-            this.lblVade.Text = "Vade:";
+            this.lblVadeTarihi.AutoSize = true;
+            this.lblVadeTarihi.Location = new System.Drawing.Point(68, 427);
+            this.lblVadeTarihi.Name = "lblVadeTarihi";
+            this.lblVadeTarihi.Size = new System.Drawing.Size(43, 16);
+            this.lblVadeTarihi.TabIndex = 14;
+            this.lblVadeTarihi.Text = "Vade:";
             // 
-            // dateTimePicker1
+            // dtVadeTarihi
             // 
-            this.dateTimePicker1.Location = new System.Drawing.Point(192, 380);
-            this.dateTimePicker1.Name = "dateTimePicker1";
-            this.dateTimePicker1.Size = new System.Drawing.Size(279, 22);
-            this.dateTimePicker1.TabIndex = 15;
+            this.dtVadeTarihi.Location = new System.Drawing.Point(192, 421);
+            this.dtVadeTarihi.Name = "dtVadeTarihi";
+            this.dtVadeTarihi.Size = new System.Drawing.Size(279, 22);
+            this.dtVadeTarihi.TabIndex = 15;
             // 
-            // dateTimePicker2
+            // dtIadeTarihi
             // 
-            this.dateTimePicker2.Location = new System.Drawing.Point(192, 440);
-            this.dateTimePicker2.Name = "dateTimePicker2";
-            this.dateTimePicker2.Size = new System.Drawing.Size(279, 22);
-            this.dateTimePicker2.TabIndex = 17;
+            this.dtIadeTarihi.Location = new System.Drawing.Point(192, 481);
+            this.dtIadeTarihi.Name = "dtIadeTarihi";
+            this.dtIadeTarihi.Size = new System.Drawing.Size(279, 22);
+            this.dtIadeTarihi.TabIndex = 17;
             // 
             // lblIadeTarihi
             // 
             this.lblIadeTarihi.AutoSize = true;
-            this.lblIadeTarihi.Location = new System.Drawing.Point(68, 446);
+            this.lblIadeTarihi.Location = new System.Drawing.Point(68, 487);
             this.lblIadeTarihi.Name = "lblIadeTarihi";
             this.lblIadeTarihi.Size = new System.Drawing.Size(74, 16);
             this.lblIadeTarihi.TabIndex = 16;
@@ -199,89 +201,108 @@
             // lblKomisyonTutari
             // 
             this.lblKomisyonTutari.AutoSize = true;
-            this.lblKomisyonTutari.Location = new System.Drawing.Point(68, 514);
+            this.lblKomisyonTutari.Location = new System.Drawing.Point(68, 555);
             this.lblKomisyonTutari.Name = "lblKomisyonTutari";
             this.lblKomisyonTutari.Size = new System.Drawing.Size(106, 16);
             this.lblKomisyonTutari.TabIndex = 19;
             this.lblKomisyonTutari.Text = "Komisyon Tutarı:";
             // 
-            // textBox6
+            // txtKomisyonTutari
             // 
-            this.textBox6.Location = new System.Drawing.Point(192, 511);
-            this.textBox6.Name = "textBox6";
-            this.textBox6.Size = new System.Drawing.Size(279, 22);
-            this.textBox6.TabIndex = 18;
+            this.txtKomisyonTutari.Location = new System.Drawing.Point(192, 552);
+            this.txtKomisyonTutari.Name = "txtKomisyonTutari";
+            this.txtKomisyonTutari.Size = new System.Drawing.Size(279, 22);
+            this.txtKomisyonTutari.TabIndex = 18;
             // 
             // lblKomisyonOrani
             // 
             this.lblKomisyonOrani.AutoSize = true;
-            this.lblKomisyonOrani.Location = new System.Drawing.Point(68, 574);
+            this.lblKomisyonOrani.Location = new System.Drawing.Point(68, 615);
             this.lblKomisyonOrani.Name = "lblKomisyonOrani";
             this.lblKomisyonOrani.Size = new System.Drawing.Size(104, 16);
             this.lblKomisyonOrani.TabIndex = 21;
             this.lblKomisyonOrani.Text = "Komisyon Oranı:";
             // 
-            // textBox7
+            // txtKomisyonOrani
             // 
-            this.textBox7.Location = new System.Drawing.Point(192, 571);
-            this.textBox7.Name = "textBox7";
-            this.textBox7.Size = new System.Drawing.Size(279, 22);
-            this.textBox7.TabIndex = 20;
+            this.txtKomisyonOrani.Location = new System.Drawing.Point(192, 612);
+            this.txtKomisyonOrani.Name = "txtKomisyonOrani";
+            this.txtKomisyonOrani.Size = new System.Drawing.Size(279, 22);
+            this.txtKomisyonOrani.TabIndex = 20;
             // 
             // lblKomisyonVadesi
             // 
             this.lblKomisyonVadesi.AutoSize = true;
-            this.lblKomisyonVadesi.Location = new System.Drawing.Point(68, 636);
+            this.lblKomisyonVadesi.Location = new System.Drawing.Point(68, 677);
             this.lblKomisyonVadesi.Name = "lblKomisyonVadesi";
             this.lblKomisyonVadesi.Size = new System.Drawing.Size(115, 16);
             this.lblKomisyonVadesi.TabIndex = 23;
             this.lblKomisyonVadesi.Text = "Komisyon Vadesi:";
             // 
-            // textBox8
+            // txtKomisyonVadesi
             // 
-            this.textBox8.Location = new System.Drawing.Point(192, 633);
-            this.textBox8.Name = "textBox8";
-            this.textBox8.Size = new System.Drawing.Size(279, 22);
-            this.textBox8.TabIndex = 22;
+            this.txtKomisyonVadesi.Location = new System.Drawing.Point(192, 674);
+            this.txtKomisyonVadesi.Name = "txtKomisyonVadesi";
+            this.txtKomisyonVadesi.Size = new System.Drawing.Size(279, 22);
+            this.txtKomisyonVadesi.TabIndex = 22;
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(158, 695);
+            this.btnKaydet.Location = new System.Drawing.Point(158, 718);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(202, 51);
             this.btnKaydet.TabIndex = 24;
             this.btnKaydet.Text = "Kaydet";
             this.btnKaydet.UseVisualStyleBackColor = true;
+            this.btnKaydet.Click += new System.EventHandler(this.btnKaydet_Click);
+            // 
+            // llbMusteriNo
+            // 
+            this.llbMusteriNo.AutoSize = true;
+            this.llbMusteriNo.Location = new System.Drawing.Point(68, 106);
+            this.llbMusteriNo.Name = "llbMusteriNo";
+            this.llbMusteriNo.Size = new System.Drawing.Size(74, 16);
+            this.llbMusteriNo.TabIndex = 25;
+            this.llbMusteriNo.Text = "Müşteri No:";
+            // 
+            // txtMusteriAdi
+            // 
+            this.txtMusteriAdi.Location = new System.Drawing.Point(192, 157);
+            this.txtMusteriAdi.Name = "txtMusteriAdi";
+            this.txtMusteriAdi.Size = new System.Drawing.Size(279, 22);
+            this.txtMusteriAdi.TabIndex = 26;
             // 
             // frmTeminatMektubuEkle
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(541, 781);
+            this.Controls.Add(this.txtMusteriAdi);
+            this.Controls.Add(this.llbMusteriNo);
             this.Controls.Add(this.btnKaydet);
             this.Controls.Add(this.lblKomisyonVadesi);
-            this.Controls.Add(this.textBox8);
+            this.Controls.Add(this.txtKomisyonVadesi);
             this.Controls.Add(this.lblKomisyonOrani);
-            this.Controls.Add(this.textBox7);
+            this.Controls.Add(this.txtKomisyonOrani);
             this.Controls.Add(this.lblKomisyonTutari);
-            this.Controls.Add(this.textBox6);
-            this.Controls.Add(this.dateTimePicker2);
+            this.Controls.Add(this.txtKomisyonTutari);
+            this.Controls.Add(this.dtIadeTarihi);
             this.Controls.Add(this.lblIadeTarihi);
-            this.Controls.Add(this.dateTimePicker1);
-            this.Controls.Add(this.lblVade);
+            this.Controls.Add(this.dtVadeTarihi);
+            this.Controls.Add(this.lblVadeTarihi);
             this.Controls.Add(this.chkEuro);
             this.Controls.Add(this.chkDolar);
             this.Controls.Add(this.chkTL);
             this.Controls.Add(this.lblMektupTur);
-            this.Controls.Add(this.textBox5);
+            this.Controls.Add(this.txtMektupTuru);
             this.Controls.Add(this.lblBanka);
-            this.Controls.Add(this.textBox4);
+            this.Controls.Add(this.txtBanka);
             this.Controls.Add(this.lblTutar);
-            this.Controls.Add(this.textBox3);
-            this.Controls.Add(this.lblMusteri);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.lblMusteriNo);
-            this.Controls.Add(this.textBox1);
+            this.Controls.Add(this.txtTutar);
+            this.Controls.Add(this.lblMusteriAdi);
+            this.Controls.Add(this.txtMusteriNo);
+            this.Controls.Add(this.lblMektupNo);
+            this.Controls.Add(this.txtMektupNo);
             this.Name = "frmTeminatMektubuEkle";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Teminat Mektubu Ekle";
@@ -292,29 +313,31 @@
 
         #endregion
 
-        private System.Windows.Forms.TextBox textBox1;
-        private System.Windows.Forms.Label lblMusteriNo;
-        private System.Windows.Forms.Label lblMusteri;
-        private System.Windows.Forms.TextBox textBox2;
+        private System.Windows.Forms.TextBox txtMektupNo;
+        private System.Windows.Forms.Label lblMektupNo;
+        private System.Windows.Forms.Label lblMusteriAdi;
+        private System.Windows.Forms.TextBox txtMusteriNo;
         private System.Windows.Forms.Label lblTutar;
-        private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.TextBox txtTutar;
         private System.Windows.Forms.Label lblBanka;
-        private System.Windows.Forms.TextBox textBox4;
+        private System.Windows.Forms.TextBox txtBanka;
         private System.Windows.Forms.Label lblMektupTur;
-        private System.Windows.Forms.TextBox textBox5;
+        private System.Windows.Forms.TextBox txtMektupTuru;
         private System.Windows.Forms.CheckBox chkTL;
         private System.Windows.Forms.CheckBox chkDolar;
         private System.Windows.Forms.CheckBox chkEuro;
-        private System.Windows.Forms.Label lblVade;
-        private System.Windows.Forms.DateTimePicker dateTimePicker1;
-        private System.Windows.Forms.DateTimePicker dateTimePicker2;
+        private System.Windows.Forms.Label lblVadeTarihi;
+        private System.Windows.Forms.DateTimePicker dtVadeTarihi;
+        private System.Windows.Forms.DateTimePicker dtIadeTarihi;
         private System.Windows.Forms.Label lblIadeTarihi;
         private System.Windows.Forms.Label lblKomisyonTutari;
-        private System.Windows.Forms.TextBox textBox6;
+        private System.Windows.Forms.TextBox txtKomisyonTutari;
         private System.Windows.Forms.Label lblKomisyonOrani;
-        private System.Windows.Forms.TextBox textBox7;
+        private System.Windows.Forms.TextBox txtKomisyonOrani;
         private System.Windows.Forms.Label lblKomisyonVadesi;
-        private System.Windows.Forms.TextBox textBox8;
+        private System.Windows.Forms.TextBox txtKomisyonVadesi;
         private System.Windows.Forms.Button btnKaydet;
+        private System.Windows.Forms.Label llbMusteriNo;
+        private System.Windows.Forms.TextBox txtMusteriAdi;
     }
 }

@@ -20,6 +20,7 @@ namespace CEKA_APP.Entitys.ProjeFinans
         public DateTime? gerceklesenTarih { get; set; } 
         public string aciklama { get; set; }
         public bool teminatMektubu { get; set; }
+        public string teminatDurumu { get; set; }
         public string durum { get; set; }
     }
 }

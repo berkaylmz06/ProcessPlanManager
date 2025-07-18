@@ -15,16 +15,15 @@ namespace CEKA_APP.UsrControl
         {
             InitializeComponent();
 
-            DataGridViewHelper.StilUygulaMusteriler(dataGridMusteriler);
+            DataGridViewHelper.StilUygulaProjeFinans(dataGridMusteriler);
 
             this.Load += new EventHandler(ctlMusteriler_Load);
 
             if (this.dataGridMusteriler.ContextMenuStrip != null)
             {
-                this.contextMenuStrip1 = (System.Windows.Forms.ContextMenuStrip)this.dataGridMusteriler.ContextMenuStrip;
-                this.contextMenuStrip1.Opening += new System.ComponentModel.CancelEventHandler(cmsMusteriIslemleri_Opening);
+                this.cmsMusteriIslemleri = (System.Windows.Forms.ContextMenuStrip)this.dataGridMusteriler.ContextMenuStrip;
 
-                foreach (ToolStripItem item in contextMenuStrip1.Items)
+                foreach (ToolStripItem item in cmsMusteriIslemleri.Items)
                 {
                     if (item.Name == "tsmiMusteriEkle")
                         tsmiMusteriEkle = (ToolStripMenuItem)item;
