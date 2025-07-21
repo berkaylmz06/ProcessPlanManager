@@ -16,17 +16,13 @@ namespace CEKA_APP.Forms
         public string KilometreTasiAdi { get; private set; }
         public string Oran { get; private set; }
         private ProjeFinans_FiyatlandirmaKilometreTaslariData kilometreTasiData = new ProjeFinans_FiyatlandirmaKilometreTaslariData();
-
-        // ctlOdemeSartlari'ndan gelecek, zaten seçili olan kilometre taşlarının adlarını tutacak liste
         private List<string> _alreadySelectedMilestones;
 
-        // Constructor: Mevcut seçili kilometre taşlarının listesini parametre olarak alır
         public frmYeniKilometreTasi(List<string> alreadySelectedMilestones = null)
         {
             InitializeComponent();
-            this.Icon = new Icon("cekalogokirmizi.ico");
+            this.Icon = Properties.Resources.cekalogokirmizi;
 
-            // Eğer parametre boş gelirse (null), boş bir liste ata
             _alreadySelectedMilestones = alreadySelectedMilestones ?? new List<string>();
 
             cmbOran.Items.AddRange(new string[] { "%10", "%20", "%30", "%40", "%50", "%60", "%70", "%80", "%90", "%100" });
@@ -69,7 +65,6 @@ namespace CEKA_APP.Forms
         {
             if (!txtKilometreTasi.Visible)
             {
-                // Yeni kilometre taşı ekleme moduna geçiş
                 txtKilometreTasi.Clear();
                 txtKilometreTasi.Visible = true;
                 lblYeniKilometreTasi.Visible = true;
@@ -81,24 +76,22 @@ namespace CEKA_APP.Forms
                 btnEkle.Text = "Onayla";
                 this.Height += 40;
             }
-            else if (!string.IsNullOrEmpty(txtKilometreTasi.Text.Trim())) // Giriş boş değilse
+            else if (!string.IsNullOrEmpty(txtKilometreTasi.Text.Trim())) 
             {
                 string yeniKilometreTasiAdi = txtKilometreTasi.Text.Trim();
 
-                // Veritabanında mükerrer kayıt kontrolü
                 var mevcutVeritabaniKilometreTaslari = kilometreTasiData.GetFiyatlandirmaKilometreTasi();
                 if (mevcutVeritabaniKilometreTaslari.Any(kt => kt.Adi.Equals(yeniKilometreTasiAdi, StringComparison.OrdinalIgnoreCase)))
                 {
                     MessageBox.Show("Bu kilometre taşı veritabanında zaten mevcut. Lütfen farklı bir ad girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return; // Ekleme işlemini durdur
+                    return; 
                 }
 
                 KilometreTasiAdi = yeniKilometreTasiAdi;
 
                 kilometreTasiData.FiyatlandirmaKilometreTasiEkle(KilometreTasiAdi);
-                LoadKilometreTasi(); // Yeni eklenen kilometre taşı ile listeyi yeniden yükle
+                LoadKilometreTasi(); 
 
-                // UI'ı orijinal haline geri döndür
                 txtKilometreTasi.Visible = false;
                 lblYeniKilometreTasi.Visible = false;
                 lblYeniKilometreTasiBilgi.Visible = false;
@@ -112,7 +105,6 @@ namespace CEKA_APP.Forms
             }
             else
             {
-                // Kullanıcı metin girmeden "Onayla"ya basarsa
                 MessageBox.Show("Lütfen yeni kilometre taşı adını girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }

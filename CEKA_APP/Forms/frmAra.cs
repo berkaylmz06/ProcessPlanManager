@@ -22,7 +22,7 @@ namespace CEKA_APP
             this.detayEklenecekMi = detayEkle;
             AraFormDinamikLabel(columns);
 
-            this.Icon = new Icon("cekalogokirmizi.ico");
+            this.Icon = Properties.Resources.cekalogokirmizi;
         }
 
         public frmAra()

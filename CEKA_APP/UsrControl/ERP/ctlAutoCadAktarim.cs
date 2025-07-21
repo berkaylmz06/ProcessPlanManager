@@ -35,6 +35,7 @@ namespace CEKA_APP.UsrControl
         private void ctlAutoCadAktarim_Load(object sender, EventArgs e)
         {
             ctlBaslik1.Baslik = "AutoCad Aktarım";
+            btnAktar.Enabled = false;
         }
         private void btnXmlDosyaSec_Click(object sender, EventArgs e)
         {
@@ -48,10 +49,12 @@ namespace CEKA_APP.UsrControl
                     {
                         tumParcalar = ParcalariOku(xmlPath);
                         dataGridXmlCiktisi.DataSource = tumParcalar;
+                        btnAktar.Enabled = true;
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        btnAktar.Enabled = false;
                     }
                 }
             }
@@ -66,6 +69,7 @@ namespace CEKA_APP.UsrControl
             {
                 MessageBox.Show("XML okutması yapılmamış!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 dataGridXmlCiktisi.DataSource = null;
+                btnAktar.Enabled = false;
                 return;
             }
 
@@ -103,7 +107,7 @@ namespace CEKA_APP.UsrControl
                     string ifsMalzemeAd = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeMalzeme(p.Ad);
                     if (string.IsNullOrEmpty(ifsMalzemeAd))
                     {
-                        ifsMalzemeAd = p.Ad; 
+                        ifsMalzemeAd = p.Ad;
                     }
 
                     return new AutoCadAktarimDetay
@@ -124,11 +128,12 @@ namespace CEKA_APP.UsrControl
             {
                 string hataMesaji = "Aşağıdaki uyarilar bulundu:\n\n" + string.Join("\n", hataMesajlari);
                 MessageBox.Show(hataMesaji, "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                btnAktar.Enabled = false;
             }
 
             dataGridIslenmisXml.DataSource = ozetParcalar;
         }
-      
+
         private List<AutoCadAktarim> ParcalariOku(string xmlPath)
         {
             var liste = new List<AutoCadAktarim>();
@@ -147,7 +152,7 @@ namespace CEKA_APP.UsrControl
                     Ad = "",
                     Kalite = "",
                     NetAgirlik = null,
-                    GrupAdet = grupAdet 
+                    GrupAdet = grupAdet
                 });
 
                 foreach (var sp in mainpart.Descendants("singlepart"))
@@ -167,7 +172,7 @@ namespace CEKA_APP.UsrControl
                         Ad = part.Attribute("name")?.Value ?? "Bilinmiyor",
                         Kalite = part.Element("material")?.Attribute("name")?.Value ?? "Bilinmiyor",
                         NetAgirlik = double.TryParse(part.Element("exactWeight")?.Value, NumberStyles.Any, CultureInfo.InvariantCulture, out double net) ? net / 1000.0 : (double?)null,
-                        GrupAdet = grupAdet 
+                        GrupAdet = grupAdet
                     };
 
                     liste.Add(parca);
@@ -182,15 +187,39 @@ namespace CEKA_APP.UsrControl
             if (string.IsNullOrWhiteSpace(txtProjeNo.Text))
             {
                 MessageBox.Show("Lütfen proje bilgisi giriniz.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                btnAktar.Enabled = false;
+                return;
             }
-            else
+
+            string projeNo = txtProjeNo.Text.Trim();
+            var guncelParcalar = dataGridXmlCiktisi.DataSource as List<AutoCadAktarim>;
+            if (guncelParcalar == null)
             {
-                OzetTabloyuGuncelle();
+                MessageBox.Show("Parça listesi boş!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                btnAktar.Enabled = false;
+                return;
             }
+
+            var mevcutGruplar = AutoCadAktarimData.GruplariGetir(projeNo);
+            var yeniGruplar = guncelParcalar.Select(p => p.Grup.Split('-')[0]).Distinct().ToList();
+            var kesisenGruplar = mevcutGruplar.AsEnumerable()
+                .Select(row => row["grupAdi"].ToString().Split('-')[0])
+                .Intersect(yeniGruplar)
+                .ToList();
+
+            if (kesisenGruplar.Any())
+            {
+                MessageBox.Show($"Bu proje için zaten mevcut olan gruplar: {string.Join(", ", kesisenGruplar)}",
+                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                btnAktar.Enabled = false;
+                return;
+            }
+
+            OzetTabloyuGuncelle();
+            btnAktar.Enabled = true;
         }
         public void tabloDuzenle()
         {
-
             if (dataGridXmlCiktisi.Columns.Contains("GrupAdet"))
                 dataGridXmlCiktisi.Columns["GrupAdet"].Visible = false;
         }
@@ -200,6 +229,7 @@ namespace CEKA_APP.UsrControl
             if (dataGridIslenmisXml == null || dataGridIslenmisXml.Rows.Count == 0)
             {
                 MessageBox.Show("Kaydedilecek veri bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                btnAktar.Enabled = false;
                 return;
             }
 
@@ -227,7 +257,7 @@ namespace CEKA_APP.UsrControl
                 if (!string.IsNullOrWhiteSpace(proje) && !string.IsNullOrWhiteSpace(grup))
                 {
                     AutoCadAktarimData.SaveAutoCadData(proje, grup, malzemeKod, adet, malzemeAd, kalite);
-                    uniqueGruplar.Add(grup);
+                    uniqueGruplar.Add(grup.Split('-')[0]);
                 }
             }
 
@@ -236,6 +266,7 @@ namespace CEKA_APP.UsrControl
             var userController = new LogEkle(_formArayuzu.lblSistemKullaniciMetinAl());
             userController.LogYap("PaftaYuklemesiYapildi", "AutoCad Aktarım", $"Kullanıcı {proje} numaralı projeye {gruplar} grupları yükledi.");
             MessageBox.Show("Veriler kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            btnAktar.Enabled = false;
         }
     }
 }

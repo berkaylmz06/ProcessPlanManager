@@ -22,7 +22,7 @@ namespace CEKA_APP.Forms
         {
             InitializeComponent();
 
-            this.Icon = new Icon("cekalogokirmizi.ico");
+            this.Icon = Properties.Resources.cekalogokirmizi;
 
             if (musteri != null)
             {

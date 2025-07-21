@@ -15,7 +15,7 @@ namespace CEKA_APP
             InitializeComponent();
             LoadKalemler();
 
-            this.Icon = new Icon("cekalogokirmizi.ico");
+            this.Icon = Properties.Resources.cekalogokirmizi;
 
         }
 

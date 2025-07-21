@@ -45,7 +45,7 @@ namespace CEKA_APP.Forms
             txtAciklama.Text = aciklama;
             txtTarih.Text = tarih;
 
-            this.Icon = new Icon("cekalogokirmizi.ico");
+            this.Icon = Properties.Resources.cekalogokirmizi;
 
             var btnNotEkle = this.Controls.Find("btnNotEkle", true).FirstOrDefault() as Button;
             int baseX = btnNotEkle != null ? btnNotEkle.Left : 10;

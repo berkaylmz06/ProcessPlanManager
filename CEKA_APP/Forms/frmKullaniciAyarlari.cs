@@ -21,7 +21,7 @@ namespace CEKA_APP
             InitializeComponent();
             this.kullaniciAdi = kullaniciAdi;
 
-            this.Icon = new Icon("cekalogokirmizi.ico");
+            this.Icon = Properties.Resources.cekalogokirmizi;
         }
 
         private void frmKullaniciBilgileri_Load(object sender, EventArgs e)

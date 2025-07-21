@@ -19,6 +19,8 @@ namespace CEKA_APP.Entitys
         public string digerProjeIliskisiVarMi { get; set; } 
         public DateTime siparisSozlesmeTarihi { get; set; }
         public decimal toplamBedel { get; set; }
+        public string paraBirimi { get; set; }
+        public string faturalamaSekli { get; set; }
         public bool nakliyeVarMi { get; set; }
         public List<string> altProjeBilgileri { get; set; }
         public string ustProjeID { get; set; }

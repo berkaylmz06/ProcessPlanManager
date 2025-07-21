@@ -17,7 +17,7 @@ namespace CEKA_APP
         {
             InitializeComponent();
             _kullaniciService = new KullanicilarData();
-            this.Icon = new Icon("cekalogokirmizi.ico");
+            this.Icon = Properties.Resources.cekalogokirmizi;
 
             this.BackColor = ColorTranslator.FromHtml("#2C3E50");
             btnGiris.BackColor = Color.FromArgb(52, 152, 219);

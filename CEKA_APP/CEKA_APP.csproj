@@ -64,7 +64,7 @@
     <GenerateManifests>true</GenerateManifests>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
@@ -342,6 +342,12 @@
     <Compile Include="UsrControl\ERP\ctlAutoCadAktarim.Designer.cs">
       <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
     </Compile>
+    <Compile Include="UsrControl\ProjeFinans\ctlOdemeSartlariListe.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ProjeFinans\ctlOdemeSartlariListe.Designer.cs">
+      <DependentUpon>ctlOdemeSartlariListe.cs</DependentUpon>
+    </Compile>
     <Compile Include="UsrControl\Sistem\ctlBaslik.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -496,6 +502,9 @@
     <EmbeddedResource Include="UsrControl\ERP\ctlAutoCadAktarim.resx">
       <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ProjeFinans\ctlOdemeSartlariListe.resx">
+      <DependentUpon>ctlOdemeSartlariListe.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\Sistem\ctlBaslik.resx">
       <DependentUpon>ctlBaslik.cs</DependentUpon>
     </EmbeddedResource>
@@ -566,7 +575,7 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Resources\cekalogokirmizi.ico" />
+    <None Include="Resources\cekalogokirmizi.ico" />
     <None Include="Resources\copKutusu.png" />
     <None Include="Resources\cekalogo.png" />
     <None Include="Resources\kullanici.png" />

@@ -76,7 +76,69 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
+        public List<OdemeSekilleri> GetOdemeBilgileri()
+        {
+            var odemeBilgileriList = new List<OdemeSekilleri>();
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                connection.Open();
+                string query = @"
+                    SELECT
+                        o.odemeId,
+                        o.projeNo,
+                        o.kilometreTasiId,
+                        k.kilometreTasiAdi AS kilometreTasiAdi,
+                        o.siralama,
+                        o.oran,
+                        o.tutar,
+                        o.tahminiTarih,
+                        o.gerceklesenTarih,
+                        o.aciklama,
+                        o.teminatMektubu,
+                        o.teminatDurumu,
+                        o.durum
+                    FROM ProjeFinans_OdemeSekilleri o
+                    JOIN ProjeFinans_KilometreTaslari k ON o.kilometreTasiId = k.kilometreTasiId";
 
+
+                using (var cmd = new SqlCommand(query, connection))
+                {
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var odemeSekilleri = new CEKA_APP.Entitys.ProjeFinans.OdemeSekilleri
+                            {
+                                odemeId = Convert.ToInt32(reader["odemeId"]),
+                                projeNo = reader["projeNo"].ToString(),
+                                kilometreTasiId = Convert.ToInt32(reader["kilometreTasiId"]),
+                                kilometreTasiAdi = reader["kilometreTasiAdi"].ToString(),
+                                siralama = Convert.ToInt32(reader["siralama"]),
+                                oran = Convert.ToDecimal(reader["oran"]),
+                                tutar = Convert.ToDecimal(reader["tutar"]),
+                                aciklama = reader["aciklama"].ToString(),
+                                teminatMektubu = Convert.ToBoolean(reader["teminatMektubu"]),
+                                teminatDurumu = reader["teminatMektubu"] != DBNull.Value ? reader["teminatMektubu"].ToString() : null,
+                                durum = reader["durum"].ToString()
+                            };
+
+                            if (reader["tahminiTarih"] != DBNull.Value)
+                                odemeSekilleri.tahminiTarih = Convert.ToDateTime(reader["tahminiTarih"]);
+                            else
+                                odemeSekilleri.tahminiTarih = null; 
+
+                            if (reader["gerceklesenTarih"] != DBNull.Value)
+                                odemeSekilleri.gerceklesenTarih = Convert.ToDateTime(reader["gerceklesenTarih"]);
+                            else
+                                odemeSekilleri.gerceklesenTarih = null; 
+
+                            odemeBilgileriList.Add(odemeSekilleri);
+                        }
+                    }
+                }
+            }
+            return odemeBilgileriList;
+        }
         public List<OdemeSekilleri> GetOdemeBilgileriByProjeNo(string projeNo)
         {
             var odemeBilgileriList = new List<OdemeSekilleri>();
@@ -170,7 +232,6 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
         }
 
-        // Yeni eklenecek DeleteOdemeBilgi metodu
         public void DeleteOdemeBilgi(string projeNo, int kilometreTasiId)
         {
             using (var connection = DataBaseHelper.GetConnection())

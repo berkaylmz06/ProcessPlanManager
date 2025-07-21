@@ -6,7 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Drawing;
-using System.Drawing.Drawing2D;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
@@ -25,38 +24,16 @@ namespace CEKA_APP.UsrControl
         public ctlProjeKutuk()
         {
             InitializeComponent();
-            this.DoubleBuffered = true;
             projeBilgileriKaydedildi = false;
 
-            // Kontrollerin tanımlı olup olmadığını kontrol et
-            if (txtProjeNo == null || chkAltProjeVar == null || chkAltProjeYok == null ||
-                chkProjeIliskisiVar == null || chkProjeIliskisiYok == null ||
-                dtpSiparisSozlesmeTarihi == null || txtToplamBedel == null ||
-                lblAltProjeHata == null || txtMusteriNo == null ||
-                txtMusteriAdi == null || txtTeklifNo == null ||
-                txtIsFirsatiNo == null || txtProjeAra == null ||
-                ctlBaslik1 == null)
-            {
-                MessageBox.Show("Form tasarımında gerekli kontroller eksik. Lütfen Designer.cs dosyasını kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            // Modern renk ve stil ayarları
-            this.BackColor = Color.FromArgb(245, 247, 250);
-            contextMenu = new ContextMenuStrip
-            {
-                BackColor = Color.White,
-                Font = new Font("Segoe UI", 9, FontStyle.Regular),
-                ForeColor = Color.FromArgb(44, 62, 80),
-                Renderer = new ToolStripProfessionalRenderer { RoundedEdges = true }
-            };
+            contextMenu = new ContextMenuStrip();
             mnuProjeFiyatlandirma = new ToolStripMenuItem("Proje Fiyatlandırma") { Enabled = false };
             mnuProjeBilgileri = new ToolStripMenuItem("Proje Bilgileri") { Enabled = false };
             contextMenu.Items.Add(mnuProjeFiyatlandirma);
             contextMenu.Items.Add(mnuProjeBilgileri);
             this.ContextMenuStrip = contextMenu;
 
-            mnuProjeBilgileri.Click += (s, e2) =>
+            mnuProjeBilgileri.Click += (s, e) =>
             {
                 var parentForm = this.FindForm() as frmAnaSayfa;
                 if (parentForm == null)
@@ -74,7 +51,7 @@ namespace CEKA_APP.UsrControl
                 }
 
                 var altProjeler = chkAltProjeVar.Checked
-                    ? flpAltProjeTextBoxes.Controls.OfType<CustomPanel>()
+                    ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
                         .SelectMany(p => p.Controls.OfType<TextBox>())
                         .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                         .Select(txt => txt.Text.Trim())
@@ -85,7 +62,7 @@ namespace CEKA_APP.UsrControl
                 parentForm.NavigateToUserControl(parentForm.projeBilgileri);
             };
 
-            mnuProjeFiyatlandirma.Click += (s, e2) =>
+            mnuProjeFiyatlandirma.Click += (s, e) =>
             {
                 string projeNo = txtProjeNo.Text.Trim();
                 if (string.IsNullOrEmpty(projeNo))
@@ -95,7 +72,7 @@ namespace CEKA_APP.UsrControl
                 }
 
                 List<string> altProjeler = chkAltProjeVar.Checked
-                    ? flpAltProjeTextBoxes.Controls.OfType<CustomPanel>()
+                    ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
                         .SelectMany(p => p.Controls.OfType<TextBox>())
                         .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                         .Select(txt => txt.Text.Trim())
@@ -138,18 +115,14 @@ namespace CEKA_APP.UsrControl
                         StartPosition = FormStartPosition.CenterParent,
                         FormBorderStyle = FormBorderStyle.FixedDialog,
                         MaximizeBox = false,
-                        MinimizeBox = false,
-                        BackColor = Color.FromArgb(245, 247, 250)
+                        MinimizeBox = false
                     })
                     {
                         var comboBox = new ComboBox
                         {
                             Location = new Point(20, 20),
                             Width = 240,
-                            DropDownStyle = ComboBoxStyle.DropDownList,
-                            Font = new Font("Segoe UI", 9, FontStyle.Regular),
-                            BackColor = Color.White,
-                            ForeColor = Color.FromArgb(44, 62, 80)
+                            DropDownStyle = ComboBoxStyle.DropDownList
                         };
                         comboBox.Items.AddRange(altProjeler.ToArray());
                         form.Controls.Add(comboBox);
@@ -158,17 +131,9 @@ namespace CEKA_APP.UsrControl
                         {
                             Text = "Tamam",
                             Location = new Point(20, 60),
-                            Width = 100,
-                            Height = 30,
-                            BackColor = Color.FromArgb(52, 152, 219),
-                            ForeColor = Color.White,
-                            FlatStyle = FlatStyle.Flat,
-                            FlatAppearance = { BorderSize = 0 },
-                            Font = new Font("Segoe UI", 9, FontStyle.Regular)
+                            Width = 100
                         };
-                        btnTamam.MouseEnter += (s2, e3) => btnTamam.BackColor = Color.FromArgb(41, 128, 185);
-                        btnTamam.MouseLeave += (s2, e3) => btnTamam.BackColor = Color.FromArgb(52, 152, 219);
-                        btnTamam.Click += (s2, e3) =>
+                        btnTamam.Click += (s2, e2) =>
                         {
                             if (comboBox.SelectedItem != null)
                             {
@@ -187,17 +152,9 @@ namespace CEKA_APP.UsrControl
                         {
                             Text = "İptal",
                             Location = new Point(160, 60),
-                            Width = 100,
-                            Height = 30,
-                            BackColor = Color.FromArgb(231, 76, 60),
-                            ForeColor = Color.White,
-                            FlatStyle = FlatStyle.Flat,
-                            FlatAppearance = { BorderSize = 0 },
-                            Font = new Font("Segoe UI", 9, FontStyle.Regular)
+                            Width = 100
                         };
-                        btnIptal.MouseEnter += (s2, e3) => btnIptal.BackColor = Color.FromArgb(192, 57, 43);
-                        btnIptal.MouseLeave += (s2, e3) => btnIptal.BackColor = Color.FromArgb(231, 76, 60);
-                        btnIptal.Click += (s2, e3) => form.Close();
+                        btnIptal.Click += (s2, e2) => form.Close();
                         form.Controls.Add(btnIptal);
 
                         if (form.ShowDialog() == DialogResult.OK && form.Tag != null)
@@ -214,7 +171,6 @@ namespace CEKA_APP.UsrControl
                 }
             };
 
-            // FlowLayoutPanel'ler için kart tabanlı modern tasarım
             flpAltProjeTextBoxes = new FlowLayoutPanel
             {
                 AutoSize = false,
@@ -223,21 +179,12 @@ namespace CEKA_APP.UsrControl
                 AutoScroll = true,
                 AutoScrollMinSize = new Size(0, 0),
                 Height = 150,
-                Width = 300,
+                Width = 200,
                 Visible = false,
-                BackColor = Color.FromArgb(245, 247, 250),
-                BorderStyle = BorderStyle.None,
-                Padding = new Padding(15)
+                BackColor = Color.FromArgb(240, 240, 240),
+                BorderStyle = BorderStyle.FixedSingle,
+                Padding = new Padding(5)
             };
-            flpAltProjeTextBoxes.Paint += (s, e2) =>
-            {
-                using (var pen = new Pen(Color.FromArgb(209, 213, 219), 1))
-                {
-                    e2.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                    e2.Graphics.DrawRectangle(pen, new Rectangle(2, 2, flpAltProjeTextBoxes.Width - 5, flpAltProjeTextBoxes.Height - 5));
-                }
-            };
-
             flpIliskiTextBoxes = new FlowLayoutPanel
             {
                 AutoSize = false,
@@ -246,56 +193,33 @@ namespace CEKA_APP.UsrControl
                 AutoScroll = true,
                 AutoScrollMinSize = new Size(0, 0),
                 Height = 150,
-                Width = 300,
+                Width = 200,
                 Visible = false,
-                BackColor = Color.FromArgb(245, 247, 250),
-                BorderStyle = BorderStyle.None,
-                Padding = new Padding(15)
-            };
-            flpIliskiTextBoxes.Paint += (s, e2) =>
-            {
-                using (var pen = new Pen(Color.FromArgb(209, 213, 219), 1))
-                {
-                    e2.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                    e2.Graphics.DrawRectangle(pen, new Rectangle(2, 2, flpIliskiTextBoxes.Width - 5, flpIliskiTextBoxes.Height - 5));
-                }
+                BackColor = Color.FromArgb(240, 240, 240),
+                BorderStyle = BorderStyle.FixedSingle,
+                Padding = new Padding(5)
             };
 
-            flpAltProjeTextBoxes.Location = new Point(txtProjeNo.Location.X + txtProjeNo.Width + 15, txtProjeNo.Location.Y + txtProjeNo.Height - 10);
-            flpIliskiTextBoxes.Location = new Point(txtProjeNo.Location.X + txtProjeNo.Width + 15, txtProjeNo.Location.Y + txtProjeNo.Height - 10);
+            flpAltProjeTextBoxes.Location = new Point(txtProjeNo.Location.X + txtProjeNo.Width + 10, txtProjeNo.Location.Y + txtProjeNo.Height - 10);
+            flpIliskiTextBoxes.Location = new Point(txtProjeNo.Location.X + txtProjeNo.Width + 10, txtProjeNo.Location.Y + txtProjeNo.Height - 10);
 
-            // Etiketler için modern stil
             var lblAltProjeler = new Label
             {
                 Text = "Alt Projeler",
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 AutoSize = true,
-                Margin = new Padding((flpAltProjeTextBoxes.Width - 80) / 2, 0, 0, 10),
-                ForeColor = Color.FromArgb(52, 73, 94)
-            };
-            lblAltProjeler.Paint += (s, e2) =>
-            {
-                using (var pen = new Pen(Color.FromArgb(224, 224, 224), 1))
-                {
-                    e2.Graphics.DrawLine(pen, 0, lblAltProjeler.Height - 2, lblAltProjeler.Width, lblAltProjeler.Height - 2);
-                }
+                Margin = new Padding((flpAltProjeTextBoxes.Width - 80) / 2, 0, 0, 5),
+                ForeColor = Color.FromArgb(44, 62, 80)
             };
             flpAltProjeTextBoxes.Controls.Add(lblAltProjeler);
 
             var lblIliskiProjeler = new Label
             {
                 Text = "İlişkili Projeler",
-                Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
                 AutoSize = true,
-                Margin = new Padding((flpIliskiTextBoxes.Width - 100) / 2, 0, 0, 10),
-                ForeColor = Color.FromArgb(52, 73, 94)
-            };
-            lblIliskiProjeler.Paint += (s, e2) =>
-            {
-                using (var pen = new Pen(Color.FromArgb(224, 224, 224), 1))
-                {
-                    e2.Graphics.DrawLine(pen, 0, lblIliskiProjeler.Height - 2, lblIliskiProjeler.Width, lblIliskiProjeler.Height - 2);
-                }
+                Margin = new Padding((flpIliskiTextBoxes.Width - 100) / 2, 0, 0, 5),
+                ForeColor = Color.FromArgb(44, 62, 80)
             };
             flpIliskiTextBoxes.Controls.Add(lblIliskiProjeler);
 
@@ -305,34 +229,67 @@ namespace CEKA_APP.UsrControl
             this.Controls.Add(flpAltProjeTextBoxes);
             this.Controls.Add(flpIliskiTextBoxes);
 
-            chkAltProjeVar.CheckedChanged += (s, e2) =>
+            chkAltProjeVar.CheckedChanged += (s, e) =>
             {
                 CheckBoxKontrol(chkAltProjeVar, chkAltProjeYok, flpAltProjeTextBoxes, "AltProje");
             };
-            chkAltProjeYok.CheckedChanged += (s, e2) =>
+            chkAltProjeYok.CheckedChanged += (s, e) =>
             {
                 CheckBoxKontrol(chkAltProjeYok, chkAltProjeVar, flpAltProjeTextBoxes, "AltProje", false);
             };
-            chkProjeIliskisiVar.CheckedChanged += (s, e2) =>
+            chkProjeIliskisiVar.CheckedChanged += (s, e) =>
             {
                 CheckBoxKontrol(chkProjeIliskisiVar, chkProjeIliskisiYok, flpIliskiTextBoxes, "Iliski");
             };
-            chkProjeIliskisiYok.CheckedChanged += (s, e2) =>
+            chkProjeIliskisiYok.CheckedChanged += (s, e) =>
             {
                 CheckBoxKontrol(chkProjeIliskisiYok, chkProjeIliskisiVar, flpIliskiTextBoxes, "Iliski", false);
             };
-            chkNakliyeVar.CheckedChanged += (s, e2) =>
+            chkNakliyeVar.CheckedChanged += (s, e) =>
             {
                 if (chkNakliyeVar.Checked) chkNakliyeYok.Checked = false;
             };
-            chkNakliyeYok.CheckedChanged += (s, e2) =>
+            chkNakliyeYok.CheckedChanged += (s, e) =>
             {
                 if (chkNakliyeYok.Checked) chkNakliyeVar.Checked = false;
             };
-            txtProjeNo.TextChanged += (s, e2) => UpdateContextMenu();
+            chkTekil.CheckedChanged += (s, e) =>
+            {
+                if (chkTekil.Checked) chkCogul.Checked = false;
+            };
+            chkCogul.CheckedChanged += (s, e) =>
+            {
+                if (chkCogul.Checked) chkTekil.Checked = false;
+            };
+            chkEuro.CheckedChanged += (s, e) =>
+            {
+                if (chkEuro.Checked)
+                {
+                    chkDolar.Checked = false;
+                    chkTL.Checked = false;
+                }
+            };
+            chkDolar.CheckedChanged += (s, e) =>
+            {
+                if (chkDolar.Checked)
+                {
+                    chkEuro.Checked = false;
+                    chkTL.Checked = false;
+                }
+            };
+            chkTL.CheckedChanged += (s, e) =>
+            {
+                if (chkTL.Checked)
+                {
+                    chkEuro.Checked = false;
+                    chkDolar.Checked = false;
+                }
+            };
+
+            txtProjeNo.TextChanged += (s, e) => UpdateContextMenu();
         }
 
-        private void UpdateToplamBedelUI(string projeNo, decimal toplamBedel, List<string> eksikFiyatlandirmaProjeler)
+        public void UpdateToplamBedelUI(string projeNo, decimal toplamBedel, List<string> eksikFiyatlandirmaProjeler)
         {
             if (this.InvokeRequired)
             {
@@ -340,39 +297,42 @@ namespace CEKA_APP.UsrControl
                 {
                     UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler);
                 }));
-                return;
-            }
-
-            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
-            if (projeKutuk != null && projeKutuk.altProjeVarMi)
-            {
-                if (eksikFiyatlandirmaProjeler.Any())
-                {
-                    txtToplamBedel.Text = $"{toplamBedel:F2} (Alt projeler: {string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma yok)";
-                    txtToplamBedel.ForeColor = Color.FromArgb(231, 76, 60);
-                }
-                else
-                {
-                    txtToplamBedel.Text = toplamBedel.ToString("F2");
-                    txtToplamBedel.ForeColor = Color.FromArgb(44, 62, 80);
-                }
             }
             else
             {
-                if (eksikFiyatlandirmaProjeler.Any() && eksikFiyatlandirmaProjeler.Contains(projeNo))
+                var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
+                if (projeKutuk != null && projeKutuk.altProjeVarMi)
                 {
-                    txtToplamBedel.Text = $"{toplamBedel:F2} ({projeNo} için fiyatlandırma yok)";
-                    txtToplamBedel.ForeColor = Color.FromArgb(231, 76, 60);
+                    if (eksikFiyatlandirmaProjeler.Any())
+                    {
+                        txtToplamBedel.Text = toplamBedel.ToString("F2");
+                        lblAltProjeHata.Text = $"Alt projeler: {string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma yok";
+                        lblAltProjeHata.ForeColor = Color.Red;
+                    }
+                    else
+                    {
+                        txtToplamBedel.Text = toplamBedel.ToString("F2");
+                        lblAltProjeHata.Text = "";
+                        lblAltProjeHata.ForeColor = Color.Black;
+                    }
                 }
                 else
                 {
-                    txtToplamBedel.Text = toplamBedel.ToString("F2");
-                    txtToplamBedel.ForeColor = Color.FromArgb(44, 62, 80);
+                    if (eksikFiyatlandirmaProjeler.Any() && eksikFiyatlandirmaProjeler.Contains(projeNo))
+                    {
+                        txtToplamBedel.Text = toplamBedel.ToString("F2");
+                        lblAltProjeHata.Text = $"{projeNo} için fiyatlandırma bilgisi yok.";
+                        lblAltProjeHata.ForeColor = Color.Red;
+                    }
+                    else
+                    {
+                        txtToplamBedel.Text = toplamBedel.ToString("F2");
+                        lblAltProjeHata.Text = "";
+                        lblAltProjeHata.ForeColor = Color.Black;
+                    }
                 }
             }
-            ProjeFinans_ProjeKutukData.UpdateToplamBedel(projeNo, toplamBedel);
         }
-
         private void CheckBoxKontrol(CheckBox aktif, CheckBox pasif, Control ilgiliKontrol, string prefix, bool goster = true)
         {
             if (aktif.Checked)
@@ -400,45 +360,28 @@ namespace CEKA_APP.UsrControl
                 {
                     flp.Controls.Clear();
                     flp.Controls.Add(aktif.Name == "chkAltProjeVar"
-                        ? new Label
-                        {
-                            Text = "Alt Projeler",
-                            Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                            AutoSize = true,
-                            Margin = new Padding((flp.Width - 80) / 2, 0, 0, 10),
-                            ForeColor = Color.FromArgb(52, 73, 94)
-                        }
-                        : new Label
-                        {
-                            Text = "İlişkili Projeler",
-                            Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                            AutoSize = true,
-                            Margin = new Padding((flp.Width - 100) / 2, 0, 0, 10),
-                            ForeColor = Color.FromArgb(52, 73, 94)
-                        });
+                        ? new Label { Text = "Alt Projeler", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 80) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) }
+                        : new Label { Text = "İlişkili Projeler", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 100) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) });
 
-                    int index = flp.Controls.OfType<CustomPanel>().SelectMany(p => p.Controls.OfType<TextBox>()).Count() + 1; // Corrected index calculation
+                    int index = flp.Controls.OfType<TextBox>().Count() + 1;
                     var txt = new TextBox
                     {
                         Width = flp.Width - 80,
-                        Height = 30,
+                        Height = 20,
                         AutoSize = false,
-                        Margin = new Padding(0, 0, 0, 0),
+                        Margin = new Padding(5, 5, 5, 5),
                         Name = $"txt_{prefix}_{index}",
-                        ForeColor = Color.FromArgb(189, 195, 199),
+                        ForeColor = Color.Gray,
                         Text = $"Proje #{index}",
                         BorderStyle = BorderStyle.FixedSingle,
-                        BackColor = Color.FromArgb(249, 249, 249),
-                        Font = new Font("Segoe UI", 9, FontStyle.Regular)
+                        BackColor = Color.White
                     };
-                    txt.GotFocus += (s2, e2) => txt.BackColor = Color.White;
-                    txt.LostFocus += (s2, e2) => txt.BackColor = Color.FromArgb(249, 249, 249);
                     txt.Enter += (s2, e2) =>
                     {
                         if (txt.Text == $"Proje #{txt.Name.Split('_').Last()}")
                         {
                             txt.Text = "";
-                            txt.ForeColor = Color.FromArgb(44, 62, 80);
+                            txt.ForeColor = Color.Black;
                         }
                     };
                     txt.Leave += (s2, e2) =>
@@ -446,48 +389,19 @@ namespace CEKA_APP.UsrControl
                         if (string.IsNullOrWhiteSpace(txt.Text))
                         {
                             txt.Text = $"Proje #{txt.Name.Split('_').Last()}";
-                            txt.ForeColor = Color.FromArgb(189, 195, 199);
+                            txt.ForeColor = Color.Gray;
                         }
                     };
                     txt.TextChanged += (s2, e2) => UpdateContextMenu();
-                    txt.Paint += (s2, e3) =>
+                    var panel = new Panel
                     {
-                        using (var pen = new Pen(txt.Focused ? Color.FromArgb(52, 152, 219) : Color.FromArgb(209, 213, 219), 1))
-                        {
-                            e3.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                            e3.Graphics.DrawRectangle(pen, new Rectangle(0, 0, txt.Width - 1, txt.Height - 1));
-                        }
-                    };
-                    var btnKaldir = new Button
-                    {
-                        Text = "X",
-                        Width = 25,
+                        Width = flp.Width - 10,
                         Height = 25,
-                        Margin = new Padding(0, 0, 0, 0),
-                        BackColor = Color.FromArgb(231, 76, 60),
-                        ForeColor = Color.White,
-                        FlatStyle = FlatStyle.Flat,
-                        FlatAppearance = { BorderSize = 0 },
-                        Font = new Font("Segoe UI", 9, FontStyle.Bold)
-                    };
-                    btnKaldir.MouseEnter += (s2, e2) => btnKaldir.BackColor = Color.FromArgb(192, 57, 43);
-                    btnKaldir.MouseLeave += (s2, e2) => btnKaldir.BackColor = Color.FromArgb(231, 76, 60);
-                    btnKaldir.Click += (s2, e2) =>
-                    {
-                        flp.Controls.Remove(txt.Parent);
-                        UpdateContextMenu();
-                    };
-                    var card = new CustomPanel(Color.FromArgb(209, 213, 219), Color.FromArgb(249, 249, 249))
-                    {
-                        Width = flp.Width - 20,
-                        Height = 40,
                         Margin = new Padding(5, 5, 5, 5)
                     };
-                    card.Controls.Add(txt);
-                    card.Controls.Add(btnKaldir);
-                    txt.Location = new Point(5, 5);
-                    btnKaldir.Location = new Point(txt.Width + 10, 7);
-                    flp.Controls.Add(card);
+                    panel.Controls.Add(txt);
+                    txt.Location = new Point(0, 0);
+                    flp.Controls.Add(panel);
 
                     AddEkleButton(flp, prefix);
                     var btnEkle = flp.Controls.OfType<Button>().FirstOrDefault(b => b.Text == "Ekle");
@@ -508,22 +422,8 @@ namespace CEKA_APP.UsrControl
                 {
                     flp.Controls.Clear();
                     flp.Controls.Add(aktif.Name == "chkAltProjeVar"
-                        ? new Label
-                        {
-                            Text = "Alt Projeler",
-                            Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                            AutoSize = true,
-                            Margin = new Padding((flp.Width - 80) / 2, 0, 0, 10),
-                            ForeColor = Color.FromArgb(52, 73, 94)
-                        }
-                        : new Label
-                        {
-                            Text = "İlişkili Projeler",
-                            Font = new Font("Segoe UI", 12, FontStyle.Bold),
-                            AutoSize = true,
-                            Margin = new Padding((flp.Width - 100) / 2, 0, 0, 10),
-                            ForeColor = Color.FromArgb(52, 73, 94)
-                        });
+                        ? new Label { Text = "Alt Projeler", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 80) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) }
+                        : new Label { Text = "İlişkili Projeler", Font = new Font("Segoe UI", 10, FontStyle.Bold), AutoSize = true, Margin = new Padding((flp.Width - 100) / 2, 0, 0, 5), ForeColor = Color.FromArgb(44, 62, 80) });
                     AddEkleButton(flp, prefix);
                     flp.Visible = false;
                 }
@@ -534,13 +434,6 @@ namespace CEKA_APP.UsrControl
 
         private void AddEkleButton(FlowLayoutPanel flp, string prefix)
         {
-            // Remove existing "Ekle" button to prevent duplicates before adding a new one
-            var existingEkleButton = flp.Controls.OfType<Button>().FirstOrDefault(b => b.Text == "Ekle");
-            if (existingEkleButton != null)
-            {
-                flp.Controls.Remove(existingEkleButton);
-            }
-
             var btnEkle = new Button
             {
                 Text = "Ekle",
@@ -548,104 +441,72 @@ namespace CEKA_APP.UsrControl
                 ForeColor = Color.White,
                 FlatStyle = FlatStyle.Flat,
                 FlatAppearance = { BorderSize = 0 },
-                Width = flp.Width - 20,
-                Height = 40,
-                Margin = new Padding((flp.Width - (flp.Width - 20)) / 2, 10, 10, 10),
-                Font = new Font("Segoe UI", 10, FontStyle.Regular)
+                Width = flp.Width - 40,
+                Height = 25,
+                Margin = new Padding((flp.Width - (flp.Width - 40)) / 2, 5, 5, 5),
+                Font = new Font("Segoe UI", 9, FontStyle.Regular)
             };
-            btnEkle.MouseEnter += (s2, e2) => btnEkle.BackColor = Color.FromArgb(41, 128, 185);
-            btnEkle.MouseLeave += (s2, e2) => btnEkle.BackColor = Color.FromArgb(52, 152, 219);
-            btnEkle.Paint += (s2, e3) =>
+            btnEkle.Click += (s, e) =>
             {
-                using (var pen = new Pen(Color.FromArgb(209, 213, 219), 1))
-                {
-                    e3.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                    e3.Graphics.DrawRectangle(pen, new Rectangle(0, 0, btnEkle.Width - 1, btnEkle.Height - 1));
-                }
-            };
-            btnEkle.Click += (s2, e2) =>
-            {
-                int index = flp.Controls.OfType<CustomPanel>().SelectMany(p => p.Controls.OfType<TextBox>()).Count() + 1;
+                int index = flp.Controls.OfType<Panel>().SelectMany(p => p.Controls.OfType<TextBox>()).Count() + 1;
                 var txt = new TextBox
                 {
                     Width = flp.Width - 80,
-                    Height = 30,
+                    Height = 20,
                     AutoSize = false,
                     Margin = new Padding(0, 0, 0, 0),
                     Name = $"txt_{prefix}_{index}",
-                    ForeColor = Color.FromArgb(189, 195, 199),
+                    ForeColor = Color.Gray,
                     Text = $"Proje #{index}",
                     BorderStyle = BorderStyle.FixedSingle,
-                    BackColor = Color.FromArgb(249, 249, 249),
-                    Font = new Font("Segoe UI", 9, FontStyle.Regular)
+                    BackColor = Color.White
                 };
-                txt.GotFocus += (s3, e3) => txt.BackColor = Color.White;
-                txt.LostFocus += (s3, e3) => txt.BackColor = Color.FromArgb(249, 249, 249);
-                txt.Enter += (s3, e3) =>
+                txt.Enter += (s2, e2) =>
                 {
                     if (txt.Text == $"Proje #{txt.Name.Split('_').Last()}")
                     {
                         txt.Text = "";
-                        txt.ForeColor = Color.FromArgb(44, 62, 80);
+                        txt.ForeColor = Color.Black;
                     }
                 };
-                txt.Leave += (s3, e3) =>
+                txt.Leave += (s2, e2) =>
                 {
                     if (string.IsNullOrWhiteSpace(txt.Text))
                     {
                         txt.Text = $"Proje #{txt.Name.Split('_').Last()}";
-                        txt.ForeColor = Color.FromArgb(189, 195, 199);
+                        txt.ForeColor = Color.Gray;
                     }
                 };
-                txt.TextChanged += (s3, e3) => UpdateContextMenu();
-                txt.Paint += (s3, e4) =>
-                {
-                    using (var pen = new Pen(txt.Focused ? Color.FromArgb(52, 152, 219) : Color.FromArgb(209, 213, 219), 1))
-                    {
-                        e4.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                        e4.Graphics.DrawRectangle(pen, new Rectangle(0, 0, txt.Width - 1, txt.Height - 1));
-                    }
-                };
+                txt.TextChanged += (s2, e2) => UpdateContextMenu();
                 var btnKaldir = new Button
                 {
                     Text = "X",
-                    Width = 25,
-                    Height = 25,
+                    Width = 20,
+                    Height = 20,
                     Margin = new Padding(0, 0, 0, 0),
                     BackColor = Color.FromArgb(231, 76, 60),
                     ForeColor = Color.White,
                     FlatStyle = FlatStyle.Flat,
                     FlatAppearance = { BorderSize = 0 },
-                    Font = new Font("Segoe UI", 9, FontStyle.Bold)
+                    Font = new Font("Segoe UI", 8, FontStyle.Bold)
                 };
-                btnKaldir.MouseEnter += (s3, e3) => btnKaldir.BackColor = Color.FromArgb(192, 57, 43);
-                btnKaldir.MouseLeave += (s3, e3) => btnKaldir.BackColor = Color.FromArgb(231, 76, 60);
-                btnKaldir.Click += (s3, e3) =>
+                btnKaldir.Click += (s2, e2) =>
                 {
                     flp.Controls.Remove(txt.Parent);
                     UpdateContextMenu();
                 };
-                var card = new CustomPanel(Color.FromArgb(209, 213, 219), Color.FromArgb(249, 249, 249))
+                var panel = new Panel
                 {
-                    Width = flp.Width - 20,
-                    Height = 40,
+                    Width = flp.Width - 10,
+                    Height = 25,
                     Margin = new Padding(5, 5, 5, 5)
                 };
-                card.Controls.Add(txt);
-                card.Controls.Add(btnKaldir);
-                txt.Location = new Point(5, 5);
-                btnKaldir.Location = new Point(txt.Width + 10, 7);
-
-                // Add the new card before the "Ekle" button if it exists
-                if (flp.Controls.Contains(btnEkle))
-                {
-                    flp.Controls.Add(card);
-                    flp.Controls.SetChildIndex(btnEkle, flp.Controls.Count - 1);
-                }
-                else
-                {
-                    flp.Controls.Add(card);
-                }
+                panel.Controls.Add(txt);
+                panel.Controls.Add(btnKaldir);
+                txt.Location = new Point(0, 0);
+                btnKaldir.Location = new Point(txt.Width + 5, 0);
+                flp.Controls.Add(panel);
+                flp.Controls.SetChildIndex(btnEkle, flp.Controls.Count - 1);
                 txt.Focus();
                 txt.Select();
             };
@@ -659,13 +520,13 @@ namespace CEKA_APP.UsrControl
 
             if (chkAltProjeVar.Checked && chkProjeIliskisiVar.Checked)
             {
-                flpAltProjeTextBoxes.Location = new Point(txtProjeNo.Location.X + txtProjeNo.Width + 15, txtProjeNo.Location.Y + txtProjeNo.Height - 10);
-                flpIliskiTextBoxes.Location = new Point(flpAltProjeTextBoxes.Location.X + flpAltProjeTextBoxes.Width + 15, flpAltProjeTextBoxes.Location.Y);
+                flpAltProjeTextBoxes.Location = new Point(txtProjeNo.Location.X + txtProjeNo.Width + 10, txtProjeNo.Location.Y + txtProjeNo.Height - 10);
+                flpIliskiTextBoxes.Location = new Point(flpAltProjeTextBoxes.Location.X + flpAltProjeTextBoxes.Width + 10, flpAltProjeTextBoxes.Location.Y);
             }
             else
             {
-                flpAltProjeTextBoxes.Location = new Point(txtProjeNo.Location.X + txtProjeNo.Width + 15, txtProjeNo.Location.Y + txtProjeNo.Height - 10);
-                flpIliskiTextBoxes.Location = new Point(txtProjeNo.Location.X + txtProjeNo.Width + 15, txtProjeNo.Location.Y + txtProjeNo.Height - 10);
+                flpAltProjeTextBoxes.Location = new Point(txtProjeNo.Location.X + txtProjeNo.Width + 10, txtProjeNo.Location.Y + txtProjeNo.Height - 10);
+                flpIliskiTextBoxes.Location = new Point(txtProjeNo.Location.X + txtProjeNo.Width + 10, txtProjeNo.Location.Y + txtProjeNo.Height - 10);
             }
         }
 
@@ -675,7 +536,7 @@ namespace CEKA_APP.UsrControl
 
             if (chkAltProjeVar.Checked)
             {
-                var altProjeler = flpAltProjeTextBoxes.Controls.OfType<CustomPanel>()
+                var altProjeler = flpAltProjeTextBoxes.Controls.OfType<Panel>()
                     .SelectMany(p => p.Controls.OfType<TextBox>())
                     .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                     .Select(txt => txt.Text.Trim()).ToList();
@@ -694,7 +555,7 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-        private void btnAra_Click(object sender, EventArgs e2)
+        private void btnAra_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtProjeAra.Text))
             {
@@ -712,7 +573,6 @@ namespace CEKA_APP.UsrControl
                 txtTeklifNo.Text = proje.teklifNo ?? "";
                 txtIsFirsatiNo.Text = proje.isFirsatiNo ?? "";
                 txtProjeNo.Text = proje.projeNo ?? "";
-
                 chkAltProjeVar.Checked = proje.altProjeVarMi;
                 chkAltProjeYok.Checked = !proje.altProjeVarMi;
                 chkProjeIliskisiVar.Checked = proje.digerProjeIliskisiVarMi != "0";
@@ -720,15 +580,20 @@ namespace CEKA_APP.UsrControl
                 dtpSiparisSozlesmeTarihi.Value = proje.siparisSozlesmeTarihi;
                 chkNakliyeVar.Checked = proje.nakliyeVarMi;
                 chkNakliyeYok.Checked = !proje.nakliyeVarMi;
+                chkTekil.Checked = proje.faturalamaSekli == "Tekil";
+                chkCogul.Checked = proje.faturalamaSekli == "Cogul";
+                chkEuro.Checked = proje.paraBirimi == "EUR";
+                chkDolar.Checked = proje.paraBirimi == "USD";
+                chkTL.Checked = proje.paraBirimi == "TL";
 
                 flpAltProjeTextBoxes.Controls.Clear();
                 flpAltProjeTextBoxes.Controls.Add(new Label
                 {
                     Text = "Alt Projeler",
-                    Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
                     AutoSize = true,
-                    Margin = new Padding((flpAltProjeTextBoxes.Width - 80) / 2, 0, 0, 10),
-                    ForeColor = Color.FromArgb(52, 73, 94)
+                    Margin = new Padding((flpAltProjeTextBoxes.Width - 80) / 2, 0, 0, 5),
+                    ForeColor = Color.FromArgb(44, 62, 80)
                 });
                 if (proje.altProjeVarMi && proje.altProjeBilgileri != null)
                 {
@@ -738,56 +603,43 @@ namespace CEKA_APP.UsrControl
                         var txt = new TextBox
                         {
                             Width = flpAltProjeTextBoxes.Width - 80,
-                            Height = 30,
+                            Height = 20,
                             Margin = new Padding(0, 0, 0, 0),
                             Name = $"txt_AltProje_{index}",
                             Text = altProje,
-                            ForeColor = Color.FromArgb(44, 62, 80),
+                            ForeColor = Color.Black,
                             BorderStyle = BorderStyle.FixedSingle,
-                            BackColor = Color.FromArgb(249, 249, 249),
-                            Font = new Font("Segoe UI", 9, FontStyle.Regular)
+                            BackColor = Color.White
                         };
-                        txt.GotFocus += (s2, e3) => txt.BackColor = Color.White;
-                        txt.LostFocus += (s2, e3) => txt.BackColor = Color.FromArgb(249, 249, 249);
-                        txt.TextChanged += (s2, e3) => UpdateContextMenu();
-                        txt.Paint += (s2, e3) =>
-                        {
-                            using (var pen = new Pen(txt.Focused ? Color.FromArgb(52, 152, 219) : Color.FromArgb(209, 213, 219), 1))
-                            {
-                                e3.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                                e3.Graphics.DrawRectangle(pen, new Rectangle(0, 0, txt.Width - 1, txt.Height - 1));
-                            }
-                        };
+                        txt.TextChanged += (s2, e2) => UpdateContextMenu();
                         var btnKaldir = new Button
                         {
                             Text = "X",
-                            Width = 25,
-                            Height = 25,
+                            Width = 20,
+                            Height = 20,
                             Margin = new Padding(0, 0, 0, 0),
                             BackColor = Color.FromArgb(231, 76, 60),
                             ForeColor = Color.White,
                             FlatStyle = FlatStyle.Flat,
                             FlatAppearance = { BorderSize = 0 },
-                            Font = new Font("Segoe UI", 9, FontStyle.Bold)
+                            Font = new Font("Segoe UI", 8, FontStyle.Bold)
                         };
-                        btnKaldir.MouseEnter += (s2, e3) => btnKaldir.BackColor = Color.FromArgb(192, 57, 43);
-                        btnKaldir.MouseLeave += (s2, e3) => btnKaldir.BackColor = Color.FromArgb(231, 76, 60);
-                        btnKaldir.Click += (s2, e3) =>
+                        btnKaldir.Click += (s2, e2) =>
                         {
                             flpAltProjeTextBoxes.Controls.Remove(txt.Parent);
                             UpdateContextMenu();
                         };
-                        var card = new CustomPanel(Color.FromArgb(209, 213, 219), Color.FromArgb(249, 249, 249))
+                        var panel = new Panel
                         {
-                            Width = flpAltProjeTextBoxes.Width - 20,
-                            Height = 40,
+                            Width = flpAltProjeTextBoxes.Width - 10,
+                            Height = 25,
                             Margin = new Padding(5, 5, 5, 5)
                         };
-                        card.Controls.Add(txt);
-                        card.Controls.Add(btnKaldir);
-                        txt.Location = new Point(5, 5);
-                        btnKaldir.Location = new Point(txt.Width + 10, 7);
-                        flpAltProjeTextBoxes.Controls.Add(card);
+                        panel.Controls.Add(txt);
+                        panel.Controls.Add(btnKaldir);
+                        txt.Location = new Point(0, 0);
+                        btnKaldir.Location = new Point(txt.Width + 5, 0);
+                        flpAltProjeTextBoxes.Controls.Add(panel);
                         index++;
                     }
                     AddEkleButton(flpAltProjeTextBoxes, "AltProje");
@@ -802,10 +654,10 @@ namespace CEKA_APP.UsrControl
                 flpIliskiTextBoxes.Controls.Add(new Label
                 {
                     Text = "İlişkili Projeler",
-                    Font = new Font("Segoe UI", 12, FontStyle.Bold),
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
                     AutoSize = true,
-                    Margin = new Padding((flpIliskiTextBoxes.Width - 100) / 2, 0, 0, 10),
-                    ForeColor = Color.FromArgb(52, 73, 94)
+                    Margin = new Padding((flpIliskiTextBoxes.Width - 100) / 2, 0, 0, 5),
+                    ForeColor = Color.FromArgb(44, 62, 80)
                 });
                 if (proje.digerProjeIliskisiVarMi != "0" && !string.IsNullOrEmpty(proje.digerProjeIliskisiVarMi))
                 {
@@ -816,56 +668,43 @@ namespace CEKA_APP.UsrControl
                         var txt = new TextBox
                         {
                             Width = flpIliskiTextBoxes.Width - 80,
-                            Height = 30,
+                            Height = 20,
                             Margin = new Padding(0, 0, 0, 0),
                             Name = $"txt_Iliski_{index}",
                             Text = iliskiProje.Trim(),
-                            ForeColor = Color.FromArgb(44, 62, 80),
+                            ForeColor = Color.Black,
                             BorderStyle = BorderStyle.FixedSingle,
-                            BackColor = Color.FromArgb(249, 249, 249),
-                            Font = new Font("Segoe UI", 9, FontStyle.Regular)
+                            BackColor = Color.White
                         };
-                        txt.GotFocus += (s2, e3) => txt.BackColor = Color.White;
-                        txt.LostFocus += (s2, e3) => txt.BackColor = Color.FromArgb(249, 249, 249);
-                        txt.TextChanged += (s2, e3) => UpdateContextMenu();
-                        txt.Paint += (s2, e3) =>
-                        {
-                            using (var pen = new Pen(txt.Focused ? Color.FromArgb(52, 152, 219) : Color.FromArgb(209, 213, 219), 1))
-                            {
-                                e3.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
-                                e3.Graphics.DrawRectangle(pen, new Rectangle(0, 0, txt.Width - 1, txt.Height - 1));
-                            }
-                        };
+                        txt.TextChanged += (s2, e2) => UpdateContextMenu();
                         var btnKaldir = new Button
                         {
                             Text = "X",
-                            Width = 25,
-                            Height = 25,
+                            Width = 20,
+                            Height = 20,
                             Margin = new Padding(0, 0, 0, 0),
                             BackColor = Color.FromArgb(231, 76, 60),
                             ForeColor = Color.White,
                             FlatStyle = FlatStyle.Flat,
                             FlatAppearance = { BorderSize = 0 },
-                            Font = new Font("Segoe UI", 9, FontStyle.Bold)
+                            Font = new Font("Segoe UI", 8, FontStyle.Bold)
                         };
-                        btnKaldir.MouseEnter += (s2, e3) => btnKaldir.BackColor = Color.FromArgb(192, 57, 43);
-                        btnKaldir.MouseLeave += (s2, e3) => btnKaldir.BackColor = Color.FromArgb(231, 76, 60);
-                        btnKaldir.Click += (s2, e3) =>
+                        btnKaldir.Click += (s2, e2) =>
                         {
                             flpIliskiTextBoxes.Controls.Remove(txt.Parent);
                             UpdateContextMenu();
                         };
-                        var card = new CustomPanel(Color.FromArgb(209, 213, 219), Color.FromArgb(249, 249, 249))
+                        var panel = new Panel
                         {
-                            Width = flpIliskiTextBoxes.Width - 20,
-                            Height = 40,
+                            Width = flpIliskiTextBoxes.Width - 10,
+                            Height = 25,
                             Margin = new Padding(5, 5, 5, 5)
                         };
-                        card.Controls.Add(txt);
-                        card.Controls.Add(btnKaldir);
-                        txt.Location = new Point(5, 5);
-                        btnKaldir.Location = new Point(txt.Width + 10, 7);
-                        flpIliskiTextBoxes.Controls.Add(card);
+                        panel.Controls.Add(txt);
+                        panel.Controls.Add(btnKaldir);
+                        txt.Location = new Point(0, 0);
+                        btnKaldir.Location = new Point(txt.Width + 5, 0);
+                        flpIliskiTextBoxes.Controls.Add(panel);
                         index++;
                     }
                     AddEkleButton(flpIliskiTextBoxes, "Iliski");
@@ -881,7 +720,7 @@ namespace CEKA_APP.UsrControl
 
                 var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
                 var altProjeler = chkAltProjeVar.Checked
-                    ? flpAltProjeTextBoxes.Controls.OfType<CustomPanel>()
+                    ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
                         .SelectMany(p => p.Controls.OfType<TextBox>())
                         .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                         .Select(txt => txt.Text.Trim())
@@ -896,15 +735,12 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-        private void ctlProjeKutuk_Load(object sender, EventArgs e2)
+        private void ctlProjeKutuk_Load(object sender, EventArgs e)
         {
             ctlBaslik1.Baslik = "Proje Kütük";
-            ctlBaslik1.BackColor = Color.FromArgb(52, 152, 219);
-            ctlBaslik1.ForeColor = Color.White;
-            ctlBaslik1.Font = new Font("Segoe UI", 12, FontStyle.Bold);
         }
 
-        private void btnKaydet_Click(object sender, EventArgs e2)
+        private void btnKaydet_Click(object sender, EventArgs e)
         {
             var hataMesajlari = new List<string>();
 
@@ -937,14 +773,13 @@ namespace CEKA_APP.UsrControl
 
             if (chkAltProjeVar.Checked)
             {
-                var altProjeler = flpAltProjeTextBoxes.Controls.OfType<CustomPanel>()
+                var altProjeler = flpAltProjeTextBoxes.Controls.OfType<Panel>()
                     .SelectMany(p => p.Controls.OfType<TextBox>())
                     .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                     .Select(txt => txt.Text.Trim()).ToList();
                 if (!altProjeler.Any())
                 {
                     lblAltProjeHata.Text = "Alt proje var işaretlediniz fakat alt proje bilgisi girmediniz.";
-                    lblAltProjeHata.ForeColor = Color.FromArgb(231, 76, 60);
                     lblAltProjeHata.Visible = true;
                     hataMesajlari.Add("Alt proje var işaretlendiniz fakat alt proje bilgisi girmediniz.");
                 }
@@ -960,7 +795,7 @@ namespace CEKA_APP.UsrControl
 
             if (chkProjeIliskisiVar.Checked)
             {
-                var iliskiProjeler = flpIliskiTextBoxes.Controls.OfType<CustomPanel>()
+                var iliskiProjeler = flpIliskiTextBoxes.Controls.OfType<Panel>()
                     .SelectMany(p => p.Controls.OfType<TextBox>())
                     .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                     .Select(txt => txt.Text.Trim()).ToList();
@@ -968,6 +803,16 @@ namespace CEKA_APP.UsrControl
                 {
                     hataMesajlari.Add("İlişkili proje var işaretlendiniz fakat ilişkili proje bilgisi girmediniz.");
                 }
+            }
+
+            if (!chkTekil.Checked && !chkCogul.Checked)
+            {
+                hataMesajlari.Add("Ödeme şekli (Tekil veya Çoğul) seçilmelidir.");
+            }
+
+            if (!chkEuro.Checked && !chkDolar.Checked && !chkTL.Checked)
+            {
+                hataMesajlari.Add("Para birimi (EUR, USD veya TL) seçilmelidir.");
             }
 
             if (hataMesajlari.Any())
@@ -985,7 +830,7 @@ namespace CEKA_APP.UsrControl
                 projeNo = txtProjeNo.Text.Trim(),
                 altProjeVarMi = chkAltProjeVar.Checked,
                 digerProjeIliskisiVarMi = chkProjeIliskisiVar.Checked
-                    ? string.Join(",", flpIliskiTextBoxes.Controls.OfType<CustomPanel>()
+                    ? string.Join(",", flpIliskiTextBoxes.Controls.OfType<Panel>()
                         .SelectMany(p => p.Controls.OfType<TextBox>())
                         .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                         .Select(txt => txt.Text.Trim()))
@@ -994,11 +839,13 @@ namespace CEKA_APP.UsrControl
                 toplamBedel = bedel,
                 nakliyeVarMi = chkNakliyeVar.Checked,
                 altProjeBilgileri = chkAltProjeVar.Checked
-                    ? flpAltProjeTextBoxes.Controls.OfType<CustomPanel>()
+                    ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
                         .SelectMany(p => p.Controls.OfType<TextBox>())
                         .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                         .Select(txt => txt.Text.Trim()).ToList()
-                    : new List<string>()
+                    : new List<string>(),
+                faturalamaSekli = chkTekil.Checked ? "Tekil" : "Cogul",
+                paraBirimi = chkEuro.Checked ? "EUR" : chkDolar.Checked ? "USD" : "TL"
             };
 
             string proje = txtProjeNo.Text.Trim();
@@ -1015,7 +862,7 @@ namespace CEKA_APP.UsrControl
                 {
                     foreach (var altProje in kutuk.altProjeBilgileri)
                     {
-                        if (!ProjeFinans_ProjeIliskiData.AltProjeEkle(proje, altProje))
+                        if (!ProjeFinans_ProjeKutukData.AltProjeEkle(proje, altProje))
                         {
                             MessageBox.Show($"Alt Proje '{altProje}' için ilişki kaydı eklenirken hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
@@ -1029,7 +876,7 @@ namespace CEKA_APP.UsrControl
 
                 var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
                 var altProjeler = chkAltProjeVar.Checked
-                    ? flpAltProjeTextBoxes.Controls.OfType<CustomPanel>()
+                    ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
                         .SelectMany(p => p.Controls.OfType<TextBox>())
                         .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                         .Select(txt => txt.Text.Trim())
@@ -1044,7 +891,7 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-        private void txtMusteriNo_Leave(object sender, EventArgs e2)
+        private void txtMusteriNo_Leave(object sender, EventArgs e)
         {
             string musteriNo = txtMusteriNo.Text.Trim();
             if (!string.IsNullOrEmpty(musteriNo))

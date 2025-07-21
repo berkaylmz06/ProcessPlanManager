@@ -100,5 +100,30 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
             return altProjeler;
         }
+        public static string GetUstProjeNo(string altProjeNo)
+        {
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    string sql = @"
+                        SELECT ustProjeNo
+                        FROM ProjeFinans_ProjeIliski
+                        WHERE TRIM(altProjeNo) = @altProjeNo";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@altProjeNo", altProjeNo.Trim());
+                        var result = command.ExecuteScalar();
+                        return result != null ? result.ToString().Trim() : null;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Üst proje numarası alınırken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
+                }
+            }
+        }
     }
 }

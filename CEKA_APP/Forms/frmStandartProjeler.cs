@@ -20,7 +20,7 @@ namespace CEKA_APP
         {
             InitializeComponent();
             ListBoxHelper.StilUygula(listGruplar);
-            this.Icon = new Icon("cekalogokirmizi.ico");
+            this.Icon = Properties.Resources.cekalogokirmizi;
         }
         private void btnProjeOlustur_Click(object sender, EventArgs e)
         {
