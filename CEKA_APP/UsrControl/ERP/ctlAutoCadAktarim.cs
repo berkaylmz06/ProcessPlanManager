@@ -35,7 +35,7 @@ namespace CEKA_APP.UsrControl
         private void ctlAutoCadAktarim_Load(object sender, EventArgs e)
         {
             ctlBaslik1.Baslik = "AutoCad Aktarım";
-            btnAktar.Enabled = false;
+            btnAktar.Enabled = false; 
         }
         private void btnXmlDosyaSec_Click(object sender, EventArgs e)
         {
@@ -49,12 +49,12 @@ namespace CEKA_APP.UsrControl
                     {
                         tumParcalar = ParcalariOku(xmlPath);
                         dataGridXmlCiktisi.DataSource = tumParcalar;
-                        btnAktar.Enabled = true;
+                        btnAktar.Enabled = true; 
                     }
                     catch (Exception ex)
                     {
                         MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        btnAktar.Enabled = false;
+                        btnAktar.Enabled = false; 
                     }
                 }
             }
@@ -128,7 +128,7 @@ namespace CEKA_APP.UsrControl
             {
                 string hataMesaji = "Aşağıdaki uyarilar bulundu:\n\n" + string.Join("\n", hataMesajlari);
                 MessageBox.Show(hataMesaji, "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                btnAktar.Enabled = false;
+                btnAktar.Enabled = false; 
             }
 
             dataGridIslenmisXml.DataSource = ozetParcalar;
@@ -187,7 +187,7 @@ namespace CEKA_APP.UsrControl
             if (string.IsNullOrWhiteSpace(txtProjeNo.Text))
             {
                 MessageBox.Show("Lütfen proje bilgisi giriniz.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                btnAktar.Enabled = false;
+                btnAktar.Enabled = false; 
                 return;
             }
 
@@ -196,14 +196,14 @@ namespace CEKA_APP.UsrControl
             if (guncelParcalar == null)
             {
                 MessageBox.Show("Parça listesi boş!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                btnAktar.Enabled = false;
+                btnAktar.Enabled = false; 
                 return;
             }
 
             var mevcutGruplar = AutoCadAktarimData.GruplariGetir(projeNo);
-            var yeniGruplar = guncelParcalar.Select(p => p.Grup.Split('-')[0]).Distinct().ToList();
+            var yeniGruplar = guncelParcalar.Select(p => string.Join("-", p.Grup.Split('-').Take(2))).Distinct().ToList();
             var kesisenGruplar = mevcutGruplar.AsEnumerable()
-                .Select(row => row["grupAdi"].ToString().Split('-')[0])
+                .Select(row => string.Join("-", row["grupAdi"].ToString().Split('-').Take(2)))
                 .Intersect(yeniGruplar)
                 .ToList();
 
@@ -257,7 +257,7 @@ namespace CEKA_APP.UsrControl
                 if (!string.IsNullOrWhiteSpace(proje) && !string.IsNullOrWhiteSpace(grup))
                 {
                     AutoCadAktarimData.SaveAutoCadData(proje, grup, malzemeKod, adet, malzemeAd, kalite);
-                    uniqueGruplar.Add(grup.Split('-')[0]);
+                    uniqueGruplar.Add(string.Join("-", grup.Split('-').Take(2))); // XXX-XX formatı
                 }
             }
 
@@ -266,7 +266,7 @@ namespace CEKA_APP.UsrControl
             var userController = new LogEkle(_formArayuzu.lblSistemKullaniciMetinAl());
             userController.LogYap("PaftaYuklemesiYapildi", "AutoCad Aktarım", $"Kullanıcı {proje} numaralı projeye {gruplar} grupları yükledi.");
             MessageBox.Show("Veriler kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-            btnAktar.Enabled = false;
+            btnAktar.Enabled = false; 
         }
     }
 }
