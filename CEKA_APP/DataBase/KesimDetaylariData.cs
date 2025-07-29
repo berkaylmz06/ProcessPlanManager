@@ -299,13 +299,14 @@ namespace CEKA_APP.DataBase
 
             string query = @"
     SELECT 
-        kd.kalite,
-        kd.malzeme,
-        kd.malzemeKod,
-        kd.proje AS projeAdi,
-        kd.kesilmisAdet,
-        ISNULL(kd.toplamAdet, 0) AS toplamAdet
-    FROM KesimDetaylari kd
+    kd.kalite,
+    kd.malzeme,
+    kd.malzemeKod,
+    kd.proje AS projeAdi,
+    kd.kesilmisAdet,
+    ISNULL(m.adet, 0) AS toplamAdet
+FROM KesimDetaylari kd
+LEFT JOIN Malzemeler m ON kd.malzemeKod = m.malzemeKod
   ";
 
             using (SqlConnection conn = DataBaseHelper.GetConnection())

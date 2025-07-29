@@ -288,8 +288,7 @@ namespace CEKA_APP.UsrControl
             {
                 var dt = KesimListesiData.GetirKesimListesi(kesimId);
 
-                // dataGridKesimListesi'nden toplamPlanTekrari değerini al
-                int toplamPlanTekrari = 1; // Varsayılan değer, hata durumunda 1
+                int toplamPlanTekrari = 1; 
                 foreach (DataGridViewRow row in dataGridKesimListesi.Rows)
                 {
                     if (row.Cells["kesimId"].Value?.ToString() == kesimId)
@@ -302,7 +301,6 @@ namespace CEKA_APP.UsrControl
                     }
                 }
 
-                // kpAdetSayilari sütununu toplamPlanTekrari ile çarp
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     foreach (DataRow row in dt.Rows)

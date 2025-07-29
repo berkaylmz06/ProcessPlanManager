@@ -19,5 +19,8 @@ namespace CEKA_APP.Entitys
             get { return NetAgirlik.HasValue ? (double?)Math.Round(Adet * NetAgirlik.Value, 2) : null; }
         }
         public int GrupAdet { get; set; }
+        public string GrupAdi { get; set; }
+        public string MalzemeKod { get; set; }
+        public Guid? YuklemeId { get; set; }
     }
 }

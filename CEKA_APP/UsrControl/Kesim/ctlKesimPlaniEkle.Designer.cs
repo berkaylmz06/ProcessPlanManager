@@ -30,6 +30,7 @@
         {
             this.panelVeriYonetim = new System.Windows.Forms.Panel();
             this.groupBoxVeriYonetim = new System.Windows.Forms.GroupBox();
+            this.btnYazdir = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.button4 = new System.Windows.Forms.Button();
@@ -73,9 +74,9 @@
             this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button3 = new System.Windows.Forms.Button();
             this.btnSec = new System.Windows.Forms.Button();
-            this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
-            this.btnYazdir = new System.Windows.Forms.Button();
             this.pdfViewer1 = new PdfiumViewer.PdfViewer();
+            this.lblDurum = new System.Windows.Forms.Label();
+            this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.panelVeriYonetim.SuspendLayout();
             this.groupBoxVeriYonetim.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -99,6 +100,7 @@
             // 
             // groupBoxVeriYonetim
             // 
+            this.groupBoxVeriYonetim.Controls.Add(this.lblDurum);
             this.groupBoxVeriYonetim.Controls.Add(this.btnYazdir);
             this.groupBoxVeriYonetim.Controls.Add(this.button5);
             this.groupBoxVeriYonetim.Controls.Add(this.progressBar1);
@@ -129,6 +131,16 @@
             this.groupBoxVeriYonetim.Size = new System.Drawing.Size(700, 780);
             this.groupBoxVeriYonetim.TabIndex = 325;
             this.groupBoxVeriYonetim.TabStop = false;
+            // 
+            // btnYazdir
+            // 
+            this.btnYazdir.Location = new System.Drawing.Point(600, 710);
+            this.btnYazdir.Name = "btnYazdir";
+            this.btnYazdir.Size = new System.Drawing.Size(79, 42);
+            this.btnYazdir.TabIndex = 327;
+            this.btnYazdir.Text = "Yazdır";
+            this.btnYazdir.UseVisualStyleBackColor = true;
+            this.btnYazdir.Click += new System.EventHandler(this.btnYazdir_Click);
             // 
             // button5
             // 
@@ -563,25 +575,6 @@
             this.btnSec.UseVisualStyleBackColor = true;
             this.btnSec.Click += new System.EventHandler(this.btnSec_Click);
             // 
-            // ctlBaslik1
-            // 
-            this.ctlBaslik1.Baslik = "Başlık";
-            this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
-            this.ctlBaslik1.Name = "ctlBaslik1";
-            this.ctlBaslik1.Size = new System.Drawing.Size(1612, 48);
-            this.ctlBaslik1.TabIndex = 327;
-            // 
-            // btnYazdir
-            // 
-            this.btnYazdir.Location = new System.Drawing.Point(600, 710);
-            this.btnYazdir.Name = "btnYazdir";
-            this.btnYazdir.Size = new System.Drawing.Size(79, 42);
-            this.btnYazdir.TabIndex = 327;
-            this.btnYazdir.Text = "Yazdır";
-            this.btnYazdir.UseVisualStyleBackColor = true;
-            this.btnYazdir.Click += new System.EventHandler(this.btnYazdir_Click);
-            // 
             // pdfViewer1
             // 
             this.pdfViewer1.Dock = System.Windows.Forms.DockStyle.Fill;
@@ -590,6 +583,23 @@
             this.pdfViewer1.Name = "pdfViewer1";
             this.pdfViewer1.Size = new System.Drawing.Size(882, 899);
             this.pdfViewer1.TabIndex = 328;
+            // 
+            // lblDurum
+            // 
+            this.lblDurum.AutoSize = true;
+            this.lblDurum.Location = new System.Drawing.Point(22, 18);
+            this.lblDurum.Name = "lblDurum";
+            this.lblDurum.Size = new System.Drawing.Size(0, 20);
+            this.lblDurum.TabIndex = 328;
+            // 
+            // ctlBaslik1
+            // 
+            this.ctlBaslik1.Baslik = "Başlık";
+            this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
+            this.ctlBaslik1.Name = "ctlBaslik1";
+            this.ctlBaslik1.Size = new System.Drawing.Size(1612, 48);
+            this.ctlBaslik1.TabIndex = 327;
             // 
             // ctlKesimPlaniEkle
             // 
@@ -665,5 +675,6 @@
         private ctlBaslik ctlBaslik1;
         private System.Windows.Forms.Button btnYazdir;
         private PdfiumViewer.PdfViewer pdfViewer1;
+        private System.Windows.Forms.Label lblDurum;
     }
 }

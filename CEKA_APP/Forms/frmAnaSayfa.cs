@@ -202,6 +202,10 @@ namespace CEKA_APP
                     btnAutoCad.Visible = true;
                     btnProjeOgeleri.Visible = true;
                     break;
+                case "Erp":
+                    btnAutoCad.Visible = true;
+                    btnProjeOgeleri.Visible = true;
+                    break;
 
             }
 

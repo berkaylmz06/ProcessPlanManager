@@ -36,6 +36,7 @@
             this.panelSpacer1 = new System.Windows.Forms.Panel();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.panelDetay = new System.Windows.Forms.Panel();
+            this.ctlBaslik2 = new CEKA_APP.UsrControl.ctlBaslik();
             this.panel1 = new System.Windows.Forms.Panel();
             this.btnKullaniciSil = new System.Windows.Forms.Button();
             this.panelRolAtaCizgi = new System.Windows.Forms.Panel();
@@ -50,7 +51,6 @@
             this.lblKullaniciAdi = new System.Windows.Forms.Label();
             this.lblAdSoyad = new System.Windows.Forms.Label();
             this.txtAdSoyad = new System.Windows.Forms.TextBox();
-            this.ctlBaslik2 = new CEKA_APP.UsrControl.ctlBaslik();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.panelDisContainer.SuspendLayout();
             this.panelList.SuspendLayout();
@@ -155,6 +155,15 @@
             this.panelDetay.Size = new System.Drawing.Size(1247, 969);
             this.panelDetay.TabIndex = 140;
             // 
+            // ctlBaslik2
+            // 
+            this.ctlBaslik2.Baslik = "Başlık";
+            this.ctlBaslik2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ctlBaslik2.Location = new System.Drawing.Point(0, 10);
+            this.ctlBaslik2.Name = "ctlBaslik2";
+            this.ctlBaslik2.Size = new System.Drawing.Size(1247, 50);
+            this.ctlBaslik2.TabIndex = 142;
+            // 
             // panel1
             // 
             this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
@@ -192,7 +201,8 @@
             "Muhasebe",
             "Operatör",
             "Kullanıcı",
-            "Ressam"});
+            "Ressam",
+            "Erp"});
             this.cbKullaniciRol.Location = new System.Drawing.Point(121, 7);
             this.cbKullaniciRol.Name = "cbKullaniciRol";
             this.cbKullaniciRol.Size = new System.Drawing.Size(274, 24);
@@ -282,15 +292,6 @@
             this.txtAdSoyad.Name = "txtAdSoyad";
             this.txtAdSoyad.Size = new System.Drawing.Size(274, 22);
             this.txtAdSoyad.TabIndex = 0;
-            // 
-            // ctlBaslik2
-            // 
-            this.ctlBaslik2.Baslik = "Başlık";
-            this.ctlBaslik2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ctlBaslik2.Location = new System.Drawing.Point(0, 10);
-            this.ctlBaslik2.Name = "ctlBaslik2";
-            this.ctlBaslik2.Size = new System.Drawing.Size(1247, 50);
-            this.ctlBaslik2.TabIndex = 142;
             // 
             // ctlBaslik1
             // 

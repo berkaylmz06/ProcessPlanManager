@@ -1,4 +1,5 @@
-﻿using CEKA_APP.Helper;
+﻿using CEKA_APP.DataBase.ProjeFinans;
+using CEKA_APP.Helper;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using System;
@@ -25,13 +26,18 @@ namespace CEKA_APP.Forms
         private List<Label> notLabels = new List<Label>();
         private List<Button> notKapatButonlari = new List<Button>();
         private Panel notPanel;
-
-        public frmFaturaOlustur(string tutar, string aciklama, string tarih, string musteriAdi)
+        private readonly string projeNo;
+        private readonly int kilometreTasiId;
+        private readonly int? odemeId;
+        public frmFaturaOlustur(string tutar, string aciklama, string tarih, string musteriAdi, int kilometreTasiId = 0, int? odemeId = null)
         {
             this.tutar = tutar ?? "0";
             this.aciklama = aciklama ?? "";
             this.tarih = tarih ?? "Belirtilmemiş";
             this.musteriAdi = musteriAdi ?? "Bilinmiyor";
+            this.projeNo = musteriAdi?.Trim();
+            this.kilometreTasiId = kilometreTasiId;
+            this.odemeId = odemeId;
             InitializeComponent();
 
             PdfSharp.Fonts.GlobalFontSettings.FontResolver = new PlatformFontResolver();
@@ -44,6 +50,7 @@ namespace CEKA_APP.Forms
             txtTutar.Text = tutar;
             txtAciklama.Text = aciklama;
             txtTarih.Text = tarih;
+            txtProjeNo.Text = musteriAdi;
 
             this.Icon = Properties.Resources.cekalogokirmizi;
 
@@ -57,8 +64,18 @@ namespace CEKA_APP.Forms
                 AutoScroll = true
             };
             this.Controls.Add(notPanel);
-        }
 
+            // Fatura varlığını kontrol et
+            if (kilometreTasiId > 0)
+            {
+                var odemeSekilleriData = new ProjeFinans_OdemeSekilleriData();
+                var odemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kilometreTasiId);
+                if (odemeBilgi != null && !string.IsNullOrEmpty(odemeBilgi.faturaNo?.ToString()))
+                {
+                    btnGoruntule.Enabled = true;
+                }
+            }
+        }
         private void btnNotEkle_Click(object sender, EventArgs e)
         {
             notSayisi++;
@@ -1157,12 +1174,74 @@ namespace CEKA_APP.Forms
             try
             {
                 document.Save(filename);
-                MessageBox.Show($"PDF '{textInvoiceNumber}.pdf' Invoice klasörüne başarıyla oluşturuldu.", "PDF Oluşturuldu", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (odemeId.HasValue && odemeId > 0)
+                {
+                    var odemeSekilleriData = new ProjeFinans_OdemeSekilleriData();
+                    bool updateSuccess = odemeSekilleriData.UpdateFaturaNo(odemeId.Value, textInvoiceNumber);
+                    if (updateSuccess)
+                    {
+                        btnGoruntule.Enabled = true;
+                        MessageBox.Show($"PDF '{textInvoiceNumber}.pdf' Invoice klasörüne başarıyla oluşturuldu ve fatura numarası veritabanına kaydedildi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show($"PDF '{textInvoiceNumber}.pdf' oluşturuldu, ancak fatura numarası veritabanına kaydedilemedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show($"PDF '{textInvoiceNumber}.pdf' Invoice klasörüne başarıyla oluşturuldu, ancak ödeme ID'si geçersiz olduğu için fatura numarası kaydedilemedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
                 Process.Start(new ProcessStartInfo(filename) { UseShellExecute = true });
             }
-            catch (IOException)
+            catch (IOException ex)
             {
-                MessageBox.Show("İşlem, başka bir işlem tarafından kullanıldığından dosyaya erişemiyor.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"PDF dosyası oluşturulurken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnGoruntule_Click(object sender, EventArgs e)
+        {
+            if (odemeId > 0)
+            {
+                try
+                {
+                    var odemeSekilleriData = new ProjeFinans_OdemeSekilleriData();
+                    var odemeBilgi = odemeSekilleriData.GetOdemeBilgiByOdemeId(odemeId.Value);
+                    if (odemeBilgi != null && !string.IsNullOrEmpty(odemeBilgi.faturaNo?.ToString()))
+                    {
+                        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
+                        string invoiceFolderPath = Path.Combine(desktopPath, "Invoice");
+                        string fullPath = Path.Combine(invoiceFolderPath, $"{odemeBilgi.faturaNo}.pdf");
+                        if (File.Exists(fullPath))
+                        {
+                            try
+                            {
+                                Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
+                            }
+                            catch (Exception ex)
+                            {
+                                MessageBox.Show($"Fatura görüntülenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Fatura dosyası bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Bu ödeme için fatura bulunamadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Fatura görüntülenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Geçersiz ödeme ID'si.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

@@ -5,7 +5,9 @@ using CEKA_APP.DataBase;
 using CEKA_APP.Entitys;
 using CEKA_APP.Helper;
 using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas;
 using iText.Kernel.Pdf.Canvas.Parser;
+using iText.Kernel.Pdf.Canvas.Parser.Data;
 using iText.Kernel.Pdf.Canvas.Parser.Listener;
 using PdfSharp.Fonts;
 using System;
@@ -89,6 +91,8 @@ namespace CEKA_APP.UsrControl
                 return "Ajan";
             if (firstPageText.Contains("nestings list"))
                 return "Lantek";
+            if (firstPageText.Contains("detailed list of nestings"))
+                return "Lantek";
 
 
             MessageBox.Show("PDF türü tespit edilemedi. İlk 500 karakter: " + firstPageText.Substring(0, Math.Min(500, firstPageText.Length)), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -113,7 +117,8 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show("Lütfen önce bir makine seçin (Ajan, Adm, Baykal).", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-
+            btnKaydet.Enabled = true;
+            lblDurum.Text = "";
             _formArayuzu.RichTextBox1Temizle();
             _formArayuzu.RichTextBox2Temizle();
             _formArayuzu.RichTextBox3Temizle();
@@ -163,7 +168,7 @@ namespace CEKA_APP.UsrControl
                         }
                         else if (_seciliButon == btnAdm)
                         {
-                            pdfText = await PdfOkuBaykal(filePath);
+                            pdfText = await PdfOkuADM(filePath);
 
                             _formArayuzu.RichTextBox1Yaz(pdfText);
 
@@ -292,6 +297,7 @@ namespace CEKA_APP.UsrControl
                             HesaplaEkAgirlikYuzdeleri();
                         }
 
+                        AdetKarsilastirma();
 
                         progressBar1.Visible = false;
                     }
@@ -306,6 +312,234 @@ namespace CEKA_APP.UsrControl
                     MessageBox.Show("Dosya bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     progressBar1.Visible = false;
                 }
+            }
+        }
+        private void AdetKarsilastirma()
+        {
+            Dictionary<string, int> dg1Quantities = new Dictionary<string, int>();
+            foreach (DataGridViewRow row in dataGridView1.Rows)
+            {
+                if (!row.IsNewRow)
+                {
+                    string kalip = row.Cells[2].Value?.ToString()?.Trim() ?? "";
+                    string poz = row.Cells[3].Value?.ToString()?.Trim() ?? "";
+                    string proje = row.Cells[5].Value?.ToString()?.Trim() ?? "";
+
+                    string numericPozPartDg1 = poz.Replace("P", "").Replace("p", "");
+                    if (int.TryParse(numericPozPartDg1, out int numberDg1))
+                    {
+                        poz = numberDg1.ToString("D2");
+                    }
+
+                    int adet = 0;
+                    string adetStringDg1 = row.Cells[4].Value?.ToString()?.Trim() ?? "";
+                    adetStringDg1 = Regex.Replace(adetStringDg1, @"AD$", "", RegexOptions.IgnoreCase);
+
+                    if (int.TryParse(adetStringDg1, out adet))
+                    {
+                        string key = $"{kalip}-{poz}-{proje}";
+                        if (dg1Quantities.ContainsKey(key))
+                        {
+                            dg1Quantities[key] += adet;
+                        }
+                        else
+                        {
+                            dg1Quantities[key] = adet;
+                        }
+                    }
+                }
+            }
+
+            Dictionary<string, int> pageRepetitions = new Dictionary<string, int>();
+            foreach (DataGridViewRow row in dataGridView3.Rows)
+            {
+                if (!row.IsNewRow && row.Cells.Count > 2)
+                {
+                    string pageId = row.Cells[0].Value?.ToString()?.Trim() ?? "";
+                    int repetition = 0;
+                    if (int.TryParse(row.Cells[2].Value?.ToString()?.Trim(), out repetition))
+                    {
+                        if (!string.IsNullOrEmpty(pageId))
+                        {
+                            pageRepetitions[pageId] = repetition;
+                        }
+                    }
+                }
+            }
+
+            Dictionary<string, (int TotalCalculatedAdet, List<string> OriginalCodes)> dg2GroupedByFullKey =
+                new Dictionary<string, (int, List<string>)>();
+
+            foreach (DataGridViewRow row in dataGridView2.Rows)
+            {
+                if (!row.IsNewRow && row.Cells.Count > 2)
+                {
+                    string orijinalKod = row.Cells[0].Value?.ToString()?.Trim() ?? "";
+                    string pageIdFromDg2 = row.Cells[1].Value?.ToString()?.Trim() ?? "";
+
+                    int rawAdet = 0;
+                    if (!int.TryParse(row.Cells[2].Value?.ToString()?.Trim(), out rawAdet))
+                    {
+                        continue;
+                    }
+
+                    int calculatedAdet = rawAdet;
+                    if (pageRepetitions.ContainsKey(pageIdFromDg2))
+                    {
+                        calculatedAdet *= pageRepetitions[pageIdFromDg2];
+                    }
+
+                    string[] parcalar = orijinalKod.Split('-');
+                    if (parcalar.Length >= 5)
+                    {
+                        string fullKeyForGrouping;
+                        string originalBasePart = $"{parcalar[0]}-{parcalar[1]}-{parcalar[2]}-{parcalar[3]}-{parcalar[4]}";
+                        if (parcalar.Length > 5)
+                        {
+                            originalBasePart += $"-{parcalar[5]}";
+                        }
+                        if (parcalar.Length > 6)
+                        {
+                            fullKeyForGrouping = originalBasePart + $"-{parcalar[6]}";
+                        }
+                        else
+                        {
+                            fullKeyForGrouping = originalBasePart;
+                        }
+
+                        if (dg2GroupedByFullKey.ContainsKey(fullKeyForGrouping))
+                        {
+                            var existingEntry = dg2GroupedByFullKey[fullKeyForGrouping];
+                            existingEntry.TotalCalculatedAdet += calculatedAdet;
+                            existingEntry.OriginalCodes.Add(orijinalKod);
+                            dg2GroupedByFullKey[fullKeyForGrouping] = existingEntry;
+                        }
+                        else
+                        {
+                            dg2GroupedByFullKey[fullKeyForGrouping] = (calculatedAdet, new List<string> { orijinalKod });
+                        }
+                    }
+                }
+            }
+
+            StringBuilder statusMessage = new StringBuilder();
+            bool allQuantitiesMatch = true;
+
+            HashSet<string> processedDg1Keys = new HashSet<string>();
+            List<string> mismatchKeys = new List<string>(); 
+
+            foreach (var dg1Entry in dg1Quantities)
+            {
+                string dg1Key = dg1Entry.Key;
+                int dg1Adet = dg1Entry.Value;
+
+                bool foundMatchForThisDg1KeyInAnyDg2Variant = false;
+
+                foreach (var dg2GroupedEntry in dg2GroupedByFullKey)
+                {
+                    string fullDg2Key = dg2GroupedEntry.Key;
+                    int dg2TotalCalculatedAdet = dg2GroupedEntry.Value.TotalCalculatedAdet;
+
+                    string dg2BaseKeyCandidate = "";
+                    string[] fullKeyParts = fullDg2Key.Split('-');
+                    if (fullKeyParts.Length >= 5)
+                    {
+                        string kalipFromFull = $"{fullKeyParts[0]}-{fullKeyParts[1]}";
+                        string pozFromFull = fullKeyParts[2];
+                        string numericPozFromFull = pozFromFull.Replace("P", "").Replace("p", "");
+                        if (int.TryParse(numericPozFromFull, out int numberFromFull))
+                        {
+                            pozFromFull = numberFromFull.ToString("D2");
+                        }
+                        string projeBaseFromFull = Regex.Replace(fullKeyParts[4].Trim(), @"-EK\d+$", "", RegexOptions.IgnoreCase);
+
+                        dg2BaseKeyCandidate = $"{kalipFromFull}-{pozFromFull}-{projeBaseFromFull}";
+                    }
+
+                    if (dg1Key == dg2BaseKeyCandidate)
+                    {
+                        foundMatchForThisDg1KeyInAnyDg2Variant = true;
+                        processedDg1Keys.Add(dg1Key);
+
+                        if (dg1Adet != dg2TotalCalculatedAdet)
+                        {
+                            allQuantitiesMatch = false;
+                            if (!mismatchKeys.Contains(dg1Key)) 
+                            {
+                                mismatchKeys.Add(dg1Key);
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!allQuantitiesMatch)
+            {
+                statusMessage.Append("⚠️ Adetler eşleşmiyor: ");
+                statusMessage.Append(string.Join(", ", mismatchKeys));
+                lblDurum.Text = statusMessage.ToString();
+                lblDurum.ForeColor = Color.OrangeRed;
+                btnKaydet.Enabled = false;
+            }
+            else
+            {
+                lblDurum.Text = "✅ Tüm adetler eşleşiyor.";
+                lblDurum.ForeColor = Color.Green;
+            }
+
+            bool hasMissingOrExtra = false;
+
+            foreach (var dg1Entry in dg1Quantities)
+            {
+                if (!processedDg1Keys.Contains(dg1Entry.Key))
+                {
+                    hasMissingOrExtra = true;
+                    break;
+                }
+            }
+
+            foreach (var dg2GroupedEntry in dg2GroupedByFullKey)
+            {
+                string fullDg2Key = dg2GroupedEntry.Key;
+                string dg2BaseKeyCandidate = "";
+                string[] fullKeyParts = fullDg2Key.Split('-');
+                if (fullKeyParts.Length >= 5)
+                {
+                    string kalipFromFull = $"{fullKeyParts[0]}-{fullKeyParts[1]}";
+                    string pozFromFull = fullKeyParts[2];
+                    string numericPozFromFull = pozFromFull.Replace("P", "").Replace("p", "");
+                    if (int.TryParse(numericPozFromFull, out int numberFromFull))
+                    {
+                        pozFromFull = numberFromFull.ToString("D2");
+                    }
+                    string projeBaseFromFull = Regex.Replace(fullKeyParts[4].Trim(), @"-EK\d+$", "", RegexOptions.IgnoreCase);
+                    dg2BaseKeyCandidate = $"{kalipFromFull}-{pozFromFull}-{projeBaseFromFull}";
+                }
+
+                if (!dg1Quantities.ContainsKey(dg2BaseKeyCandidate))
+                {
+                    hasMissingOrExtra = true;
+                    break;
+                }
+            }
+
+            if (hasMissingOrExtra)
+            {
+                if (allQuantitiesMatch) 
+                {
+                    lblDurum.Text = "⚠️ Bazı kayıtlar eksik veya fazla.";
+                    lblDurum.ForeColor = Color.OrangeRed;
+                }
+                else 
+                {
+                    lblDurum.Text += "\n⚠️ Bazı kayıtlar eksik veya fazla.";
+                }
+            }
+
+            if (!dg1Quantities.Any() && !dg2GroupedByFullKey.Any())
+            {
+                lblDurum.Text = "Karşılaştırılacak veri bulunamadı.";
+                lblDurum.ForeColor = Color.Gray;
             }
         }
         private string DuzeltRegexIle(string hataliSatir)
@@ -520,7 +754,176 @@ namespace CEKA_APP.UsrControl
 
             return pageText.ToString();
         }
+        public async Task<string> PdfOkuADM(string pdfpath)
+        {
+            var pageText = new StringBuilder();
+            var logLines = new List<string> { "=== PdfOkuADM_Log.txt ===", $"İşlem Tarihi: {DateTime.Now:dd.MM.yyyy HH:mm:ss}" };
+            int? lastProgramNo = null; // Son program numarasını takip etmek için
+            bool checkNextId = false; // Bir program numarasından sonraki ilk ID satırını kontrol etmek için
 
+            try
+            {
+                using (iText.Kernel.Pdf.PdfDocument pdfDocument = new iText.Kernel.Pdf.PdfDocument(new PdfReader(pdfpath)))
+                {
+                    int pageNumbers = pdfDocument.GetNumberOfPages();
+                    pageText.AppendLine($"Toplam sayfa sayısı: {pageNumbers}");
+                    logLines.Add($"Toplam sayfa sayısı: {pageNumbers}");
+
+                    for (int i = 1; i <= pageNumbers; i++)
+                    {
+                        try
+                        {
+                            pageText.AppendLine($"\n-------- Sayfa {i} --------");
+                            logLines.Add($"\nSayfa {i} işleniyor...");
+
+                            ITextExtractionStrategy strategy = new LocationTextExtractionStrategy();
+                            string text = PdfTextExtractor.GetTextFromPage(pdfDocument.GetPage(i), strategy);
+
+                            // Satırları ayır ve ID sonrası program satırını kontrol et
+                            string[] lines = text.Split(new[] { "\r\n", "\n", "\r" }, StringSplitOptions.None);
+                            bool idFound = false;
+
+                            for (int j = 0; j < lines.Length; j++)
+                            {
+                                string line = lines[j].Trim();
+                                if (string.IsNullOrWhiteSpace(line))
+                                {
+                                    logLines.Add($"Boş satır atlandı: {j + 1}");
+                                    continue;
+                                }
+
+                                logLines.Add($"Satır {j + 1}: {line}");
+
+                                // ID satırı kontrolü (örneğin, 3,083, 3,084, birleşik satırları da kapsar)
+                                if (Regex.IsMatch(line, @"^\d+,\d+\s*"))
+                                {
+                                    idFound = true;
+                                    if (lastProgramNo.HasValue)
+                                    {
+                                        checkNextId = true; // Bir program numarasından sonraki ilk ID satırı
+                                    }
+                                    // Birleşik satırları ayır (örneğin, "3,084 110 1 ...")
+                                    string idPart = Regex.Match(line, @"^\d+,\d+").Value;
+                                    string remainingPart = line.Length > idPart.Length ? line.Substring(idPart.Length).Trim() : null;
+                                    pageText.AppendLine(idPart);
+                                    logLines.Add($"ID satırı bulundu: {idPart}");
+
+                                    // Kalan kısım program satırı gibi görünüyorsa işle
+                                    if (!string.IsNullOrEmpty(remainingPart) && Regex.IsMatch(remainingPart, @"^\d+\s+\d+\s+[\d,.]+\s+[\d,.]+\s+[\d,.]+\s+[\d,.]+\s+[\d,.]+"))
+                                    {
+                                        string[] parts = Regex.Split(remainingPart, @"\s+").Where(s => !string.IsNullOrEmpty(s)).ToArray();
+                                        if (parts.Length >= 7)
+                                        {
+                                            string programNo = parts[0];
+                                            if (int.TryParse(programNo, out int currentProgramNo))
+                                            {
+                                                if (checkNextId && lastProgramNo.HasValue)
+                                                {
+                                                    int expectedProgramNo = lastProgramNo.Value + 10;
+                                                    logLines.Add($"ID satırından sonraki satır bulundu satır başı yapıldı: {remainingPart}");
+                                                    pageText.AppendLine(); // Satır başı ekle
+                                                    pageText.AppendLine(remainingPart); // Satırı bir alt satıra taşı
+                                                    checkNextId = false; // Kontrolü bitir
+                                                    lastProgramNo = currentProgramNo; // Son program numarasını güncelle
+                                                }
+                                                else
+                                                {
+                                                    int expectedProgramNo = lastProgramNo.HasValue ? lastProgramNo.Value + 10 : currentProgramNo;
+                                                    if (currentProgramNo != expectedProgramNo)
+                                                    {
+                                                        logLines.Add($"Ardışık program kontrolü: Beklenen: {expectedProgramNo}, Bulunan: {programNo}, satır başı yapılıyor: {remainingPart}");
+                                                        pageText.AppendLine(); // Satır başı ekle
+                                                        pageText.AppendLine(remainingPart); // Satırı bir alt satıra taşı
+                                                    }
+                                                    else
+                                                    {
+                                                        pageText.AppendLine(remainingPart); // Normal şekilde ekle
+                                                        logLines.Add($"Program satırı eklendi: {programNo}");
+                                                    }
+                                                    lastProgramNo = currentProgramNo; // Son program numarasını güncelle
+                                                    checkNextId = false; // Yeni program numarası için sıfırla
+                                                }
+                                            }
+                                            idFound = false;
+                                            continue;
+                                        }
+                                    }
+                                    continue;
+                                }
+
+                                // Program satırı kontrolü
+                                if (idFound && Regex.IsMatch(line, @"^\d+\s+\d+\s+[\d,.]+\s+[\d,.]+\s+[\d,.]+\s+[\d,.]+\s+[\d,.]+"))
+                                {
+                                    string[] parts = Regex.Split(line, @"\s+").Where(s => !string.IsNullOrEmpty(s)).ToArray();
+                                    if (parts.Length >= 7)
+                                    {
+                                        string programNo = parts[0];
+                                        if (int.TryParse(programNo, out int currentProgramNo))
+                                        {
+                                            if (checkNextId && lastProgramNo.HasValue)
+                                            {
+                                                int expectedProgramNo = lastProgramNo.Value + 10;
+                                                logLines.Add($"ID satırından sonraki satır bulundu satır başı yapıldı: {line}");
+                                                pageText.AppendLine(); // Satır başı ekle
+                                                pageText.AppendLine(line); // Satırı bir alt satıra taşı
+                                                checkNextId = false; // Kontrolü bitir
+                                            }
+                                            else
+                                            {
+                                                int expectedProgramNo = lastProgramNo.HasValue ? lastProgramNo.Value + 10 : currentProgramNo;
+                                                if (currentProgramNo != expectedProgramNo)
+                                                {
+                                                    logLines.Add($"Ardışık program kontrolü: Beklenen: {expectedProgramNo}, Bulunan: {programNo}, satır başı yapılıyor: {line}");
+                                                    pageText.AppendLine(); // Satır başı ekle
+                                                    pageText.AppendLine(line); // Satırı bir alt satıra taşı
+                                                }
+                                                else
+                                                {
+                                                    pageText.AppendLine(line); // Normal şekilde ekle
+                                                    logLines.Add($"Program satırı eklendi: {programNo}");
+                                                }
+                                                checkNextId = false; // Yeni program numarası için sıfırla
+                                            }
+                                            lastProgramNo = currentProgramNo; // Son program numarasını güncelle
+                                        }
+                                        idFound = false;
+                                        continue;
+                                    }
+                                }
+
+                                pageText.AppendLine(line);
+                                idFound = false; // ID sonrası başka bir satırsa bayrağı sıfırla
+                            }
+
+                            int progressValue = (int)((i / (float)pageNumbers) * 100);
+                            BeginInvoke((Action)(() => progressBar1.Value = progressValue));
+
+                            await Task.Delay(100);
+                        }
+                        catch (Exception pageEx)
+                        {
+                            pageText.AppendLine($"\n-------- Sayfa {i} --------");
+                            pageText.AppendLine($"[Sayfa okunamadı: {pageEx.Message}]");
+                            logLines.Add($"Sayfa {i} hatası: {pageEx.Message}");
+                            MessageBox.Show($"Sayfa {i} okunamadı: {pageEx.Message}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                pageText.AppendLine($"[PDF genel okuma hatası: {ex.Message}]");
+                logLines.Add($"PDF genel okuma hatası: {ex.Message}");
+                MessageBox.Show("PDF genel okuma hatası: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            // PdfOkuADM logunu kaydet
+            string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "CEKA_APP");
+            string logPath = Path.Combine(appPath, "PdfOkuADM_Log.txt");
+            File.WriteAllLines(logPath, logLines, Encoding.UTF8);
+
+            return pageText.ToString();
+        }
         private void UpdateTextBoxes()
         {
             HashSet<string> kaliteSet = new HashSet<string>();
@@ -555,7 +958,11 @@ namespace CEKA_APP.UsrControl
 
             HashSet<string> islenmisPaketIdSet = new HashSet<string>();
             List<string> hataMesajlari = new List<string>();
+
+            // Tuple: dKesimId, proje, kalip, poz, adetStr, adet (DataGridView2'den orijinal), paketAdet (DataGridView3'ten)
             List<Tuple<string, string, string, string, string, int, int>> geciciKayitlar = new List<Tuple<string, string, string, string, string, int, int>>();
+            // Tuple: ifsKalite, ifsMalzeme, malzemeKod (kalip-poz), proje, adetKayit (DG2*DG3*EK), ekVar
+            List<Tuple<string, string, string, string, int, bool>> detayKayitBilgileri = new List<Tuple<string, string, string, string, int, bool>>();
 
             if (string.IsNullOrEmpty(Id))
             {
@@ -579,6 +986,7 @@ namespace CEKA_APP.UsrControl
                 hataMesajlari.Add($"Kalite '{kalite}' için eşleşme bulunamadı, hata mesajlarında orijinal değer kullanılacak.");
                 ifsKalite = kalite;
             }
+
             string ifsMalzeme = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
             if (string.IsNullOrEmpty(ifsMalzeme))
             {
@@ -587,8 +995,12 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            // Aynı kalıp, poz ve proje için adetleri toplamak için bir sözlük oluştur
-            Dictionary<(string, string, string), int> kalipPozProjeAdet = new Dictionary<(string, string, string), int>();
+            // This dictionary will hold the total/processed quantities for both KontrolAdeta and KesimDetaylariData.
+            // However, for KontrolAdeta, it will be multiplied by 'paketAdet'.
+            Dictionary<(string kalip, string poz, string proje), int> kalipPozProjeToplamAdet = new Dictionary<(string, string, string), int>();
+
+            // Define Regex once outside the loop for performance.
+            Regex regex = new Regex(@"-EK(\d+)", RegexOptions.IgnoreCase);
 
             for (int i = 0; i < dataGridView2.Rows.Count; i++)
             {
@@ -597,13 +1009,12 @@ namespace CEKA_APP.UsrControl
 
                 string orijinalKod = row.Cells[0].Value?.ToString()?.Trim() ?? "";
                 string dKesimId = row.Cells[1].Value?.ToString()?.Trim() ?? "";
-                string adetStr = row.Cells[2].Value?.ToString()?.Trim() ?? ""; // 3. kolondan adet al
-                string paketAdetStr = "";
+                string adetStr = row.Cells[2].Value?.ToString()?.Trim() ?? ""; // adet from dataGridView2
 
+                string paketAdetStr = "";
                 foreach (DataGridViewRow d3Row in dataGridView3.Rows)
                 {
                     if (d3Row.IsNewRow || d3Row.Cells[0].Value == null) continue;
-
                     if (d3Row.Cells[0].Value.ToString() == dKesimId)
                     {
                         paketAdetStr = d3Row.Cells[2].Value?.ToString()?.Trim() ?? "";
@@ -619,7 +1030,6 @@ namespace CEKA_APP.UsrControl
                     kalip = $"{parcalar[0]}-{parcalar[1]}";
                     poz = parcalar[2];
                     proje = parcalar[4].Trim();
-
                     if (parcalar.Length >= 6)
                     {
                         ekBilgi = parcalar[5];
@@ -640,38 +1050,11 @@ namespace CEKA_APP.UsrControl
                         poz = $"{poz}-{ekBilgi}";
                     }
                 }
-                string kalipOrj = $"{kalip}-{poz}";
-                string kalipPoz = $"{kalip}-{poz}";
-                string kalipPozForValidation = kalipPoz;
-
-                if (!AutoCadAktarimData.GetirStandartGruplar(kalip))
-                {
-                    string kalip00 = $"{kalip.Substring(0, 3)}-00";
-                    kalipPoz = $"{kalip00}-{poz}";
-                    kalipPozForValidation = kalipPoz;
-                }
-
-                int tireSayisi = kalipPoz.Count(c => c == '-');
-                if (tireSayisi >= 3)
-                {
-                    int ucuncuTireIndex = kalipPoz.IndexOf('-', kalipPoz.IndexOf('-', kalipPoz.IndexOf('-') + 1) + 1);
-                    kalipPozForValidation = kalipPoz.Substring(0, ucuncuTireIndex);
-                }
 
                 if (!int.TryParse(adetStr, out int adet))
                 {
                     hataMesajlari.Add($"Satır {i + 1}: Geçersiz adet formatı: {adetStr}");
                     continue;
-                }
-
-                var key = (kalip, poz, proje);
-                if (kalipPozProjeAdet.ContainsKey(key))
-                {
-                    kalipPozProjeAdet[key] += adet;
-                }
-                else
-                {
-                    kalipPozProjeAdet[key] = adet;
                 }
 
                 if (!int.TryParse(paketAdetStr, out int paketAdet))
@@ -680,16 +1063,65 @@ namespace CEKA_APP.UsrControl
                     continue;
                 }
 
+                // Prepare the total quantities for KontrolAdeta, multiplied by package quantity
+                int hesaplananToplamAdetForValidation = adet * paketAdet;
+                var key = (kalip, poz, proje);
+                if (kalipPozProjeToplamAdet.ContainsKey(key))
+                {
+                    kalipPozProjeToplamAdet[key] += hesaplananToplamAdetForValidation;
+                }
+                else
+                {
+                    kalipPozProjeToplamAdet[key] = hesaplananToplamAdetForValidation;
+                }
+
+                // Temporary records to be used for KesimListesiPaketData and KesimListesiData
                 geciciKayitlar.Add(Tuple.Create(dKesimId, proje, kalip, poz, adetStr, adet, paketAdet));
                 islenmisPaketIdSet.Add(dKesimId);
+
+                // Collect information for KesimDetaylariData
+                // adetKayit calculation: dataGridView2 adet * paketAdet * EK_count
+                int adetKayitFinal = adet * paketAdet; // adet (dg2) * paketAdet (dg3)
+                bool ekVarForDetails = false;
+                var match = regex.Match(orijinalKod);
+                if (match.Success)
+                {
+                    adetKayitFinal *= 1;
+                    ekVarForDetails = true; // Mark as having EK
+                }
+
+                // KesimDetaylariData'ya kaydedilecek bilgiler
+                string malzemeKodForDetails = $"{kalip}-{poz}";
+
+                // YENİ EKLENEN KISIM: İki tireden sonraki kısmı atma
+                int firstHyphenIndex = malzemeKodForDetails.IndexOf('-');
+                int secondHyphenIndex = -1;
+                if (firstHyphenIndex != -1)
+                {
+                    secondHyphenIndex = malzemeKodForDetails.IndexOf('-', firstHyphenIndex + 1);
+                }
+
+                if (secondHyphenIndex != -1 && secondHyphenIndex + 1 < malzemeKodForDetails.Length)
+                {
+                    // Üçüncü tirenin indeksini bul (eğer varsa)
+                    int thirdHyphenIndex = malzemeKodForDetails.IndexOf('-', secondHyphenIndex + 1);
+                    if (thirdHyphenIndex != -1)
+                    {
+                        malzemeKodForDetails = malzemeKodForDetails.Substring(0, thirdHyphenIndex);
+                    }
+                }
+
+                detayKayitBilgileri.Add(Tuple.Create(ifsKalite, ifsMalzeme, malzemeKodForDetails, proje, adetKayitFinal, ekVarForDetails));
             }
 
-            foreach (var entry in kalipPozProjeAdet)
+            // ---
+            // Stok kontrolü (PAKET ADEDİ İLE ÇARPILMIŞ TOPLAM ADETLER ile)
+            foreach (var entry in kalipPozProjeToplamAdet)
             {
                 var (kalip, poz, proje) = entry.Key;
-                int toplamAdet = entry.Value;
-                string kalipPozForValidation = $"{kalip}-{poz}";
+                int toplamAdet = entry.Value; // Bu, paket adedi ile çarpılmış toplam adettir.
 
+                string kalipPozForValidation = $"{kalip}-{poz}";
                 if (!AutoCadAktarimData.GetirStandartGruplar(kalip))
                 {
                     string kalip00 = $"{kalip.Substring(0, 3)}-00";
@@ -710,11 +1142,11 @@ namespace CEKA_APP.UsrControl
                     hataMesajlari.Add(
                         $"Stok Yetersizliği: [{kalite} - {malzeme} - {kalip} - {poz} - {proje}]\n" +
                         $"Planlanan: {toplamAdet}, Yüklenen: {toplamAdetYuklenen}, Toplam Talep: {toplamAdet + toplamAdetYuklenen}, Stok: {toplamAdetIfs}\n" +
-                        $"❗  Toplam ihtiyaç, mevcut stok miktarını aşmaktadır.\n"
+                        $"❗ Toplam ihtiyaç, mevcut stok miktarını aşmaktadır.\n"
                     );
-
                 }
             }
+            // ---
 
             if (hataMesajlari.Count > 0)
             {
@@ -725,63 +1157,23 @@ namespace CEKA_APP.UsrControl
 
             bool kayitYapildi = false;
 
-            foreach (DataGridViewRow row in dataGridView1.Rows)
+            // ---
+            // KesimDetaylariData kayıtları
+            foreach (var detayBilgi in detayKayitBilgileri)
             {
-                if (row.IsNewRow || row.Cells[0].Value == null) continue;
+                string detayIfsKalite = detayBilgi.Item1;
+                string detayIfsMalzeme = detayBilgi.Item2;
+                string detayMalzemeKod = detayBilgi.Item3; // Burada artık kısaltılmış değeri içeriyor
+                string detayProje = detayBilgi.Item4;
+                int detayAdetKayit = detayBilgi.Item5;
+                bool detayEkVar = detayBilgi.Item6;
 
-                string malzemeDg = row.Cells[1].Value?.ToString()?.Trim() ?? "";
-                string kalipDg = row.Cells[2].Value?.ToString()?.Trim() ?? "";
-                string pozDg = row.Cells[3].Value?.ToString()?.Trim() ?? "";
-                string numericPartDg = pozDg.Replace("P", "").Replace("p", "");
-                if (int.TryParse(numericPartDg, out int numberDg))
-                {
-                    pozDg = numberDg.ToString("D2");
-                }
-
-                string malzemeKodDg = $"{kalipDg}-{pozDg}";
-                string projeDg = row.Cells[5].Value?.ToString()?.Trim() ?? "";
-                string adetStrDg = row.Cells[4].Value?.ToString()?.Trim() ?? "";
-                int adetDg = 0;
-                if (!string.IsNullOrEmpty(adetStrDg))
-                {
-                    adetStrDg = adetStrDg.ToUpper().Replace("AD", "").Trim();
-                    int.TryParse(adetStrDg, out adetDg);
-                }
-
-                int adetKayit = adetDg;
-
-                HashSet<string> ekSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                Regex regex = new Regex(@"-EK(\d+)", RegexOptions.IgnoreCase);
-
-                foreach (DataGridViewRow row2 in dataGridView2.Rows)
-                {
-                    if (row2.IsNewRow || row2.Cells[0].Value == null) continue;
-
-                    string orijinalKod = row2.Cells[0].Value?.ToString() ?? "";
-                    if (string.IsNullOrEmpty(orijinalKod)) continue;
-
-                    string kontrolKod = $"{kalipDg}-P{pozDg}";
-                    if (orijinalKod.StartsWith(kontrolKod, StringComparison.OrdinalIgnoreCase))
-                    {
-                        var match = regex.Match(orijinalKod);
-                        if (match.Success)
-                        {
-                            string ekKodu = match.Value.ToUpper();
-                            ekSet.Add(ekKodu);
-                        }
-                    }
-                }
-
-                if (ekSet.Count > 0)
-                {
-                    adetKayit = adetDg * ekSet.Count;
-                }
-
-                bool ekVar = ekSet.Count > 0;
-
-                KesimDetaylariData.SaveKesimDetaylariData(ifsKalite, ifsMalzeme, malzemeKodDg, projeDg, adetKayit, adetKayit, ekVar);
+                KesimDetaylariData.SaveKesimDetaylariData(detayIfsKalite, detayIfsMalzeme, detayMalzemeKod, detayProje, detayAdetKayit, detayAdetKayit, detayEkVar);
+                kayitYapildi = true;
             }
+            // ---
 
+            // KesimListesiPaketData ve KesimListesiData kayıtları (geciciKayitlar listesi kullanılarak)
             foreach (var kayit in geciciKayitlar)
             {
                 string dKesimId = kayit.Item1;
@@ -792,16 +1184,19 @@ namespace CEKA_APP.UsrControl
                 int adet = kayit.Item6;
                 int paketAdet = kayit.Item7;
 
-                if (!islenmisPaketIdSet.Contains(dKesimId)) continue;
-
                 KesimListesiPaketData.SaveKesimDataPaket(olusturan, dKesimId, paketAdet, paketAdet, eklemeTarihi);
-                IdUreticiData.SiradakiIdKaydet(currentId.Value);
                 KesimListesiData.SaveKesimData(olusturan, dKesimId, proje, malzeme, kalite,
                     new string[] { kalip }, new string[] { poz }, new string[] { adetStr }, eklemeTarihi);
-
-                kayitYapildi = true;
             }
+            // ---
 
+            if (kayitYapildi)
+            {
+                IdUreticiData.SiradakiIdKaydet(currentId.Value);
+            }
+            // ---
+
+            // Mesaj kutuları ve temizleme
             if (hataMesajlari.Count > 0)
             {
                 hataMesaji = "Aşağıdaki uyarilar bulundu:\n\n" + string.Join("\n", hataMesajlari);
@@ -824,7 +1219,298 @@ namespace CEKA_APP.UsrControl
             {
                 MessageBox.Show("Hiçbir geçerli satır bulunamadı, kayıt yapılmadı!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
-        }
+        }       
+        //private void btnKaydet_Click(object sender, EventArgs e)
+        //{
+        //    if (!currentId.HasValue)
+        //    {
+        //        MessageBox.Show("Lütfen önce bir kesim oluşturun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //        return;
+        //    }
+
+        //    string olusturan = _formArayuzu.lblSistemKullaniciMetinAl();
+        //    string malzeme = txtMalzeme.Text.Trim();
+        //    string kalite = txtKalite.Text.Trim();
+        //    DateTime eklemeTarihi = DateTime.Now;
+        //    string Id = txtId.Text.Trim();
+        //    string hataMesaji;
+
+        //    HashSet<string> islenmisPaketIdSet = new HashSet<string>();
+        //    List<string> hataMesajlari = new List<string>();
+        //    List<Tuple<string, string, string, string, string, int, int>> geciciKayitlar = new List<Tuple<string, string, string, string, string, int, int>>();
+
+        //    if (string.IsNullOrEmpty(Id))
+        //    {
+        //        MessageBox.Show("Lütfen geçerli bir ID giriniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //        return;
+        //    }
+
+        //    if (KesimListesiPaketData.KesimIdVarMi(Id))
+        //    {
+        //        MessageBox.Show($"Girilen ID zaten sistemde mevcut: {Id}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //        txtId.Text = "";
+        //        dataGridView1.Rows.Clear();
+        //        dataGridView2.Rows.Clear();
+        //        dataGridView3.Rows.Clear();
+        //        return;
+        //    }
+
+        //    string ifsKalite = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKalite(kalite);
+        //    if (string.IsNullOrEmpty(ifsKalite))
+        //    {
+        //        hataMesajlari.Add($"Kalite '{kalite}' için eşleşme bulunamadı, hata mesajlarında orijinal değer kullanılacak.");
+        //        ifsKalite = kalite;
+        //    }
+        //    string ifsMalzeme = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
+        //    if (string.IsNullOrEmpty(ifsMalzeme))
+        //    {
+        //        hataMesajlari.Add(hataMesaji);
+        //        MessageBox.Show(hataMesaji, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        return;
+        //    }
+
+        //    Dictionary<(string, string, string), int> kalipPozProjeAdet = new Dictionary<(string, string, string), int>();
+
+        //    for (int i = 0; i < dataGridView2.Rows.Count; i++)
+        //    {
+        //        DataGridViewRow row = dataGridView2.Rows[i];
+        //        if (row.IsNewRow || row.Cells[0].Value == null) continue;
+
+        //        string orijinalKod = row.Cells[0].Value?.ToString()?.Trim() ?? "";
+        //        string dKesimId = row.Cells[1].Value?.ToString()?.Trim() ?? "";
+        //        string adetStr = row.Cells[2].Value?.ToString()?.Trim() ?? "";
+        //        string paketAdetStr = "";
+
+        //        foreach (DataGridViewRow d3Row in dataGridView3.Rows)
+        //        {
+        //            if (d3Row.IsNewRow || d3Row.Cells[0].Value == null) continue;
+
+        //            if (d3Row.Cells[0].Value.ToString() == dKesimId)
+        //            {
+        //                paketAdetStr = d3Row.Cells[2].Value?.ToString()?.Trim() ?? "";
+        //                break;
+        //            }
+        //        }
+
+        //        string[] parcalar = orijinalKod.Split('-');
+        //        string proje = "", kalip = "", poz = "", ekBilgi = "";
+
+        //        if (parcalar.Length >= 5)
+        //        {
+        //            kalip = $"{parcalar[0]}-{parcalar[1]}";
+        //            poz = parcalar[2];
+        //            proje = parcalar[4].Trim();
+
+        //            if (parcalar.Length >= 6)
+        //            {
+        //                ekBilgi = parcalar[5];
+        //            }
+        //        }
+        //        else
+        //        {
+        //            hataMesajlari.Add($"Satır {i + 1}: Geçersiz veri formatı: {orijinalKod}");
+        //            continue;
+        //        }
+
+        //        string numericPart = poz.Replace("P", "").Replace("p", "");
+        //        if (int.TryParse(numericPart, out int number))
+        //        {
+        //            poz = number.ToString("D2");
+        //            if (!string.IsNullOrEmpty(ekBilgi))
+        //            {
+        //                poz = $"{poz}-{ekBilgi}";
+        //            }
+        //        }
+        //        string kalipOrj = $"{kalip}-{poz}";
+        //        string kalipPoz = $"{kalip}-{poz}";
+        //        string kalipPozForValidation = kalipPoz;
+
+        //        if (!AutoCadAktarimData.GetirStandartGruplar(kalip))
+        //        {
+        //            string kalip00 = $"{kalip.Substring(0, 3)}-00";
+        //            kalipPoz = $"{kalip00}-{poz}";
+        //            kalipPozForValidation = kalipPoz;
+        //        }
+
+        //        int tireSayisi = kalipPoz.Count(c => c == '-');
+        //        if (tireSayisi >= 3)
+        //        {
+        //            int ucuncuTireIndex = kalipPoz.IndexOf('-', kalipPoz.IndexOf('-', kalipPoz.IndexOf('-') + 1) + 1);
+        //            kalipPozForValidation = kalipPoz.Substring(0, ucuncuTireIndex);
+        //        }
+
+        //        if (!int.TryParse(adetStr, out int adet))
+        //        {
+        //            hataMesajlari.Add($"Satır {i + 1}: Geçersiz adet formatı: {adetStr}");
+        //            continue;
+        //        }
+
+        //        var key = (kalip, poz, proje);
+        //        if (kalipPozProjeAdet.ContainsKey(key))
+        //        {
+        //            kalipPozProjeAdet[key] += adet;
+        //        }
+        //        else
+        //        {
+        //            kalipPozProjeAdet[key] = adet;
+        //        }
+
+        //        if (!int.TryParse(paketAdetStr, out int paketAdet))
+        //        {
+        //            hataMesajlari.Add($"Satır {i + 1}: Geçersiz paket adedi: {paketAdetStr}");
+        //            continue;
+        //        }
+
+        //        geciciKayitlar.Add(Tuple.Create(dKesimId, proje, kalip, poz, adetStr, adet, paketAdet));
+        //        islenmisPaketIdSet.Add(dKesimId);
+        //    }
+
+        //    foreach (var entry in kalipPozProjeAdet)
+        //    {
+        //        var (kalip, poz, proje) = entry.Key;
+        //        int toplamAdet = entry.Value;
+        //        string kalipPozForValidation = $"{kalip}-{poz}";
+
+        //        if (!AutoCadAktarimData.GetirStandartGruplar(kalip))
+        //        {
+        //            string kalip00 = $"{kalip.Substring(0, 3)}-00";
+        //            kalipPozForValidation = $"{kalip00}-{poz}";
+        //        }
+
+        //        int tireSayisi = kalipPozForValidation.Count(c => c == '-');
+        //        if (tireSayisi >= 3)
+        //        {
+        //            int ucuncuTireIndex = kalipPozForValidation.IndexOf('-', kalipPozForValidation.IndexOf('-', kalipPozForValidation.IndexOf('-') + 1) + 1);
+        //            kalipPozForValidation = kalipPozForValidation.Substring(0, ucuncuTireIndex);
+        //        }
+
+        //        var (isValid, toplamAdetIfs, toplamAdetYuklenen) = AutoCadAktarimData.KontrolAdeta(ifsKalite, ifsMalzeme, kalipPozForValidation, proje, toplamAdet);
+
+        //        if (!isValid)
+        //        {
+        //            hataMesajlari.Add(
+        //                $"Stok Yetersizliği: [{kalite} - {malzeme} - {kalip} - {poz} - {proje}]\n" +
+        //                $"Planlanan: {toplamAdet}, Yüklenen: {toplamAdetYuklenen}, Toplam Talep: {toplamAdet + toplamAdetYuklenen}, Stok: {toplamAdetIfs}\n" +
+        //                $"❗  Toplam ihtiyaç, mevcut stok miktarını aşmaktadır.\n"
+        //            );
+
+        //        }
+        //    }
+
+        //    if (hataMesajlari.Count > 0)
+        //    {
+        //        hataMesaji = "Aşağıdaki satırlarda hata bulundu:\n\n" + string.Join("\n", hataMesajlari);
+        //        MessageBox.Show(hataMesaji, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //        return;
+        //    }
+
+        //    bool kayitYapildi = false;
+
+        //    foreach (DataGridViewRow row in dataGridView1.Rows)
+        //    {
+        //        if (row.IsNewRow || row.Cells[0].Value == null) continue;
+
+        //        string malzemeDg = row.Cells[1].Value?.ToString()?.Trim() ?? "";
+        //        string kalipDg = row.Cells[2].Value?.ToString()?.Trim() ?? "";
+        //        string pozDg = row.Cells[3].Value?.ToString()?.Trim() ?? "";
+        //        string numericPartDg = pozDg.Replace("P", "").Replace("p", "");
+        //        if (int.TryParse(numericPartDg, out int numberDg))
+        //        {
+        //            pozDg = numberDg.ToString("D2");
+        //        }
+
+        //        string malzemeKodDg = $"{kalipDg}-{pozDg}";
+        //        string projeDg = row.Cells[5].Value?.ToString()?.Trim() ?? "";
+        //        string adetStrDg = row.Cells[4].Value?.ToString()?.Trim() ?? "";
+        //        int adetDg = 0;
+        //        if (!string.IsNullOrEmpty(adetStrDg))
+        //        {
+        //            adetStrDg = adetStrDg.ToUpper().Replace("AD", "").Trim();
+        //            int.TryParse(adetStrDg, out adetDg);
+        //        }
+
+        //        int adetKayit = adetDg;
+
+        //        HashSet<string> ekSet = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        //        Regex regex = new Regex(@"-EK(\d+)", RegexOptions.IgnoreCase);
+
+        //        foreach (DataGridViewRow row2 in dataGridView2.Rows)
+        //        {
+        //            if (row2.IsNewRow || row2.Cells[0].Value == null) continue;
+
+        //            string orijinalKod = row2.Cells[0].Value?.ToString() ?? "";
+        //            if (string.IsNullOrEmpty(orijinalKod)) continue;
+
+        //            string kontrolKod = $"{kalipDg}-P{pozDg}";
+        //            if (orijinalKod.StartsWith(kontrolKod, StringComparison.OrdinalIgnoreCase))
+        //            {
+        //                var match = regex.Match(orijinalKod);
+        //                if (match.Success)
+        //                {
+        //                    string ekKodu = match.Value.ToUpper();
+        //                    ekSet.Add(ekKodu);
+        //                }
+        //            }
+        //        }
+
+        //        if (ekSet.Count > 0)
+        //        {
+        //            adetKayit = adetDg * ekSet.Count;
+        //        }
+
+        //        bool ekVar = ekSet.Count > 0;
+
+        //        KesimDetaylariData.SaveKesimDetaylariData(ifsKalite, ifsMalzeme, malzemeKodDg, projeDg, adetKayit, adetKayit, ekVar);
+        //    }
+
+        //    foreach (var kayit in geciciKayitlar)
+        //    {
+        //        string dKesimId = kayit.Item1;
+        //        string proje = kayit.Item2;
+        //        string kalip = kayit.Item3;
+        //        string poz = kayit.Item4;
+        //        string adetStr = kayit.Item5;
+        //        int adet = kayit.Item6;
+        //        int paketAdet = kayit.Item7;
+
+        //        if (!islenmisPaketIdSet.Contains(dKesimId)) continue;
+
+        //        KesimListesiPaketData.SaveKesimDataPaket(olusturan, dKesimId, paketAdet, paketAdet, eklemeTarihi);
+        //        IdUreticiData.SiradakiIdKaydet(currentId.Value);
+        //        KesimListesiData.SaveKesimData(olusturan, dKesimId, proje, malzeme, kalite,
+        //            new string[] { kalip }, new string[] { poz }, new string[] { adetStr }, eklemeTarihi);
+
+        //        kayitYapildi = true;
+        //    }
+
+        //    if (hataMesajlari.Count > 0)
+        //    {
+        //        hataMesaji = "Aşağıdaki uyarilar bulundu:\n\n" + string.Join("\n", hataMesajlari);
+        //        MessageBox.Show(hataMesaji, "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //    }
+
+        //    if (islenmisPaketIdSet.Count > 0 && !kayitYapildi)
+        //    {
+        //        MessageBox.Show("Paket başarıyla oluşturuldu, ancak içerik eklenmedi!", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //    }
+        //    else if (kayitYapildi)
+        //    {
+        //        var userController = new LogEkle(_formArayuzu.lblSistemKullaniciMetinAl());
+        //        userController.LogYap("KesimPlaniEklendi", "Kesim Planı Ekle", $"Kullanıcı {currentId.Value} numaralı kesim planını yükledi.");
+        //        ExportToXmlWithDialog(dataGridView1);
+        //        MessageBox.Show("Kayıt işlemi başarıyla tamamlandı ve XML dosyası oluşturuldu.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //        Temizle();
+        //    }
+        //    else
+        //    {
+        //        MessageBox.Show("Hiçbir geçerli satır bulunamadı, kayıt yapılmadı!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        //    }
+        //}
+
+
+
+
+
         //private void btnKaydet_Click(object sender, EventArgs e)
         //{
         //    if (!currentId.HasValue)
@@ -1429,6 +2115,7 @@ namespace CEKA_APP.UsrControl
 
             ExportToXml(dgv, dosyaYolu);
         }
+
         public void ExportToXml(DataGridView dgv, string dosyaYolu)
         {
             if (string.IsNullOrWhiteSpace(txtId.Text) || string.IsNullOrWhiteSpace(txtSite.Text))
@@ -1476,11 +2163,11 @@ namespace CEKA_APP.UsrControl
                     string kalite = (dgv.Rows[0].Cells[0].Value?.ToString() ?? "").Trim();
                     string kaliteXml = kalite;
                     var kaliteDonusumleri = new Dictionary<string, string>
-            {
-                { "ST37", "S235JR" },
-                { "ST44", "S275JR" },
-                { "ST52", "S355J2" }
-            };
+                {
+                    { "ST37", "S235JR" },
+                    { "ST44", "S275JR" },
+                    { "ST52", "S355J2" }
+                };
                     if (kaliteDonusumleri.TryGetValue(kalite, out var donusum))
                     {
                         kaliteXml = donusum;
@@ -1489,19 +2176,25 @@ namespace CEKA_APP.UsrControl
 
                     writer.WriteElementString("EklemeTarihi", dtEklemeTarihi.Value.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture).Trim());
 
+                    // BURASI GÜNCELLENDİ: dataGridView2'den veri çekme ve gruplama mantığı
                     var parcaBySayfaId = dataGridView2.Rows.Cast<DataGridViewRow>()
                         .Where(row => !row.IsNewRow && row.Cells[1].Value != null)
-                        .GroupBy(row => (SayfaId: row.Cells[1].Value.ToString().Trim(), Poz: ExtractPoz(row.Cells[0].Value?.ToString()?.Trim())))
+                        .GroupBy(row => new // Gruplama anahtarı: Sayfa ID ve Kalıp Verisi
+                        {
+                            SayfaId = row.Cells[1].Value.ToString().Trim(), // 2. kolon (index 1)
+                            KalipVerisi = row.Cells[0].Value?.ToString()?.Trim() // 1. kolon (index 0)
+                        })
                         .Select(g => new
                         {
                             g.Key.SayfaId,
-                            g.Key.Poz,
+                            g.Key.KalipVerisi, // Orijinal kalıp verisini de burada tutuyoruz
+                            Poz = ExtractPoz(g.Key.KalipVerisi), // Poz'u kalıp verisinden çıkarıyoruz
                             ParcaRows = g.ToList(),
-                            ToplamAdet = g.Sum(row => double.TryParse(row.Cells[2].Value?.ToString()?.Trim(), out double adet) ? adet : 0),
-                            ToplamEkOran = g.Sum(row => double.TryParse(row.Cells[4].Value?.ToString()?.Trim(), out double oran) ? oran : 0),
+                            ToplamAdet = g.Sum(row => double.TryParse(row.Cells[2].Value?.ToString()?.Trim(), out double adet) ? adet : 0), // 3. kolon (index 2)
+                            ToplamEkOran = g.Sum(row => double.TryParse(row.Cells[4].Value?.ToString()?.Trim(), out double oran) ? oran : 0), // 5. kolon (index 4)
                             EkAdi = g.FirstOrDefault(row => row.Cells[0].Value?.ToString().Contains("EK") == true)?.Cells[0].Value?.ToString().Split('-').LastOrDefault(p => p.Contains("EK")) ?? "-"
                         })
-                        .GroupBy(x => x.SayfaId)
+                        .GroupBy(x => x.SayfaId) // Sayfa ID'ye göre tekrar gruplayıp sözlüğe dönüştürüyoruz
                         .ToDictionary(g => g.Key, g => g.ToList());
 
                     foreach (DataGridViewRow sayfaRow in dataGridView3.Rows)
@@ -1521,7 +2214,8 @@ namespace CEKA_APP.UsrControl
                             {
                                 writer.WriteStartElement("Parca");
 
-                                string kalipVerisi = parcaGroup.ParcaRows.First().Cells[0].Value?.ToString() ?? "";
+                                // Artık kalipVerisi parcaGroup'un kendisinden geliyor
+                                string kalipVerisi = parcaGroup.KalipVerisi;
                                 string[] parcalar = kalipVerisi.Split('-');
                                 string kalip = kalipVerisi, poz = parcaGroup.Poz, proje = "";
 
@@ -1531,6 +2225,7 @@ namespace CEKA_APP.UsrControl
                                     string birParca = parcalar[1].Trim();
 
                                     kalip = $"{sifirParca}-{birParca}";
+                                    // AutoCadAktarimData sınıfınızın ve GetirStandartGruplar metodunun mevcut olması gerekiyor.
                                     if (!AutoCadAktarimData.GetirStandartGruplar(kalip))
                                     {
                                         birParca = "00";
@@ -1572,6 +2267,8 @@ namespace CEKA_APP.UsrControl
                     writer.WriteEndDocument();
                 }
 
+                // LogEkle sınıfınızın ve _formArayuzu nesnesinin dışarıdan sağlanması gerekiyor.
+                // Bu kısım için LogEkle sınıfının bir örneğinin ve lblSistemKullaniciMetinAl() metodunun varlığını varsayıyoruz.
                 var userController = new LogEkle(_formArayuzu.lblSistemKullaniciMetinAl());
                 userController.LogYap("XmlDosyasiOlusturuldu", "Kesim Planı Ekle", $"Kullanıcı {txtId.Text.Trim()} numaralı kesim planı XML dosyası oluşturdu.");
             }
@@ -1588,172 +2285,11 @@ namespace CEKA_APP.UsrControl
             if (parcalar.Length >= 3)
             {
                 string poz = parcalar[2].Trim();
-                return poz.StartsWith("P") ? poz : $"P{poz}";
+                // Eğer Poz zaten 'P' ile başlıyorsa tekrar 'P' eklemeyin
+                return poz.StartsWith("P", StringComparison.OrdinalIgnoreCase) ? poz : $"P{poz}";
             }
             return "";
         }
-
-        //public void ExportToXml(DataGridView dgv, string dosyaYolu)
-        //{
-        //    if (string.IsNullOrWhiteSpace(txtId.Text) || string.IsNullOrWhiteSpace(txtSite.Text))
-        //    {
-        //        MessageBox.Show("ID veya Site alanı boş olamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        return;
-        //    }
-
-        //    if (dgv.Rows.Count == 0 || dgv.Rows[0].IsNewRow)
-        //    {
-        //        MessageBox.Show("DataGridView'de veri bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        return;
-        //    }
-
-        //    XmlWriterSettings ayarlar = new XmlWriterSettings { Indent = true };
-
-        //    try
-        //    {
-        //        string directory = Path.GetDirectoryName(dosyaYolu);
-        //        if (!Directory.Exists(directory))
-        //        {
-        //            Directory.CreateDirectory(directory);
-        //        }
-
-        //        using (XmlWriter writer = XmlWriter.Create(dosyaYolu, ayarlar))
-        //        {
-        //            writer.WriteStartDocument();
-        //            writer.WriteStartElement("YerlesimPlaniBilgileri");
-
-        //            writer.WriteElementString("ID", txtId.Text.Trim());
-        //            writer.WriteElementString("Site", txtSite.Text.Trim());
-
-        //            string stokKodu = (dgv.Rows[0].Cells[1].Value?.ToString() ?? "").Trim();
-        //            string stokKoduXml = stokKodu;
-        //            if (!string.IsNullOrEmpty(stokKodu) && Regex.IsMatch(stokKodu, @"MM$", RegexOptions.IgnoreCase))
-        //            {
-        //                string sayiKismi = Regex.Replace(stokKodu, @"MM$", "", RegexOptions.IgnoreCase).Trim();
-        //                if (int.TryParse(sayiKismi, out int sayi))
-        //                {
-        //                    stokKoduXml = $"KPL{sayi:D3}";
-        //                }
-        //            }
-        //            writer.WriteElementString("StokKodu", stokKoduXml);
-
-        //            string kalite = (dgv.Rows[0].Cells[0].Value?.ToString() ?? "").Trim();
-        //            string kaliteXml = kalite;
-        //            var kaliteDonusumleri = new Dictionary<string, string>
-        //    {
-        //        { "ST37", "S235JR" },
-        //        { "ST44", "S275JR" },
-        //        { "ST52", "S355J2" }
-        //    };
-        //            if (kaliteDonusumleri.TryGetValue(kalite, out var donusum))
-        //            {
-        //                kaliteXml = donusum;
-        //            }
-        //            writer.WriteElementString("Kalite", kaliteXml);
-
-        //            writer.WriteElementString("EklemeTarihi", dtEklemeTarihi.Value.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture).Trim());
-
-        //            var parcaBySayfaId = dataGridView2.Rows.Cast<DataGridViewRow>()
-        //                .Where(row => !row.IsNewRow && row.Cells[1].Value != null)
-        //                .GroupBy(row => row.Cells[1].Value.ToString().Trim())
-        //                .ToDictionary(g => g.Key, g => g.ToList());
-
-        //            foreach (DataGridViewRow sayfaRow in dataGridView3.Rows)
-        //            {
-        //                if (sayfaRow.IsNewRow || sayfaRow.Cells[0].Value == null) continue;
-
-        //                string sayfaId = sayfaRow.Cells[0].Value.ToString().Trim();
-        //                writer.WriteStartElement("Sayfa");
-        //                writer.WriteElementString("ID", sayfaId);
-
-        //                string tekrarAdeti = (sayfaRow.Cells[2].Value?.ToString() ?? "1").Trim();
-        //                writer.WriteElementString("TekrarAdeti", tekrarAdeti);
-
-        //                if (parcaBySayfaId.TryGetValue(sayfaId, out var parcaRows))
-        //                {
-        //                    foreach (var parcaRow in parcaRows)
-        //                    {
-        //                        writer.WriteStartElement("Parca");
-
-        //                        string kalipVerisi = (parcaRow.Cells[0].Value?.ToString() ?? "").Trim();
-        //                        string[] parcalar = kalipVerisi.Split('-');
-        //                        string kalip = kalipVerisi, poz = "", proje = "";
-
-        //                        if (parcalar.Length >= 5)
-        //                        {
-        //                            string sifirParca = parcalar[0].Trim();
-        //                            string birParca = parcalar[1].Trim();
-
-        //                            kalip = $"{sifirParca}-{birParca}";
-        //                            if (!AutoCadAktarimData.GetirStandartGruplar(kalip))
-        //                            {
-        //                                birParca = "00";
-        //                                kalip = $"{sifirParca}-{birParca}";
-        //                            }
-
-        //                            poz = parcalar[2].Trim();
-        //                            proje = parcalar[4].Trim();
-
-        //                            if (poz.StartsWith("P"))
-        //                            {
-        //                                poz = poz.Substring(1);
-        //                                if (poz.Length == 1 && int.TryParse(poz, out int pozSayi))
-        //                                {
-        //                                    poz = pozSayi.ToString("D2");
-        //                                }
-        //                            }
-        //                        }
-
-        //                        writer.WriteElementString("Kalip", kalip);
-        //                        writer.WriteElementString("Poz", poz);
-        //                        writer.WriteElementString("Proje", proje);
-
-        //                        string ekAdi = "-";
-        //                        string ekOran = "-";
-        //                        string adetToWrite = (parcaRow.Cells[2].Value?.ToString() ?? "0").Trim();
-
-        //                        if (parcaRow.Cells[4].Value != null &&
-        //                            double.TryParse(parcaRow.Cells[4].Value.ToString().Trim(), out double oran) &&
-        //                            parcaRow.Cells[2].Value != null &&
-        //                            double.TryParse(parcaRow.Cells[2].Value.ToString().Trim(), out double adet))
-        //                        {
-        //                            ekOran = oran.ToString(CultureInfo.InvariantCulture).Trim();
-        //                            adetToWrite = "0";
-
-        //                            List<string> parcaList = parcaRow.Cells[0].Value?.ToString()
-        //                                .Split('-')
-        //                                .Select(p => p.Trim())
-        //                                .ToList() ?? new List<string>();
-
-        //                            if (parcaList.Any(p => p.Contains("EK")))
-        //                            {
-        //                                ekAdi = parcaList.First(p => p.Contains("EK"));
-        //                            }
-        //                        }
-
-        //                        writer.WriteElementString("Adet", adetToWrite);
-        //                        writer.WriteElementString("EkAdi", ekAdi);
-        //                        writer.WriteElementString("EkOran", ekOran);
-
-        //                        writer.WriteEndElement();
-        //                    }
-        //                }
-
-        //                writer.WriteEndElement();
-        //            }
-
-        //            writer.WriteEndElement();
-        //            writer.WriteEndDocument();
-        //        }
-
-        //        var userController = new LogEkle(_formArayuzu.lblSistemKullaniciMetinAl());
-        //        userController.LogYap("XmlDosyasiOlusturuldu", "Kesim Planı Ekle", $"Kullanıcı {txtId.Text.Trim()} numaralı kesim planı XML dosyası oluşturdu.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show($"XML oluşturma sırasında hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-        //}
 
         private void button2_Click(object sender, EventArgs e)
         {
@@ -2180,7 +2716,7 @@ namespace CEKA_APP.UsrControl
 
                 Regex partRegex = new Regex(@"(\d{5}\.\d{2,3}-\d{3}-00-P\d+)\s+(\d+)\s+([\d,.]+)\s+([\d,]+\.?\d*)\s+(-?[\d,]+\.?\d*)\s+(-?[\d,]+\.?\d*)", RegexOptions.IgnoreCase);
                 Regex cncRegex = new Regex(@"^\s*(\d+)\s+(\d+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)", RegexOptions.IgnoreCase);
-                Regex rich4Regex = new Regex(@"ST\d+-[A-Za-z0-9]+-(?<poz>\d+-\d+-P\d+)-\d*AD-(?<pozPrefix>[\d.]+).*\(Sayfa\s*[:]\s*(?<sayfa>\d+).*M[iı]ktar\s*[:\s]\s*(?<adet>\d+).*Program\s*[:\s]\s*(?<program>\d+)", RegexOptions.IgnoreCase);
+                Regex rich4Regex = new Regex(@"ST\d+-[A-Za-z0-9]+-(?<poz>\d+-\d+-P\d+)-\d*AD-(?<pozPrefix>[\d.]+).*\(Sayfa\s*[:]\s*(?<sayfa>\d+).*M[iı]ktar\s*[:\s]\s*(?<adet>\d+).*Program\s*[:\s]\s*(?<program>\d+)\s*,\s*Program Tekrarı\s*[:\s]\s*(?<tekrar>\d+)\)", RegexOptions.IgnoreCase);
 
                 var lines1 = text1.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
                 var lines4 = text4.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
@@ -2230,14 +2766,20 @@ namespace CEKA_APP.UsrControl
                             string sequenceStr = sequence.ToString("D2");
                             string parcaId = poz;
                             string uniqueId = $"{baseId}-{programId}-{sequenceStr}";
-                            partInfoDict[parcaId] = (poz, $"{baseId}-{programId}", adet, agirlik, uniqueId);
+                            string dictKey = $"{parcaId}|{currentCncProgram}";
+
+                            partInfoDict[dictKey] = (poz, $"{baseId}-{programId}", adet, agirlik, uniqueId);
                             logLines.Add($"Parça Bulundu: {parcaId} => Poz: {poz}, Program: {currentCncProgram}, Adet: {adet}, Ağırlık: {agirlik:F2}, Id: {uniqueId}");
                         }
                     }
                 }
 
+                logLines.Add($"partInfoDict: {string.Join(", ", partInfoDict.Select(kvp => $"{kvp.Key}:{kvp.Value.Id}"))}");
+
                 logLines.Add("\nRichTextBox4 Verileri:");
                 programSequenceDict.Clear();
+
+                logLines.Add($"programIdMap: {string.Join(", ", programIdMap.Select(kvp => $"{kvp.Key}:{kvp.Value}"))}");
 
                 foreach (var line in lines4)
                 {
@@ -2253,25 +2795,36 @@ namespace CEKA_APP.UsrControl
                         string pozPrefix = match.Groups["pozPrefix"].Value;
                         string programNo = match.Groups["program"].Value;
                         string adetStr = match.Groups["adet"].Value;
+                        string tekrarStr = match.Groups["tekrar"].Value;
 
                         string programId = programIdMap.ContainsKey(programNo) ? programIdMap[programNo] : "00";
 
                         int sequence = programSequenceDict.ContainsKey(programNo) ? programSequenceDict[programNo] + 1 : 1;
                         programSequenceDict[programNo] = sequence;
                         string sequenceStr = sequence.ToString("D2");
-                        string uniqueId = $"{baseId}-{programId}-{sequenceStr}";
-
-                        string formattedPoz = $"{pozSimple}-2AD-{pozPrefix}";
                         string parcaId = $"{pozPrefix}-{pozSimple}";
 
-                        if (partInfoDict.TryGetValue(parcaId, out var partInfo))
+                        string formattedPoz = $"{pozSimple}-2AD-{pozPrefix}";
+
+                        if (int.TryParse(adetStr, out int miktar) && int.TryParse(tekrarStr, out int tekrar))
                         {
-                            logLines.Add($"Eşleşme Bulundu: {cleanedLine},Id: {partInfo.Id}");
-                            finalOutputList.Add((partInfo.Id, formattedPoz, $"{baseId}-{programId}", partInfo.Adet, partInfo.Agirlik));
+                            string dictKey = $"{parcaId}|{programNo}";
+                            if (partInfoDict.TryGetValue(dictKey, out var partInfo))
+                            {
+                                logLines.Add($"Eşleşme Bulundu: {cleanedLine}, Id: {partInfo.Id}");
+                                finalOutputList.Add((partInfo.Id, formattedPoz, $"{baseId}-{programId}", miktar, partInfo.Agirlik));
+                            }
+                            else
+                            {
+                                logLines.Add($"Eşleşme Bulunamadı: {cleanedLine}");
+                                logLines.Add($"Hata Detayı: dictKey={dictKey}, parcaId={parcaId}, programId={programId}, programNo={programNo}");
+                                var relatedParts = partInfoDict.Keys.Where(k => k.StartsWith(parcaId + "|")).Select(k => $"{k}:{partInfoDict[k].Id}");
+                                logLines.Add($"partInfoDict'teki ilgili pozlar: {string.Join(", ", relatedParts)}");
+                            }
                         }
                         else
                         {
-                            logLines.Add($"Eşleşme Bulunamadı: {cleanedLine}");
+                            logLines.Add($"Hata: Adet veya Tekrar parse edilemedi: {cleanedLine}");
                         }
                     }
                     else
@@ -2534,7 +3087,6 @@ namespace CEKA_APP.UsrControl
                 log.WriteLine($"[{DateTime.Now}] İşlem tamamlandı");
             }
         }
-
         private void HesaplaEkAgirlikYuzdeleri()
         {
             try
@@ -2572,12 +3124,32 @@ namespace CEKA_APP.UsrControl
                         continue;
                     }
 
+                    double katsayi = 1;
+                    foreach (DataGridViewRow katsayiRow in dataGridView3.Rows)
+                    {
+                        if (katsayiRow.IsNewRow) continue;
+
+                        string katsayiID = katsayiRow.Cells[0].Value?.ToString() ?? "";
+                        if (katsayiID.Equals(sayfaID, StringComparison.OrdinalIgnoreCase))
+                        {
+                            string katsayiStr = katsayiRow.Cells[2].Value?.ToString() ?? "1";
+                            if (!double.TryParse(katsayiStr, NumberStyles.Any, CultureInfo.InvariantCulture, out katsayi))
+                            {
+                                katsayi = 1;
+                                logLines.Add($"Uyarı: SayfaID {sayfaID} için geçersiz katsayı, 1 olarak alındı.");
+                            }
+                            break;
+                        }
+                    }
+
+                    int guncelAdet = (int)(adet * katsayi);
+
                     string basePoz = ekRegex.Replace(poz, "");
 
                     if (!pozGroups.ContainsKey(basePoz))
                         pozGroups[basePoz] = new List<(string, string, int, double, DataGridViewRow)>();
 
-                    pozGroups[basePoz].Add((poz, sayfaID, adet, agirlik, row));
+                    pozGroups[basePoz].Add((poz, sayfaID, guncelAdet, agirlik, row));
                 }
 
                 logLines.Add("\nEK İbaresi İçeren Pozlar ve Yüzde Hesaplamaları:");
@@ -2607,13 +3179,93 @@ namespace CEKA_APP.UsrControl
                 string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "CEKA_APP");
                 string logPath = Path.Combine(appPath, "EkAdetAgirlikYuzdeLog.txt");
                 File.WriteAllLines(logPath, logLines);
-
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
+
+        //private void HesaplaEkAgirlikYuzdeleri()
+        //{
+        //    try
+        //    {
+        //        var logLines = new List<string> {
+        //    "=== EkAdetAgirlikYuzdeLog.txt ===",
+        //    $"İşlem Tarihi: {DateTime.Now}",
+        //    "\nDataGridView2 Veri Analizi:"
+        //};
+
+        //        Regex ekRegex = new Regex(@"-EK\d*(?=\s|$)", RegexOptions.IgnoreCase);
+
+        //        if (!dataGridView2.Columns.Contains("Oran"))
+        //        {
+        //            dataGridView2.Columns.Add("Oran", "Toplam Ağırlık Oranı");
+        //        }
+
+        //        var pozGroups = new Dictionary<string, List<(string Poz, string SayfaID, int Adet, double Agirlik, DataGridViewRow Row)>>();
+
+        //        foreach (DataGridViewRow row in dataGridView2.Rows)
+        //        {
+        //            if (row.IsNewRow) continue;
+
+        //            string poz = row.Cells[0].Value?.ToString() ?? "";
+        //            string sayfaID = row.Cells[1].Value?.ToString() ?? "";
+        //            string adetStr = row.Cells[2].Value?.ToString() ?? "0";
+        //            string agirlikStr = row.Cells[3].Value?.ToString() ?? "0";
+
+        //            agirlikStr = agirlikStr.Replace(",", ".");
+
+        //            if (!int.TryParse(adetStr, out int adet) ||
+        //                !double.TryParse(agirlikStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double agirlik))
+        //            {
+        //                logLines.Add($"Hata: Geçersiz adet veya ağırlık değeri - Poz: {poz}");
+        //                continue;
+        //            }
+
+        //            string basePoz = ekRegex.Replace(poz, "");
+
+        //            if (!pozGroups.ContainsKey(basePoz))
+        //                pozGroups[basePoz] = new List<(string, string, int, double, DataGridViewRow)>();
+
+        //            pozGroups[basePoz].Add((poz, sayfaID, adet, agirlik, row));
+        //        }
+
+        //        logLines.Add("\nEK İbaresi İçeren Pozlar ve Yüzde Hesaplamaları:");
+
+        //        foreach (var group in pozGroups)
+        //        {
+        //            string basePoz = group.Key;
+        //            var items = group.Value;
+
+        //            if (items.Any(item => ekRegex.IsMatch(item.Poz)))
+        //            {
+        //                double toplamAgirlik = items.Where(item => ekRegex.IsMatch(item.Poz))
+        //                                            .Sum(item => item.Agirlik * item.Adet);
+
+        //                logLines.Add($"\nPoz: {basePoz}, Toplam Ağırlık: {toplamAgirlik}");
+
+        //                foreach (var item in items.Where(i => ekRegex.IsMatch(i.Poz)))
+        //                {
+        //                    double oran = (item.Agirlik * item.Adet) / toplamAgirlik;
+        //                    logLines.Add($"  - Poz: {item.Poz}, Sayfa ID: {item.SayfaID}, Adet: {item.Adet}, Ağırlık: {item.Agirlik}, Parçanın Toplam Ağırlığa Oranı: {oran:F6}");
+
+        //                    item.Row.Cells["Oran"].Value = $"{oran:F6}";
+        //                }
+        //            }
+        //        }
+
+        //        string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "CEKA_APP");
+        //        string logPath = Path.Combine(appPath, "EkAdetAgirlikYuzdeLog.txt");
+        //        File.WriteAllLines(logPath, logLines);
+
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //}
 
         private void button4_Click_1(object sender, EventArgs e)
         {
@@ -2653,7 +3305,7 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            if (dataGridView3.Rows.Count == 0 || dataGridView3.Rows[0].IsNewRow)
+            if (_seciliButon != btnAdm && (dataGridView3.Rows.Count == 0 || dataGridView3.Rows[0].IsNewRow))
             {
                 MessageBox.Show("DataGridView3'te veri bulunamadı!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -2663,34 +3315,87 @@ namespace CEKA_APP.UsrControl
             {
                 string tempFilePath = Path.Combine(Path.GetTempPath(), $"ModifiedPDF_{Guid.NewGuid()}.pdf");
 
-                using (var memoryStream = new MemoryStream())
+                if (_seciliButon == btnAdm)
                 {
-                    using (var input = PdfSharp.Pdf.IO.PdfReader.Open(txtDosya.Text, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Modify))
+                    using (var pdfDocument = new iText.Kernel.Pdf.PdfDocument(new iText.Kernel.Pdf.PdfReader(txtDosya.Text), new iText.Kernel.Pdf.PdfWriter(tempFilePath)))
                     {
-                        foreach (DataGridViewRow row in dataGridView3.Rows)
+                        var uniqueNumbers = dataGridView2.Rows
+                            .Cast<DataGridViewRow>()
+                            .Where(row => !row.IsNewRow && row.Cells[1].Value != null)
+                            .Select(row => row.Cells[1].Value.ToString().Trim())
+                            .Distinct()
+                            .OrderBy(num => num)
+                            .ToList();
+
+                        int numberIndex = 0;
+
+                        var textLocations = FindCncLocations(txtDosya.Text);
+
+                        var locationsByPage = textLocations
+                            .GroupBy(loc => loc.PageNumber)
+                            .OrderBy(g => g.Key);
+
+                        foreach (var pageGroup in locationsByPage)
                         {
-                            if (row.IsNewRow || row.Cells[1].Value == null || row.Cells[0].Value == null) continue;
+                            if (numberIndex >= uniqueNumbers.Count) break;
 
-                            string sayfaNoStr = row.Cells[1].Value.ToString().Trim();
-                            string metin = row.Cells[0].Value.ToString().Trim();
+                            int pageNumber = pageGroup.Key;
+                            if (pageNumber < 1 || pageNumber > pdfDocument.GetNumberOfPages()) continue;
 
-                            if (!int.TryParse(sayfaNoStr, out int sayfaNo) || sayfaNo < 1 || sayfaNo > input.PageCount)
+                            var page = pdfDocument.GetPage(pageNumber);
+                            var canvas = new iText.Kernel.Pdf.Canvas.PdfCanvas(page);
+
+                            var sortedLocations = pageGroup.OrderBy(loc => loc.Y).Reverse().ToList();
+
+                            foreach (var location in sortedLocations)
                             {
-                                MessageBox.Show($"Geçersiz sayfa numarası: {sayfaNoStr}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                continue;
+                                if (numberIndex >= uniqueNumbers.Count) break;
+
+                                double xOffset = 600;
+                                double yOffset = 20;
+                                float fontSize = 14f;
+
+                                canvas.BeginText()
+                                        .SetFontAndSize(iText.Kernel.Font.PdfFontFactory.CreateFont(iText.IO.Font.Constants.StandardFonts.HELVETICA), fontSize)
+                                        .SetTextMatrix((float)(location.X + xOffset), (float)(location.Y + yOffset))
+                                        .ShowText(uniqueNumbers[numberIndex])
+                                        .EndText();
+
+                                numberIndex++;
+                            }
+                        }
+                    }
+                }
+                else 
+                {
+                    using (var memoryStream = new MemoryStream())
+                    {
+                        using (var input = PdfSharp.Pdf.IO.PdfReader.Open(txtDosya.Text, PdfSharp.Pdf.IO.PdfDocumentOpenMode.Modify))
+                        {
+                            foreach (DataGridViewRow row in dataGridView3.Rows)
+                            {
+                                if (row.IsNewRow || row.Cells[1].Value == null || row.Cells[0].Value == null) continue;
+
+                                string sayfaNoStr = row.Cells[1].Value.ToString().Trim();
+                                string metin = row.Cells[0].Value.ToString().Trim();
+
+                                if (!int.TryParse(sayfaNoStr, out int sayfaNo) || sayfaNo < 1 || sayfaNo > input.PageCount)
+                                {
+                                    MessageBox.Show($"Geçersiz sayfa numarası: {sayfaNoStr}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    continue;
+                                }
+
+                                var gfx = PdfSharp.Drawing.XGraphics.FromPdfPage(input.Pages[sayfaNo - 1], PdfSharp.Drawing.XGraphicsPdfPageOptions.Append);
+                                var font = new PdfSharp.Drawing.XFont("Arial", 20);
+                                gfx.DrawString(metin, font, PdfSharp.Drawing.XBrushes.Black, new PdfSharp.Drawing.XPoint(400, 40));
                             }
 
-                            var gfx = PdfSharp.Drawing.XGraphics.FromPdfPage(input.Pages[sayfaNo - 1], PdfSharp.Drawing.XGraphicsPdfPageOptions.Append);
-                            var font = new PdfSharp.Drawing.XFont("Arial", 20);
-                            gfx.DrawString(metin, font, PdfSharp.Drawing.XBrushes.Black, new PdfSharp.Drawing.XPoint(400, 40));
-
+                            input.Save(memoryStream);
+                            memoryStream.Position = 0;
                         }
 
-                        input.Save(memoryStream);
-                        memoryStream.Position = 0;
+                        File.WriteAllBytes(tempFilePath, memoryStream.ToArray());
                     }
-
-                    File.WriteAllBytes(tempFilePath, memoryStream.ToArray());
                 }
 
                 using (var document = PdfiumViewer.PdfDocument.Load(tempFilePath))
@@ -2724,6 +3429,23 @@ namespace CEKA_APP.UsrControl
             }
         }
 
+        private List<(int PageNumber, double X, double Y)> FindCncLocations(string pdfPath)
+        {
+            var locations = new List<(int PageNumber, double X, double Y)>();
 
+            using (var pdfDocument = new iText.Kernel.Pdf.PdfDocument(new iText.Kernel.Pdf.PdfReader(pdfPath)))
+            {
+                for (int pageNum = 1; pageNum <= pdfDocument.GetNumberOfPages(); pageNum++)
+                {
+                    var page = pdfDocument.GetPage(pageNum);
+                    var strategy = new MetinKonumBulucu("CNC"); 
+                    var processor = new iText.Kernel.Pdf.Canvas.Parser.PdfCanvasProcessor(strategy);
+                    processor.ProcessPageContent(page);
+                    locations.AddRange(strategy.GetTextLocations().Select(loc => (pageNum, loc.X, loc.Y)));
+                }
+            }
+
+            return locations;
+        }
     }
 }

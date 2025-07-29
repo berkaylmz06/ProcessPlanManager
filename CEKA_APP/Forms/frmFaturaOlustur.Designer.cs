@@ -40,6 +40,7 @@
             this.txtProjeNo = new System.Windows.Forms.TextBox();
             this.btnNotEkle = new System.Windows.Forms.Button();
             this.label1 = new System.Windows.Forms.Label();
+            this.btnGoruntule = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // lblTutar
@@ -76,7 +77,7 @@
             // 
             // btnPdfOlustur
             // 
-            this.btnPdfOlustur.Location = new System.Drawing.Point(127, 351);
+            this.btnPdfOlustur.Location = new System.Drawing.Point(215, 347);
             this.btnPdfOlustur.Name = "btnPdfOlustur";
             this.btnPdfOlustur.Size = new System.Drawing.Size(159, 46);
             this.btnPdfOlustur.TabIndex = 6;
@@ -148,12 +149,23 @@
             this.label1.TabIndex = 14;
             this.label1.Text = "Müşteri:";
             // 
+            // btnGoruntule
+            // 
+            this.btnGoruntule.Location = new System.Drawing.Point(50, 347);
+            this.btnGoruntule.Name = "btnGoruntule";
+            this.btnGoruntule.Size = new System.Drawing.Size(159, 46);
+            this.btnGoruntule.TabIndex = 15;
+            this.btnGoruntule.Text = "Görüntüle";
+            this.btnGoruntule.UseVisualStyleBackColor = true;
+            this.btnGoruntule.Click += new System.EventHandler(this.btnGoruntule_Click);
+            // 
             // frmFaturaOlustur
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(955, 449);
+            this.Controls.Add(this.btnGoruntule);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.btnNotEkle);
             this.Controls.Add(this.txtProjeNo);
@@ -188,5 +200,6 @@
         private System.Windows.Forms.TextBox txtProjeNo;
         private System.Windows.Forms.Button btnNotEkle;
         private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Button btnGoruntule;
     }
 }

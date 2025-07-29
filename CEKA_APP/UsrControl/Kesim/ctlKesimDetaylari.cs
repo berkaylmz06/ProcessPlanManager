@@ -13,8 +13,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
-using static iText.Commons.Utils.PlaceHolderTextUtil;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement;
 
 namespace CEKA_APP.UsrControl
 {
@@ -226,15 +224,6 @@ namespace CEKA_APP.UsrControl
                 }
             }
         }
-        //private string NormalizeMalzemeKod(string malzemeKod)
-        //{
-        //    if (string.IsNullOrWhiteSpace(malzemeKod)) return malzemeKod;
-
-        //    var parts = malzemeKod.Split('-');
-        //    if (parts.Length != 3) return malzemeKod;
-
-        //    return $"{parts[0]}-00-{parts[2]}";
-        //}
 
         private string NormalizeMalzemeKod(string malzemeKod)
         {
@@ -243,16 +232,14 @@ namespace CEKA_APP.UsrControl
             var parts = malzemeKod.Split('-');
             if (parts.Length != 3) return malzemeKod;
 
-            // İlk iki parçayı birleştir (örneğin, ABC-12)
             string kalipKodu = $"{parts[0]}-{parts[1]}";
 
-            // StandartGruplar kontrolü
             if (AutoCadAktarimData.GetirStandartGruplar(kalipKodu))
             {
-                return malzemeKod; // StandartGruplar'da varsa orijinal haliyle dön
+                return malzemeKod; 
             }
 
-            return $"{parts[0]}-00-{parts[2]}"; // StandartGruplar'da yoksa 00 formatına çevir
+            return $"{parts[0]}-00-{parts[2]}";
         }
         private void OrtalaLabel(Label lbl, Panel pnl)
         {

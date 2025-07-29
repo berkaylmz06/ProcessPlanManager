@@ -14,5 +14,7 @@ namespace CEKA_APP.Entitys
         public int Adet { get; set; }
         public string MalzemeAd { get; set; }
         public string Kalite { get; set; }
+        public Guid? YuklemeId { get; set; }
+        public int OrjinalAdet { get; set; }
     }
 }

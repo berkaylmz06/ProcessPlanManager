@@ -1,5 +1,6 @@
 ﻿using CEKA_APP.DataBase;
 using System;
+using System.Configuration;
 using System.Deployment.Application;
 using System.Diagnostics;
 using System.Drawing;
@@ -36,7 +37,6 @@ namespace CEKA_APP
             KullaniciBilgileriniYukle();
             //GuncellemeKontrol();
         }
-
         public void GuncellemeKontrol()
         {
             try
@@ -53,7 +53,14 @@ namespace CEKA_APP
                     localVersion = fileVersionInfo.ProductVersion;
                 }
 
-                string remoteVersionFile = @"\\fileserver\proje\CEKA APP\version.txt";
+                string remoteVersionFile = ConfigurationManager.AppSettings["RemoteVersionFile"];
+                string setupFileLocation = ConfigurationManager.AppSettings["SetupFile"];
+
+                if (string.IsNullOrEmpty(remoteVersionFile) || string.IsNullOrEmpty(setupFileLocation))
+                {
+                    MessageBox.Show("Uygulama yapılandırma dosyasında (App.config) sürüm ve kurulum dosya yolları ('RemoteVersionFile', 'SetupFile') tanımlanmamış. Lütfen App.config dosyasını kontrol edin.", "Yapılandırma Hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
 
                 if (!File.Exists(remoteVersionFile))
                 {
@@ -83,11 +90,17 @@ namespace CEKA_APP
 
                     if (result == DialogResult.Yes)
                     {
-                        //Process.Start(@"\\fileserver\proje\CEKA APP\setup.exe");
-                        Process.Start(@"\\192.168.2.3\proje\CEKA APP\setup.exe");
+                        if (File.Exists(setupFileLocation))
+                        {
+                            Process.Start(setupFileLocation);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Kurulum dosyası bulunamadı:\n" + setupFileLocation, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        }
                     }
 
-                    Application.Exit();
+                    Application.Exit(); 
                 }
             }
             catch (Exception ex)

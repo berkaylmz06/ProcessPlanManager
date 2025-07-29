@@ -15,7 +15,6 @@ namespace CEKA_APP.Entitys.ProjeFinans
         public int siralama { get; set; }
         public decimal oran { get; set; }
         public decimal tutar { get; set; }
-
         public DateTime? tahminiTarih{ get; set; }
         public DateTime? gerceklesenTarih { get; set; } 
         public string aciklama { get; set; }
@@ -24,5 +23,6 @@ namespace CEKA_APP.Entitys.ProjeFinans
         public string durum { get; set; }
         public decimal odenenTutar { get; set; } 
         public decimal kalanTutar { get; set; }
+        public string faturaNo { get; set; }
     }
 }

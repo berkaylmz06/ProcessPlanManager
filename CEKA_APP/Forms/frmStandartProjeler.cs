@@ -138,7 +138,6 @@ namespace CEKA_APP
                 string secilenGrup = listGruplar.SelectedItem.ToString();
                 string projeAdi = txtProjeBagla.Text.Trim();
 
-                // Proje numarasının varlığını kontrol et
                 using (var conn = DataBaseHelper.GetConnection())
                 {
                     conn.Open();
@@ -155,12 +154,17 @@ namespace CEKA_APP
                     }
                 }
 
-                AutoCadAktarimData.GrupEkleGuncelle(projeAdi, secilenGrup, null);
-                MessageBox.Show("Grup başarıyla projeye bağlandı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                Guid yeniYuklemeId = Guid.NewGuid();
+
+                AutoCadAktarimData.UstGrupEkleGuncelle(projeAdi, secilenGrup, yeniYuklemeId, 1, null);
+
+                MessageBox.Show($"Grup '{secilenGrup}' başarıyla '{projeAdi}' projesine bağlandı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                txtProjeBagla.Clear();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Hata oluştu: {ex.Message}\nDetay: {ex.StackTrace}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
