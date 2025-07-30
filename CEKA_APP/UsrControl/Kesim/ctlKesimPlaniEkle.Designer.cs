@@ -30,6 +30,7 @@
         {
             this.panelVeriYonetim = new System.Windows.Forms.Panel();
             this.groupBoxVeriYonetim = new System.Windows.Forms.GroupBox();
+            this.lblDurum = new System.Windows.Forms.Label();
             this.btnYazdir = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
@@ -75,7 +76,6 @@
             this.button3 = new System.Windows.Forms.Button();
             this.btnSec = new System.Windows.Forms.Button();
             this.pdfViewer1 = new PdfiumViewer.PdfViewer();
-            this.lblDurum = new System.Windows.Forms.Label();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.panelVeriYonetim.SuspendLayout();
             this.groupBoxVeriYonetim.SuspendLayout();
@@ -132,9 +132,17 @@
             this.groupBoxVeriYonetim.TabIndex = 325;
             this.groupBoxVeriYonetim.TabStop = false;
             // 
+            // lblDurum
+            // 
+            this.lblDurum.AutoSize = true;
+            this.lblDurum.Location = new System.Drawing.Point(19, 695);
+            this.lblDurum.Name = "lblDurum";
+            this.lblDurum.Size = new System.Drawing.Size(0, 16);
+            this.lblDurum.TabIndex = 328;
+            // 
             // btnYazdir
             // 
-            this.btnYazdir.Location = new System.Drawing.Point(600, 710);
+            this.btnYazdir.Location = new System.Drawing.Point(600, 715);
             this.btnYazdir.Name = "btnYazdir";
             this.btnYazdir.Size = new System.Drawing.Size(79, 42);
             this.btnYazdir.TabIndex = 327;
@@ -330,7 +338,7 @@
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(175, 710);
+            this.btnKaydet.Location = new System.Drawing.Point(175, 715);
             this.btnKaydet.Margin = new System.Windows.Forms.Padding(2);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(350, 42);
@@ -583,14 +591,6 @@
             this.pdfViewer1.Name = "pdfViewer1";
             this.pdfViewer1.Size = new System.Drawing.Size(882, 899);
             this.pdfViewer1.TabIndex = 328;
-            // 
-            // lblDurum
-            // 
-            this.lblDurum.AutoSize = true;
-            this.lblDurum.Location = new System.Drawing.Point(22, 18);
-            this.lblDurum.Name = "lblDurum";
-            this.lblDurum.Size = new System.Drawing.Size(0, 20);
-            this.lblDurum.TabIndex = 328;
             // 
             // ctlBaslik1
             // 

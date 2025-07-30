@@ -959,9 +959,7 @@ namespace CEKA_APP.UsrControl
             HashSet<string> islenmisPaketIdSet = new HashSet<string>();
             List<string> hataMesajlari = new List<string>();
 
-            // Tuple: dKesimId, proje, kalip, poz, adetStr, adet (DataGridView2'den orijinal), paketAdet (DataGridView3'ten)
             List<Tuple<string, string, string, string, string, int, int>> geciciKayitlar = new List<Tuple<string, string, string, string, string, int, int>>();
-            // Tuple: ifsKalite, ifsMalzeme, malzemeKod (kalip-poz), proje, adetKayit (DG2*DG3*EK), ekVar
             List<Tuple<string, string, string, string, int, bool>> detayKayitBilgileri = new List<Tuple<string, string, string, string, int, bool>>();
 
             if (string.IsNullOrEmpty(Id))
@@ -995,11 +993,8 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            // This dictionary will hold the total/processed quantities for both KontrolAdeta and KesimDetaylariData.
-            // However, for KontrolAdeta, it will be multiplied by 'paketAdet'.
             Dictionary<(string kalip, string poz, string proje), int> kalipPozProjeToplamAdet = new Dictionary<(string, string, string), int>();
 
-            // Define Regex once outside the loop for performance.
             Regex regex = new Regex(@"-EK(\d+)", RegexOptions.IgnoreCase);
 
             for (int i = 0; i < dataGridView2.Rows.Count; i++)
@@ -1063,7 +1058,6 @@ namespace CEKA_APP.UsrControl
                     continue;
                 }
 
-                // Prepare the total quantities for KontrolAdeta, multiplied by package quantity
                 int hesaplananToplamAdetForValidation = adet * paketAdet;
                 var key = (kalip, poz, proje);
                 if (kalipPozProjeToplamAdet.ContainsKey(key))
@@ -1075,25 +1069,20 @@ namespace CEKA_APP.UsrControl
                     kalipPozProjeToplamAdet[key] = hesaplananToplamAdetForValidation;
                 }
 
-                // Temporary records to be used for KesimListesiPaketData and KesimListesiData
                 geciciKayitlar.Add(Tuple.Create(dKesimId, proje, kalip, poz, adetStr, adet, paketAdet));
                 islenmisPaketIdSet.Add(dKesimId);
 
-                // Collect information for KesimDetaylariData
-                // adetKayit calculation: dataGridView2 adet * paketAdet * EK_count
-                int adetKayitFinal = adet * paketAdet; // adet (dg2) * paketAdet (dg3)
+                int adetKayitFinal = adet * paketAdet;
                 bool ekVarForDetails = false;
                 var match = regex.Match(orijinalKod);
                 if (match.Success)
                 {
                     adetKayitFinal *= 1;
-                    ekVarForDetails = true; // Mark as having EK
+                    ekVarForDetails = true;
                 }
 
-                // KesimDetaylariData'ya kaydedilecek bilgiler
                 string malzemeKodForDetails = $"{kalip}-{poz}";
 
-                // YENİ EKLENEN KISIM: İki tireden sonraki kısmı atma
                 int firstHyphenIndex = malzemeKodForDetails.IndexOf('-');
                 int secondHyphenIndex = -1;
                 if (firstHyphenIndex != -1)
@@ -1103,7 +1092,6 @@ namespace CEKA_APP.UsrControl
 
                 if (secondHyphenIndex != -1 && secondHyphenIndex + 1 < malzemeKodForDetails.Length)
                 {
-                    // Üçüncü tirenin indeksini bul (eğer varsa)
                     int thirdHyphenIndex = malzemeKodForDetails.IndexOf('-', secondHyphenIndex + 1);
                     if (thirdHyphenIndex != -1)
                     {
@@ -1114,12 +1102,10 @@ namespace CEKA_APP.UsrControl
                 detayKayitBilgileri.Add(Tuple.Create(ifsKalite, ifsMalzeme, malzemeKodForDetails, proje, adetKayitFinal, ekVarForDetails));
             }
 
-            // ---
-            // Stok kontrolü (PAKET ADEDİ İLE ÇARPILMIŞ TOPLAM ADETLER ile)
             foreach (var entry in kalipPozProjeToplamAdet)
             {
                 var (kalip, poz, proje) = entry.Key;
-                int toplamAdet = entry.Value; // Bu, paket adedi ile çarpılmış toplam adettir.
+                int toplamAdet = entry.Value; 
 
                 string kalipPozForValidation = $"{kalip}-{poz}";
                 if (!AutoCadAktarimData.GetirStandartGruplar(kalip))
@@ -1146,7 +1132,6 @@ namespace CEKA_APP.UsrControl
                     );
                 }
             }
-            // ---
 
             if (hataMesajlari.Count > 0)
             {
@@ -1157,13 +1142,11 @@ namespace CEKA_APP.UsrControl
 
             bool kayitYapildi = false;
 
-            // ---
-            // KesimDetaylariData kayıtları
             foreach (var detayBilgi in detayKayitBilgileri)
             {
                 string detayIfsKalite = detayBilgi.Item1;
                 string detayIfsMalzeme = detayBilgi.Item2;
-                string detayMalzemeKod = detayBilgi.Item3; // Burada artık kısaltılmış değeri içeriyor
+                string detayMalzemeKod = detayBilgi.Item3; 
                 string detayProje = detayBilgi.Item4;
                 int detayAdetKayit = detayBilgi.Item5;
                 bool detayEkVar = detayBilgi.Item6;
@@ -1171,9 +1154,7 @@ namespace CEKA_APP.UsrControl
                 KesimDetaylariData.SaveKesimDetaylariData(detayIfsKalite, detayIfsMalzeme, detayMalzemeKod, detayProje, detayAdetKayit, detayAdetKayit, detayEkVar);
                 kayitYapildi = true;
             }
-            // ---
 
-            // KesimListesiPaketData ve KesimListesiData kayıtları (geciciKayitlar listesi kullanılarak)
             foreach (var kayit in geciciKayitlar)
             {
                 string dKesimId = kayit.Item1;
@@ -1188,15 +1169,12 @@ namespace CEKA_APP.UsrControl
                 KesimListesiData.SaveKesimData(olusturan, dKesimId, proje, malzeme, kalite,
                     new string[] { kalip }, new string[] { poz }, new string[] { adetStr }, eklemeTarihi);
             }
-            // ---
 
             if (kayitYapildi)
             {
                 IdUreticiData.SiradakiIdKaydet(currentId.Value);
             }
-            // ---
 
-            // Mesaj kutuları ve temizleme
             if (hataMesajlari.Count > 0)
             {
                 hataMesaji = "Aşağıdaki uyarilar bulundu:\n\n" + string.Join("\n", hataMesajlari);
@@ -1770,6 +1748,7 @@ namespace CEKA_APP.UsrControl
 
         private void Temizle()
         {
+            lblDurum.Text = "";
             txtId.Clear();
             txtMalzeme.Clear();
             txtKalite.Clear();

@@ -8,3 +8,4 @@ For other dependencies:
 - **PDFium**: Licensed under BSD-3-Clause. See `/LICENSES/LICENSE_PDFium.txt`.
 - **PDFsharp**: Licensed under MIT. See `/LICENSES/LICENSE_PDFsharp.txt`.
 - **Newtonsoft.Json**: Licensed under MIT. See `/LICENSES/LICENSE_Newtonsoft.Json.txt`.
+- **ExcelDataReader**: Licensed under MIT. See /LICENSES/LICENSE_ExcelDataReader.txt.

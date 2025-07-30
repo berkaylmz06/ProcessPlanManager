@@ -10,10 +10,10 @@ namespace CEKA_APP.Entitys.ProjeFinans
     {
         public string musteriNo { get; set; }
         public string musteriAdi { get; set; }
-        public string musteriMensei { get; set; }
+        public string vergiDairesi { get; set; }
         public string vergiNo { get; set; }
-        public string vergiDairesi { get; set; }    
         public string adres { get; set; }
-        public DateTime olusturmaTarihi { get; set; }
+        public string musteriMensei { get; set; }
+        public string doviz { get; set; }
     }
 }

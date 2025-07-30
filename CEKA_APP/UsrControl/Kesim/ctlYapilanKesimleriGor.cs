@@ -16,6 +16,8 @@ namespace CEKA_APP.UsrControl
     public partial class ctlYapilanKesimleriGor : UserControl
     {
         private IKullaniciAdiOgren _kullaniciAdi;
+        private Dictionary<string, string> sonFiltreKriterleri = new Dictionary<string, string>(); 
+
         public ctlYapilanKesimleriGor()
         {
             InitializeComponent();
@@ -30,14 +32,17 @@ namespace CEKA_APP.UsrControl
 
             tabloDuzenle();
         }
+
         private void ctlYapilanKesimleriGor_Load(object sender, EventArgs e)
         {
             ctlBaslik1.Baslik = "Yapılan Kesimleri Gör";
         }
+
         public void FormKullaniciAdiGetir(IKullaniciAdiOgren kullaniciAdi)
         {
             _kullaniciAdi = kullaniciAdi;
         }
+
         public void tabloDuzenle()
         {
             if (dataGridViewTamamlanmisKesimListesi.Columns.Contains("kesimYapan"))
@@ -55,19 +60,31 @@ namespace CEKA_APP.UsrControl
             if (dataGridViewTamamlanmisKesimListesi.Columns.Contains("kesimSaati"))
                 dataGridViewTamamlanmisKesimListesi.Columns["kesimSaati"].HeaderText = "Kesim Saati";
         }
+
         private void btnAra_Click(object sender, EventArgs e)
         {
             frmAra frm = new frmAra(
-         dataGridViewTamamlanmisKesimListesi.Columns,
-         KesimListesiFiltrele,
-         AramaSonucuGeldi,false);
+                dataGridViewTamamlanmisKesimListesi.Columns,
+                KesimListesiFiltrele,
+                AramaSonucuGeldi,
+                false,
+                sonFiltreKriterleri 
+            );
 
             frm.ShowDialog();
         }
+
         private DataTable KesimListesiFiltrele(Dictionary<string, TextBox> filtreler)
         {
+            sonFiltreKriterleri.Clear();
+            foreach (var filtre in filtreler)
+            {
+                sonFiltreKriterleri[filtre.Key] = filtre.Value.Text.Trim();
+            }
+
             return KesimTamamlanmisData.KesimTamamlanmisFiltrele(filtreler);
         }
+
         private void AramaSonucuGeldi(DataTable tablo)
         {
             dataGridViewTamamlanmisKesimListesi.DataSource = tablo;
@@ -85,7 +102,6 @@ namespace CEKA_APP.UsrControl
                 if (satir.Cells["kesimId"].Value != null)
                 {
                     string kesimId = satir.Cells["kesimId"].Value.ToString();
-
 
                     try
                     {
@@ -112,7 +128,6 @@ namespace CEKA_APP.UsrControl
                         dataGridViewTamamlanmisHareket.Columns[3].HeaderText = "Kesilen Adet";
                         dataGridViewTamamlanmisHareket.Columns[4].HeaderText = "Kesim Tarihi";
                         dataGridViewTamamlanmisHareket.Columns[5].HeaderText = "Kesim Saati";
-
                     }
                     catch (Exception ex)
                     {
@@ -121,6 +136,5 @@ namespace CEKA_APP.UsrControl
                 }
             }
         }
-
     }
 }

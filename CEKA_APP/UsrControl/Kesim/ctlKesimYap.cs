@@ -17,6 +17,8 @@ namespace CEKA_APP.UsrControl
     public partial class ctlKesimYap : UserControl
     {
         private IKullaniciAdiOgren _kullaniciAdi;
+        private Dictionary<string, string> sonFiltreKriterleri = new Dictionary<string, string>(); 
+
         public ctlKesimYap()
         {
             InitializeComponent();
@@ -32,14 +34,17 @@ namespace CEKA_APP.UsrControl
 
             VerileriYukle();
         }
+
         private void ctlKesimYap_Load(object sender, EventArgs e)
         {
             ctlBaslik1.Baslik = "Kesim Yap";
         }
+
         public void FormKullaniciAdiGetir(IKullaniciAdiOgren kullaniciAdi)
         {
             _kullaniciAdi = kullaniciAdi;
         }
+
         private void dataGridKesimListesi_CellClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0)
@@ -48,7 +53,6 @@ namespace CEKA_APP.UsrControl
                 if (satir.Cells["kesimId"].Value != null)
                 {
                     string kesimId = satir.Cells["kesimId"].Value.ToString();
-
 
                     try
                     {
@@ -73,6 +77,7 @@ namespace CEKA_APP.UsrControl
                 }
             }
         }
+
         public void VerileriYukle()
         {
             KesimListesiPaketData kesimdatas = new KesimListesiPaketData();
@@ -110,7 +115,6 @@ namespace CEKA_APP.UsrControl
 
             if (dataGridKesimListesi.Columns.Contains("eklemeTarihi"))
                 dataGridKesimListesi.Columns["eklemeTarihi"].HeaderText = "Ekleme Tarihi";
-
         }
 
         private void btnAra_Click(object sender, EventArgs e)
@@ -118,26 +122,55 @@ namespace CEKA_APP.UsrControl
             var userController = new LogEkle(_kullaniciAdi.lblSistemKullaniciMetinAl());
             userController.LogYap("Tabloda Arama", "Kesim Yap", "Kullanıcı Tabloda Arama Yaptı.");
 
+            List<DataGridViewColumn> tempFilteredColumns = new List<DataGridViewColumn>();
+            foreach (DataGridViewColumn column in dataGridKesimListesi.Columns)
+            {
+                if (column.Name != "Detay")
+                {
+                    DataGridViewColumn newCol = (DataGridViewColumn)column.Clone();
+                    tempFilteredColumns.Add(newCol);
+                }
+            }
 
-            frmAra frm = new frmAra(
-    dataGridKesimListesi.Columns,
-    KesimListesiFiltrele,
-    AramaSonucuGeldi,true);
+            using (DataGridView tempGrid = new DataGridView())
+            {
+                foreach (var col in tempFilteredColumns)
+                {
+                    tempGrid.Columns.Add(col);
+                }
 
-            frm.ShowDialog();
+                frmAra frm = new frmAra(
+                    tempGrid.Columns, 
+                    KesimListesiFiltrele,
+                    AramaSonucuGeldi,
+                    true,
+                    sonFiltreKriterleri
+                );
+
+                frm.ShowDialog();
+            }
         }
+
         private DataTable KesimListesiFiltrele(Dictionary<string, TextBox> filtreler)
         {
+            sonFiltreKriterleri.Clear();
+            foreach (var filtre in filtreler)
+            {
+                sonFiltreKriterleri[filtre.Key] = filtre.Value.Text.Trim();
+            }
+
             return KesimListesiPaketData.KesimListesiniPaketFiltrele(filtreler);
         }
+
         private void AramaSonucuGeldi(DataTable tablo)
         {
             dataGridKesimListesi.DataSource = tablo;
             if (dataGridKesimListesi.Columns.Contains("id"))
                 dataGridKesimListesi.Columns["id"].Visible = false;
 
-            tabloDuzenle(); 
+            tabloDuzenle();
         }
+
         private void btnPaketKes_Click(object sender, EventArgs e)
         {
             DateTime currentDateTime = DateTime.Now;

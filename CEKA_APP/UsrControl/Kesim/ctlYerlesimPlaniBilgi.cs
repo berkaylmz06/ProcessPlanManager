@@ -84,70 +84,76 @@ namespace CEKA_APP.UsrControl
                     if (result == DialogResult.Yes)
                     {
                         hataMesajlari.Clear();
-                        bool paketSilindi = KesimListesiPaketData.KesimListesiPaketSil(kesimId);
+                        bool tumDetaylarGuncellendi = true;
 
-                        if (paketSilindi)
+                        // Önce tüm detayları kontrol et, hata varsa silme işlemini yapma
+                        foreach (DataGridViewRow row in dataGridDetay.Rows)
                         {
-                            bool tumDetaylarGuncellendi = true;
-                            foreach (DataGridViewRow row in dataGridDetay.Rows)
+                            string kalite = row.Cells["kalite"].Value?.ToString();
+                            string malzeme = row.Cells["malzeme"].Value?.ToString();
+                            string kalipNo = row.Cells["kalipNo"].Value?.ToString();
+                            string kesilecekPozlar = row.Cells["kesilecekPozlar"].Value?.ToString();
+                            string proje = row.Cells["projeNo"].Value?.ToString();
+                            int silinecekAdet = 1;
+
+                            if (kalite != null && malzeme != null && kalipNo != null && kesilecekPozlar != null && proje != null)
                             {
-                                string kalite = row.Cells["kalite"].Value?.ToString();
-                                string malzeme = row.Cells["malzeme"].Value?.ToString();
-                                string kalipNo = row.Cells["kalipNo"].Value?.ToString();
-                                string kesilecekPozlar = row.Cells["kesilecekPozlar"].Value?.ToString();
-                                string proje = row.Cells["projeNo"].Value?.ToString();
-                                int silinecekAdet = 1;
-
-                                if (kalite != null && malzeme != null && kalipNo != null && kesilecekPozlar != null && proje != null)
+                                if (row.Cells["kpAdetSayilari"].Value != null && int.TryParse(row.Cells["kpAdetSayilari"].Value.ToString(), out int adet))
                                 {
-                                    if (row.Cells["kpAdetSayilari"].Value != null && int.TryParse(row.Cells["kpAdetSayilari"].Value.ToString(), out int adet))
-                                    {
-                                        silinecekAdet = adet > 0 ? adet : 1;
-                                    }
-                                    else
-                                    {
-                                        hataMesajlari.Add($"Satır için kpAdetSayilari değeri geçersiz veya null: {row.Cells["kpAdetSayilari"].Value}");
-                                    }
+                                    silinecekAdet = adet > 0 ? adet : 1;
+                                }
+                                else
+                                {
+                                    hataMesajlari.Add($"Satır için kpAdetSayilari değeri geçersiz veya null: {row.Cells["kpAdetSayilari"].Value}");
+                                    tumDetaylarGuncellendi = false;
+                                    break;
+                                }
 
-                                    string ifsKalite = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKalite(kalite);
-                                    if (string.IsNullOrEmpty(ifsKalite))
-                                    {
-                                        hataMesajlari.Add($"Kalite '{kalite}' için eşleşme bulunamadı, orijinal değer '{kalite}' kullanılacak.");
-                                        ifsKalite = kalite;
-                                    }
+                                string ifsKalite = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKalite(kalite);
+                                if (string.IsNullOrEmpty(ifsKalite))
+                                {
+                                    hataMesajlari.Add($"Kalite '{kalite}' için eşleşme bulunamadı, orijinal değer '{kalite}' kullanılacak.");
+                                    ifsKalite = kalite;
+                                }
 
-                                    string hataMesaji;
-                                    string ifsMalzeme = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
-                                    if (string.IsNullOrEmpty(ifsMalzeme))
-                                    {
-                                        hataMesajlari.Add(hataMesaji);
-                                    }
+                                string hataMesaji;
+                                string ifsMalzeme = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
+                                if (string.IsNullOrEmpty(ifsMalzeme))
+                                {
+                                    hataMesajlari.Add(hataMesaji);
+                                    tumDetaylarGuncellendi = false;
+                                    break;
+                                }
 
-                                    string kesilecekPozlarForValidation = kesilecekPozlar;
-                                    if (kesilecekPozlar.Contains("-"))
-                                    {
-                                        kesilecekPozlarForValidation = kesilecekPozlar.Substring(0, kesilecekPozlar.IndexOf("-"));
-                                    }
+                                string kesilecekPozlarForValidation = kesilecekPozlar;
+                                if (kesilecekPozlar.Contains("-"))
+                                {
+                                    kesilecekPozlarForValidation = kesilecekPozlar.Substring(0, kesilecekPozlar.IndexOf("-"));
+                                }
 
-                                    if (hataMesajlari.Count > 0)
+                                if (ifsKalite != null && ifsMalzeme != null)
+                                {
+                                    if (!KesimDetaylariData.GuncelleKesimDetaylari(ifsKalite, ifsMalzeme, kalipNo, kesilecekPozlarForValidation, proje, silinecekAdet, false))
                                     {
+                                        hataMesajlari.Add($"Kesim detayı ({kalite}, {malzeme}, {kalipNo}, {kesilecekPozlarForValidation}, {proje}) adet düşürme işlemi başarısız. Silinecek adet: {silinecekAdet}");
                                         tumDetaylarGuncellendi = false;
                                         break;
                                     }
-
-                                    if (ifsKalite != null && ifsMalzeme != null)
-                                    {
-                                        if (!KesimDetaylariData.GuncelleKesimDetaylari(ifsKalite, ifsMalzeme, kalipNo, kesilecekPozlarForValidation, proje, silinecekAdet, false))
-                                        {
-                                            hataMesajlari.Add($"Kesim detayı ({kalite}, {malzeme}, {kalipNo}, {kesilecekPozlarForValidation}, {proje}) adet düşürme işlemi başarısız. Silinecek adet: {silinecekAdet}");
-                                            tumDetaylarGuncellendi = false;
-                                            break;
-                                        }
-                                    }
                                 }
                             }
+                            else
+                            {
+                                hataMesajlari.Add("Eksik veri: Kalite, malzeme, kalıp no, kesilecek pozlar veya proje null.");
+                                tumDetaylarGuncellendi = false;
+                                break;
+                            }
+                        }
 
-                            if (tumDetaylarGuncellendi && hataMesajlari.Count == 0)
+                        // Hata yoksa silme işlemini gerçekleştir
+                        if (tumDetaylarGuncellendi && hataMesajlari.Count == 0)
+                        {
+                            bool paketSilindi = KesimListesiPaketData.KesimListesiPaketSil(kesimId);
+                            if (paketSilindi)
                             {
                                 MessageBox.Show($"Kesim ID: {kesimId} olan veri ve ilgili tüm kesim detaylarının adetleri başarıyla düşürüldü.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                                 VerileriYukle();
@@ -159,19 +165,12 @@ namespace CEKA_APP.UsrControl
                             }
                             else
                             {
-                                if (hataMesajlari.Count > 0)
-                                {
-                                    MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
-                                else
-                                {
-                                    MessageBox.Show("Adet düşürme işlemi tamamlanamadı. Lütfen tekrar deneyin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
+                                hataMesajlari.Add("Paket silme işlemi başarısız oldu.");
+                                MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
                         else
                         {
-                            hataMesajlari.Add("Paket silme işlemi başarısız oldu.");
                             MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
@@ -190,78 +189,74 @@ namespace CEKA_APP.UsrControl
                     if (result == DialogResult.Yes)
                     {
                         hataMesajlari.Clear();
-                        bool listeSilindi = KesimListesiData.KesimListesiSil(detayId);
+                        string kalite = dataGridDetay.Rows[e.RowIndex].Cells["kalite"].Value?.ToString();
+                        string malzeme = dataGridDetay.Rows[e.RowIndex].Cells["malzeme"].Value?.ToString();
+                        string kalipNo = dataGridDetay.Rows[e.RowIndex].Cells["kalipNo"].Value?.ToString();
+                        string kesilecekPozlar = dataGridDetay.Rows[e.RowIndex].Cells["kesilecekPozlar"].Value?.ToString();
+                        string proje = dataGridDetay.Rows[e.RowIndex].Cells["projeNo"].Value?.ToString();
+                        int silinecekAdet = 1;
 
-                        if (listeSilindi)
+                        if (kalite != null && malzeme != null && kalipNo != null && kesilecekPozlar != null && proje != null)
                         {
-                            string kalite = dataGridDetay.Rows[e.RowIndex].Cells["kalite"].Value?.ToString();
-                            string malzeme = dataGridDetay.Rows[e.RowIndex].Cells["malzeme"].Value?.ToString();
-                            string kalipNo = dataGridDetay.Rows[e.RowIndex].Cells["kalipNo"].Value?.ToString();
-                            string kesilecekPozlar = dataGridDetay.Rows[e.RowIndex].Cells["kesilecekPozlar"].Value?.ToString();
-                            string proje = dataGridDetay.Rows[e.RowIndex].Cells["projeNo"].Value?.ToString();
-                            int silinecekAdet = 1;
-
-                            if (kalite != null && malzeme != null && kalipNo != null && kesilecekPozlar != null && proje != null)
+                            if (dataGridDetay.Rows[e.RowIndex].Cells["kpAdetSayilari"].Value != null && int.TryParse(dataGridDetay.Rows[e.RowIndex].Cells["kpAdetSayilari"].Value.ToString(), out int adet))
                             {
-                                if (dataGridDetay.Rows[e.RowIndex].Cells["kpAdetSayilari"].Value != null && int.TryParse(dataGridDetay.Rows[e.RowIndex].Cells["kpAdetSayilari"].Value.ToString(), out int adet))
+                                silinecekAdet = adet > 0 ? adet : 1;
+                            }
+                            else
+                            {
+                                hataMesajlari.Add($"Seçilen satır için kpAdetSayilari değeri geçersiz veya null: {dataGridDetay.Rows[e.RowIndex].Cells["kpAdetSayilari"].Value}");
+                            }
+
+                            string ifsKalite = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKalite(kalite);
+                            if (string.IsNullOrEmpty(ifsKalite))
+                            {
+                                hataMesajlari.Add($"Kalite '{kalite}' için eşleşme bulunamadı, orijinal değer '{kalite}' kullanılacak.");
+                                ifsKalite = kalite;
+                            }
+
+                            string hataMesaji;
+                            string ifsMalzeme = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
+                            if (string.IsNullOrEmpty(ifsMalzeme))
+                            {
+                                hataMesajlari.Add(hataMesaji);
+                            }
+
+                            string kesilecekPozlarForValidation = kesilecekPozlar;
+                            if (kesilecekPozlar.Contains("-"))
+                            {
+                                kesilecekPozlarForValidation = kesilecekPozlar.Substring(0, kesilecekPozlar.IndexOf("-"));
+                            }
+
+                            if (hataMesajlari.Count > 0)
+                            {
+                                MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            }
+                            else if (ifsKalite != null && ifsMalzeme != null)
+                            {
+                                bool listeSilindi = KesimListesiData.KesimListesiSil(detayId);
+                                if (listeSilindi && KesimDetaylariData.GuncelleKesimDetaylari(ifsKalite, ifsMalzeme, kalipNo, kesilecekPozlarForValidation, proje, silinecekAdet, false))
                                 {
-                                    silinecekAdet = adet > 0 ? adet : 1;
+                                    MessageBox.Show($"Kesim detayı satırının {silinecekAdet} adet düşürüldü.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    var kesimId = dataGridKesimListesi.CurrentRow?.Cells["kesimId"].Value?.ToString();
+                                    if (kesimId != null)
+                                    {
+                                        YenileDetayTablosu(kesimId);
+
+                                        var userController = new LogEkle(_kullaniciAdi.lblSistemKullaniciMetinAl());
+                                        userController.LogYap("YerlesimPlaniIcerigiSilindi", "Yerleşim Planı Bilgi",
+                                            $"Kullanıcı {kesimId} numaralı kesimden içerik sildi. Kalite: {ifsKalite}, Malzeme: {ifsMalzeme}, MalzemeKod: {kalipNo}-{kesilecekPozlarForValidation}, Proje: {proje} Silinen Adet: {silinecekAdet}");
+                                    }
                                 }
                                 else
                                 {
-                                    hataMesajlari.Add($"Seçilen satır için kpAdetSayilari değeri geçersiz veya null: {dataGridDetay.Rows[e.RowIndex].Cells["kpAdetSayilari"].Value}");
-                                }
-
-                                string ifsKalite = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKalite(kalite);
-                                if (string.IsNullOrEmpty(ifsKalite))
-                                {
-                                    hataMesajlari.Add($"Kalite '{kalite}' için eşleşme bulunamadı, orijinal değer '{kalite}' kullanılacak.");
-                                    ifsKalite = kalite;
-                                }
-
-                                string hataMesaji;
-                                string ifsMalzeme = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
-                                if (string.IsNullOrEmpty(ifsMalzeme))
-                                {
-                                    hataMesajlari.Add(hataMesaji);
-                                }
-
-                                string kesilecekPozlarForValidation = kesilecekPozlar;
-                                if (kesilecekPozlar.Contains("-"))
-                                {
-                                    kesilecekPozlarForValidation = kesilecekPozlar.Substring(0, kesilecekPozlar.IndexOf("-"));
-                                }
-
-                                if (hataMesajlari.Count > 0)
-                                {
+                                    hataMesajlari.Add($"Kesim detayı satırı adet düşürme işlemi başarısız. Kalite: {ifsKalite}, Malzeme: {ifsMalzeme}, MalzemeKod: {kalipNo}-{kesilecekPozlarForValidation}, Silinecek Adet: {silinecekAdet}");
                                     MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                }
-                                else if (ifsKalite != null && ifsMalzeme != null)
-                                {
-                                    if (KesimDetaylariData.GuncelleKesimDetaylari(ifsKalite, ifsMalzeme, kalipNo, kesilecekPozlarForValidation, proje, silinecekAdet, false))
-                                    {
-                                        MessageBox.Show($"Kesim detayı satırının {silinecekAdet} adet düşürüldü.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                        var kesimId = dataGridKesimListesi.CurrentRow?.Cells["kesimId"].Value?.ToString();
-                                        if (kesimId != null)
-                                        {
-                                            YenileDetayTablosu(kesimId);
-
-                                            var userController = new LogEkle(_kullaniciAdi.lblSistemKullaniciMetinAl());
-                                            userController.LogYap("YerlesimPlaniIcerigiSilindi", "Yerleşim Planı Bilgi",
-                                                $"Kullanıcı {kesimId} numaralı kesimden içerik sildi. Kalite: {ifsKalite}, Malzeme: {ifsMalzeme}, MalzemeKod: {kalipNo}-{kesilecekPozlarForValidation}, Proje: {proje} Silinen Adet: {silinecekAdet}");
-                                        }
-                                    }
-                                    else
-                                    {
-                                        hataMesajlari.Add($"Kesim detayı satırı adet düşürme işlemi başarısız. Kalite: {ifsKalite}, Malzeme: {ifsMalzeme}, MalzemeKod: {kalipNo}-{kesilecekPozlarForValidation}, Silinecek Adet: {silinecekAdet}");
-                                        MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    }
                                 }
                             }
                         }
                         else
                         {
-                            hataMesajlari.Add("Kesim listesi satırı silme işlemi başarısız oldu.");
+                            hataMesajlari.Add("Eksik veri: Kalite, malzeme, kalıp no, kesilecek pozlar veya proje null.");
                             MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
@@ -288,7 +283,7 @@ namespace CEKA_APP.UsrControl
             {
                 var dt = KesimListesiData.GetirKesimListesi(kesimId);
 
-                int toplamPlanTekrari = 1; 
+                int toplamPlanTekrari = 1;
                 foreach (DataGridViewRow row in dataGridKesimListesi.Rows)
                 {
                     if (row.Cells["kesimId"].Value?.ToString() == kesimId)
@@ -318,18 +313,18 @@ namespace CEKA_APP.UsrControl
                 if (dt != null && dt.Rows.Count > 0)
                 {
                     Dictionary<string, string> kolonBasliklari = new Dictionary<string, string>
-            {
-                { "olusturan", "Planı Oluşturan" },
-                { "kesimId", "Kesim ID" },
-                { "projeNo", "Proje No" },
-                { "kalite", "Kalite" },
-                { "malzeme", "Malzeme" },
-                { "kalipNo", "Kalıp No" },
-                { "kesilenPozlar", "Kesilen Pozlar" },
-                { "kesilenPozAdetSayilari", "Kesilen Pozların Adet Sayıları" },
-                { "eklemeTarihi", "Ekleme Tarihi" },
-                { "kpAdetSayilari", "KP Adet Sayıları (Toplam)" }
-            };
+                    {
+                        { "olusturan", "Planı Oluşturan" },
+                        { "kesimId", "Kesim ID" },
+                        { "projeNo", "Proje No" },
+                        { "kalite", "Kalite" },
+                        { "malzeme", "Malzeme" },
+                        { "kalipNo", "Kalıp No" },
+                        { "kesilenPozlar", "Kesilen Pozlar" },
+                        { "kesilenPozAdetSayilari", "Kesilen Pozların Adet Sayıları" },
+                        { "eklemeTarihi", "Ekleme Tarihi" },
+                        { "kpAdetSayilari", "KP Adet Sayıları (Toplam)" }
+                    };
 
                     foreach (var kolon in kolonBasliklari)
                     {

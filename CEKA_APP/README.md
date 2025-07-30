@@ -9,10 +9,11 @@ Bu proje aşağıdaki kütüphaneleri kullanır:
 - **PDFium**: Licensed under BSD-3-Clause. See `/LICENSES/LICENSE_PDFium.txt`.
 - **PDFsharp**: Licensed under MIT. See `/LICENSES/LICENSE_PDFsharp.txt`.
 - **Newtonsoft.Json**: Licensed under MIT. See `/LICENSES/LICENSE_Newtonsoft.Json.txt`.
+- **ExcelDataReader**: Licensed under MIT. See /LICENSES/LICENSE_ExcelDataReader.txt.
 
 ## Installation
-1. Projeyi GitHub'dan klonlayın: `git clone https://github.com/berkaylmz06/ProcessPlanManager/tree/master`
-2. Gerekli bağımlılıkları yükleyin (NuGet paketleri: iText, PDFium, PDFsharp, Newtonsoft.Json).
+1. Projeyi GitHub'dan klonlayın: `git clone https://github.com/berkaylmz06/ProcessPlanManager`
+2. Gerekli bağımlılıkları yükleyin (NuGet paketleri: iText, PDFium, PDFsharp, Newtonsoft.Json, ExcelDataReader).
 3. Visual Studio'da projeyi derleyin ve çalıştırın.
 
 ## License
