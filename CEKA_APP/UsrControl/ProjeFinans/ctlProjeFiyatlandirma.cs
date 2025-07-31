@@ -49,7 +49,6 @@ namespace CEKA_APP.UsrControl
             ctlBaslik1.Baslik = "Proje Fiyatlandırma";
             panelUst.AutoScroll = true;
 
-            // Tablo ayarları
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.AutoSize = false;
             tableLayoutPanel1.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -57,7 +56,6 @@ namespace CEKA_APP.UsrControl
             tableLayoutPanel1.AutoScroll = true;
             tableLayoutPanel1.MinimumSize = new Size(tableLayoutPanel1.Width, 200);
 
-            // Sütun ayarları
             tableLayoutPanel1.ColumnCount = 8;
             tableLayoutPanel1.ColumnStyles.Clear();
             for (int i = 0; i < 8; i++)
@@ -65,10 +63,8 @@ namespace CEKA_APP.UsrControl
                 tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 12.5f));
             }
 
-            // Başlangıçta başlık ve boş satır ekle
             InitializeTableStructure();
 
-            // Alt panel ayarları
             tableLayoutPanel2.Dock = DockStyle.Bottom;
             tableLayoutPanel2.AutoSize = true;
             tableLayoutPanel2.AutoSizeMode = AutoSizeMode.GrowAndShrink;
@@ -86,15 +82,12 @@ namespace CEKA_APP.UsrControl
             tableLayoutPanel1.SuspendLayout();
             try
             {
-                // Tüm kontrolleri temizle
                 tableLayoutPanel1.Controls.Clear();
                 tableLayoutPanel1.RowStyles.Clear();
                 tableLayoutPanel1.RowCount = 0;
 
-                // Başlık satırını ekle
                 AddHeaderRow();
 
-                // Boş spacer satırını ekle
                 AddSpacerRow();
             }
             finally

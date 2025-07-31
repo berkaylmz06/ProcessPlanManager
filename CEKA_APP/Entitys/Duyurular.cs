@@ -12,5 +12,6 @@ namespace CEKA_APP.Entitys
         public string kullanici { get; set; }
         public string duyuru { get; set; }
         public DateTime duyuruZamani { get; set; }
+        public DateTime yayinlamaTarihi { get; set; }
     }
 }

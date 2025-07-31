@@ -792,7 +792,6 @@ namespace CEKA_APP.UsrControl
 
             List<string> alreadySelectedMilestones = new List<string>();
 
-            // Kilometre taşı adı şimdi 2. sütunda (indeks 2) olacak
             for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
             {
                 Label lblKilometreTasiAdi = tableLayoutPanel1.GetControlFromPosition(2, row) as Label;
@@ -827,11 +826,11 @@ namespace CEKA_APP.UsrControl
                         OdemeSekilleri newMilestone = new OdemeSekilleri
                         {
                             projeNo = txtProjeAra.Text.Trim(),
-                            kilometreTasiId = 0, // 0 yeni, kaydedilmemiş bir giriş olduğunu gösterir
+                            kilometreTasiId = 0, 
                             kilometreTasiAdi = frm.KilometreTasiAdi,
                             oran = yeniOran,
                             tutar = tutar,
-                            kalanTutar = tutar, // Yeni eklenen kilometrede kalan tutar, tutara eşit başlar
+                            kalanTutar = tutar, 
                             tahminiTarih = null,
                             gerceklesenTarih = null,
                             aciklama = "",
@@ -841,7 +840,7 @@ namespace CEKA_APP.UsrControl
                         };
 
                         _newlyAddedMilestones.Add(newMilestone);
-                        LoadOdemeBilgileri(txtProjeAra.Text.Trim()); // Tabloyu yenile
+                        LoadOdemeBilgileri(txtProjeAra.Text.Trim());
                         UpdateBulkInvoiceButtonText();
                     }
                 }

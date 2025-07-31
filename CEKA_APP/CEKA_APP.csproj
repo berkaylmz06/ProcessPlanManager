@@ -242,6 +242,8 @@
     <Compile Include="DataBase\ProjeFinans\ProjeFinans_FiyatlandirmaData.cs" />
     <Compile Include="DataBase\ProjeFinans\ProjeFinans_ProjeKutukData.cs" />
     <Compile Include="DataBase\ProjeFinans\ProjeFinans_Projeler.cs" />
+    <Compile Include="DataBase\ProjeFinans\ProjeFinans_SevkiyatData.cs" />
+    <Compile Include="DataBase\ProjeFinans\ProjeFinans_SevkiyatPaketleriData.cs" />
     <Compile Include="DataBase\ProjeFinans\ProjeFinans_TeminatMektuplariData.cs" />
     <Compile Include="DataBase\SorunBildirimleriData.cs" />
     <Compile Include="Entitys\AutoCadAktarimDetay.cs" />
@@ -257,6 +259,7 @@
     <Compile Include="Entitys\ProjeFinans\OdemeSekilleri.cs" />
     <Compile Include="Entitys\ProjeFinans\ProjeBilgi.cs" />
     <Compile Include="Entitys\ProjeFinans\ProjeKutuk.cs" />
+    <Compile Include="Entitys\ProjeFinans\Sevkiyat.cs" />
     <Compile Include="Entitys\ProjeFinans\TeminatMektuplari.cs" />
     <Compile Include="Entitys\SorunBildirimleri.cs" />
     <Compile Include="Entitys\KesimListesi.cs" />
@@ -322,6 +325,12 @@
     <Compile Include="Forms\frmYeniKilometreTasi.Designer.cs">
       <DependentUpon>frmYeniKilometreTasi.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frmYeniPaketEkle.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmYeniPaketEkle.Designer.cs">
+      <DependentUpon>frmYeniPaketEkle.cs</DependentUpon>
+    </Compile>
     <Compile Include="Helper\ButonGenelHelper.cs" />
     <Compile Include="Helper\ButonMakinaSecHelper.cs" />
     <Compile Include="Helper\ChartiTiklanmazYap.cs">
@@ -353,6 +362,12 @@
     </Compile>
     <Compile Include="UsrControl\ProjeFinans\ctlOdemeSartlariListe.Designer.cs">
       <DependentUpon>ctlOdemeSartlariListe.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UsrControl\ProjeFinans\ctlSevkiyat.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\ProjeFinans\ctlSevkiyat.Designer.cs">
+      <DependentUpon>ctlSevkiyat.cs</DependentUpon>
     </Compile>
     <Compile Include="UsrControl\Sistem\ctlBaslik.cs">
       <SubType>UserControl</SubType>
@@ -492,6 +507,9 @@
     <EmbeddedResource Include="Forms\frmYeniKilometreTasi.resx">
       <DependentUpon>frmYeniKilometreTasi.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmYeniPaketEkle.resx">
+      <DependentUpon>frmYeniPaketEkle.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
@@ -507,6 +525,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ProjeFinans\ctlOdemeSartlariListe.resx">
       <DependentUpon>ctlOdemeSartlariListe.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\ProjeFinans\ctlSevkiyat.resx">
+      <DependentUpon>ctlSevkiyat.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\Sistem\ctlBaslik.resx">
       <DependentUpon>ctlBaslik.cs</DependentUpon>
@@ -597,6 +618,9 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="DataBase\KesimTakip\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

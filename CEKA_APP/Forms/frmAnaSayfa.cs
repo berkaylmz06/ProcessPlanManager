@@ -103,6 +103,7 @@ namespace CEKA_APP
             ButonGenelHelper.StilUygula(btnTeminatMektuplari);
             ButonGenelHelper.StilUygula(btnMusteriler);
             ButonGenelHelper.StilUygula(btnOdemeSarlariListe);
+            ButonGenelHelper.StilUygula(btnSevkiyat);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnSistem);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnDuyuru);
@@ -126,11 +127,12 @@ namespace CEKA_APP
             btnDuyuru.Visible = false;
             btnProjeKutuk.Visible = false;
             btnProjeFiyatlandirma.Visible = false;
-            btnYerlesimPlaniBilgileri.Visible= false;
+            btnYerlesimPlaniBilgileri.Visible = false;
             btnOdemeSartlari.Visible = false;
             btnTeminatMektuplari.Visible = false;
             btnMusteriler.Visible = false;
             btnOdemeSarlariListe.Visible = false;
+            btnSevkiyat.Visible = false;
 
             switch (aktifKullanici.kullaniciRol)
             {
@@ -152,6 +154,7 @@ namespace CEKA_APP
                     btnTeminatMektuplari.Visible = true;
                     btnMusteriler.Visible = true;
                     btnOdemeSarlariListe.Visible = true;
+                    btnSevkiyat.Visible = true;
                     break;
                 case "Destek":
                     btnKesimPlaniEkle.Visible = true;
@@ -174,13 +177,14 @@ namespace CEKA_APP
                     btnTeminatMektuplari.Visible = true;
                     btnMusteriler.Visible = true;
                     btnOdemeSarlariListe.Visible = true;
+                    btnSevkiyat.Visible = true;
                     break;
                 case "İş Hazırlama":
                     btnKesimPlaniEkle.Visible = true;
                     btnKesimYap.Visible = true;
                     btnYapilanKesimleriGor.Visible = true;
                     panelKesimPlaniEkleVeri.Visible = true;
-                    btnKesimDetaylari.Visible=true;
+                    btnKesimDetaylari.Visible = true;
                     btnYerlesimPlaniBilgileri.Visible = true;
                     break;
                 case "Muhasebe":
@@ -190,6 +194,7 @@ namespace CEKA_APP
                     btnTeminatMektuplari.Visible = true;
                     btnMusteriler.Visible = true;
                     btnOdemeSarlariListe.Visible = true;
+                    btnSevkiyat.Visible = true;
                     break;
                 case "Operatör":
                     btnKesimYap.Visible = true;
@@ -229,6 +234,7 @@ namespace CEKA_APP
                 btnOdemeSartlari,
                 btnTeminatMektuplari,
                 btnOdemeSarlariListe,
+                btnSevkiyat,
                 btnOturumuKapat
             );
 
@@ -277,7 +283,7 @@ namespace CEKA_APP
 
         private void btnOturumuKapat_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Oturumu kapatmak için onaylıyor musunuz?","Bilgi", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            if (MessageBox.Show("Oturumu kapatmak için onaylıyor musunuz?", "Bilgi", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
                 frmKullaniciGirisi kullanicigiris = new frmKullaniciGirisi();
                 kullanicigiris.FormClosed += (s, args) => Application.Exit();
@@ -602,6 +608,12 @@ namespace CEKA_APP
         {
             var odemeSartlariListe = new ctlOdemeSartlariListe();
             UserControlEkle(odemeSartlariListe);
+        }
+
+        private void btnSevkiyat_Click(object sender, EventArgs e)
+        {
+            var sevkiyat = new ctlSevkiyat();
+            UserControlEkle(sevkiyat);
         }
     }
 }
