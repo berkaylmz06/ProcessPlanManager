@@ -9,7 +9,7 @@ using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
 using System.Data.SqlClient;
-using CEKA_APP.Entitys.ProjeFinans; // Add this for SqlCommand and SqlDbType
+using CEKA_APP.Entitys.ProjeFinans;
 using System.Globalization; // Add this for CultureInfo
 
 namespace CEKA_APP.UsrControl
@@ -17,7 +17,7 @@ namespace CEKA_APP.UsrControl
     public partial class ctlOdemeSartlari : UserControl
     {
         private List<(string projeNo, int kilometreTasiId)> _pendingDeletions = new List<(string projeNo, int kilometreTasiId)>();
-        private List<OdemeSekilleri> _newlyAddedMilestones = new List<OdemeSekilleri>(); // Yeni eklenen ancak henüz kaydedilmemiş kilometre taşları için liste
+        private List<OdemeSartlari> _newlyAddedMilestones = new List<OdemeSartlari>();
 
         public ctlOdemeSartlari()
         {
@@ -31,46 +31,39 @@ namespace CEKA_APP.UsrControl
             tableLayoutPanel1.AutoScroll = true;
             tableLayoutPanel1.MinimumSize = new Size(tableLayoutPanel1.Width, 200);
 
-            // Kolon sayısı güncellendi (Kalan Tutar kolonu sona taşındı)
             tableLayoutPanel1.ColumnCount = 14;
             tableLayoutPanel1.ColumnStyles.Clear();
 
-            // Sütun stillerini ayarla (Kalan Tutar en sona)
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30f)); // 0: Checkbox
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30f)); // 1: Sil (Çöp kutusu simgesi)
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 12f));  // 2: Proje Kilometre Taşları
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 5f));   // 3: Oran (%)
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 8f));   // 4: Tutar
-            // Kalan Tutar kolonu şimdi en sonda olacak, bu kısımdaki eski indexler kaydırıldı.
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 8f));  // 5: Tahmini Tarih (was 6)
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 8f));  // 6: Gerçekleşen Tarih (was 7)
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 18f));  // 7: Açıklama (was 8)
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 5f));   // 8: Teminat Mektubu (was 9)
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 5f));   // 9: Teminat Durumu (was 10)
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 5f));   // 10: Mektup Geri Al (was 11)
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 5f));   // 11: Durum (was 12)
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 8f));   // 12: Durum Değiştir (was 13)
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 8f));   // 13: Kalan Tutar (YENİ SON KOLON)
-
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 12f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 5f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 8f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 8f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 8f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 15f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 5f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 5f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 5f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 5f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 8f));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 8f));
 
             btnKilometreTasiEkle.Enabled = false;
             tableLayoutPanel1.AllowDrop = false;
 
-            // Yeni eklenen olay işleyicileri
             chkTutarTamaminiKullan.CheckedChanged += ChkTutarTamaminiKullan_CheckedChanged;
             txtEksilenTutar.TextChanged += TxtEksilenTutar_TextChanged;
         }
 
         private void TxtCikarilacakTutar_KeyPress(object sender, KeyPressEventArgs e)
         {
-            // Rakamlar, backspace ve virgül/nokta (kültüre göre) girişine izin ver
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) &&
                 (e.KeyChar != CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0]))
             {
                 e.Handled = true;
             }
 
-            // Sadece bir tane ondalık ayırıcıya izin ver
             if ((e.KeyChar == CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0]) && ((sender as TextBox).Text.IndexOf(CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0]) > -1))
             {
                 e.Handled = true;
@@ -87,24 +80,33 @@ namespace CEKA_APP.UsrControl
                 tableLayoutPanel1.RowCount = 0;
                 AddHeaderRow();
 
-                var odemeSekilleriData = new ProjeFinans_OdemeSekilleriData();
+                // Üst proje kontrolü
+                bool isUpperProject = !ProjeFinans_ProjeIliskiData.CheckAltProje(projeNo);
+                if (!isUpperProject)
+                {
+                    tableLayoutPanel1.ColumnStyles[8].Width = 0; // Teminat Mektubu
+                    tableLayoutPanel1.ColumnStyles[9].Width = 0; // Teminat Durumu
+                    tableLayoutPanel1.ColumnStyles[10].Width = 0; // Mektup Geri Al
+                }
+                else
+                {
+                    tableLayoutPanel1.ColumnStyles[8].Width = 10f; // Teminat Mektubu
+                    tableLayoutPanel1.ColumnStyles[9].Width = 5f;  // Teminat Durumu
+                    tableLayoutPanel1.ColumnStyles[10].Width = 5f; // Mektup Geri Al
+                }
+
+                var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
                 var odemeBilgileriFromDb = odemeSekilleriData.GetOdemeBilgileriByProjeNo(projeNo);
 
-                // Veritabanından gelen verilerle yeni eklenen ancak kaydedilmemiş verileri birleştir
-                List<OdemeSekilleri> combinedOdemeBilgileri = new List<OdemeSekilleri>();
+                List<OdemeSartlari> combinedOdemeBilgileri = new List<OdemeSartlari>();
                 combinedOdemeBilgileri.AddRange(odemeBilgileriFromDb);
-                // Sadece mevcut projeye ait yeni eklenmiş kilometre taşlarını ekle
-                combinedOdemeBilgileri.AddRange(_newlyAddedMilestones.Where(m => m.projeNo == projeNo && m.kilometreTasiId == 0)); // Sadece yeni eklenenleri ekle
+                combinedOdemeBilgileri.AddRange(_newlyAddedMilestones.Where(m => m.projeNo == projeNo && m.kilometreTasiId == 0));
 
-                // Silinmek üzere işaretlenmiş öğeleri filtrele
-                var filteredOdemeBilgileri = combinedOdemeBilgileri.Where(odemeBilgi =>
-                    !_pendingDeletions.Any(pd => pd.projeNo == projeNo && pd.kilometreTasiId == odemeBilgi.kilometreTasiId)
-                )
-                // Tahmini Tarihe göre sıralama, null değerleri sona al
-                .OrderBy(o => o.tahminiTarih.HasValue ? 0 : 1) // Null olmayanları öne al
-                .ThenBy(o => o.tahminiTarih.HasValue ? o.tahminiTarih.Value : DateTime.MaxValue) // Null olmayanları tarihe göre sırala
-                .ToList();
-
+                var filteredOdemeBilgileri = combinedOdemeBilgileri
+                    .Where(odemeBilgi => !_pendingDeletions.Any(pd => pd.projeNo == projeNo && pd.kilometreTasiId == odemeBilgi.kilometreTasiId))
+                    .OrderBy(o => o.tahminiTarih.HasValue ? 0 : 1)
+                    .ThenBy(o => o.tahminiTarih.HasValue ? o.tahminiTarih.Value : DateTime.MaxValue)
+                    .ToList();
 
                 foreach (var odemeBilgi in filteredOdemeBilgileri)
                 {
@@ -112,15 +114,13 @@ namespace CEKA_APP.UsrControl
                     tableLayoutPanel1.RowCount++;
                     tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
 
-                    // 0. Sütun: Checkbox
-                    System.Windows.Forms.CheckBox chkSelect = new System.Windows.Forms.CheckBox();
+                    CheckBox chkSelect = new CheckBox();
                     chkSelect.AutoSize = true;
-                    chkSelect.Tag = odemeBilgi.kilometreTasiId; // Kilometre taşının ID'sini Tag'e ata
+                    chkSelect.Tag = odemeBilgi.kilometreTasiId;
                     chkSelect.CheckedChanged += new System.EventHandler(this.chkSelect_CheckedChanged);
-                    chkSelect.Margin = new Padding(3, 10, 3, 3); // Dikey hizalama için boşluk bırak
+                    chkSelect.Margin = new Padding(3, 10, 3, 3);
                     tableLayoutPanel1.Controls.Add(chkSelect, 0, newRowIndex);
 
-                    // 1. Sütun: Silme Simgesi PictureBox
                     var pbDelete = new PictureBox
                     {
                         Image = Properties.Resources.copKutusu,
@@ -134,12 +134,11 @@ namespace CEKA_APP.UsrControl
                     pbDelete.Tag = odemeBilgi;
                     tableLayoutPanel1.Controls.Add(pbDelete, 1, newRowIndex);
 
-                    // Diğer sütunlar için kontrol oluşturma ve ekleme (sütun indeksleri güncellendi)
                     var lblKilometreTasiAdi = new Label { Text = odemeBilgi.kilometreTasiAdi, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, Margin = new Padding(2), AutoSize = false, Height = 30, MaximumSize = new Size(0, 30), Font = new Font("Segoe UI", 10) };
                     var lblOran = new Label { Text = $"%{odemeBilgi.oran:F0}", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleCenter, Margin = new Padding(2), AutoSize = false, Height = 30, MaximumSize = new Size(0, 30), Font = new Font("Segoe UI", 10) };
                     var txtTutar = new TextBox
                     {
-                        Text = odemeBilgi.tutar.ToString("N2", System.Globalization.CultureInfo.CurrentCulture), // Tutar formatını kültüre göre ayarla
+                        Text = odemeBilgi.tutar.ToString("N2", CultureInfo.CurrentCulture),
                         Dock = DockStyle.Fill,
                         TextAlign = HorizontalAlignment.Center,
                         Margin = new Padding(2),
@@ -152,10 +151,9 @@ namespace CEKA_APP.UsrControl
                         BackColor = Color.LightGray
                     };
 
-                    // Kalan Tutar Kolonu (Şimdi en sondaki kolon - index 13)
                     var txtKalanTutar = new TextBox
                     {
-                        Text = odemeBilgi.kalanTutar.ToString("N2", System.Globalization.CultureInfo.CurrentCulture) ?? "", // Kalan tutar varsa göster, yoksa boş
+                        Text = odemeBilgi.kalanTutar.ToString("N2", CultureInfo.CurrentCulture),
                         Dock = DockStyle.Fill,
                         TextAlign = HorizontalAlignment.Center,
                         Margin = new Padding(2),
@@ -164,7 +162,7 @@ namespace CEKA_APP.UsrControl
                         MaximumSize = new Size(0, 30),
                         Font = new Font("Segoe UI", 10),
                         BorderStyle = BorderStyle.FixedSingle,
-                        Enabled = false, // Kalan tutar doğrudan düzenlenemez
+                        Enabled = false,
                         BackColor = Color.LightGray
                     };
 
@@ -181,7 +179,7 @@ namespace CEKA_APP.UsrControl
                     {
                         dtpTahminiTarih.Checked = false;
                     }
-                    dtpTahminiTarih.Enabled = (odemeBilgi.kilometreTasiId == 0); // Sadece yeni kayıtlar düzenlenebilir
+                    dtpTahminiTarih.Enabled = (odemeBilgi.kilometreTasiId == 0);
 
                     if (odemeBilgi.gerceklesenTarih.HasValue)
                     {
@@ -243,9 +241,9 @@ namespace CEKA_APP.UsrControl
                     {
                         var button = s as Button;
                         int rowIdx = tableLayoutPanel1.GetRow(button);
-                        var lblTempTeminatDurum = GetLabelAt(rowIdx, 9); // Index güncellendi (eski 10)
+                        var lblTempTeminatDurum = GetLabelAt(rowIdx, 9);
 
-                        var pnlTempTeminatMektubu = tableLayoutPanel1.GetControlFromPosition(8, rowIdx) as Panel; // Index güncellendi (eski 9)
+                        var pnlTempTeminatMektubu = tableLayoutPanel1.GetControlFromPosition(8, rowIdx) as Panel;
                         var chkTempTeminatMektubuVar = pnlTempTeminatMektubu?.Controls.OfType<CheckBox>().FirstOrDefault(c => c.Text == "Var");
                         var chkTempTeminatMektubuYok = pnlTempTeminatMektubu?.Controls.OfType<CheckBox>().FirstOrDefault(c => c.Text == "Yok");
 
@@ -284,20 +282,20 @@ namespace CEKA_APP.UsrControl
                         lblDurum.ForeColor = Color.Black;
                     }
 
-                    // Sütun indeksleri güncellendi (Kalan Tutar kolonu en sona taşındı)
                     tableLayoutPanel1.Controls.Add(lblKilometreTasiAdi, 2, newRowIndex);
                     tableLayoutPanel1.Controls.Add(lblOran, 3, newRowIndex);
                     tableLayoutPanel1.Controls.Add(txtTutar, 4, newRowIndex);
-                    // Kalan Tutar şimdi en sondaki kolon (index 13) olacak
-                    tableLayoutPanel1.Controls.Add(dtpTahminiTarih, 5, newRowIndex); // Index 5 (was 6)
-                    tableLayoutPanel1.Controls.Add(dtpGerceklesenTarih, 6, newRowIndex); // Index 6 (was 7)
-                    tableLayoutPanel1.Controls.Add(rtbAciklama, 7, newRowIndex); // Index 7 (was 8)
-                    tableLayoutPanel1.Controls.Add(pnlTeminatMektubu, 8, newRowIndex); // Index 8 (was 9)
-                    tableLayoutPanel1.Controls.Add(newLblTeminatDurum, 9, newRowIndex); // Index 9 (was 10)
-                    tableLayoutPanel1.Controls.Add(btnMektupGeriAl, 10, newRowIndex); // Index 10 (was 11)
-                    tableLayoutPanel1.Controls.Add(lblDurum, 11, newRowIndex); // Index 11 (was 12)
+                    tableLayoutPanel1.Controls.Add(dtpTahminiTarih, 5, newRowIndex);
+                    tableLayoutPanel1.Controls.Add(dtpGerceklesenTarih, 6, newRowIndex);
+                    tableLayoutPanel1.Controls.Add(rtbAciklama, 7, newRowIndex);
+                    if (isUpperProject)
+                    {
+                        tableLayoutPanel1.Controls.Add(pnlTeminatMektubu, 8, newRowIndex);
+                        tableLayoutPanel1.Controls.Add(newLblTeminatDurum, 9, newRowIndex);
+                        tableLayoutPanel1.Controls.Add(btnMektupGeriAl, 10, newRowIndex);
+                    }
+                    tableLayoutPanel1.Controls.Add(lblDurum, 11, newRowIndex);
 
-                    // Durum Değiştir butonu (yeni indeks 12)
                     var btnOdendi = new Button
                     {
                         Text = odemeBilgi.durum == "Ödendi" ? "Bekliyor Yap" : "Ödendi Yap",
@@ -310,30 +308,46 @@ namespace CEKA_APP.UsrControl
                     btnOdendi.Click += BtnOdendi_Click;
                     tableLayoutPanel1.Controls.Add(btnOdendi, 12, newRowIndex);
 
-                    // Kalan Tutar En Sona
                     tableLayoutPanel1.Controls.Add(txtKalanTutar, 13, newRowIndex);
 
-
-                    chkTeminatMektubuVar.CheckedChanged += (s, e) =>
+                    if (isUpperProject)
                     {
-                        if (chkTeminatMektubuVar.Checked)
+                        chkTeminatMektubuVar.CheckedChanged += (s, e) =>
                         {
-                            chkTeminatMektubuYok.Checked = false;
-                            var lblTempTeminatDurum = GetLabelAt(newRowIndex, 9); // Index güncellendi (eski 10)
-                            var frm = new frmTeminatMektubuEkle(null);
-                            if (frm.ShowDialog() == DialogResult.OK)
+                            if (chkTeminatMektubuVar.Checked)
                             {
-                                if (lblTempTeminatDurum != null)
+                                chkTeminatMektubuYok.Checked = false;
+                                var lblTempTeminatDurum = GetLabelAt(newRowIndex, 9);
+                                var frm = new frmTeminatMektubuEkle(null, txtProjeAra.Text.Trim());
+                                if (frm.ShowDialog() == DialogResult.OK)
                                 {
-                                    lblTempTeminatDurum.Text = "Aktif";
-                                    lblTempTeminatDurum.ForeColor = Color.Green;
-                                    btnMektupGeriAl.Enabled = true;
+                                    if (lblTempTeminatDurum != null)
+                                    {
+                                        lblTempTeminatDurum.Text = "Aktif";
+                                        lblTempTeminatDurum.ForeColor = Color.Green;
+                                        btnMektupGeriAl.Enabled = true;
+                                    }
+                                }
+                                else
+                                {
+                                    chkTeminatMektubuVar.Checked = false;
+                                    chkTeminatMektubuYok.Checked = true;
+                                    if (lblTempTeminatDurum != null)
+                                    {
+                                        lblTempTeminatDurum.Text = "Pasif";
+                                        lblTempTeminatDurum.ForeColor = Color.Red;
+                                        btnMektupGeriAl.Enabled = false;
+                                    }
                                 }
                             }
-                            else
+                        };
+
+                        chkTeminatMektubuYok.CheckedChanged += (s, e) =>
+                        {
+                            if (chkTeminatMektubuYok.Checked)
                             {
                                 chkTeminatMektubuVar.Checked = false;
-                                chkTeminatMektubuYok.Checked = true;
+                                var lblTempTeminatDurum = GetLabelAt(newRowIndex, 9);
                                 if (lblTempTeminatDurum != null)
                                 {
                                     lblTempTeminatDurum.Text = "Pasif";
@@ -341,23 +355,8 @@ namespace CEKA_APP.UsrControl
                                     btnMektupGeriAl.Enabled = false;
                                 }
                             }
-                        }
-                    };
-
-                    chkTeminatMektubuYok.CheckedChanged += (s, e) =>
-                    {
-                        if (chkTeminatMektubuYok.Checked)
-                        {
-                            chkTeminatMektubuVar.Checked = false;
-                            var lblTempTeminatDurum = GetLabelAt(newRowIndex, 9); // Index güncellendi (eski 10)
-                            if (lblTempTeminatDurum != null)
-                            {
-                                lblTempTeminatDurum.Text = "Pasif";
-                                lblTempTeminatDurum.ForeColor = Color.Red;
-                                btnMektupGeriAl.Enabled = false;
-                            }
-                        }
-                    };
+                        };
+                    }
                 }
 
                 AddBottomSpacer();
@@ -369,7 +368,6 @@ namespace CEKA_APP.UsrControl
                 UpdateBulkInvoiceButtonText();
             }
         }
-
         private void PbDelete_Click(object sender, EventArgs e)
         {
             var pictureBox = sender as PictureBox;
@@ -382,18 +380,16 @@ namespace CEKA_APP.UsrControl
                     return;
                 }
 
-                var odemeBilgi = pictureBox.Tag as OdemeSekilleri;
+                var odemeBilgi = pictureBox.Tag as OdemeSartlari;
 
                 tableLayoutPanel1.SuspendLayout();
                 try
                 {
-                    // Case 1: Mevcut bir satırı silme (veritabanından)
                     if (odemeBilgi != null && odemeBilgi.kilometreTasiId != 0)
                     {
                         _pendingDeletions.Add((txtProjeAra.Text.Trim(), odemeBilgi.kilometreTasiId));
                         MessageBox.Show("Satır başarıyla silinmek üzere işaretlendi. Kaydet butonuna tıklayarak veritabanından silmeyi onaylayın.", "Silme Onayı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
-                    // Case 2: Yeni eklenmiş, henüz kaydedilmemiş bir satırı silme
                     else if (odemeBilgi != null && odemeBilgi.kilometreTasiId == 0)
                     {
                         _newlyAddedMilestones.RemoveAll(m => m.projeNo == odemeBilgi.projeNo && m.kilometreTasiAdi == odemeBilgi.kilometreTasiAdi);
@@ -415,8 +411,6 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-
-
         private void btnAra_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtProjeAra.Text))
@@ -428,15 +422,12 @@ namespace CEKA_APP.UsrControl
             var projeNo = txtProjeAra.Text.Trim();
             Console.WriteLine($"Girilen projeNo: '{projeNo}'");
 
-            // ProjeBilgi al
             var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
             Console.WriteLine($"projeBilgi: {(projeBilgi != null ? "Bulundu" : "Bulunamadı")}");
 
-            // ProjeKutuk al
-            var projeKutuk = CEKA_APP.DataBase.ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
+            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
             Console.WriteLine($"projeKutuk: {(projeKutuk != null ? "Bulundu" : "Bulunamadı")}");
 
-            // Alt proje kontrolü
             bool isAltProje = ProjeFinans_ProjeIliskiData.CheckAltProje(projeNo);
             Console.WriteLine($"isAltProje: {isAltProje}");
 
@@ -445,8 +436,8 @@ namespace CEKA_APP.UsrControl
                 var ustProjeNo = ProjeFinans_ProjeIliskiData.GetUstProjeNo(projeNo);
                 if (!string.IsNullOrEmpty(ustProjeNo))
                 {
-                    var ustProjeKutuk = CEKA_APP.DataBase.ProjeFinans_ProjeKutukData.ProjeKutukAra(ustProjeNo);
-                    bool ustTekil = CEKA_APP.DataBase.ProjeFinans_ProjeKutukData.IsFaturalamaSekliTekil(ustProjeNo);
+                    var ustProjeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(ustProjeNo);
+                    bool ustTekil = ProjeFinans_ProjeKutukData.IsFaturalamaSekliTekil(ustProjeNo);
 
                     if (ustProjeKutuk != null && ustTekil)
                     {
@@ -473,12 +464,14 @@ namespace CEKA_APP.UsrControl
 
                 var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
 
+                lblToplamBedelBilgi.Text = "";
+                
                 UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler);
 
                 _pendingDeletions.Clear();
                 _newlyAddedMilestones.Clear();
-                LoadOdemeBilgileri(projeNo); // Kilometre taşlarını yükle
-                UpdateTutarColumn(toplamBedel); // Yüklendikten sonra tutar ve kalan tutarı güncelle
+                LoadOdemeBilgileri(projeNo);
+                UpdateTutarColumn(toplamBedel);
 
                 UpdateBulkInvoiceButtonText();
 
@@ -489,7 +482,6 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show("Proje bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-
 
         public void UpdateToplamBedelUI(string projeNo, decimal toplamBedel, List<string> eksikFiyatlandirmaProjeler)
         {
@@ -507,8 +499,10 @@ namespace CEKA_APP.UsrControl
                 {
                     if (eksikFiyatlandirmaProjeler.Any())
                     {
-                        txtToplamBedel.Text = $"{toplamBedel:F2} (Alt projeler: {string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma yok)";
+                        txtToplamBedel.Text = $"{toplamBedel:F2}";
                         txtToplamBedel.ForeColor = Color.Red;
+                        lblToplamBedelBilgi.Text = $"Alt projeler: {string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma yok";
+                        lblToplamBedelBilgi.ForeColor = Color.Red;
                     }
                     else
                     {
@@ -569,20 +563,20 @@ namespace CEKA_APP.UsrControl
                 int headerRowIndex = 0;
 
                 string[] headers = {
-                    "", // 0: Checkbox için boş başlık
-                    "Sil", // 1: Çöp kutusu simgesi için başlık
-                    "Proje Kilometre Taşları", // 2
-                    "Oran (%)", // 3
-                    "Tutar", // 4
-                    "Tahmini Tarih", // 5 (was 6)
-                    "Gerçekleşen Tarih", // 6 (was 7)
-                    "Açıklama", // 7 (was 8)
-                    "Teminat Mektubu", // 8 (was 9)
-                    "Teminat Durumu", // 9 (was 10)
-                    "Mektup Geri Al", // 10 (was 11)
-                    "Durum", // 11 (was 12)
-                    "Durum Değiştir", // 12 (was 13)
-                    "Kalan Tutar" // 13 (YENİ SON BAŞLIK)
+                    "",
+                    "Sil",
+                    "Proje Kilometre Taşları",
+                    "Oran (%)",
+                    "Tutar",
+                    "Tahmini Tarih",
+                    "Gerçekleşen Tarih",
+                    "Açıklama",
+                    "Teminat Mektubu",
+                    "Teminat Durumu",
+                    "Mektup Geri Al",
+                    "Durum",
+                    "Durum Değiştir",
+                    "Kalan Tutar"
                 };
 
                 for (int i = 0; i < headers.Length; i++)
@@ -593,7 +587,7 @@ namespace CEKA_APP.UsrControl
                         Font = new Font("Segoe UI", 8, FontStyle.Bold),
                         TextAlign = ContentAlignment.MiddleCenter,
                         Dock = DockStyle.Fill,
-                        Margin = new Padding(2),
+                        Margin = new Padding(0),
                         AutoSize = false,
                         Height = 30,
                         MaximumSize = new Size(0, 30),
@@ -646,52 +640,16 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-        private void RemoveBottomSpacer()
-        {
-            tableLayoutPanel1.SuspendLayout();
-            try
-            {
-                if (tableLayoutPanel1.RowCount > 1)
-                {
-                    int bottomSpacerIndex = tableLayoutPanel1.RowCount - 1;
-                    var existingSpacerControl = tableLayoutPanel1.GetControlFromPosition(0, bottomSpacerIndex);
-                    if (existingSpacerControl is Label lbl && string.IsNullOrEmpty(lbl.Text) && lbl.Height == 10)
-                    {
-                        for (int col = 0; col < tableLayoutPanel1.ColumnCount; col++)
-                        {
-                            Control ctl = tableLayoutPanel1.GetControlFromPosition(col, bottomSpacerIndex);
-                            if (ctl != null)
-                            {
-                                tableLayoutPanel1.Controls.Remove(ctl);
-                                ctl.Dispose();
-                            }
-                        }
-                        if (tableLayoutPanel1.RowStyles.Count > bottomSpacerIndex)
-                        {
-                            tableLayoutPanel1.RowStyles.RemoveAt(bottomSpacerIndex);
-                        }
-                        tableLayoutPanel1.RowCount--;
-                    }
-                }
-            }
-            finally
-            {
-                tableLayoutPanel1.ResumeLayout(true);
-            }
-        }
-
         private decimal HesaplaOranToplami()
         {
             decimal oranToplami = 0;
-            var culture = new System.Globalization.CultureInfo("tr-TR");
+            var culture = new CultureInfo("tr-TR");
 
-            // Başlık satırı (0) ve spacer (son satır) hariç diğer satırları döngüye al
             for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
             {
-                // Oran etiketi şimdi 3. sütunda (indeks 3) olacak
                 var lblOran = GetLabelAt(row, 3);
                 if (lblOran != null && decimal.TryParse(lblOran.Text.Replace("%", "").Trim(),
-                    System.Globalization.NumberStyles.Any, culture, out decimal oran))
+                    NumberStyles.Any, culture, out decimal oran))
                 {
                     oranToplami += oran;
                 }
@@ -707,10 +665,7 @@ namespace CEKA_APP.UsrControl
 
             string cleanText = txtToplamBedel.Text.Split('(')[0].Trim();
 
-            return decimal.TryParse(cleanText,
-                                  System.Globalization.NumberStyles.Any,
-                                  new System.Globalization.CultureInfo("tr-TR"),
-                                  out toplamBedel);
+            return decimal.TryParse(cleanText, NumberStyles.Any, new CultureInfo("tr-TR"), out toplamBedel);
         }
 
         private decimal ParseToplamBedelOrDefault()
@@ -724,30 +679,28 @@ namespace CEKA_APP.UsrControl
 
         private void UpdateTutarColumn(decimal toplamBedel)
         {
-            var culture = new System.Globalization.CultureInfo("tr-TR");
+            var culture = new CultureInfo("tr-TR");
 
             tableLayoutPanel1.SuspendLayout();
             try
             {
-                // Başlık satırı (0) ve spacer (son satır) hariç diğer satırları döngüye al
                 for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
                 {
                     var lblOran = GetLabelAt(row, 3);
-                    var txtTutar = GetTextBoxAt(row, 4); // Tutar kolonu
-                    var txtKalanTutar = GetTextBoxAt(row, 13); // Kalan Tutar kolonu (YENİ KONUM)
+                    var txtTutar = GetTextBoxAt(row, 4);
+                    var txtKalanTutar = GetTextBoxAt(row, 13);
 
                     if (lblOran != null && txtTutar != null && txtKalanTutar != null)
                     {
                         string oranText = lblOran.Text.Replace("%", "").Trim();
                         if (decimal.TryParse(oranText,
-                                           System.Globalization.NumberStyles.Any,
+                                           NumberStyles.Any,
                                            culture,
                                            out decimal oran))
                         {
                             decimal tutar = (toplamBedel * oran) / 100m;
                             string formattedTutar = Math.Round(tutar, 2).ToString("N2", culture);
                             txtTutar.Text = formattedTutar;
-                            txtKalanTutar.Text = formattedTutar; // Başlangıçta kalan tutar, toplam tutara eşit
                         }
                     }
                 }
@@ -808,7 +761,7 @@ namespace CEKA_APP.UsrControl
                     if (!string.IsNullOrEmpty(frm.KilometreTasiAdi) && !string.IsNullOrEmpty(frm.Oran))
                     {
                         string cleanOran = frm.Oran.Replace("%", "").Trim();
-                        if (!decimal.TryParse(cleanOran, System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal yeniOran))
+                        if (!decimal.TryParse(cleanOran, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal yeniOran))
                         {
                             MessageBox.Show("Geçersiz oran formatı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                             return;
@@ -823,14 +776,14 @@ namespace CEKA_APP.UsrControl
 
                         decimal tutar = (ParseToplamBedelOrDefault() * yeniOran) / 100m;
 
-                        OdemeSekilleri newMilestone = new OdemeSekilleri
+                        OdemeSartlari newMilestone = new OdemeSartlari
                         {
                             projeNo = txtProjeAra.Text.Trim(),
-                            kilometreTasiId = 0, 
+                            kilometreTasiId = 0,
                             kilometreTasiAdi = frm.KilometreTasiAdi,
                             oran = yeniOran,
                             tutar = tutar,
-                            kalanTutar = tutar, 
+                            kalanTutar = tutar,
                             tahminiTarih = null,
                             gerceklesenTarih = null,
                             aciklama = "",
@@ -869,33 +822,31 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            var odemeSekilleriData = new ProjeFinans_OdemeSekilleriData();
+            var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
             var kilometreTasiData = new ProjeFinans_FiyatlandirmaKilometreTaslariData();
             try
             {
+                // Silme işlemlerini gerçekleştir
                 foreach (var itemToDelete in _pendingDeletions)
                 {
                     odemeSekilleriData.DeleteOdemeBilgi(itemToDelete.projeNo, itemToDelete.kilometreTasiId);
                 }
                 _pendingDeletions.Clear();
 
+                // Her satırı kaydet veya güncelle
                 for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
                 {
-                    System.Diagnostics.Debug.WriteLine($"Kontrol ediliyor: Satır {row}");
-
                     var lblKilometreTasiAdi = GetLabelAt(row, 2);
                     var lblOran = GetLabelAt(row, 3);
                     var txtTutar = GetTextBoxAt(row, 4);
-                    var txtKalanTutar = GetTextBoxAt(row, 13); // Kalan Tutar kolonu (YENİ KONUM)
-                    var dtpTahminiTarih = GetDateTimePickerAt(row, 5); // Index 5 (was 6)
-                    var dtpGerceklesenTarih = GetDateTimePickerAt(row, 6); // Index 6 (was 7)
-                    var rtbAciklama = GetRichTextBoxAt(row, 7); // Index 7 (was 8)
-                    var txtFaturaNo = GetTextBoxAt(row, 13); // Fatura No, artık 13. kolonda değil. Fatura no bu kodda hiç yoktu, bu satır yanlış, kaldırılmalı veya doğru bir index verilmelidir. Geçici olarak tutulmuştur.
-
-                    var lblDurum = GetLabelAt(row, 11); // Durum kolonu (YENİ KONUM)
-                    var pnlTeminatMektubu = tableLayoutPanel1.GetControlFromPosition(8, row) as Panel; // Index 8 (was 9)
+                    var txtKalanTutar = GetTextBoxAt(row, 13);
+                    var dtpTahminiTarih = GetDateTimePickerAt(row, 5);
+                    var dtpGerceklesenTarih = GetDateTimePickerAt(row, 6);
+                    var rtbAciklama = GetRichTextBoxAt(row, 7);
+                    var lblDurum = GetLabelAt(row, 11);
+                    var pnlTeminatMektubu = tableLayoutPanel1.GetControlFromPosition(8, row) as Panel;
                     var chkTeminatMektubuVar = pnlTeminatMektubu?.Controls.OfType<CheckBox>().FirstOrDefault(c => c.Text == "Var");
-                    var lblTeminatDurum = GetLabelAt(row, 9); // Teminat Durumu kolonu (YENİ KONUM)
+                    var lblTeminatDurum = GetLabelAt(row, 9);
                     string teminatDurumu = lblTeminatDurum?.Text;
 
                     if (lblKilometreTasiAdi == null || string.IsNullOrWhiteSpace(lblKilometreTasiAdi.Text) ||
@@ -919,14 +870,14 @@ namespace CEKA_APP.UsrControl
                     }
 
                     string oranText = lblOran.Text.Replace("%", "").Trim();
-                    if (!decimal.TryParse(oranText, System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out decimal oran))
+                    if (!decimal.TryParse(oranText, NumberStyles.Number, CultureInfo.InvariantCulture, out decimal oran))
                     {
                         MessageBox.Show($"Geçersiz oran formatı: {oranText}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
                     }
 
                     string tutarText = txtTutar.Text.Trim();
-                    if (!decimal.TryParse(tutarText, System.Globalization.NumberStyles.Currency | System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture, out decimal tutar))
+                    if (!decimal.TryParse(tutarText, NumberStyles.Currency | NumberStyles.Number, CultureInfo.CurrentCulture, out decimal tutar))
                     {
                         MessageBox.Show($"Geçersiz tutar formatı: {tutarText}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                         return;
@@ -934,7 +885,7 @@ namespace CEKA_APP.UsrControl
 
                     string kalanTutarText = txtKalanTutar.Text.Trim();
                     decimal? kalanTutar = null;
-                    if (!string.IsNullOrEmpty(kalanTutarText) && decimal.TryParse(kalanTutarText, System.Globalization.NumberStyles.Currency | System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture, out decimal parsedKalanTutar))
+                    if (!string.IsNullOrEmpty(kalanTutarText) && decimal.TryParse(kalanTutarText, NumberStyles.Currency | NumberStyles.Number, CultureInfo.CurrentCulture, out decimal parsedKalanTutar))
                     {
                         kalanTutar = parsedKalanTutar;
                     }
@@ -945,22 +896,24 @@ namespace CEKA_APP.UsrControl
                     bool teminatMektubu = chkTeminatMektubuVar != null && chkTeminatMektubuVar.Checked;
                     string durum = lblDurum.Text;
                     int siralama = row;
-                    string faturaNo = ""; // txtFaturaNo?.Text.Trim() ?? ""; // Fatura No kolonu yok, boş bırakıldı
+
+                    // Mevcut faturaNo değerini veritabanından al
+                    string faturaNo = odemeSekilleriData.GetFaturaNo(projeNo, kilometreTasiId) ?? "";
 
                     odemeSekilleriData.SaveOrUpdateOdemeBilgi(
                         projeNo,
                         kilometreTasiId,
                         siralama,
-                        oran.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
-                        tutar.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
+                        oran.ToString("F2", CultureInfo.InvariantCulture),
+                        tutar.ToString("F2", CultureInfo.InvariantCulture),
                         tahminiTarih,
                         gerceklesenTarih,
                         aciklama,
                         teminatMektubu,
                         teminatDurumu,
                         durum,
-                        faturaNo, // Fatura No parametresi
-                        kalanTutar?.ToString("F2", System.Globalization.CultureInfo.InvariantCulture) ?? string.Empty
+                        faturaNo,
+                        kalanTutar?.ToString("F2", CultureInfo.InvariantCulture) ?? string.Empty
                     );
                 }
                 MessageBox.Show("Ödeme bilgileri başarıyla kaydedildi/güncellendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -991,16 +944,16 @@ namespace CEKA_APP.UsrControl
                 var lblKilometreTasiAdi = GetLabelAt(rowIndex, 2);
                 var lblOran = GetLabelAt(rowIndex, 3);
                 var txtTutar = GetTextBoxAt(rowIndex, 4);
-                var txtKalanTutar = GetTextBoxAt(rowIndex, 13); // Kalan Tutar kolonu (YENİ KONUM)
-                var dtpTahminiTarih = GetDateTimePickerAt(rowIndex, 5); // Index 5 (was 6)
-                var dtpGerceklesenTarih = GetDateTimePickerAt(rowIndex, 6); // Index 6 (was 7)
-                var rtbAciklama = GetRichTextBoxAt(rowIndex, 7); // Index 7 (was 8)
-                var txtFaturaNo = GetTextBoxAt(rowIndex, 13); // Fatura No, artık 13. kolonda değil. Bu satır yanlış, kaldırılmalı veya doğru bir index verilmelidir. Geçici olarak tutulmuştur.
-                var pnlTeminatMektubu = tableLayoutPanel1.GetControlFromPosition(8, rowIndex) as Panel; // Index 8 (was 9)
+                var txtKalanTutar = GetTextBoxAt(rowIndex, 13);
+                var dtpTahminiTarih = GetDateTimePickerAt(rowIndex, 5);
+                var dtpGerceklesenTarih = GetDateTimePickerAt(rowIndex, 6);
+                var rtbAciklama = GetRichTextBoxAt(rowIndex, 7);
+                var txtFaturaNo = GetTextBoxAt(rowIndex, 13);
+                var pnlTeminatMektubu = tableLayoutPanel1.GetControlFromPosition(8, rowIndex) as Panel;
                 var chkTeminatMektubuVar = pnlTeminatMektubu?.Controls.OfType<CheckBox>().FirstOrDefault(c => c.Text == "Var");
-                var lblDurum = GetLabelAt(rowIndex, 11); // Durum kolonu (YENİ KONUM)
-                var lblTeminatDurum = GetLabelAt(rowIndex, 9); // Teminat Durumu kolonu (YENİ KONUM)
-                string teminatDurumu = lblTeminatDurum.Text;
+                var lblDurum = GetLabelAt(rowIndex, 11);
+                var lblTeminatDurum = GetLabelAt(rowIndex, 9);
+                string teminatDurumu = lblTeminatDurum?.Text;
 
                 if (lblKilometreTasiAdi == null || string.IsNullOrWhiteSpace(lblKilometreTasiAdi.Text))
                 {
@@ -1050,14 +1003,14 @@ namespace CEKA_APP.UsrControl
                     try
                     {
                         string oranText = lblOran.Text.Replace("%", "").Trim();
-                        decimal oran = decimal.Parse(oranText, System.Globalization.CultureInfo.InvariantCulture);
+                        decimal oran = decimal.Parse(oranText, CultureInfo.InvariantCulture);
 
                         string tutarText = txtTutar.Text.Trim();
-                        decimal tutar = decimal.Parse(tutarText, System.Globalization.NumberStyles.Currency | System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture);
+                        decimal tutar = decimal.Parse(tutarText, NumberStyles.Currency | NumberStyles.Number, CultureInfo.CurrentCulture);
 
                         string kalanTutarText = txtKalanTutar.Text.Trim();
                         decimal kalanTutar = 0m;
-                        if (!string.IsNullOrEmpty(kalanTutarText) && decimal.TryParse(kalanTutarText, System.Globalization.NumberStyles.Currency | System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.CurrentCulture, out decimal parsedKalanTutar))
+                        if (!string.IsNullOrEmpty(kalanTutarText) && decimal.TryParse(kalanTutarText, NumberStyles.Currency | NumberStyles.Number, CultureInfo.CurrentCulture, out decimal parsedKalanTutar))
                         {
                             kalanTutar = parsedKalanTutar;
                         }
@@ -1067,23 +1020,23 @@ namespace CEKA_APP.UsrControl
                         string aciklama = rtbAciklama.Text;
                         bool teminatMektubu = chkTeminatMektubuVar != null && chkTeminatMektubuVar.Checked;
                         int siralama = rowIndex;
-                        string faturaNo = ""; // txtFaturaNo?.Text.Trim() ?? ""; // Fatura No kolonu yok, boş bırakıldı
+                        string faturaNo = "";
 
-                        var odemeSekilleriData = new ProjeFinans_OdemeSekilleriData();
+                        var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
                         odemeSekilleriData.SaveOrUpdateOdemeBilgi(
                             projeNo,
                             kilometreTasiId,
                             siralama,
-                            oran.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
-                            tutar.ToString("F2", System.Globalization.CultureInfo.InvariantCulture),
+                            oran.ToString("F2", CultureInfo.InvariantCulture),
+                            tutar.ToString("F2", CultureInfo.InvariantCulture),
                             tahminiTarih,
                             gerceklesenTarih,
                             aciklama,
                             teminatMektubu,
                             teminatDurumu,
                             newStatus,
-                            faturaNo, // Fatura No parametresi
-                            kalanTutar.ToString("F2", System.Globalization.CultureInfo.InvariantCulture)
+                            faturaNo,
+                            kalanTutar.ToString("F2", CultureInfo.InvariantCulture)
                         );
 
                         LoadOdemeBilgileri(projeNo);
@@ -1105,21 +1058,17 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-        // Checkbox'ın durumu değiştiğinde çağrılacak olay işleyici
         private void chkSelect_CheckedChanged(object sender, EventArgs e)
         {
             UpdateBulkInvoiceButtonText();
         }
 
-        // Toplu Fatura Oluştur/Seçili Satırları Faturala butonunun metnini güncelleyen metot
         private void UpdateBulkInvoiceButtonText()
         {
             int checkedCount = 0;
-            // tableLayoutPanel1 içindeki tüm kontrolleri gez
             for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
             {
-                // Eğer kontrol bir CheckBox ise
-                System.Windows.Forms.CheckBox chk = tableLayoutPanel1.GetControlFromPosition(0, row) as System.Windows.Forms.CheckBox;
+                CheckBox chk = tableLayoutPanel1.GetControlFromPosition(0, row) as CheckBox;
                 if (chk != null && chk.Checked)
                 {
                     checkedCount++;
@@ -1141,27 +1090,27 @@ namespace CEKA_APP.UsrControl
             List<int> selectedRowIndexes = new List<int>();
             decimal totalTutar = 0m;
             string musteriAdi = txtProjeAra.Text.Trim();
-            var culture = System.Globalization.CultureInfo.CurrentCulture;
+            var culture = CultureInfo.CurrentCulture;
 
             for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
             {
-                System.Windows.Forms.CheckBox chk = tableLayoutPanel1.GetControlFromPosition(0, row) as System.Windows.Forms.CheckBox;
+                CheckBox chk = tableLayoutPanel1.GetControlFromPosition(0, row) as CheckBox;
                 if (chk != null && chk.Checked)
                 {
                     selectedRowIndexes.Add(row);
                 }
             }
 
-            if (selectedRowIndexes.Count == 1) // Tek satır seçiliyse
+            if (selectedRowIndexes.Count == 1)
             {
                 int rowIndex = selectedRowIndexes[0];
 
                 var lblKmTasiAdi = GetLabelAt(rowIndex, 2);
                 var txtTutarFatura = GetTextBoxAt(rowIndex, 4);
-                var rtbAciklamaFatura = tableLayoutPanel1.GetControlFromPosition(7, rowIndex) as RichTextBox; // Index 7 (was 8)
-                var dtpTahminiTarihFatura = tableLayoutPanel1.GetControlFromPosition(5, rowIndex) as DateTimePicker; // Index 5 (was 6)
-                var dtpGerceklesenTarihFatura = tableLayoutPanel1.GetControlFromPosition(6, rowIndex) as DateTimePicker; // Index 6 (was 7)
-                var checkBox = tableLayoutPanel1.GetControlFromPosition(0, rowIndex) as System.Windows.Forms.CheckBox;
+                var rtbAciklamaFatura = tableLayoutPanel1.GetControlFromPosition(7, rowIndex) as RichTextBox;
+                var dtpTahminiTarihFatura = tableLayoutPanel1.GetControlFromPosition(5, rowIndex) as DateTimePicker;
+                var dtpGerceklesenTarihFatura = tableLayoutPanel1.GetControlFromPosition(6, rowIndex) as DateTimePicker;
+                var checkBox = tableLayoutPanel1.GetControlFromPosition(0, rowIndex) as CheckBox;
 
                 if (lblKmTasiAdi == null || txtTutarFatura == null || rtbAciklamaFatura == null ||
                     string.IsNullOrWhiteSpace(lblKmTasiAdi.Text) ||
@@ -1197,7 +1146,7 @@ namespace CEKA_APP.UsrControl
 
                 if (checkBox != null && checkBox.Tag != null && int.TryParse(checkBox.Tag.ToString(), out int tagId))
                 {
-                    var odemeData = new ProjeFinans_OdemeSekilleriData();
+                    var odemeData = new ProjeFinans_OdemeSartlariData();
                     var odemeInfo = odemeData.GetOdemeBilgileriByProjeNo(txtProjeAra.Text.Trim())
                         .FirstOrDefault(o => o.kilometreTasiId == tagId);
                     odemeId = odemeInfo?.odemeId;
@@ -1219,25 +1168,25 @@ namespace CEKA_APP.UsrControl
                 );
                 frm.ShowDialog();
             }
-            else // İki veya daha fazla satır seçiliyse (eski toplu faturalama işlevi) veya hiç seçili değilse
+            else
             {
-                if (selectedRowIndexes.Count == 0) // Hiç satır seçilmemişse tüm satırları dahil et
+                if (selectedRowIndexes.Count == 0)
                 {
                     for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
                     {
                         TextBox txtTutar = GetTextBoxAt(row, 4);
-                        if (txtTutar != null && decimal.TryParse(txtTutar.Text, System.Globalization.NumberStyles.Currency | System.Globalization.NumberStyles.Number, culture, out decimal tutar))
+                        if (txtTutar != null && decimal.TryParse(txtTutar.Text, NumberStyles.Currency | NumberStyles.Number, culture, out decimal tutar))
                         {
                             totalTutar += tutar;
                         }
                     }
                 }
-                else // Seçili satırları dahil et
+                else
                 {
                     foreach (int rowIndex in selectedRowIndexes)
                     {
                         TextBox txtTutar = GetTextBoxAt(rowIndex, 4);
-                        if (txtTutar != null && decimal.TryParse(txtTutar.Text, System.Globalization.NumberStyles.Currency | System.Globalization.NumberStyles.Number, culture, out decimal tutar))
+                        if (txtTutar != null && decimal.TryParse(txtTutar.Text, NumberStyles.Currency | NumberStyles.Number, culture, out decimal tutar))
                         {
                             totalTutar += tutar;
                         }
@@ -1268,8 +1217,8 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            var culture = System.Globalization.CultureInfo.CurrentCulture;
-            if (!decimal.TryParse(txtEksilenTutar.Text, System.Globalization.NumberStyles.Any, culture, out decimal cikarilacakDeger))
+            var culture = CultureInfo.CurrentCulture;
+            if (!decimal.TryParse(txtEksilenTutar.Text, NumberStyles.Any, culture, out decimal cikarilacakDeger))
             {
                 MessageBox.Show("Geçersiz tutar formatı. Lütfen sayısal bir değer girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
@@ -1278,14 +1227,14 @@ namespace CEKA_APP.UsrControl
             List<int> selectedRowIndexes = new List<int>();
             for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
             {
-                System.Windows.Forms.CheckBox chk = tableLayoutPanel1.GetControlFromPosition(0, row) as System.Windows.Forms.CheckBox;
+                CheckBox chk = tableLayoutPanel1.GetControlFromPosition(0, row) as CheckBox;
                 if (chk != null && chk.Checked)
                 {
                     selectedRowIndexes.Add(row);
                 }
             }
 
-            if (selectedRowIndexes.Count == 0) // Hiç satır seçilmemişse tüm satırları etkile
+            if (selectedRowIndexes.Count == 0)
             {
                 DialogResult dialogResult = MessageBox.Show(
                     "Hiçbir satır seçilmedi. Girilen tutar tüm satırlardaki 'Kalan Tutar' alanlarından çıkarılacaktır. Devam etmek istiyor musunuz?",
@@ -1296,7 +1245,6 @@ namespace CEKA_APP.UsrControl
                     return;
                 }
 
-                // Tüm satırları selectedRowIndexes'e ekle (başlık ve spacer hariç)
                 for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
                 {
                     selectedRowIndexes.Add(row);
@@ -1308,23 +1256,22 @@ namespace CEKA_APP.UsrControl
             {
                 foreach (int rowIndex in selectedRowIndexes)
                 {
-                    TextBox txtKalanTutar = GetTextBoxAt(rowIndex, 13); // Kalan Tutar kolonu (YENİ KONUM)
-                    Label lblDurum = GetLabelAt(rowIndex, 11); // Durum kolonu (YENİ KONUM)
+                    TextBox txtKalanTutar = GetTextBoxAt(rowIndex, 13);
+                    Label lblDurum = GetLabelAt(rowIndex, 11);
 
                     if (txtKalanTutar != null)
                     {
                         decimal currentKalanTutar = 0m;
-                        if (decimal.TryParse(txtKalanTutar.Text, System.Globalization.NumberStyles.Any, culture, out currentKalanTutar))
+                        if (decimal.TryParse(txtKalanTutar.Text, NumberStyles.Any, culture, out currentKalanTutar))
                         {
                             decimal newKalanTutar = currentKalanTutar - cikarilacakDeger;
                             if (newKalanTutar < 0)
                             {
                                 MessageBox.Show($"Satır {rowIndex}'deki 'Kalan Tutar' değeri çıkarılan tutardan daha küçük olamaz. İşlem iptal edildi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                return; // Tüm işlemi durdur
+                                return;
                             }
                             txtKalanTutar.Text = newKalanTutar.ToString("N2", culture);
 
-                            // Kalan Tutar 0 olunca Durum'u "Ödendi" yap
                             if (newKalanTutar == 0 && lblDurum != null)
                             {
                                 lblDurum.Text = "Ödendi";
@@ -1332,28 +1279,22 @@ namespace CEKA_APP.UsrControl
                             }
                             else if (newKalanTutar > 0 && lblDurum != null && lblDurum.Text == "Ödendi")
                             {
-                                // Eğer kalan tutar 0'dan büyük hale gelirse ve durum "Ödendi" ise "Bekliyor" yap
-                                // Bu kısım isteğe bağlıdır, kullanıcı "Ödendi" durumunu korumak isteyebilir.
-                                // Şu anki talepte sadece 0 olunca "Ödendi" yapma var.
-                                // lblDurum.Text = "Bekliyor";
-                                // lblDurum.ForeColor = Color.Red;
+
                             }
                         }
                         else
                         {
-                            // Eğer Kalan Tutar boş veya geçersizse, Tutar'dan başla
-                            TextBox txtTutar = GetTextBoxAt(rowIndex, 4); // Tutar kolonu
-                            if (txtTutar != null && decimal.TryParse(txtTutar.Text, System.Globalization.NumberStyles.Any, culture, out decimal currentTutar))
+                            TextBox txtTutar = GetTextBoxAt(rowIndex, 4);
+                            if (txtTutar != null && decimal.TryParse(txtTutar.Text, NumberStyles.Any, culture, out decimal currentTutar))
                             {
                                 decimal newKalanTutar = currentTutar - cikarilacakDeger;
                                 if (newKalanTutar < 0)
                                 {
                                     MessageBox.Show($"Satır {rowIndex}'deki 'Tutar' değeri çıkarılan tutardan daha küçük olamaz. İşlem iptal edildi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                    return; // Tüm işlemi durdur
+                                    return;
                                 }
                                 txtKalanTutar.Text = newKalanTutar.ToString("N2", culture);
 
-                                // Kalan Tutar 0 olunca Durum'u "Ödendi" yap
                                 if (newKalanTutar == 0 && lblDurum != null)
                                 {
                                     lblDurum.Text = "Ödendi";
@@ -1361,8 +1302,7 @@ namespace CEKA_APP.UsrControl
                                 }
                                 else if (newKalanTutar > 0 && lblDurum != null && lblDurum.Text == "Ödendi")
                                 {
-                                    // lblDurum.Text = "Bekliyor";
-                                    // lblDurum.ForeColor = Color.Red;
+
                                 }
                             }
                         }
@@ -1376,55 +1316,46 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-        // chkTutarTamaminiKullan'ın CheckedChanged olayı
         private void ChkTutarTamaminiKullan_CheckedChanged(object sender, EventArgs e)
         {
             if (chkTutarTamaminiKullan.Checked)
             {
                 decimal totalKalanTutar = 0m;
-                var culture = System.Globalization.CultureInfo.CurrentCulture;
+                var culture = CultureInfo.CurrentCulture;
                 List<int> selectedRowIndexes = new List<int>();
 
-                // Seçili satırları bul
                 for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
                 {
-                    System.Windows.Forms.CheckBox chk = tableLayoutPanel1.GetControlFromPosition(0, row) as System.Windows.Forms.CheckBox;
+                    CheckBox chk = tableLayoutPanel1.GetControlFromPosition(0, row) as CheckBox;
                     if (chk != null && chk.Checked)
                     {
                         selectedRowIndexes.Add(row);
                     }
                 }
 
-                if (selectedRowIndexes.Count > 0) // Seçili satırlar varsa sadece onların kalan tutarını topla
+                if (selectedRowIndexes.Count > 0)
                 {
                     foreach (int rowIndex in selectedRowIndexes)
                     {
-                        TextBox txtKalanTutar = GetTextBoxAt(rowIndex, 13); // Kalan Tutar kolonu (YENİ KONUM)
-                        if (txtKalanTutar != null && decimal.TryParse(txtKalanTutar.Text, System.Globalization.NumberStyles.Any, culture, out decimal kalanTutar))
+                        TextBox txtKalanTutar = GetTextBoxAt(rowIndex, 13);
+                        if (txtKalanTutar != null && decimal.TryParse(txtKalanTutar.Text, NumberStyles.Any, culture, out decimal kalanTutar))
                         {
                             totalKalanTutar += kalanTutar;
                         }
                     }
                 }
-                else // Hiç satır seçilmemişse tüm satırların kalan tutarını topla
+                else
                 {
                     for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
                     {
-                        TextBox txtKalanTutar = GetTextBoxAt(row, 13); // Kalan Tutar kolonu (YENİ KONUM)
-                        if (txtKalanTutar != null && decimal.TryParse(txtKalanTutar.Text, System.Globalization.NumberStyles.Any, culture, out decimal kalanTutar))
+                        TextBox txtKalanTutar = GetTextBoxAt(row, 13);
+                        if (txtKalanTutar != null && decimal.TryParse(txtKalanTutar.Text, NumberStyles.Any, culture, out decimal kalanTutar))
                         {
                             totalKalanTutar += kalanTutar;
                         }
                     }
                 }
                 txtEksilenTutar.Text = totalKalanTutar.ToString("N2", culture);
-            }
-            else
-            {
-                // Checkbox işaretli değilse, txtEksilenTutar'ı temizleme (isteğe bağlı, kullanıcı değiştirdiği için zaten değişecektir)
-                // Ancak bu olay, txtEksilenTutar_TextChanged tarafından zaten tetikleneceği için,
-                // manuel değişiklik durumunda bu else bloğuna girilmesi beklenmez.
-                // Eğer buraya manuel olarak unchecked yapılıyorsa temizlenebilir.
             }
         }
 

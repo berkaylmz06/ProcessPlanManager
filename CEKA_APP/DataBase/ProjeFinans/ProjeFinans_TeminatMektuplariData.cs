@@ -12,38 +12,37 @@ namespace CEKA_APP.DataBase.ProjeFinans
 {
     public class ProjeFinans_TeminatMektuplariData
     {
-        public bool TeminatMektubuKaydet(TeminatMektuplari mektup) 
+        public bool TeminatMektubuKaydet(TeminatMektuplari mektup)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {
                 try
                 {
                     connection.Open();
-
                     string sql = @"
                         INSERT INTO ProjeFinans_TeminatMektuplari
-                        (mektupNo, musteriNo, musteriAdi, paraBirimi, banka, mektupTuru, tutar, vadeTarihi, iadeTarihi, komisyonTutari, komisyonOrani, komisyonVadesi)
+                        (mektupNo, musteriNo, musteriAdi, paraBirimi, banka, mektupTuru, tutar, vadeTarihi, iadeTarihi, komisyonTutari, komisyonOrani, komisyonVadesi, projeNo)
                         VALUES
-                        (@mektupNo, @musteriNo, @musteriAdi, @paraBirimi, @banka, @mektupTuru, @tutar, @vadeTarihi, @iadeTarihi, @komisyonTutari, @komisyonOrani, @komisyonVadesi)";
+                        (@mektupNo, @musteriNo, @musteriAdi, @paraBirimi, @banka, @mektupTuru, @tutar, @vadeTarihi, @iadeTarihi, @komisyonTutari, @komisyonOrani, @komisyonVadesi, @projeNo)";
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
-                        command.Parameters.AddWithValue("@mektupNo", mektup.mektupNo ?? "");
-                        command.Parameters.AddWithValue("@musteriNo", mektup.musteriNo ?? "");
-                        command.Parameters.AddWithValue("@musteriAdi", mektup.musteriAdi ?? "");
-                        command.Parameters.AddWithValue("@paraBirimi", mektup.paraBirimi ?? "");
-                        command.Parameters.AddWithValue("@banka", mektup.banka ?? "");
-                        command.Parameters.AddWithValue("@mektupTuru", mektup.mektupTuru ?? "");
+                        command.Parameters.AddWithValue("@mektupNo", mektup.mektupNo ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@musteriNo", mektup.musteriNo ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@musteriAdi", mektup.musteriAdi ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@paraBirimi", mektup.paraBirimi ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@banka", mektup.banka ?? (object)DBNull.Value);
+                        command.Parameters.AddWithValue("@mektupTuru", mektup.mektupTuru ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@tutar", mektup.tutar);
-                        command.Parameters.AddWithValue("@vadeTarihi", mektup.vadeTarihi);
+                        command.Parameters.AddWithValue("@vadeTarihi", mektup.vadeTarihi.HasValue ? (object)mektup.vadeTarihi : DBNull.Value);
                         command.Parameters.AddWithValue("@iadeTarihi", mektup.iadeTarihi);
                         command.Parameters.AddWithValue("@komisyonTutari", mektup.komisyonTutari);
                         command.Parameters.AddWithValue("@komisyonOrani", mektup.komisyonOrani);
                         command.Parameters.AddWithValue("@komisyonVadesi", mektup.komisyonVadesi);
+                        command.Parameters.AddWithValue("@projeNo", mektup.projeNo ?? (object)DBNull.Value);
 
                         command.ExecuteNonQuery();
                     }
-
                     return true;
                 }
                 catch (Exception ex)
@@ -53,6 +52,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
+
         public List<TeminatMektuplari> GetTeminatMektuplari()
         {
             List<TeminatMektuplari> teminatMektuplari = new List<TeminatMektuplari>();
@@ -61,7 +61,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 try
                 {
                     connection.Open();
-                    string query = "SELECT mektupNo, musteriNo, musteriAdi, paraBirimi, banka, mektupTuru, tutar, vadeTarihi, iadeTarihi, komisyonTutari, komisyonOrani, komisyonVadesi FROM ProjeFinans_TeminatMektuplari";
+                    string query = "SELECT mektupNo, musteriNo, musteriAdi, paraBirimi, banka, mektupTuru, tutar, vadeTarihi, iadeTarihi, komisyonTutari, komisyonOrani, komisyonVadesi, projeNo FROM ProjeFinans_TeminatMektuplari";
                     using (var cmd = new SqlCommand(query, connection))
                     {
                         using (SqlDataReader reader = cmd.ExecuteReader())
@@ -69,18 +69,20 @@ namespace CEKA_APP.DataBase.ProjeFinans
                             while (reader.Read())
                             {
                                 TeminatMektuplari mektup = new TeminatMektuplari();
-                                mektup.mektupNo = reader["mektupNo"] as string;
-                                mektup.musteriNo = reader["musteriNo"] as string;
-                                mektup.musteriAdi = reader["musteriAdi"] as string;
-                                mektup.paraBirimi = reader["paraBirimi"] as string;
-                                mektup.banka = reader["banka"] as string;
-                                mektup.mektupTuru = reader["mektupTuru"] as string;
+                                mektup.mektupNo = reader["mektupNo"] as string ?? "";
+                                mektup.musteriNo = reader["musteriNo"] as string ?? "";
+                                mektup.musteriAdi = reader["musteriAdi"] as string ?? "";
+                                mektup.paraBirimi = reader["paraBirimi"] as string ?? "";
+                                mektup.banka = reader["banka"] as string ?? "";
+                                mektup.mektupTuru = reader["mektupTuru"] as string ?? "";
                                 mektup.tutar = reader.GetDecimal(reader.GetOrdinal("tutar"));
-                                mektup.vadeTarihi = reader.GetDateTime(reader.GetOrdinal("vadeTarihi"));
+                                mektup.vadeTarihi = !reader.IsDBNull(reader.GetOrdinal("vadeTarihi")) ? (DateTime?)reader.GetDateTime(reader.GetOrdinal("vadeTarihi")) : null;
                                 mektup.iadeTarihi = reader.GetDateTime(reader.GetOrdinal("iadeTarihi"));
                                 mektup.komisyonTutari = reader.GetDecimal(reader.GetOrdinal("komisyonTutari"));
                                 mektup.komisyonOrani = reader.GetDecimal(reader.GetOrdinal("komisyonOrani"));
                                 mektup.komisyonVadesi = reader.GetInt32(reader.GetOrdinal("komisyonVadesi"));
+                                mektup.projeNo = reader["projeNo"] as string ?? ""; // Yeni eklenen projeNo
+
                                 teminatMektuplari.Add(mektup);
                             }
                         }
@@ -94,6 +96,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
             return teminatMektuplari;
         }
+
         public bool MektupNoVarMi(string mektupNo)
         {
             using (var connection = DataBaseHelper.GetConnection())
@@ -104,7 +107,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     string query = "SELECT COUNT(1) FROM ProjeFinans_TeminatMektuplari WHERE mektupNo = @mektupNo";
                     using (var cmd = new SqlCommand(query, connection))
                     {
-                        cmd.Parameters.AddWithValue("@mektupNo", mektupNo);
+                        cmd.Parameters.AddWithValue("@mektupNo", mektupNo ?? (object)DBNull.Value);
                         int count = (int)cmd.ExecuteScalar();
                         return count > 0;
                     }
@@ -116,6 +119,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
+
         public void MektupGuncelle(string eskiMektupNo, TeminatMektuplari guncelMektup)
         {
             using (var connection = DataBaseHelper.GetConnection())
@@ -135,23 +139,25 @@ namespace CEKA_APP.DataBase.ProjeFinans
                             iadeTarihi = @iadeTarihi,
                             komisyonTutari = @komisyonTutari,
                             komisyonOrani = @komisyonOrani,
-                            komisyonVadesi = @komisyonVadesi
+                            komisyonVadesi = @komisyonVadesi,
+                            projeNo = @projeNo
                         WHERE mektupNo = @eskiMektupNo";
 
                     using (var cmd = new SqlCommand(query, connection))
                     {
-                        cmd.Parameters.AddWithValue("@yeniMusteriNo", guncelMektup.musteriNo);
-                        cmd.Parameters.AddWithValue("@musteriAdi", guncelMektup.musteriAdi);
-                        cmd.Parameters.AddWithValue("@paraBirimi", guncelMektup.paraBirimi);
-                        cmd.Parameters.AddWithValue("@banka", guncelMektup.banka);
-                        cmd.Parameters.AddWithValue("@mektupTuru", guncelMektup.mektupTuru);
+                        cmd.Parameters.AddWithValue("@yeniMusteriNo", guncelMektup.musteriNo ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@musteriAdi", guncelMektup.musteriAdi ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@paraBirimi", guncelMektup.paraBirimi ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@banka", guncelMektup.banka ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@mektupTuru", guncelMektup.mektupTuru ?? (object)DBNull.Value);
                         cmd.Parameters.AddWithValue("@tutar", guncelMektup.tutar);
-                        cmd.Parameters.AddWithValue("@vadeTarihi", guncelMektup.vadeTarihi);
+                        cmd.Parameters.AddWithValue("@vadeTarihi", guncelMektup.vadeTarihi.HasValue ? (object)guncelMektup.vadeTarihi : DBNull.Value);
                         cmd.Parameters.AddWithValue("@iadeTarihi", guncelMektup.iadeTarihi);
                         cmd.Parameters.AddWithValue("@komisyonTutari", guncelMektup.komisyonTutari);
                         cmd.Parameters.AddWithValue("@komisyonOrani", guncelMektup.komisyonOrani);
                         cmd.Parameters.AddWithValue("@komisyonVadesi", guncelMektup.komisyonVadesi);
-                        cmd.Parameters.AddWithValue("@eskiMusteriNo", eskiMektupNo);
+                        cmd.Parameters.AddWithValue("@projeNo", guncelMektup.projeNo ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@eskiMektupNo", eskiMektupNo ?? (object)DBNull.Value);
 
                         cmd.ExecuteNonQuery();
                     }
@@ -163,6 +169,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
+
         public void MektupSil(string mektupNo)
         {
             using (var connection = DataBaseHelper.GetConnection())
@@ -173,8 +180,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     string query = "DELETE FROM ProjeFinans_TeminatMektuplari WHERE mektupNo = @mektupNo";
                     using (var cmd = new SqlCommand(query, connection))
                     {
-                        cmd.Parameters.AddWithValue("@mektupNo", mektupNo);
-
+                        cmd.Parameters.AddWithValue("@mektupNo", mektupNo ?? (object)DBNull.Value);
                         cmd.ExecuteNonQuery();
                     }
                 }

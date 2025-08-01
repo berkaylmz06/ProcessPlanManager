@@ -1,4 +1,5 @@
-﻿using CEKA_APP.DataBase.ProjeFinans;
+﻿using CEKA_APP.DataBase;
+using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Entitys.ProjeFinans;
 using System;
 using System.Collections.Generic;
@@ -17,19 +18,20 @@ namespace CEKA_APP.Forms
         private TeminatMektuplari _currentMektup;
         private bool _isUpdateMode = false;
         private string _originalMektupNoForUpdate;
+        private string _projeNo;
 
-        public frmTeminatMektubuEkle(TeminatMektuplari teminatMektup)
+        public frmTeminatMektubuEkle(TeminatMektuplari teminatMektup, string projeNo = null)
         {
             InitializeComponent();
-
             this.Icon = Properties.Resources.cekalogokirmizi;
+            _projeNo = projeNo; // Proje numarasını ata
 
             if (teminatMektup != null)
             {
                 _currentMektup = teminatMektup;
                 _isUpdateMode = true;
-                _originalMektupNoForUpdate = teminatMektup.mektupNo; // Changed from musteriNo to mektupNo
-                this.Text = "Teminat Mektubu Bilgilerini Güncelle"; // Updated form title
+                _originalMektupNoForUpdate = teminatMektup.mektupNo;
+                this.Text = "Teminat Mektubu Bilgilerini Güncelle";
                 btnKaydet.Text = "Güncelle";
                 LoadMektupDataToForm();
                 txtMektupNo.Enabled = false;
@@ -38,9 +40,28 @@ namespace CEKA_APP.Forms
             {
                 _currentMektup = new TeminatMektuplari();
                 _isUpdateMode = false;
-                this.Text = "Yeni Teminat Mektubu Ekle"; // Updated form title
+                this.Text = "Yeni Teminat Mektubu Ekle";
                 btnKaydet.Text = "Kaydet";
-                ClearFormFields(); // Added to clear fields for new entry
+                ClearFormFields();
+                LoadProjeKutukData();
+            }
+
+            // ComboBox değişikliğinde vade tarihi kontrolü
+            cmbMektupTuru.SelectedIndexChanged += CmbMektupTuru_SelectedIndexChanged;
+        }
+
+        private void CmbMektupTuru_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // "Kesin" veya "Kati" seçilirse vade tarihi devre dışı bırakılır
+            if (cmbMektupTuru.SelectedItem != null &&
+                (cmbMektupTuru.SelectedItem.ToString() == "Kesin" || cmbMektupTuru.SelectedItem.ToString() == "Kati"))
+            {
+                dtVadeTarihi.Enabled = false;
+                dtVadeTarihi.Value = DateTime.Now; // Varsayılan değer, kaydedilirken null olacak
+            }
+            else
+            {
+                dtVadeTarihi.Enabled = true;
             }
         }
 
@@ -54,7 +75,7 @@ namespace CEKA_APP.Forms
             chkEuro.Checked = false;
             txtTutar.Clear();
             txtBanka.Clear();
-            txtMektupTuru.Clear();
+            cmbMektupTuru.SelectedIndex = -1; // ComboBox'ı sıfırla
             dtVadeTarihi.Value = DateTime.Now;
             dtIadeTarihi.Value = DateTime.Now;
             txtKomisyonTutari.Clear();
@@ -62,24 +83,42 @@ namespace CEKA_APP.Forms
             txtKomisyonVadesi.Clear();
         }
 
-        private void LoadMektupDataToForm()
+        private void LoadProjeKutukData()
         {
-            if (_currentMektup != null)
+            if (!string.IsNullOrEmpty(_projeNo))
             {
-                txtMektupNo.Text = _currentMektup.mektupNo;
-                txtMusteriNo.Text = _currentMektup.musteriNo;
-                txtMusteriAdi.Text = _currentMektup.musteriAdi;
-                chkTL.Checked = _currentMektup.paraBirimi == "TL";
-                chkDolar.Checked = _currentMektup.paraBirimi == "USD";
-                chkEuro.Checked = _currentMektup.paraBirimi == "EUR";
-                txtTutar.Text = _currentMektup.tutar.ToString("F2");
-                txtBanka.Text = _currentMektup.banka;
-                txtMektupTuru.Text = _currentMektup.mektupTuru;
-                dtVadeTarihi.Value = _currentMektup.vadeTarihi;
-                dtIadeTarihi.Value = _currentMektup.iadeTarihi;
-                txtKomisyonTutari.Text = _currentMektup.komisyonTutari.ToString("F2");
-                txtKomisyonOrani.Text = _currentMektup.komisyonOrani.ToString("F2");
-                txtKomisyonVadesi.Text = _currentMektup.komisyonVadesi.ToString();
+                var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(_projeNo);
+                string effectiveProjeNo = _projeNo; // Varsayılan olarak mevcut proje numarası
+
+                if (projeKutuk == null)
+                {
+                    // Alt proje kontrolü
+                    if (ProjeFinans_ProjeIliskiData.CheckAltProje(_projeNo))
+                    {
+                        // Alt proje ise üst projenin numarasını al
+                        string ustProjeNo = ProjeFinans_ProjeIliskiData.GetUstProjeNo(_projeNo);
+                        if (!string.IsNullOrEmpty(ustProjeNo))
+                        {
+                            effectiveProjeNo = ustProjeNo; // Üst proje numarasını kullan
+                            projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(ustProjeNo);
+                        }
+                    }
+                }
+
+                // ProjeNo'yu _currentMektup'a ata (alt proje ise üst proje numarası)
+                _currentMektup.projeNo = effectiveProjeNo;
+
+                if (projeKutuk != null)
+                {
+                    txtMusteriNo.Text = projeKutuk.musteriNo ?? "";
+                    txtMusteriAdi.Text = projeKutuk.musteriAdi ?? "";
+                }
+                else
+                {
+                    MessageBox.Show($"Proje '{_projeNo}' için kütük bilgileri bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtMusteriNo.Text = "";
+                    txtMusteriAdi.Text = "";
+                }
             }
         }
 
@@ -97,17 +136,11 @@ namespace CEKA_APP.Forms
             }
 
             if (chkTL.Checked)
-            {
                 paraBirimi = "TL";
-            }
             else if (chkDolar.Checked)
-            {
                 paraBirimi = "USD";
-            }
             else if (chkEuro.Checked)
-            {
                 paraBirimi = "EUR";
-            }
             else
             {
                 MessageBox.Show("Lütfen para birimi seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -121,9 +154,8 @@ namespace CEKA_APP.Forms
             }
 
             string banka = txtBanka.Text.Trim();
-            string mektupTuru = txtMektupTuru.Text.Trim();
-            DateTime vadeTarihi = dtVadeTarihi.Value;
-            DateTime iadeTarihi = dtIadeTarihi.Value;
+            string mektupTuru = cmbMektupTuru.Text.Trim();
+            DateTime? vadeTarihi = (mektupTuru == "Kesin" || mektupTuru == "Kati") ? null : (DateTime?)dtVadeTarihi.Value;
 
             if (!decimal.TryParse(txtKomisyonTutari.Text, out decimal komisyonTutari))
             {
@@ -149,7 +181,6 @@ namespace CEKA_APP.Forms
             {
                 if (_isUpdateMode)
                 {
-                    // Güncelleme Modu
                     _currentMektup.mektupNo = mektupNo;
                     _currentMektup.musteriNo = musteriNo;
                     _currentMektup.musteriAdi = musteriAdi;
@@ -158,12 +189,12 @@ namespace CEKA_APP.Forms
                     _currentMektup.banka = banka;
                     _currentMektup.mektupTuru = mektupTuru;
                     _currentMektup.vadeTarihi = vadeTarihi;
-                    _currentMektup.iadeTarihi = iadeTarihi;
+                    _currentMektup.iadeTarihi = dtIadeTarihi.Value;
                     _currentMektup.komisyonTutari = komisyonTutari;
                     _currentMektup.komisyonOrani = komisyonOrani;
                     _currentMektup.komisyonVadesi = komisyonVadesi;
+                    _currentMektup.projeNo = _projeNo; // Güncelleme modunda mevcut projeNo'yu koru
 
-                    // Assuming there's an Update method similar to MusteriGuncelle
                     mektupData.MektupGuncelle(_originalMektupNoForUpdate, _currentMektup);
                     MessageBox.Show("Teminat Mektubu başarıyla güncellendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     this.DialogResult = DialogResult.OK;
@@ -171,8 +202,7 @@ namespace CEKA_APP.Forms
                 }
                 else
                 {
-                    // Ekleme Modu
-                    if (mektupData.MektupNoVarMi(mektupNo)) 
+                    if (mektupData.MektupNoVarMi(mektupNo))
                     {
                         MessageBox.Show($"'{mektupNo}' mektup numarası zaten mevcut. Lütfen farklı bir numara girin.", "Mevcut Kayıt", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
@@ -186,12 +216,13 @@ namespace CEKA_APP.Forms
                         _currentMektup.banka = banka;
                         _currentMektup.mektupTuru = mektupTuru;
                         _currentMektup.vadeTarihi = vadeTarihi;
-                        _currentMektup.iadeTarihi = iadeTarihi;
+                        _currentMektup.iadeTarihi = dtIadeTarihi.Value;
                         _currentMektup.komisyonTutari = komisyonTutari;
                         _currentMektup.komisyonOrani = komisyonOrani;
                         _currentMektup.komisyonVadesi = komisyonVadesi;
+                        // projeNo'yu LoadProjeKutukData'da zaten ayarladık, buraya gerek yok
 
-                        mektupData.TeminatMektubuKaydet(_currentMektup); 
+                        mektupData.TeminatMektubuKaydet(_currentMektup);
                         MessageBox.Show("Teminat Mektubu başarıyla kaydedildi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         ClearFormFields();
                         this.DialogResult = DialogResult.OK;
@@ -208,32 +239,51 @@ namespace CEKA_APP.Forms
         private void frmTeminatMektubuEkle_Load(object sender, EventArgs e)
         {
             ApplyCharacterLimits();
+            // Form yüklenirken mevcut mektup türüne göre vade tarihi durumunu ayarla
+            if (_isUpdateMode && _currentMektup != null)
+            {
+                if (_currentMektup.mektupTuru == "Kesin" || _currentMektup.mektupTuru == "Kati")
+                {
+                    dtVadeTarihi.Enabled = false;
+                }
+                // ProjeNo'yu güncelle modunda arka planda ata (mevcut projeNo'yu koru)
+                _currentMektup.projeNo = _projeNo;
+            }
         }
 
         private void ApplyCharacterLimits()
         {
             if (txtMektupNo != null)
-            {
                 txtMektupNo.MaxLength = 50;
-            }
             if (txtMusteriNo != null)
-            {
                 txtMusteriNo.MaxLength = 50;
-            }
             if (txtMusteriAdi != null)
-            {
                 txtMusteriAdi.MaxLength = 250;
-            }
             if (txtBanka != null)
-            {
                 txtBanka.MaxLength = 250;
-            }
-            if (txtMektupTuru != null)
+            if (cmbMektupTuru != null)
+                cmbMektupTuru.MaxLength = 250;
+        }
+
+        private void LoadMektupDataToForm()
+        {
+            if (_currentMektup != null)
             {
-                txtMektupTuru.MaxLength = 250;
+                txtMektupNo.Text = _currentMektup.mektupNo;
+                txtMusteriNo.Text = _currentMektup.musteriNo;
+                txtMusteriAdi.Text = _currentMektup.musteriAdi;
+                chkTL.Checked = _currentMektup.paraBirimi == "TL";
+                chkDolar.Checked = _currentMektup.paraBirimi == "USD";
+                chkEuro.Checked = _currentMektup.paraBirimi == "EUR";
+                txtTutar.Text = _currentMektup.tutar.ToString("F2");
+                txtBanka.Text = _currentMektup.banka;
+                cmbMektupTuru.Text = _currentMektup.mektupTuru;
+                dtVadeTarihi.Value = _currentMektup.vadeTarihi.HasValue ? _currentMektup.vadeTarihi.Value : DateTime.Now;
+                dtIadeTarihi.Value = _currentMektup.iadeTarihi;
+                txtKomisyonTutari.Text = _currentMektup.komisyonTutari.ToString("F2");
+                txtKomisyonOrani.Text = _currentMektup.komisyonOrani.ToString("F2");
+                txtKomisyonVadesi.Text = _currentMektup.komisyonVadesi.ToString();
             }
-            // Tutar, Komisyon Tutarı, Komisyon Oranı ve Komisyon Vadesi sayısal alanlar olduğu için MaxLength ayarına gerek yoktur.
-            // Bu alanlar için TextBox yerine NumericUpDown kontrolü kullanmak daha uygun olabilir.
         }
     }
 }

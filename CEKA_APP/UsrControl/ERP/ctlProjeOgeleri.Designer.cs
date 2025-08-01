@@ -28,9 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.treeView1 = new System.Windows.Forms.TreeView();
-            this.panelDisContainer = new System.Windows.Forms.Panel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.panelList = new System.Windows.Forms.Panel();
+            this.treeView1 = new System.Windows.Forms.TreeView();
             this.panelSpacer1 = new System.Windows.Forms.Panel();
             this.panelSearch = new System.Windows.Forms.Panel();
             this.btnAra = new System.Windows.Forms.Button();
@@ -39,64 +39,76 @@
             this.panelSpacer2 = new System.Windows.Forms.Panel();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.lblProjeOgeleri = new System.Windows.Forms.Label();
-            this.panelDetayContainer = new System.Windows.Forms.Panel();
+            this.panelBilgi = new System.Windows.Forms.Panel();
+            this.dataGridOgeDetay = new System.Windows.Forms.DataGridView();
             this.panelButtons = new System.Windows.Forms.Panel();
             this.btnKaydet = new System.Windows.Forms.Button();
             this.btnYeni = new System.Windows.Forms.Button();
             this.btnStandartProje = new System.Windows.Forms.Button();
-            this.dataGridOgeDetay = new System.Windows.Forms.DataGridView();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
-            this.panelDisContainer.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             this.panelList.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.panelHeader.SuspendLayout();
-            this.panelDetayContainer.SuspendLayout();
-            this.panelButtons.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridOgeDetay)).BeginInit();
+            this.panelButtons.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // splitContainer1
+            // 
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 63);
+            this.splitContainer1.Name = "splitContainer1";
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.panelList);
+            this.splitContainer1.Panel1.Controls.Add(this.panelSpacer1);
+            this.splitContainer1.Panel1.Controls.Add(this.panelSearch);
+            this.splitContainer1.Panel1.Controls.Add(this.panelSpacer2);
+            this.splitContainer1.Panel1.Controls.Add(this.panelHeader);
+            this.splitContainer1.Panel1.Padding = new System.Windows.Forms.Padding(3);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.panelBilgi);
+            this.splitContainer1.Panel2.Controls.Add(this.dataGridOgeDetay);
+            this.splitContainer1.Panel2.Controls.Add(this.panelButtons);
+            this.splitContainer1.Panel2.Padding = new System.Windows.Forms.Padding(3);
+            this.splitContainer1.Size = new System.Drawing.Size(1878, 928);
+            this.splitContainer1.SplitterDistance = 442;
+            this.splitContainer1.TabIndex = 142;
+            // 
+            // panelList
+            // 
+            this.panelList.Controls.Add(this.treeView1);
+            this.panelList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelList.Location = new System.Drawing.Point(3, 148);
+            this.panelList.Margin = new System.Windows.Forms.Padding(10);
+            this.panelList.Name = "panelList";
+            this.panelList.Size = new System.Drawing.Size(436, 777);
+            this.panelList.TabIndex = 143;
             // 
             // treeView1
             // 
             this.treeView1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.treeView1.Location = new System.Drawing.Point(0, 0);
             this.treeView1.Name = "treeView1";
-            this.treeView1.Size = new System.Drawing.Size(425, 787);
+            this.treeView1.Size = new System.Drawing.Size(436, 777);
             this.treeView1.TabIndex = 9;
             this.treeView1.BeforeSelect += new System.Windows.Forms.TreeViewCancelEventHandler(this.treeView1_BeforeSelect);
             this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
             // 
-            // panelDisContainer
-            // 
-            this.panelDisContainer.BackColor = System.Drawing.SystemColors.Control;
-            this.panelDisContainer.Controls.Add(this.panelList);
-            this.panelDisContainer.Controls.Add(this.panelSpacer1);
-            this.panelDisContainer.Controls.Add(this.panelSearch);
-            this.panelDisContainer.Controls.Add(this.panelSpacer2);
-            this.panelDisContainer.Controls.Add(this.panelHeader);
-            this.panelDisContainer.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelDisContainer.Location = new System.Drawing.Point(0, 50);
-            this.panelDisContainer.Name = "panelDisContainer";
-            this.panelDisContainer.Padding = new System.Windows.Forms.Padding(10);
-            this.panelDisContainer.Size = new System.Drawing.Size(445, 954);
-            this.panelDisContainer.TabIndex = 139;
-            // 
-            // panelList
-            // 
-            this.panelList.Controls.Add(this.treeView1);
-            this.panelList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelList.Location = new System.Drawing.Point(10, 157);
-            this.panelList.Margin = new System.Windows.Forms.Padding(10);
-            this.panelList.Name = "panelList";
-            this.panelList.Size = new System.Drawing.Size(425, 787);
-            this.panelList.TabIndex = 139;
-            // 
             // panelSpacer1
             // 
             this.panelSpacer1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelSpacer1.Location = new System.Drawing.Point(10, 141);
+            this.panelSpacer1.Location = new System.Drawing.Point(3, 138);
             this.panelSpacer1.Name = "panelSpacer1";
-            this.panelSpacer1.Size = new System.Drawing.Size(425, 16);
-            this.panelSpacer1.TabIndex = 140;
+            this.panelSpacer1.Size = new System.Drawing.Size(436, 10);
+            this.panelSpacer1.TabIndex = 145;
             // 
             // panelSearch
             // 
@@ -105,11 +117,11 @@
             this.panelSearch.Controls.Add(this.txtProjeNo);
             this.panelSearch.Controls.Add(this.label1);
             this.panelSearch.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelSearch.Location = new System.Drawing.Point(10, 76);
+            this.panelSearch.Location = new System.Drawing.Point(3, 67);
             this.panelSearch.Name = "panelSearch";
             this.panelSearch.Padding = new System.Windows.Forms.Padding(5);
-            this.panelSearch.Size = new System.Drawing.Size(425, 65);
-            this.panelSearch.TabIndex = 138;
+            this.panelSearch.Size = new System.Drawing.Size(436, 71);
+            this.panelSearch.TabIndex = 142;
             // 
             // btnAra
             // 
@@ -141,20 +153,20 @@
             // panelSpacer2
             // 
             this.panelSpacer2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelSpacer2.Location = new System.Drawing.Point(10, 60);
+            this.panelSpacer2.Location = new System.Drawing.Point(3, 57);
             this.panelSpacer2.Name = "panelSpacer2";
-            this.panelSpacer2.Size = new System.Drawing.Size(425, 16);
-            this.panelSpacer2.TabIndex = 139;
+            this.panelSpacer2.Size = new System.Drawing.Size(436, 10);
+            this.panelSpacer2.TabIndex = 144;
             // 
             // panelHeader
             // 
             this.panelHeader.BackColor = System.Drawing.Color.DarkSlateGray;
             this.panelHeader.Controls.Add(this.lblProjeOgeleri);
             this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelHeader.Location = new System.Drawing.Point(10, 10);
+            this.panelHeader.Location = new System.Drawing.Point(3, 3);
             this.panelHeader.Name = "panelHeader";
-            this.panelHeader.Size = new System.Drawing.Size(425, 50);
-            this.panelHeader.TabIndex = 137;
+            this.panelHeader.Size = new System.Drawing.Size(436, 54);
+            this.panelHeader.TabIndex = 141;
             // 
             // lblProjeOgeleri
             // 
@@ -168,15 +180,25 @@
             this.lblProjeOgeleri.TabIndex = 137;
             this.lblProjeOgeleri.Text = "Proje Öğeleri";
             // 
-            // panelDetayContainer
+            // panelBilgi
             // 
-            this.panelDetayContainer.Controls.Add(this.panelButtons);
-            this.panelDetayContainer.Controls.Add(this.dataGridOgeDetay);
-            this.panelDetayContainer.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelDetayContainer.Location = new System.Drawing.Point(0, 50);
-            this.panelDetayContainer.Name = "panelDetayContainer";
-            this.panelDetayContainer.Size = new System.Drawing.Size(1619, 954);
-            this.panelDetayContainer.TabIndex = 140;
+            this.panelBilgi.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.panelBilgi.Location = new System.Drawing.Point(3, 670);
+            this.panelBilgi.Name = "panelBilgi";
+            this.panelBilgi.Size = new System.Drawing.Size(1426, 255);
+            this.panelBilgi.TabIndex = 18;
+            // 
+            // dataGridOgeDetay
+            // 
+            this.dataGridOgeDetay.AllowUserToAddRows = false;
+            this.dataGridOgeDetay.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridOgeDetay.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.dataGridOgeDetay.Location = new System.Drawing.Point(3, 122);
+            this.dataGridOgeDetay.Name = "dataGridOgeDetay";
+            this.dataGridOgeDetay.RowHeadersWidth = 51;
+            this.dataGridOgeDetay.RowTemplate.Height = 24;
+            this.dataGridOgeDetay.Size = new System.Drawing.Size(1426, 803);
+            this.dataGridOgeDetay.TabIndex = 16;
             // 
             // panelButtons
             // 
@@ -184,14 +206,14 @@
             this.panelButtons.Controls.Add(this.btnYeni);
             this.panelButtons.Controls.Add(this.btnStandartProje);
             this.panelButtons.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelButtons.Location = new System.Drawing.Point(0, 0);
+            this.panelButtons.Location = new System.Drawing.Point(3, 3);
             this.panelButtons.Name = "panelButtons";
-            this.panelButtons.Size = new System.Drawing.Size(1619, 70);
-            this.panelButtons.TabIndex = 14;
+            this.panelButtons.Size = new System.Drawing.Size(1426, 119);
+            this.panelButtons.TabIndex = 17;
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(700, 16);
+            this.btnKaydet.Location = new System.Drawing.Point(255, 16);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(210, 38);
             this.btnKaydet.TabIndex = 12;
@@ -201,7 +223,7 @@
             // 
             // btnYeni
             // 
-            this.btnYeni.Location = new System.Drawing.Point(930, 16);
+            this.btnYeni.Location = new System.Drawing.Point(485, 16);
             this.btnYeni.Name = "btnYeni";
             this.btnYeni.Size = new System.Drawing.Size(210, 38);
             this.btnYeni.TabIndex = 11;
@@ -211,7 +233,7 @@
             // 
             // btnStandartProje
             // 
-            this.btnStandartProje.Location = new System.Drawing.Point(470, 16);
+            this.btnStandartProje.Location = new System.Drawing.Point(25, 16);
             this.btnStandartProje.Name = "btnStandartProje";
             this.btnStandartProje.Size = new System.Drawing.Size(210, 38);
             this.btnStandartProje.TabIndex = 13;
@@ -219,68 +241,57 @@
             this.btnStandartProje.UseVisualStyleBackColor = true;
             this.btnStandartProje.Click += new System.EventHandler(this.btnStandartProje_Click);
             // 
-            // dataGridOgeDetay
-            // 
-            this.dataGridOgeDetay.AllowUserToAddRows = false;
-            this.dataGridOgeDetay.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridOgeDetay.Location = new System.Drawing.Point(471, 97);
-            this.dataGridOgeDetay.Name = "dataGridOgeDetay";
-            this.dataGridOgeDetay.RowHeadersWidth = 51;
-            this.dataGridOgeDetay.RowTemplate.Height = 24;
-            this.dataGridOgeDetay.Size = new System.Drawing.Size(966, 488);
-            this.dataGridOgeDetay.TabIndex = 10;
-            // 
             // ctlBaslik1
             // 
             this.ctlBaslik1.Baslik = "Başlık";
             this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
             this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
             this.ctlBaslik1.Name = "ctlBaslik1";
-            this.ctlBaslik1.Size = new System.Drawing.Size(1619, 50);
+            this.ctlBaslik1.Size = new System.Drawing.Size(1878, 63);
             this.ctlBaslik1.TabIndex = 0;
             // 
             // ctlProjeOgeleri
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.panelDisContainer);
-            this.Controls.Add(this.panelDetayContainer);
+            this.Controls.Add(this.splitContainer1);
             this.Controls.Add(this.ctlBaslik1);
             this.Name = "ctlProjeOgeleri";
-            this.Size = new System.Drawing.Size(1619, 1004);
+            this.Size = new System.Drawing.Size(1878, 991);
             this.Load += new System.EventHandler(this.ctlProjeOgeleri_Load);
-            this.panelDisContainer.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             this.panelList.ResumeLayout(false);
             this.panelSearch.ResumeLayout(false);
             this.panelSearch.PerformLayout();
             this.panelHeader.ResumeLayout(false);
             this.panelHeader.PerformLayout();
-            this.panelDetayContainer.ResumeLayout(false);
-            this.panelButtons.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridOgeDetay)).EndInit();
+            this.panelButtons.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
 
         #endregion
-
-        private System.Windows.Forms.TreeView treeView1;
-        private System.Windows.Forms.Panel panelDisContainer;
+        private ctlBaslik ctlBaslik1;
+        private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.Panel panelList;
+        private System.Windows.Forms.TreeView treeView1;
         private System.Windows.Forms.Panel panelSpacer1;
         private System.Windows.Forms.Panel panelSearch;
-        private System.Windows.Forms.Label lblProjeOgeleri;
-        private System.Windows.Forms.Panel panelSpacer2;
-        private System.Windows.Forms.Panel panelHeader;
         private System.Windows.Forms.Button btnAra;
         private System.Windows.Forms.TextBox txtProjeNo;
         private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Panel panelDetayContainer;
-        private ctlBaslik ctlBaslik1;
+        private System.Windows.Forms.Panel panelSpacer2;
+        private System.Windows.Forms.Panel panelHeader;
+        private System.Windows.Forms.Label lblProjeOgeleri;
+        private System.Windows.Forms.Panel panelBilgi;
         private System.Windows.Forms.DataGridView dataGridOgeDetay;
+        private System.Windows.Forms.Panel panelButtons;
         private System.Windows.Forms.Button btnKaydet;
         private System.Windows.Forms.Button btnYeni;
         private System.Windows.Forms.Button btnStandartProje;
-        private System.Windows.Forms.Panel panelButtons;
     }
 }

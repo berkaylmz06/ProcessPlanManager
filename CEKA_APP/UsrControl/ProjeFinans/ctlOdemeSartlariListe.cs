@@ -30,10 +30,10 @@ namespace CEKA_APP.UsrControl.ProjeFinans
         }
         public void LoadOdemeSartlariToDataGridView()
         {
-            ProjeFinans_OdemeSekilleriData odemeSekilleriData = new ProjeFinans_OdemeSekilleriData();
+            ProjeFinans_OdemeSartlariData odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
             try
             {
-                List<OdemeSekilleri> odemeSekilleri = odemeSekilleriData.GetOdemeBilgileri();
+                List<OdemeSartlari> odemeSekilleri = odemeSekilleriData.GetOdemeBilgileri();
 
                 dataGridOdemeSartlari.DataSource = odemeSekilleri;
                 if (dataGridOdemeSartlari.Columns.Contains("odemeId"))

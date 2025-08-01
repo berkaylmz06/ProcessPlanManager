@@ -1,9 +1,11 @@
-﻿using CEKA_APP.DataBase.ProjeFinans;
+﻿using CEKA_APP.DataBase;
+using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Helper;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
@@ -47,10 +49,13 @@ namespace CEKA_APP.Forms
 
         private void frmFaturaOlustur_Load(object sender, EventArgs e)
         {
+            // Değerleri logla (hata ayıklamayı kolaylaştırmak için)
+            Console.WriteLine($"tutar: {tutar}, aciklama: {aciklama}, tarih: {tarih}, musteriAdi: {musteriAdi}");
+
             txtTutar.Text = tutar;
             txtAciklama.Text = aciklama;
             txtTarih.Text = tarih;
-            txtProjeNo.Text = musteriAdi;
+            txtMusteri.Text = musteriAdi;
 
             this.Icon = Properties.Resources.cekalogokirmizi;
 
@@ -65,15 +70,66 @@ namespace CEKA_APP.Forms
             };
             this.Controls.Add(notPanel);
 
-            // Fatura varlığını kontrol et
+            // Proje numarasına göre müşteri bilgilerini çek
+            if (!string.IsNullOrEmpty(projeNo))
+            {
+                var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
+
+                if (projeKutuk != null && !string.IsNullOrEmpty(projeKutuk.musteriNo))
+                {
+                    var musteriData = new ProjeFinans_MusterilerData();
+                    var musteriBilgi = musteriData.GetMusteriByMusteriNo(projeKutuk.musteriNo);
+
+                    if (musteriBilgi != null)
+                    {
+                        txtMusteriAdresi.Text = musteriBilgi.adres ?? "";
+                        txtVergiMerkezi.Text = musteriBilgi.vergiDairesi ?? "";
+                        txtVergiNo.Text = musteriBilgi.vergiNo ?? "";
+
+                        // Müşteri menşeisini logla
+                        Console.WriteLine($"musteriMensei: '{musteriBilgi.musteriMensei}'");
+
+                        // KDV textbox'ını menşeiye göre ayarla
+                        txtKdv.Text = ""; // Varsayılan değer
+                        txtKdv.Enabled = !string.IsNullOrEmpty(musteriBilgi.musteriMensei) &&
+                                       musteriBilgi.musteriMensei.Trim().ToLower() == "türkiye";
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Müşteri numarası {projeKutuk.musteriNo} için bilgi bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    }
+                }
+                else
+                {
+                    MessageBox.Show($"Proje numarasına {projeNo} göre müşteri numarası bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+
             if (kilometreTasiId > 0)
             {
-                var odemeSekilleriData = new ProjeFinans_OdemeSekilleriData();
+                var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
                 var odemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kilometreTasiId);
                 if (odemeBilgi != null && !string.IsNullOrEmpty(odemeBilgi.faturaNo?.ToString()))
                 {
+                    lblFaturaBilgi.Text = $"Bu kilometre taşı için {odemeBilgi.faturaNo} fatura no ile daha önceden fatura oluşturulmuş!";
                     btnGoruntule.Enabled = true;
+                    btnSil.Enabled = true;
+                    btnPdfOlustur.Enabled = false;
                 }
+                else
+                {
+                    lblFaturaBilgi.Text = "";
+                    btnGoruntule.Enabled = false;
+                    btnSil.Enabled = false;
+                    btnPdfOlustur.Enabled = true;
+                }
+            }
+            else
+            {
+                lblFaturaBilgi.Text = "";
+                btnGoruntule.Enabled = false;
+                btnSil.Enabled = false;
+                btnPdfOlustur.Enabled = true;
             }
         }
         private void btnNotEkle_Click(object sender, EventArgs e)
@@ -291,29 +347,27 @@ namespace CEKA_APP.Forms
 
                 if (gfx.MeasureString(word, font).Width > maxWidth)
                 {
-                    // Kelime tek başına çok uzunsa harf harf böl
                     var currentSegment = new System.Text.StringBuilder();
                     foreach (char c in word)
                     {
                         currentSegment.Append(c);
                         if (gfx.MeasureString(currentSegment.ToString(), font).Width > maxWidth)
                         {
-                            // Bir önceki karaktere kadar olan kısmı ekle
                             result.Append(currentSegment.ToString(0, currentSegment.Length - 1));
-                            result.Append(" "); // Bir boşluk ekleyerek sonraki parçayı yeni bir kelime gibi başlat
+                            result.Append(" ");
                             currentSegment.Clear();
-                            currentSegment.Append(c); // Mevcut karakterle yeni parçayı başlat
+                            currentSegment.Append(c);
                         }
                     }
-                    result.Append(currentSegment.ToString()); // Kalan son parçayı ekle
+                    result.Append(currentSegment.ToString());
                 }
                 else
                 {
                     result.Append(word);
                 }
-                result.Append(" "); // Her kelimeden sonra bir boşluk ekle
+                result.Append(" ");
             }
-            return result.ToString().Trim(); // En sondaki boşluğu temizle
+            return result.ToString().Trim();
         }
 
         private double MeasureTextWidth(XGraphics gfx, string text, XFont font)
@@ -495,7 +549,6 @@ namespace CEKA_APP.Forms
             string yearLastTwo = DateTime.Now.Year.ToString().Substring(2);
             string baseInvoiceNumber = $"{yearLastTwo}P{projeNo}_";
 
-            // Config dosyasından invoiceCounter değerini oku
             int lastCounter = 0;
             string configFilePath = @"\\192.168.2.3\proje\CEKA APP\config.txt";
 
@@ -504,10 +557,9 @@ namespace CEKA_APP.Forms
                 lastCounter = parsedCounter;
             }
 
-            int counter = lastCounter + 1; // Her PDF oluşturmada 1 artır
+            int counter = lastCounter + 1;
             string finalInvoiceNumber = $"{baseInvoiceNumber}{counter:D3}";
 
-            // Dosyayı kilitleyip güncelle
             try
             {
                 using (var fileStream = new FileStream(configFilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
@@ -521,7 +573,7 @@ namespace CEKA_APP.Forms
                     streamWriter.BaseStream.Seek(0, SeekOrigin.Begin); // Dosyanın başına git
                     streamWriter.Write(string.Join(Environment.NewLine, updatedConfig.Select(kv => $"{kv.Key}={kv.Value}")));
                     streamWriter.Flush();
-                    fileStream.SetLength(fileStream.Position); // Fazlalıkları temizle
+                    fileStream.SetLength(fileStream.Position);
                 }
             }
             catch (IOException ex)
@@ -534,10 +586,8 @@ namespace CEKA_APP.Forms
                 return $"{baseInvoiceNumber}001"; // İzin yoksa varsayılan bir değer döndür
             }
 
-            // Invoice klasöründe dosya çakışmasını kontrol et
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            string invoiceFolderPath = Path.Combine(desktopPath, "Invoice");
-            if (!Directory.Exists(invoiceFolderPath))
+            string invoiceFolderPath = ConfigurationManager.AppSettings["InvoiceFolderPath"];
+            if (!string.IsNullOrEmpty(invoiceFolderPath) && !Directory.Exists(invoiceFolderPath))
             {
                 Directory.CreateDirectory(invoiceFolderPath);
             }
@@ -587,7 +637,7 @@ namespace CEKA_APP.Forms
                 return;
             }
 
-            if (string.IsNullOrEmpty(txtProjeNo.Text))
+            if (string.IsNullOrEmpty(txtMusteri.Text))
             {
                 MessageBox.Show("Lütfen bir Proje Numarası giriniz. Fatura numarası oluşturulamaz.", "Proje Numarası Eksik", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
@@ -708,8 +758,8 @@ namespace CEKA_APP.Forms
             string textShippingDate = configValues.TryGetValue("textBoxShippingDate", out string shippingDate) ? shippingDate : "";
             string textInvoiceDateValue = txtTarih?.Text ?? "N/A";
             string textDescriptionData = txtAciklama?.Text ?? "";
-            string textToValue = txtProjeNo?.Text ?? "N/A";
-            string textInvoiceNumber = GenerateInvoiceNumber(txtProjeNo.Text);
+            string textToValue = txtMusteri?.Text ?? "N/A";
+            string textInvoiceNumber = GenerateInvoiceNumber(txtMusteri.Text);
 
             string textTotalValue = singleAmountValue;
             string textGrandTotalValue = singleAmountValue;
@@ -945,7 +995,6 @@ namespace CEKA_APP.Forms
             gfx.DrawRectangle(XBrushes.Black, panel1HeaderRect);
             DrawCenteredHeaderText("DESCRIPTION - SERIAL NUMBER", panel1HeaderRect, boldHeaderFont, XBrushes.White);
 
-            // Açıklama metnini ForceWordWrap ile sarmala
             string wrappedDescriptionData = ForceWordWrap(gfx, textDescriptionData, panelFont, panel1Rect.Width - (2 * cellPadding));
             double descriptionHeight = MeasureTextHeightWithFormatter(gfx, wrappedDescriptionData, panelFont, panel1Rect.Width - (2 * cellPadding));
             XRect descriptionDataRect = new XRect(panel1Rect.X + cellPadding, panel1HeaderRect.Bottom + cellPadding,
@@ -1164,9 +1213,8 @@ namespace CEKA_APP.Forms
             gfx.DrawString(rightInfoText, infoLabelFont, XBrushes.Black,
                            new XPoint(pageWidth - margin - rightInfoSize.Width, infoLabelYPosition));
 
-            string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-            string invoiceFolderPath = Path.Combine(desktopPath, "Invoice");
-            if (!Directory.Exists(invoiceFolderPath))
+            string invoiceFolderPath = ConfigurationManager.AppSettings["InvoiceFolderPath"];
+            if (!string.IsNullOrEmpty(invoiceFolderPath) && !Directory.Exists(invoiceFolderPath))
             {
                 Directory.CreateDirectory(invoiceFolderPath);
             }
@@ -1176,11 +1224,14 @@ namespace CEKA_APP.Forms
                 document.Save(filename);
                 if (odemeId.HasValue && odemeId > 0)
                 {
-                    var odemeSekilleriData = new ProjeFinans_OdemeSekilleriData();
+                    var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
                     bool updateSuccess = odemeSekilleriData.UpdateFaturaNo(odemeId.Value, textInvoiceNumber);
                     if (updateSuccess)
                     {
                         btnGoruntule.Enabled = true;
+                        lblFaturaBilgi.Text = $"Bu kilometre taşı için daha önce {textInvoiceNumber} numaralı fatura oluşturulmuştur.";
+                        btnSil.Enabled = true;
+                        btnPdfOlustur.Enabled = false;
                         MessageBox.Show($"PDF '{textInvoiceNumber}.pdf' Invoice klasörüne başarıyla oluşturuldu ve fatura numarası veritabanına kaydedildi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
@@ -1206,12 +1257,11 @@ namespace CEKA_APP.Forms
             {
                 try
                 {
-                    var odemeSekilleriData = new ProjeFinans_OdemeSekilleriData();
+                    var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
                     var odemeBilgi = odemeSekilleriData.GetOdemeBilgiByOdemeId(odemeId.Value);
                     if (odemeBilgi != null && !string.IsNullOrEmpty(odemeBilgi.faturaNo?.ToString()))
                     {
-                        string desktopPath = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);
-                        string invoiceFolderPath = Path.Combine(desktopPath, "Invoice");
+                        string invoiceFolderPath = ConfigurationManager.AppSettings["InvoiceFolderPath"];
                         string fullPath = Path.Combine(invoiceFolderPath, $"{odemeBilgi.faturaNo}.pdf");
                         if (File.Exists(fullPath))
                         {
@@ -1242,6 +1292,74 @@ namespace CEKA_APP.Forms
             else
             {
                 MessageBox.Show("Geçersiz ödeme ID'si.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+
+        private void btnSil_Click(object sender, EventArgs e)
+        {
+            if (odemeId.HasValue && odemeId > 0)
+            {
+                var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
+                var odemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kilometreTasiId);
+
+                if (odemeBilgi != null && !string.IsNullOrEmpty(odemeBilgi.faturaNo))
+                {
+                    string invoiceFolderPath = ConfigurationManager.AppSettings["InvoiceFolderPath"];
+                    string fullPath = Path.Combine(invoiceFolderPath, $"{odemeBilgi.faturaNo}.pdf");
+
+                    try
+                    {
+                        if (File.Exists(fullPath))
+                        {
+                            File.Delete(fullPath);
+                        }
+
+                        bool updateSuccess = odemeSekilleriData.UpdateFaturaNo(odemeId.Value, null);
+
+                        if (updateSuccess)
+                        {
+                            lblFaturaBilgi.Text = "";
+                            btnGoruntule.Enabled = false;
+                            btnSil.Enabled = false;
+                            btnPdfOlustur.Enabled = true;
+
+                            if (File.Exists(fullPath))
+                            {
+                                MessageBox.Show("Fatura başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                            else
+                            {
+                                MessageBox.Show("Fatura dosyası bulunamadı, ancak fatura numarası veritabanından kaldırıldı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            }
+                        }
+                        else
+                        {
+                            MessageBox.Show("Fatura numarası veritabanından kaldırılamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        }
+                    }
+                    catch (IOException ex)
+                    {
+                        MessageBox.Show($"Fatura dosyası silinirken hata oluştu: {ex.Message}. Dosya başka bir işlem tarafından kullanılıyor olabilir. Lütfen dosyayı kapatıp tekrar deneyin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Bu ödeme için fatura bulunamadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    lblFaturaBilgi.Text = "";
+                    btnGoruntule.Enabled = false;
+                    btnSil.Enabled = false;
+                    btnPdfOlustur.Enabled = true;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Geçersiz ödeme ID'si.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                lblFaturaBilgi.Text = "";
+                btnGoruntule.Enabled = false;
+                btnSil.Enabled = false;
+                btnPdfOlustur.Enabled = true;
             }
         }
     }

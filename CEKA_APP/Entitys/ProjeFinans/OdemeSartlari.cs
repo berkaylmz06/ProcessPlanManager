@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CEKA_APP.Entitys.ProjeFinans
 {
-    public class OdemeSekilleri
+    public class OdemeSartlari
     {
         public int odemeId { get; set; } 
         public string projeNo { get; set; }

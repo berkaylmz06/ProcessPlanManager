@@ -19,18 +19,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
 
         private ComboBox cmbProjeNo;
         private List<string> altProjeler;
-        private int sevkiyatSatirSayisi = 0; // Otomatik Araç Numarası için sayaç
-
-        // UI Kontrolleri (Designer.cs'de tanımlanmış olmalı)
-        // private TextBox txtProjeAra;
-        // private Button btnProjeAra;
-        // private Button btnPaketEkle;
-        // private Button btnSevkiyatEkle;
-        // private Button btnKaydet;
-        // private TableLayoutPanel tableLayoutPanel1;
-        // private Panel panelUst;
-        // private CtlBaslik ctlBaslik1;
-
+        private int sevkiyatAracSayisi = 0; 
 
         public ctlSevkiyat()
         {
@@ -71,8 +60,6 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             tableLayoutPanel1.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
             tableLayoutPanel1.AutoScroll = true;
             tableLayoutPanel1.MinimumSize = new Size(tableLayoutPanel1.Width, 200);
-
-            // Configure columns for shipment details (10 columns: Araç No, Araç Sevk Tarihi, Sevk Id, Paket, Tasima Bilgileri, Satis Siparis No, Irsaliye No, Agirlik, Fatura Toplami, Fatura No)
             tableLayoutPanel1.ColumnCount = 10;
             tableLayoutPanel1.ColumnStyles.Clear();
             for (int i = 0; i < 10; i++)
@@ -91,7 +78,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 tableLayoutPanel1.Controls.Clear();
                 tableLayoutPanel1.RowStyles.Clear();
                 tableLayoutPanel1.RowCount = 0;
-                sevkiyatSatirSayisi = 0;
+                sevkiyatAracSayisi = 0; 
 
                 AddHeaderRow();
                 AddSpacerRow();
@@ -164,27 +151,15 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 AddSpacerRow();
 
                 var sevkiyatVerileri = sevkiyatData.GetSevkiyatByProje(projeNo);
-                sevkiyatSatirSayisi = 0;
+
+                sevkiyatAracSayisi = sevkiyatVerileri.Any() ? sevkiyatVerileri.Max(s => s.aracSira) : 0;
+
                 if (sevkiyatVerileri.Any())
                 {
                     foreach (var veri in sevkiyatVerileri)
                     {
-                        sevkiyatSatirSayisi++;
-                        // Yeni sıralama: araçNo, aracSevkTarihi, sevkId, paketAdi
-                        AddSevkiyatSatiri(sevkiyatSatirSayisi, veri.aracSevkTarihi.ToString("dd.MM.yyyy HH:mm"), veri.sevkId, veri.paketAdi);
+                        AddSevkiyatSatiri(veri.aracSira, veri.aracSevkTarihi.ToString("dd.MM.yyyy HH:mm"), veri.sevkId, veri.paketAdi);
                         int row = tableLayoutPanel1.RowCount - 1;
-
-                        // Kolon indekslerini yeni sıralamaya göre güncelledik
-                        // Araç No: 0
-                        // Araç Sevk Tarihi: 1
-                        // Sevk Id: 2
-                        // Paket: 3
-                        // Taşıma Bilgileri: 4
-                        // Satış Sipariş No: 5
-                        // İrsaliye No: 6
-                        // Ağırlık: 7
-                        // Fatura Toplamı: 8
-                        // Fatura No: 9
 
                         var txtTasimaBilgileri = GetTextBoxAt(row, 4);
                         var txtSatisSipNo = GetTextBoxAt(row, 5);
@@ -215,10 +190,10 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
 
             string[] headers = {
-                "Araç No",          // 0. Kolon
-                "Araç Sevk Tarihi", // 1. Kolon (Yeni Konum)
-                "Sevk Id",          // 2. Kolon (Kaydırıldı)
-                "Paket",            // 3. Kolon (Kaydırıldı)
+                "Araç No",         
+                "Araç Sevk Tarihi", 
+                "Sevk Id",   
+                "Paket", 
                 "Taşıma Bilgileri",
                 "Satış Sipariş No",
                 "İrsaliye No",
@@ -297,8 +272,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             }
         }
 
-        // Yeni sıralama: araçNo, aracSevkTarihiValue, sevkIdValue, paketAdiValue
-        private void AddSevkiyatSatiri(int aracNo = 0, string aracSevkTarihiValue = "", string sevkIdValue = "", string paketAdiValue = "")
+        private void AddSevkiyatSatiri(int aracNo, string aracSevkTarihiValue = "", string sevkIdValue = "", string paketAdiValue = "")
         {
             tableLayoutPanel1.SuspendLayout();
             try
@@ -332,7 +306,6 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
                 int newRowIndex = tableLayoutPanel1.RowCount - 1;
 
-                // 0. Kolon: Araç No (Label)
                 var lblAracNo = new Label
                 {
                     Text = (aracNo > 0) ? $"{aracNo}. Araç" : "",
@@ -346,11 +319,11 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                     BackColor = Color.LightCyan
                 };
                 tableLayoutPanel1.Controls.Add(lblAracNo, 0, newRowIndex);
+                lblAracNo.Tag = aracNo; 
 
-                // 1. Kolon: Araç Sevk Tarihi (TextBox) - Yeni Konum
                 var txtAracSevkTarihi = new TextBox
                 {
-                    Text = string.IsNullOrEmpty(aracSevkTarihiValue) ? DateTime.Now.ToString("dd.MM.yyyy HH:mm") : aracSevkTarihiValue, // Otomatik doldurma
+                    Text = string.IsNullOrEmpty(aracSevkTarihiValue) ? DateTime.Now.ToString("dd.MM.yyyy HH:mm") : aracSevkTarihiValue,
                     Dock = DockStyle.Fill,
                     TextAlign = HorizontalAlignment.Center,
                     Margin = new Padding(2),
@@ -361,7 +334,6 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 };
                 tableLayoutPanel1.Controls.Add(txtAracSevkTarihi, 1, newRowIndex);
 
-                // 2. Kolon: Sevk Id (TextBox) - Kaydırıldı
                 var txtSevkId = new TextBox
                 {
                     Text = sevkIdValue,
@@ -375,7 +347,6 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 };
                 tableLayoutPanel1.Controls.Add(txtSevkId, 2, newRowIndex);
 
-                // 3. Kolon: Paket Adı (TextBox) - Kaydırıldı
                 var txtPaketAdi = new TextBox
                 {
                     Text = paketAdiValue,
@@ -390,7 +361,6 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 txtPaketAdi.Leave += txtPaketAdi_Leave;
                 tableLayoutPanel1.Controls.Add(txtPaketAdi, 3, newRowIndex);
 
-                // Diğer kolonlar için Textbox'ları ekle (4'ten 9'a kadar)
                 for (int i = 4; i < 10; i++)
                 {
                     var txt = new TextBox
@@ -404,8 +374,6 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                         BorderStyle = BorderStyle.FixedSingle
                     };
 
-                    // Specific handling for numeric inputs (Weight, Total Invoice)
-                    // Ağırlık (col 7) and Fatura Toplamı (col 8) columns (yeni indeksler)
                     if (i == 7 || i == 8)
                     {
                         txt.KeyPress += (s, e) =>
@@ -435,11 +403,40 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             TextBox txtPaketAdi = sender as TextBox;
             if (txtPaketAdi != null && !string.IsNullOrWhiteSpace(txtPaketAdi.Text))
             {
-                int paketId = sevkiyatPaketleriData.GetPaketIdByAdi(txtPaketAdi.Text.Trim());
+                string enteredPaketAdi = txtPaketAdi.Text.Trim();
+
+                int paketId = sevkiyatPaketleriData.GetPaketIdByAdi(enteredPaketAdi);
                 if (paketId == 0)
                 {
-                    MessageBox.Show($"'{txtPaketAdi.Text.Trim()}' adında bir paket bulunamadı. Lütfen önce paketi tanımlayın veya doğru bir paket adı girin.", "Paket Bulunamadı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($"'{enteredPaketAdi}' adında bir paket bulunamadı. Lütfen önce paketi tanımlayın veya doğru bir paket adı girin.", "Paket Bulunamadı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     txtPaketAdi.Focus();
+                    return;
+                }
+
+                int currentRow = tableLayoutPanel1.GetRow(txtPaketAdi);
+                Label lblAracNo = GetLabelAt(currentRow, 0);
+
+                if (lblAracNo != null && lblAracNo.Tag is int currentAracSira)
+                {
+                    for (int row = 1; row < tableLayoutPanel1.RowCount; row++)
+                    {
+                        if (row == currentRow) continue;
+
+                        Label otherLblAracNo = GetLabelAt(row, 0);
+                        TextBox otherTxtPaketAdi = GetTextBoxAt(row, 3);
+
+                        if (otherLblAracNo != null && otherLblAracNo.Tag is int otherAracSira &&
+                            otherTxtPaketAdi != null && !string.IsNullOrWhiteSpace(otherTxtPaketAdi.Text))
+                        {
+                            if (currentAracSira == otherAracSira && enteredPaketAdi.Equals(otherTxtPaketAdi.Text.Trim(), StringComparison.OrdinalIgnoreCase))
+                            {
+                                MessageBox.Show("Bu araca aynı paket daha önce yüklenmiştir.", "Tekrar Eden Paket", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                txtPaketAdi.Text = "";
+                                txtPaketAdi.Focus(); 
+                                return; 
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -488,9 +485,9 @@ namespace CEKA_APP.UsrControl.ProjeFinans
 
                 for (int row = 1; row < tableLayoutPanel1.RowCount; row++)
                 {
-                    // Kolon indekslerini güncelledik: Araç No: 0, Araç Sevk Tarihi: 1, SevkId: 2, PaketAdi: 3
-                    var txtSevkId = GetTextBoxAt(row, 2); // Yeni sevkId kolonu
-                    var txtPaketAdi = GetTextBoxAt(row, 3); // Yeni paket adı kolonu
+                    var lblAracNo = GetLabelAt(row, 0); 
+                    var txtSevkId = GetTextBoxAt(row, 2);
+                    var txtPaketAdi = GetTextBoxAt(row, 3);
 
                     if (txtSevkId == null || string.IsNullOrEmpty(txtSevkId.Text.Trim()) ||
                         txtPaketAdi == null || string.IsNullOrEmpty(txtPaketAdi.Text.Trim()))
@@ -498,7 +495,20 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                         continue;
                     }
 
-                    var txtAracSevkTarihi = GetTextBoxAt(row, 1); // Yeni indeks
+                    int aracSira = 0;
+                    if (lblAracNo != null && lblAracNo.Tag is int)
+                    {
+                        aracSira = (int)lblAracNo.Tag; 
+                    }
+                    else
+                    {
+                        if (lblAracNo != null && lblAracNo.Text.Contains("."))
+                        {
+                            int.TryParse(lblAracNo.Text.Split('.')[0], out aracSira);
+                        }
+                    }
+
+                    var txtAracSevkTarihi = GetTextBoxAt(row, 1);
                     var txtTasimaBilgileri = GetTextBoxAt(row, 4);
                     var txtSatisSipNo = GetTextBoxAt(row, 5);
                     var txtIrsaliyeNo = GetTextBoxAt(row, 6);
@@ -535,7 +545,8 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                             aracSevkTarihi.GetValueOrDefault(DateTime.MinValue),
                             agirlik,
                             faturaToplami,
-                            faturaNo
+                            faturaNo,
+                            aracSira
                         );
                     }
                     else
@@ -550,7 +561,8 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                             aracSevkTarihi.GetValueOrDefault(DateTime.MinValue),
                             agirlik,
                             faturaToplami,
-                            faturaNo
+                            faturaNo,
+                            aracSira
                         );
                     }
                 }
@@ -587,7 +599,6 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             if (projeKutuk != null && projeKutuk.altProjeVarMi)
             {
                 MessageBox.Show($"Proje '{arananProjeNo}' alt projelere sahip. Ana proje için sevkiyat yapılamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                UpdateButtonsState();
                 return;
             }
 
@@ -624,9 +635,27 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 return;
             }
 
-            sevkiyatSatirSayisi++;
-            AddSevkiyatSatiri(sevkiyatSatirSayisi); // Araç numarasını ve otomatik tarihi/saati gönder
-            AddSpacerRow();
+            sevkiyatAracSayisi++;
+            string currentDateTime = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+
+            DialogResult result = MessageBox.Show(
+                "Araca birden fazla paket eklenecek mi?",
+                "Paket Ekleme Onayı",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question
+            );
+
+            if (result == DialogResult.Yes)
+            {
+                AddSevkiyatSatiri(sevkiyatAracSayisi, currentDateTime);
+                AddSevkiyatSatiri(sevkiyatAracSayisi, currentDateTime);
+            }
+            else
+            {
+                AddSevkiyatSatiri(sevkiyatAracSayisi, currentDateTime);
+            }
+
+            AddSpacerRow(); 
         }
 
         private void UpdateButtonsState()

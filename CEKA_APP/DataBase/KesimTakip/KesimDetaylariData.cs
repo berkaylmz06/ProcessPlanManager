@@ -298,16 +298,24 @@ namespace CEKA_APP.DataBase
             List<KesimDetaylari> detaylar = new List<KesimDetaylari>();
 
             string query = @"
-    SELECT 
-    kd.kalite,
-    kd.malzeme,
-    kd.malzemeKod,
-    kd.proje AS projeAdi,
-    kd.kesilmisAdet,
-    ISNULL(m.adet, 0) AS toplamAdet
-FROM KesimDetaylari kd
-LEFT JOIN Malzemeler m ON kd.malzemeKod = m.malzemeKod
-  ";
+            SELECT
+                kd.kalite,
+                kd.malzeme,
+                kd.malzemeKod,
+                kd.proje AS projeAdi,
+                kd.kesilmisAdet,
+                ISNULL(SUM(m.adet), 0) AS toplamAdet,
+                CAST(kd.ekBilgi AS BIT) AS ekBilgi -- ekBilgi'yi BIT olarak alıyoruz
+            FROM KesimDetaylari kd
+            LEFT JOIN Malzemeler m ON LTRIM(RTRIM(kd.malzemeKod)) = LTRIM(RTRIM(m.malzemeKod))
+            GROUP BY
+                kd.kalite,
+                kd.malzeme,
+                kd.malzemeKod,
+                kd.proje,
+                kd.kesilmisAdet,
+                kd.ekBilgi
+        ";
 
             using (SqlConnection conn = DataBaseHelper.GetConnection())
             {
@@ -325,6 +333,8 @@ LEFT JOIN Malzemeler m ON kd.malzemeKod = m.malzemeKod
                             string projeAdi = reader["projeAdi"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
                             int kesilmisAdet = reader["kesilmisAdet"] != DBNull.Value ? Convert.ToInt32(reader["kesilmisAdet"]) : 0;
                             int toplamAdet = reader["toplamAdet"] != DBNull.Value ? Convert.ToInt32(reader["toplamAdet"]) : 0;
+                            // ekBilgi'yi bool olarak okuyoruz
+                            bool ekBilgi = reader["ekBilgi"] != DBNull.Value && Convert.ToBoolean(reader["ekBilgi"]);
 
                             string[] parts = malzemeKod.Split('-');
                             if (parts.Length >= 3)
@@ -344,7 +354,8 @@ LEFT JOIN Malzemeler m ON kd.malzemeKod = m.malzemeKod
                             {
                                 Key = key,
                                 kesilmisAdet = kesilmisAdet,
-                                toplamAdet = toplamAdet
+                                toplamAdet = toplamAdet,
+                                ekBilgi = ekBilgi // ekBilgi artık bool
                             });
                         }
                     }
@@ -358,394 +369,79 @@ LEFT JOIN Malzemeler m ON kd.malzemeKod = m.malzemeKod
             return detaylar;
         }
 
-        //public static List<KesimDetaylari> GetKesimDetaylariBilgileri()
-        //{
-        //    List<KesimDetaylari> detaylar = new List<KesimDetaylari>();
-
-        //    // 1) Ham malzemeKodları veritabanından çekiyoruz
-        //    List<string> hamMalzemeKodlar = new List<string>();
-
-        //    string kodQuery = "SELECT DISTINCT malzemeKod FROM KesimDetaylari";
-
-        //    using (SqlConnection conn = DataBaseHelper.GetConnection())
-        //    using (SqlCommand cmd = new SqlCommand(kodQuery, conn))
-        //    {
-        //        conn.Open();
-        //        using (SqlDataReader reader = cmd.ExecuteReader())
+        //        public static List<KesimDetaylari> GetKesimDetaylariBilgileri()
         //        {
-        //            while (reader.Read())
-        //            {
-        //                string kod = reader["malzemeKod"]?.ToString()?.Trim();
-        //                if (!string.IsNullOrEmpty(kod))
-        //                    hamMalzemeKodlar.Add(kod);
-        //            }
-        //        }
-        //    }
+        //            List<KesimDetaylari> detaylar = new List<KesimDetaylari>();
 
-        //    // 2) Normalize ediyoruz
-        //    List<string> normalizedKodlar = new List<string>();
-        //    Dictionary<string, string> originalToNormalizedMap = new Dictionary<string, string>();
-        //    foreach (var kod in hamMalzemeKodlar)
-        //    {
-        //        var parts = kod.Split('-');
-        //        if (parts.Length >= 2)
-        //        {
-        //            string kontrolKod = $"{parts[0]}-{parts[1]}";
-        //            if (!AutoCadAktarimData.GetirStandartGruplar(kontrolKod))
-        //            {
-        //                parts[1] = "00"; // Normalize
-        //            }
-        //            string normalizedKod = string.Join("-", parts);
-
-        //            normalizedKodlar.Add(normalizedKod);
-        //            originalToNormalizedMap[kod] = normalizedKod;
-        //        }
-        //        else
-        //        {
-        //            normalizedKodlar.Add(kod);
-        //            originalToNormalizedMap[kod] = kod;
-        //        }
-        //    }
-
-        //    // 3) Normalize edilmiş kodlar ile sorgu yapıyoruz
-        //    if (normalizedKodlar.Count == 0)
-        //        return detaylar;
-
-        //    string paramList = string.Join(",", normalizedKodlar.Select((x, i) => $"@kod{i}"));
-
-        //    string query = $@"
-        //SELECT 
-        //    kd.kalite,
-        //    kd.malzeme,
-        //    kd.malzemeKod,
-        //    kd.proje AS projeAdi,
-        //    kd.kesilmisAdet,
-        //    ISNULL(m.toplamAdet, 0) AS toplamAdet
-        //FROM KesimDetaylari kd
-        //LEFT JOIN (
-        //    SELECT malzemeKod, SUM(adet) AS toplamAdet
-        //    FROM Malzemeler
-        //    GROUP BY malzemeKod
-        //) m ON kd.malzemeKod = m.malzemeKod
-        //WHERE kd.malzemeKod IN ({paramList})
+        //            string query = @"
+        //    SELECT 
+        //        kd.kalite,
+        //        kd.malzeme,
+        //        kd.malzemeKod,
+        //        kd.proje AS projeAdi,
+        //        kd.kesilmisAdet,
+        //        ISNULL(SUM(m.adet), 0) AS toplamAdet
+        //    FROM KesimDetaylari kd
+        //    LEFT JOIN Malzemeler m ON LTRIM(RTRIM(kd.malzemeKod)) = LTRIM(RTRIM(m.malzemeKod))
+        //    GROUP BY 
+        //        kd.kalite,
+        //        kd.malzeme,
+        //        kd.malzemeKod,
+        //        kd.proje,
+        //        kd.kesilmisAdet
         //";
 
-        //    using (SqlConnection conn = DataBaseHelper.GetConnection())
-        //    using (SqlCommand cmd = new SqlCommand(query, conn))
-        //    {
-        //        for (int i = 0; i < normalizedKodlar.Count; i++)
-        //        {
-        //            cmd.Parameters.AddWithValue($"@kod{i}", normalizedKodlar[i]);
-        //        }
 
-        //        conn.Open();
-        //        using (SqlDataReader reader = cmd.ExecuteReader())
-        //        {
-        //            while (reader.Read())
+        //            using (SqlConnection conn = DataBaseHelper.GetConnection())
         //            {
-        //                string kalite = reader["kalite"]?.ToString()?.Trim();
-        //                string malzeme = reader["malzeme"]?.ToString()?.Trim();
-        //                string malzemeKod = reader["malzemeKod"]?.ToString()?.Trim();
-        //                string projeAdi = reader["projeAdi"]?.ToString()?.Trim();
-        //                int kesilmisAdet = reader["kesilmisAdet"] != DBNull.Value ? Convert.ToInt32(reader["kesilmisAdet"]) : 0;
-        //                int toplamAdet = reader["toplamAdet"] != DBNull.Value ? Convert.ToInt32(reader["toplamAdet"]) : 0;
-
-        //                // Burada normalize değil, orijinal malzemeKod ile key oluşturuyoruz.
-        //                string keyMalzemeKod = malzemeKod;
-
-        //                // Eğer normalize etmek istersen aşağıdaki gibi yapabilirsin:
-        //                if (originalToNormalizedMap.ContainsKey(malzemeKod))
-        //                    keyMalzemeKod = originalToNormalizedMap[malzemeKod];
-
-        //                string key = $"{kalite ?? "Bilinmiyor"}_{malzeme ?? "Bilinmiyor"}_{keyMalzemeKod}_{projeAdi ?? "Bilinmiyor"}";
-
-        //                detaylar.Add(new KesimDetaylari
+        //                SqlCommand cmd = new SqlCommand(query, conn);
+        //                try
         //                {
-        //                    Key = key,
-        //                    kesilmisAdet = kesilmisAdet,
-        //                    toplamAdet = toplamAdet
-        //                });
-        //            }
-        //        }
-        //    }
-
-        //    return detaylar;
-        //}
-
-
-
-
-        //public static List<KesimDetaylari> GetKesimDetaylariBilgileri()
-        //{
-        //    List<KesimDetaylari> detaylar = new List<KesimDetaylari>();
-
-        //    string query = @"
-        //SELECT 
-        //    kd.kalite,
-        //    kd.malzeme,
-        //    kd.malzemeKod,
-        //    kd.proje AS projeAdi,
-        //    kd.kesilmisAdet,
-        //    ISNULL(m.toplamAdet, 0) AS toplamAdet
-        //FROM KesimDetaylari kd
-        //LEFT JOIN (
-        //    SELECT malzemeKod, SUM(adet) AS toplamAdet
-        //    FROM Malzemeler
-        //    GROUP BY malzemeKod
-        //) m ON kd.malzemeKod = m.malzemeKod";
-
-        //    using (SqlConnection conn = DataBaseHelper.GetConnection())
-        //    {
-        //        SqlCommand cmd = new SqlCommand(query, conn);
-        //        try
-        //        {
-        //            conn.Open();
-        //            using (SqlDataReader reader = cmd.ExecuteReader())
-        //            {
-        //                while (reader.Read())
-        //                {
-        //                    string kalite = reader["kalite"]?.ToString()?.Trim();
-        //                    string malzeme = reader["malzeme"]?.ToString()?.Trim();
-        //                    string malzemeKod = reader["malzemeKod"]?.ToString()?.Trim();
-        //                    string projeAdi = reader["projeAdi"]?.ToString()?.Trim();
-        //                    int kesilmisAdet = reader["kesilmisAdet"] != DBNull.Value ? Convert.ToInt32(reader["kesilmisAdet"]) : 0;
-        //                    int adet = reader["adet"] != DBNull.Value ? Convert.ToInt32(reader["adet"]) : 0;
-
-        //                    if (!string.IsNullOrEmpty(malzemeKod))
+        //                    conn.Open();
+        //                    using (SqlDataReader reader = cmd.ExecuteReader())
         //                    {
-        //                        string[] parts = malzemeKod.Split('-');
-        //                        if (parts.Length >= 3)
+        //                        while (reader.Read())
         //                        {
-        //                            string kalipKodu = $"{parts[0]}-{parts[1]}";
+        //                            string kalite = reader["kalite"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
+        //                            string malzeme = reader["malzeme"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
+        //                            string malzemeKod = reader["malzemeKod"]?.ToString()?.Trim() ?? "";
+        //                            string projeAdi = reader["projeAdi"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
+        //                            int kesilmisAdet = reader["kesilmisAdet"] != DBNull.Value ? Convert.ToInt32(reader["kesilmisAdet"]) : 0;
+        //                            int toplamAdet = reader["toplamAdet"] != DBNull.Value ? Convert.ToInt32(reader["toplamAdet"]) : 0;
 
-        //                            // Standart grup değilse 00 yap
-        //                            if (!AutoCadAktarimData.GetirStandartGruplar(kalipKodu))
+        //                            string[] parts = malzemeKod.Split('-');
+        //                            if (parts.Length >= 3)
         //                            {
-        //                                parts[1] = "00";
-        //                                malzemeKod = string.Join("-", parts);
+        //                                string kalipKodu = $"{parts[0]}-{parts[1]}";
+        //                                if (!AutoCadAktarimData.GetirStandartGruplar(kalipKodu))
+        //                                {
+        //                                    parts[1] = "00";
+        //                                    malzemeKod = string.Join("-", parts);
+        //                                }
         //                            }
-        //                        }
+        //                            malzemeKod = malzemeKod.ToLowerInvariant();
 
-        //                        string key = $"{kalite ?? "Bilinmiyor"}_{malzeme ?? "Bilinmiyor"}_{malzemeKod}_{projeAdi ?? "Bilinmiyor"}";
+        //                            string key = $"{kalite}_{malzeme}_{malzemeKod}_{projeAdi}";
 
-        //                        detaylar.Add(new KesimDetaylari
-        //                        {
-        //                            Key = key,
-        //                            kesilmisAdet = kesilmisAdet,
-        //                            toplamAdet = adet
-        //                        });
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            MessageBox.Show($"Hata: {ex.Message}\n{ex.StackTrace}", "Veri Hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        }
-        //        finally
-        //        {
-        //            if (conn.State == ConnectionState.Open)
-        //                conn.Close();
-        //        }
-        //    }
-
-        //    return detaylar;
-        //}
-
-        //public static List<KesimDetaylari> GetKesimDetaylariBilgileri()
-        //{
-        //    List<KesimDetaylari> detaylar = new List<KesimDetaylari>();
-
-        //    string query = @"SELECT 
-        //            kd.kalite, 
-        //            kd.malzeme, 
-        //            kd.malzemeKod, 
-        //            kd.proje AS projeAdi, 
-        //            kd.kesilmisAdet, 
-        //            ISNULL(m.adet, 0) AS adet
-        //        FROM KesimDetaylari kd
-        //        LEFT JOIN Malzemeler m ON kd.malzemeKod = m.malzemeKod
-        //        LEFT JOIN Gruplar g ON m.grupID = g.grupID
-        //        LEFT JOIN Projeler p ON g.projeID = p.projeID";
-
-        //    using (SqlConnection conn = DataBaseHelper.GetConnection())
-        //    {
-        //        SqlCommand cmd = new SqlCommand(query, conn);
-        //        try
-        //        {
-        //            conn.Open();
-        //            using (SqlDataReader reader = cmd.ExecuteReader())
-        //            {
-        //                while (reader.Read())
-        //                {
-        //                    string kalite = reader["kalite"]?.ToString()?.Trim();
-        //                    string malzeme = reader["malzeme"]?.ToString()?.Trim();
-        //                    string malzemeKod = reader["malzemeKod"]?.ToString()?.Trim();
-        //                    string projeAdi = reader["projeAdi"]?.ToString()?.Trim();
-        //                    int kesilmisAdet = reader["kesilmisAdet"] != DBNull.Value ? Convert.ToInt32(reader["kesilmisAdet"]) : 0;
-        //                    int adet = reader["adet"] != DBNull.Value ? Convert.ToInt32(reader["adet"]) : 0;
-
-        //                    if (!string.IsNullOrEmpty(malzemeKod))
-        //                    {
-        //                        string[] parts = malzemeKod.Split('-');
-        //                        if (parts.Length >= 3)
-        //                        {
-        //                            string kalipKodu = $"{parts[0]}-{parts[1]}";
-
-        //                            if (!AutoCadAktarimData.GetirStandartGruplar(kalipKodu))
+        //                            detaylar.Add(new KesimDetaylari
         //                            {
-        //                                parts[1] = "00";
-        //                                malzemeKod = string.Join("-", parts);
-        //                            }
+        //                                Key = key,
+        //                                kesilmisAdet = kesilmisAdet,
+        //                                toplamAdet = toplamAdet
+        //                            });
         //                        }
-
-        //                        string key = $"{kalite ?? "Bilinmiyor"}_{malzeme ?? "Bilinmiyor"}_{malzemeKod}_{projeAdi ?? "Bilinmiyor"}";
-
-        //                        detaylar.Add(new KesimDetaylari
-        //                        {
-        //                            Key = key,
-        //                            kesilmisAdet = kesilmisAdet,
-        //                            toplamAdet = adet
-        //                        });
         //                    }
         //                }
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            MessageBox.Show($"Hata: {ex.Message}, StackTrace: {ex.StackTrace}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        }
-        //        finally
-        //        {
-        //            if (conn.State == ConnectionState.Open)
-        //                conn.Close();
-        //        }
-        //    }
-        //    return detaylar;
-        //}
-        //public static List<KesimDetaylari> GetKesimDetaylariBilgileri()
-        //{
-        //    List<KesimDetaylari> detaylar = new List<KesimDetaylari>();
-
-        //    string query = @"SELECT 
-        //                kd.kalite, 
-        //                kd.malzeme, 
-        //                kd.malzemeKod, 
-        //                kd.proje AS projeAdi, 
-        //                kd.kesilmisAdet, 
-        //                ISNULL(m.adet, 0) AS adet
-        //            FROM KesimDetaylari kd
-        //            LEFT JOIN Malzemeler m ON kd.malzemeKod = m.malzemeKod
-        //            LEFT JOIN Gruplar g ON m.grupID = g.grupID
-        //            LEFT JOIN Projeler p ON g.projeID = p.projeID";
-
-        //    using (SqlConnection conn = DataBaseHelper.GetConnection())
-        //    {
-        //        SqlCommand cmd = new SqlCommand(query, conn);
-        //        try
-        //        {
-        //            conn.Open();
-        //            using (SqlDataReader reader = cmd.ExecuteReader())
-        //            {
-        //                while (reader.Read())
+        //                catch (Exception ex)
         //                {
-        //                    string kalite = reader["kalite"]?.ToString()?.Trim();
-        //                    string malzeme = reader["malzeme"]?.ToString()?.Trim();
-        //                    string malzemeKod = reader["malzemeKod"]?.ToString()?.Trim();
-        //                    string projeAdi = reader["projeAdi"]?.ToString()?.Trim();
-        //                    int kesilmisAdet = reader["kesilmisAdet"] != DBNull.Value ? Convert.ToInt32(reader["kesilmisAdet"]) : 0;
-        //                    int adet = reader["adet"] != DBNull.Value ? Convert.ToInt32(reader["adet"]) : 0;
-
-        //                    if (!string.IsNullOrEmpty(malzemeKod))
-        //                    {
-        //                        string[] parts = malzemeKod.Split('-');
-        //                        if (parts.Length >= 2)
-        //                        {
-        //                            parts[1] = "00";
-        //                            malzemeKod = string.Join("-", parts);
-        //                        }
-
-        //                        string key = $"{kalite ?? "Bilinmiyor"}_{malzeme ?? "Bilinmiyor"}_{malzemeKod}_{projeAdi ?? "Bilinmiyor"}";
-
-        //                        detaylar.Add(new KesimDetaylari
-        //                        {
-        //                            Key = key,
-        //                            kesilmisAdet = kesilmisAdet,
-        //                            toplamAdet = adet
-        //                        });
-        //                    }
+        //                    MessageBox.Show($"Hata: {ex.Message}", "Veri Hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
         //                }
         //            }
+
+        //            return detaylar;
         //        }
-        //        catch (Exception ex)
-        //        {
-        //            MessageBox.Show($"Hata: {ex.Message}, StackTrace: {ex.StackTrace}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        }
-        //        finally
-        //        {
-        //            if (conn.State == ConnectionState.Open)
-        //                conn.Close();
-        //        }
-        //    }
-        //    return detaylar;
-        //}
 
 
-
-        //public static List<KesimDetaylari> GetKesimDetaylariBilgileri()
-        //{
-        //    List<KesimDetaylari> detaylar = new List<KesimDetaylari>();
-
-        //    string query = @"SELECT m.kalite, kd.malzeme, kd.malzemeKod, p.projeAdi, kd.kesilmisAdet, m.adet
-        //FROM KesimDetaylari kd
-        //JOIN Malzemeler m ON kd.malzemeKod = m.malzemeKod
-        //JOIN Gruplar g ON m.grupID = g.grupID
-        //JOIN Projeler p ON g.projeID = p.projeID";
-
-        //    using (SqlConnection conn = DataBaseHelper.GetConnection())
-        //    {
-        //        SqlCommand cmd = new SqlCommand(query, conn);
-        //        try
-        //        {
-        //            conn.Open();
-        //            using (SqlDataReader reader = cmd.ExecuteReader())
-        //            {
-        //                while (reader.Read())
-        //                {
-        //                    string kalite = reader["kalite"]?.ToString()?.Trim();
-        //                    string malzeme = reader["malzeme"]?.ToString()?.Trim();
-        //                    string malzemeKod = reader["malzemeKod"]?.ToString()?.Trim();
-        //                    string projeAdi = reader["projeAdi"]?.ToString()?.Trim();
-        //                    int kesilmisAdet = reader["kesilmisAdet"] != DBNull.Value ? Convert.ToInt32(reader["kesilmisAdet"]) : 0;
-        //                    int adet = reader["adet"] != DBNull.Value ? Convert.ToInt32(reader["adet"]) : 0;
-
-        //                    if (!string.IsNullOrEmpty(kalite) && !string.IsNullOrEmpty(malzeme) &&
-        //                        !string.IsNullOrEmpty(malzemeKod) && !string.IsNullOrEmpty(projeAdi))
-        //                    {
-        //                        string key = $"{kalite}_{malzeme}_{malzemeKod}_{projeAdi}";
-
-        //                        detaylar.Add(new KesimDetaylari
-        //                        {
-        //                            Key = key,
-        //                            kesilmisAdet = kesilmisAdet,
-        //                            toplamAdet = adet
-        //                        });
-        //                    }
-        //                }
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            MessageBox.Show($"Hata: {ex.Message}, StackTrace: {ex.StackTrace}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //        }
-        //        finally
-        //        {
-        //            if (conn.State == ConnectionState.Open)
-        //                conn.Close();
-        //        }
-        //    }
-        //    return detaylar;
-        //}
         public static bool SilKesimDetaylari(string kalite, string malzeme, string malzemeKod, string proje, int silinecekAdet = 0, bool tamSilme = false)
         {
             try

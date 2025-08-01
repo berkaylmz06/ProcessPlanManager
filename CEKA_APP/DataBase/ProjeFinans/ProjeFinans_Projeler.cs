@@ -106,7 +106,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@projeNo", projeNo.Trim());
-                        Console.WriteLine($"SQL Sorgusu için projeNo: '{projeNo}'"); // Log
+                        Console.WriteLine($"SQL Sorgusu için projeNo: '{projeNo}'");
                         using (var reader = command.ExecuteReader())
                         {
                             if (reader.Read())
