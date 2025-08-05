@@ -51,12 +51,14 @@
             this.lblVergiNo = new System.Windows.Forms.Label();
             this.txtKdv = new System.Windows.Forms.TextBox();
             this.lblKdv = new System.Windows.Forms.Label();
+            this.lblProje = new System.Windows.Forms.Label();
+            this.txtProjeNo = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
             // lblTutar
             // 
             this.lblTutar.AutoSize = true;
-            this.lblTutar.Location = new System.Drawing.Point(49, 266);
+            this.lblTutar.Location = new System.Drawing.Point(49, 311);
             this.lblTutar.Name = "lblTutar";
             this.lblTutar.Size = new System.Drawing.Size(41, 16);
             this.lblTutar.TabIndex = 1;
@@ -65,7 +67,7 @@
             // lblAcıklama
             // 
             this.lblAcıklama.AutoSize = true;
-            this.lblAcıklama.Location = new System.Drawing.Point(49, 322);
+            this.lblAcıklama.Location = new System.Drawing.Point(49, 367);
             this.lblAcıklama.Name = "lblAcıklama";
             this.lblAcıklama.Size = new System.Drawing.Size(66, 16);
             this.lblAcıklama.TabIndex = 2;
@@ -73,21 +75,21 @@
             // 
             // txtTutar
             // 
-            this.txtTutar.Location = new System.Drawing.Point(171, 263);
+            this.txtTutar.Location = new System.Drawing.Point(171, 308);
             this.txtTutar.Name = "txtTutar";
             this.txtTutar.Size = new System.Drawing.Size(216, 22);
             this.txtTutar.TabIndex = 4;
             // 
             // txtAciklama
             // 
-            this.txtAciklama.Location = new System.Drawing.Point(171, 319);
+            this.txtAciklama.Location = new System.Drawing.Point(171, 364);
             this.txtAciklama.Name = "txtAciklama";
             this.txtAciklama.Size = new System.Drawing.Size(216, 22);
             this.txtAciklama.TabIndex = 5;
             // 
             // btnPdfOlustur
             // 
-            this.btnPdfOlustur.Location = new System.Drawing.Point(287, 524);
+            this.btnPdfOlustur.Location = new System.Drawing.Point(287, 551);
             this.btnPdfOlustur.Name = "btnPdfOlustur";
             this.btnPdfOlustur.Size = new System.Drawing.Size(110, 46);
             this.btnPdfOlustur.TabIndex = 6;
@@ -97,7 +99,7 @@
             // 
             // txtTarih
             // 
-            this.txtTarih.Location = new System.Drawing.Point(171, 369);
+            this.txtTarih.Location = new System.Drawing.Point(171, 414);
             this.txtTarih.Name = "txtTarih";
             this.txtTarih.Size = new System.Drawing.Size(216, 22);
             this.txtTarih.TabIndex = 8;
@@ -105,7 +107,7 @@
             // lblTarih
             // 
             this.lblTarih.AutoSize = true;
-            this.lblTarih.Location = new System.Drawing.Point(49, 372);
+            this.lblTarih.Location = new System.Drawing.Point(49, 417);
             this.lblTarih.Name = "lblTarih";
             this.lblTarih.Size = new System.Drawing.Size(41, 16);
             this.lblTarih.TabIndex = 7;
@@ -114,7 +116,7 @@
             // chkEnglish
             // 
             this.chkEnglish.AutoSize = true;
-            this.chkEnglish.Location = new System.Drawing.Point(102, 477);
+            this.chkEnglish.Location = new System.Drawing.Point(102, 504);
             this.chkEnglish.Name = "chkEnglish";
             this.chkEnglish.Size = new System.Drawing.Size(77, 20);
             this.chkEnglish.TabIndex = 9;
@@ -125,7 +127,7 @@
             // chkTurkish
             // 
             this.chkTurkish.AutoSize = true;
-            this.chkTurkish.Location = new System.Drawing.Point(234, 477);
+            this.chkTurkish.Location = new System.Drawing.Point(234, 504);
             this.chkTurkish.Name = "chkTurkish";
             this.chkTurkish.Size = new System.Drawing.Size(71, 20);
             this.chkTurkish.TabIndex = 10;
@@ -135,7 +137,7 @@
             // 
             // txtMusteri
             // 
-            this.txtMusteri.Location = new System.Drawing.Point(173, 43);
+            this.txtMusteri.Location = new System.Drawing.Point(173, 88);
             this.txtMusteri.Name = "txtMusteri";
             this.txtMusteri.Size = new System.Drawing.Size(216, 22);
             this.txtMusteri.TabIndex = 11;
@@ -153,7 +155,7 @@
             // lblMusteri
             // 
             this.lblMusteri.AutoSize = true;
-            this.lblMusteri.Location = new System.Drawing.Point(51, 46);
+            this.lblMusteri.Location = new System.Drawing.Point(51, 91);
             this.lblMusteri.Name = "lblMusteri";
             this.lblMusteri.Size = new System.Drawing.Size(53, 16);
             this.lblMusteri.TabIndex = 14;
@@ -161,7 +163,7 @@
             // 
             // btnGoruntule
             // 
-            this.btnGoruntule.Location = new System.Drawing.Point(171, 524);
+            this.btnGoruntule.Location = new System.Drawing.Point(171, 551);
             this.btnGoruntule.Name = "btnGoruntule";
             this.btnGoruntule.Size = new System.Drawing.Size(110, 46);
             this.btnGoruntule.TabIndex = 15;
@@ -172,14 +174,14 @@
             // lblFaturaBilgi
             // 
             this.lblFaturaBilgi.AutoSize = true;
-            this.lblFaturaBilgi.Location = new System.Drawing.Point(12, 570);
+            this.lblFaturaBilgi.Location = new System.Drawing.Point(12, 597);
             this.lblFaturaBilgi.Name = "lblFaturaBilgi";
             this.lblFaturaBilgi.Size = new System.Drawing.Size(0, 16);
             this.lblFaturaBilgi.TabIndex = 16;
             // 
             // btnSil
             // 
-            this.btnSil.Location = new System.Drawing.Point(55, 524);
+            this.btnSil.Location = new System.Drawing.Point(55, 551);
             this.btnSil.Name = "btnSil";
             this.btnSil.Size = new System.Drawing.Size(110, 46);
             this.btnSil.TabIndex = 17;
@@ -189,7 +191,7 @@
             // 
             // txtMusteriAdresi
             // 
-            this.txtMusteriAdresi.Location = new System.Drawing.Point(173, 96);
+            this.txtMusteriAdresi.Location = new System.Drawing.Point(173, 141);
             this.txtMusteriAdresi.Name = "txtMusteriAdresi";
             this.txtMusteriAdresi.Size = new System.Drawing.Size(216, 22);
             this.txtMusteriAdresi.TabIndex = 19;
@@ -197,15 +199,15 @@
             // lblMusteriAdresi
             // 
             this.lblMusteriAdresi.AutoSize = true;
-            this.lblMusteriAdresi.Location = new System.Drawing.Point(51, 99);
+            this.lblMusteriAdresi.Location = new System.Drawing.Point(51, 144);
             this.lblMusteriAdresi.Name = "lblMusteriAdresi";
-            this.lblMusteriAdresi.Size = new System.Drawing.Size(119, 20);
+            this.lblMusteriAdresi.Size = new System.Drawing.Size(95, 16);
             this.lblMusteriAdresi.TabIndex = 18;
             this.lblMusteriAdresi.Text = "Müşteri Adresi:";
             // 
             // txtVergiMerkezi
             // 
-            this.txtVergiMerkezi.Location = new System.Drawing.Point(173, 153);
+            this.txtVergiMerkezi.Location = new System.Drawing.Point(173, 198);
             this.txtVergiMerkezi.Name = "txtVergiMerkezi";
             this.txtVergiMerkezi.Size = new System.Drawing.Size(216, 22);
             this.txtVergiMerkezi.TabIndex = 21;
@@ -213,15 +215,15 @@
             // lblVergiMerkezi
             // 
             this.lblVergiMerkezi.AutoSize = true;
-            this.lblVergiMerkezi.Location = new System.Drawing.Point(51, 156);
+            this.lblVergiMerkezi.Location = new System.Drawing.Point(51, 201);
             this.lblVergiMerkezi.Name = "lblVergiMerkezi";
-            this.lblVergiMerkezi.Size = new System.Drawing.Size(115, 20);
+            this.lblVergiMerkezi.Size = new System.Drawing.Size(92, 16);
             this.lblVergiMerkezi.TabIndex = 20;
             this.lblVergiMerkezi.Text = "Vergi Merkezi:";
             // 
             // txtVergiNo
             // 
-            this.txtVergiNo.Location = new System.Drawing.Point(173, 209);
+            this.txtVergiNo.Location = new System.Drawing.Point(173, 254);
             this.txtVergiNo.Name = "txtVergiNo";
             this.txtVergiNo.Size = new System.Drawing.Size(216, 22);
             this.txtVergiNo.TabIndex = 23;
@@ -229,15 +231,15 @@
             // lblVergiNo
             // 
             this.lblVergiNo.AutoSize = true;
-            this.lblVergiNo.Location = new System.Drawing.Point(51, 212);
+            this.lblVergiNo.Location = new System.Drawing.Point(51, 257);
             this.lblVergiNo.Name = "lblVergiNo";
-            this.lblVergiNo.Size = new System.Drawing.Size(79, 20);
+            this.lblVergiNo.Size = new System.Drawing.Size(63, 16);
             this.lblVergiNo.TabIndex = 22;
             this.lblVergiNo.Text = "Vergi No:";
             // 
             // txtKdv
             // 
-            this.txtKdv.Location = new System.Drawing.Point(171, 422);
+            this.txtKdv.Location = new System.Drawing.Point(171, 467);
             this.txtKdv.Name = "txtKdv";
             this.txtKdv.Size = new System.Drawing.Size(216, 22);
             this.txtKdv.TabIndex = 25;
@@ -245,18 +247,36 @@
             // lblKdv
             // 
             this.lblKdv.AutoSize = true;
-            this.lblKdv.Location = new System.Drawing.Point(49, 425);
+            this.lblKdv.Location = new System.Drawing.Point(49, 470);
             this.lblKdv.Name = "lblKdv";
-            this.lblKdv.Size = new System.Drawing.Size(46, 20);
+            this.lblKdv.Size = new System.Drawing.Size(37, 16);
             this.lblKdv.TabIndex = 24;
             this.lblKdv.Text = "KDV:";
+            // 
+            // lblProje
+            // 
+            this.lblProje.AutoSize = true;
+            this.lblProje.Location = new System.Drawing.Point(51, 42);
+            this.lblProje.Name = "lblProje";
+            this.lblProje.Size = new System.Drawing.Size(42, 16);
+            this.lblProje.TabIndex = 27;
+            this.lblProje.Text = "Proje:";
+            // 
+            // txtProjeNo
+            // 
+            this.txtProjeNo.Location = new System.Drawing.Point(173, 39);
+            this.txtProjeNo.Name = "txtProjeNo";
+            this.txtProjeNo.Size = new System.Drawing.Size(216, 22);
+            this.txtProjeNo.TabIndex = 26;
             // 
             // frmFaturaOlustur
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(979, 593);
+            this.ClientSize = new System.Drawing.Size(979, 638);
+            this.Controls.Add(this.lblProje);
+            this.Controls.Add(this.txtProjeNo);
             this.Controls.Add(this.txtKdv);
             this.Controls.Add(this.lblKdv);
             this.Controls.Add(this.txtVergiNo);
@@ -313,5 +333,7 @@
         private System.Windows.Forms.Label lblVergiNo;
         private System.Windows.Forms.TextBox txtKdv;
         private System.Windows.Forms.Label lblKdv;
+        private System.Windows.Forms.Label lblProje;
+        private System.Windows.Forms.TextBox txtProjeNo;
     }
 }

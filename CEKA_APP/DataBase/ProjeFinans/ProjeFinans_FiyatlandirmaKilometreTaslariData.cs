@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Windows.Forms;
+using System.Linq; // Added for `string.Join`
 
 namespace CEKA_APP.DataBase.ProjeFinans
 {
@@ -56,6 +57,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
+
         public string GetKilometreTasiAdi(int kilometreTasiId)
         {
             string kilometreTasiAdi = "";
@@ -75,6 +77,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
             return kilometreTasiAdi;
         }
+
         public int GetKilometreTasiId(string kilometreTasiAdi)
         {
             using (var connection = DataBaseHelper.GetConnection())
@@ -99,6 +102,38 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     return 0;
                 }
             }
+        }
+
+        public List<string> GetKilometreTasiAdlariByIds(List<int> kilometreTasiIds)
+        {
+            var kilometreTasiAdlari = new List<string>();
+            if (kilometreTasiIds == null || kilometreTasiIds.Count == 0)
+            {
+                return kilometreTasiAdlari;
+            }
+
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    string idList = string.Join(",", kilometreTasiIds);
+                    string query = $"SELECT kilometreTasiAdi FROM ProjeFinans_KilometreTaslari WHERE kilometreTasiId IN ({idList})";
+                    using (var cmd = new SqlCommand(query, connection))
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            kilometreTasiAdlari.Add(reader.GetString(0));
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Kilometre taşı adları alınırken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+            return kilometreTasiAdlari;
         }
     }
 }

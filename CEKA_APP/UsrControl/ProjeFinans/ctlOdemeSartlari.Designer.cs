@@ -34,20 +34,24 @@
             this.txtProjeAra = new System.Windows.Forms.TextBox();
             this.btnAra = new System.Windows.Forms.Button();
             this.panelAlt = new System.Windows.Forms.Panel();
+            this.lblTeminatBilgi = new System.Windows.Forms.Label();
             this.panelRight = new System.Windows.Forms.Panel();
             this.btnTopluFaturaOlustur = new System.Windows.Forms.Button();
             this.btnKaydet = new System.Windows.Forms.Button();
             this.panelLeft = new System.Windows.Forms.Panel();
-            this.btnKilometreTasiEkle = new System.Windows.Forms.Button();
             this.groupBoxOdemeTutari = new System.Windows.Forms.GroupBox();
+            this.lblOdemeTutari = new System.Windows.Forms.Label();
+            this.lblÖdemeAciklama = new System.Windows.Forms.Label();
+            this.rtxtAciklama = new System.Windows.Forms.RichTextBox();
             this.chkTutarTamaminiKullan = new System.Windows.Forms.CheckBox();
             this.txtEksilenTutar = new System.Windows.Forms.TextBox();
             this.btnHesapla = new System.Windows.Forms.Button();
+            this.btnKilometreTasiEkle = new System.Windows.Forms.Button();
             this.panelUst = new System.Windows.Forms.Panel();
+            this.lblToplamBedelBilgi = new System.Windows.Forms.Label();
             this.panelFill = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
-            this.lblToplamBedelBilgi = new System.Windows.Forms.Label();
             this.panelAlt.SuspendLayout();
             this.panelRight.SuspendLayout();
             this.panelLeft.SuspendLayout();
@@ -100,27 +104,37 @@
             // 
             // panelAlt
             // 
+            this.panelAlt.Controls.Add(this.lblTeminatBilgi);
             this.panelAlt.Controls.Add(this.panelRight);
             this.panelAlt.Controls.Add(this.panelLeft);
             this.panelAlt.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelAlt.Location = new System.Drawing.Point(0, 689);
+            this.panelAlt.Location = new System.Drawing.Point(0, 691);
             this.panelAlt.Name = "panelAlt";
-            this.panelAlt.Size = new System.Drawing.Size(1674, 181);
+            this.panelAlt.Size = new System.Drawing.Size(1674, 308);
             this.panelAlt.TabIndex = 6;
+            // 
+            // lblTeminatBilgi
+            // 
+            this.lblTeminatBilgi.AutoSize = true;
+            this.lblTeminatBilgi.Location = new System.Drawing.Point(443, 22);
+            this.lblTeminatBilgi.Name = "lblTeminatBilgi";
+            this.lblTeminatBilgi.Size = new System.Drawing.Size(34, 16);
+            this.lblTeminatBilgi.TabIndex = 10;
+            this.lblTeminatBilgi.Text = ".........";
             // 
             // panelRight
             // 
             this.panelRight.Controls.Add(this.btnTopluFaturaOlustur);
             this.panelRight.Controls.Add(this.btnKaydet);
             this.panelRight.Dock = System.Windows.Forms.DockStyle.Right;
-            this.panelRight.Location = new System.Drawing.Point(1291, 0);
+            this.panelRight.Location = new System.Drawing.Point(1297, 0);
             this.panelRight.Name = "panelRight";
-            this.panelRight.Size = new System.Drawing.Size(383, 181);
+            this.panelRight.Size = new System.Drawing.Size(377, 308);
             this.panelRight.TabIndex = 9;
             // 
             // btnTopluFaturaOlustur
             // 
-            this.btnTopluFaturaOlustur.Location = new System.Drawing.Point(44, 114);
+            this.btnTopluFaturaOlustur.Location = new System.Drawing.Point(38, 242);
             this.btnTopluFaturaOlustur.Name = "btnTopluFaturaOlustur";
             this.btnTopluFaturaOlustur.Size = new System.Drawing.Size(146, 48);
             this.btnTopluFaturaOlustur.TabIndex = 5;
@@ -130,7 +144,7 @@
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(215, 114);
+            this.btnKaydet.Location = new System.Drawing.Point(202, 242);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(146, 48);
             this.btnKaydet.TabIndex = 3;
@@ -140,13 +154,83 @@
             // 
             // panelLeft
             // 
-            this.panelLeft.Controls.Add(this.btnKilometreTasiEkle);
             this.panelLeft.Controls.Add(this.groupBoxOdemeTutari);
+            this.panelLeft.Controls.Add(this.btnKilometreTasiEkle);
             this.panelLeft.Dock = System.Windows.Forms.DockStyle.Left;
             this.panelLeft.Location = new System.Drawing.Point(0, 0);
             this.panelLeft.Name = "panelLeft";
-            this.panelLeft.Size = new System.Drawing.Size(305, 181);
+            this.panelLeft.Size = new System.Drawing.Size(416, 308);
             this.panelLeft.TabIndex = 8;
+            // 
+            // groupBoxOdemeTutari
+            // 
+            this.groupBoxOdemeTutari.Controls.Add(this.lblOdemeTutari);
+            this.groupBoxOdemeTutari.Controls.Add(this.lblÖdemeAciklama);
+            this.groupBoxOdemeTutari.Controls.Add(this.rtxtAciklama);
+            this.groupBoxOdemeTutari.Controls.Add(this.chkTutarTamaminiKullan);
+            this.groupBoxOdemeTutari.Controls.Add(this.txtEksilenTutar);
+            this.groupBoxOdemeTutari.Controls.Add(this.btnHesapla);
+            this.groupBoxOdemeTutari.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.groupBoxOdemeTutari.Location = new System.Drawing.Point(0, 76);
+            this.groupBoxOdemeTutari.Name = "groupBoxOdemeTutari";
+            this.groupBoxOdemeTutari.Size = new System.Drawing.Size(416, 232);
+            this.groupBoxOdemeTutari.TabIndex = 10;
+            this.groupBoxOdemeTutari.TabStop = false;
+            this.groupBoxOdemeTutari.Text = "Ödeme Tutarı";
+            // 
+            // lblOdemeTutari
+            // 
+            this.lblOdemeTutari.AutoSize = true;
+            this.lblOdemeTutari.Location = new System.Drawing.Point(13, 33);
+            this.lblOdemeTutari.Name = "lblOdemeTutari";
+            this.lblOdemeTutari.Size = new System.Drawing.Size(41, 16);
+            this.lblOdemeTutari.TabIndex = 12;
+            this.lblOdemeTutari.Text = "Tutar:";
+            // 
+            // lblÖdemeAciklama
+            // 
+            this.lblÖdemeAciklama.AutoSize = true;
+            this.lblÖdemeAciklama.Location = new System.Drawing.Point(13, 93);
+            this.lblÖdemeAciklama.Name = "lblÖdemeAciklama";
+            this.lblÖdemeAciklama.Size = new System.Drawing.Size(66, 16);
+            this.lblÖdemeAciklama.TabIndex = 11;
+            this.lblÖdemeAciklama.Text = "Açıklama:";
+            // 
+            // rtxtAciklama
+            // 
+            this.rtxtAciklama.Location = new System.Drawing.Point(123, 93);
+            this.rtxtAciklama.Name = "rtxtAciklama";
+            this.rtxtAciklama.Size = new System.Drawing.Size(258, 77);
+            this.rtxtAciklama.TabIndex = 6;
+            this.rtxtAciklama.Text = "";
+            // 
+            // chkTutarTamaminiKullan
+            // 
+            this.chkTutarTamaminiKullan.AutoSize = true;
+            this.chkTutarTamaminiKullan.Location = new System.Drawing.Point(123, 61);
+            this.chkTutarTamaminiKullan.Name = "chkTutarTamaminiKullan";
+            this.chkTutarTamaminiKullan.Size = new System.Drawing.Size(199, 20);
+            this.chkTutarTamaminiKullan.TabIndex = 10;
+            this.chkTutarTamaminiKullan.Text = "Kalan tutarın tamamını kullan.";
+            this.chkTutarTamaminiKullan.UseVisualStyleBackColor = true;
+            this.chkTutarTamaminiKullan.CheckedChanged += new System.EventHandler(this.ChkTutarTamaminiKullan_CheckedChanged);
+            // 
+            // txtEksilenTutar
+            // 
+            this.txtEksilenTutar.Location = new System.Drawing.Point(123, 33);
+            this.txtEksilenTutar.Name = "txtEksilenTutar";
+            this.txtEksilenTutar.Size = new System.Drawing.Size(258, 22);
+            this.txtEksilenTutar.TabIndex = 6;
+            // 
+            // btnHesapla
+            // 
+            this.btnHesapla.Location = new System.Drawing.Point(194, 185);
+            this.btnHesapla.Name = "btnHesapla";
+            this.btnHesapla.Size = new System.Drawing.Size(100, 29);
+            this.btnHesapla.TabIndex = 7;
+            this.btnHesapla.Text = "Hesapla";
+            this.btnHesapla.UseVisualStyleBackColor = true;
+            this.btnHesapla.Click += new System.EventHandler(this.btnHesapla_Click);
             // 
             // btnKilometreTasiEkle
             // 
@@ -157,46 +241,6 @@
             this.btnKilometreTasiEkle.Text = "+ Kilometre Taşı Ekle";
             this.btnKilometreTasiEkle.UseVisualStyleBackColor = true;
             this.btnKilometreTasiEkle.Click += new System.EventHandler(this.btnKilometreTasiEkle_Click);
-            // 
-            // groupBoxOdemeTutari
-            // 
-            this.groupBoxOdemeTutari.Controls.Add(this.chkTutarTamaminiKullan);
-            this.groupBoxOdemeTutari.Controls.Add(this.txtEksilenTutar);
-            this.groupBoxOdemeTutari.Controls.Add(this.btnHesapla);
-            this.groupBoxOdemeTutari.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBoxOdemeTutari.Location = new System.Drawing.Point(0, 90);
-            this.groupBoxOdemeTutari.Name = "groupBoxOdemeTutari";
-            this.groupBoxOdemeTutari.Size = new System.Drawing.Size(305, 91);
-            this.groupBoxOdemeTutari.TabIndex = 10;
-            this.groupBoxOdemeTutari.TabStop = false;
-            this.groupBoxOdemeTutari.Text = "Ödeme Tutarı";
-            // 
-            // chkTutarTamaminiKullan
-            // 
-            this.chkTutarTamaminiKullan.AutoSize = true;
-            this.chkTutarTamaminiKullan.Location = new System.Drawing.Point(16, 55);
-            this.chkTutarTamaminiKullan.Name = "chkTutarTamaminiKullan";
-            this.chkTutarTamaminiKullan.Size = new System.Drawing.Size(199, 20);
-            this.chkTutarTamaminiKullan.TabIndex = 10;
-            this.chkTutarTamaminiKullan.Text = "Kalan tutarın tamamını kullan.";
-            this.chkTutarTamaminiKullan.UseVisualStyleBackColor = true;
-            // 
-            // txtEksilenTutar
-            // 
-            this.txtEksilenTutar.Location = new System.Drawing.Point(16, 27);
-            this.txtEksilenTutar.Name = "txtEksilenTutar";
-            this.txtEksilenTutar.Size = new System.Drawing.Size(163, 22);
-            this.txtEksilenTutar.TabIndex = 6;
-            // 
-            // btnHesapla
-            // 
-            this.btnHesapla.Location = new System.Drawing.Point(190, 24);
-            this.btnHesapla.Name = "btnHesapla";
-            this.btnHesapla.Size = new System.Drawing.Size(100, 29);
-            this.btnHesapla.TabIndex = 7;
-            this.btnHesapla.Text = "Hesapla";
-            this.btnHesapla.UseVisualStyleBackColor = true;
-            this.btnHesapla.Click += new System.EventHandler(this.btnHesapla_Click);
             // 
             // panelUst
             // 
@@ -212,13 +256,21 @@
             this.panelUst.Size = new System.Drawing.Size(1674, 95);
             this.panelUst.TabIndex = 7;
             // 
+            // lblToplamBedelBilgi
+            // 
+            this.lblToplamBedelBilgi.AutoSize = true;
+            this.lblToplamBedelBilgi.Location = new System.Drawing.Point(1185, 56);
+            this.lblToplamBedelBilgi.Name = "lblToplamBedelBilgi";
+            this.lblToplamBedelBilgi.Size = new System.Drawing.Size(0, 16);
+            this.lblToplamBedelBilgi.TabIndex = 5;
+            // 
             // panelFill
             // 
             this.panelFill.Controls.Add(this.tableLayoutPanel1);
             this.panelFill.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelFill.Location = new System.Drawing.Point(0, 158);
             this.panelFill.Name = "panelFill";
-            this.panelFill.Size = new System.Drawing.Size(1674, 531);
+            this.panelFill.Size = new System.Drawing.Size(1674, 533);
             this.panelFill.TabIndex = 8;
             // 
             // tableLayoutPanel1
@@ -231,14 +283,14 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 251F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 228F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 236F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 228F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 233F));
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1674, 531);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1674, 533);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // ctlBaslik1
@@ -250,14 +302,6 @@
             this.ctlBaslik1.Size = new System.Drawing.Size(1674, 63);
             this.ctlBaslik1.TabIndex = 5;
             // 
-            // lblToplamBedelBilgi
-            // 
-            this.lblToplamBedelBilgi.AutoSize = true;
-            this.lblToplamBedelBilgi.Location = new System.Drawing.Point(1185, 56);
-            this.lblToplamBedelBilgi.Name = "lblToplamBedelBilgi";
-            this.lblToplamBedelBilgi.Size = new System.Drawing.Size(0, 20);
-            this.lblToplamBedelBilgi.TabIndex = 5;
-            // 
             // ctlOdemeSartlari
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -267,9 +311,10 @@
             this.Controls.Add(this.panelAlt);
             this.Controls.Add(this.ctlBaslik1);
             this.Name = "ctlOdemeSartlari";
-            this.Size = new System.Drawing.Size(1674, 870);
+            this.Size = new System.Drawing.Size(1674, 999);
             this.Load += new System.EventHandler(this.ctlOdemeSartlari_Load);
             this.panelAlt.ResumeLayout(false);
+            this.panelAlt.PerformLayout();
             this.panelRight.ResumeLayout(false);
             this.panelLeft.ResumeLayout(false);
             this.groupBoxOdemeTutari.ResumeLayout(false);
@@ -303,5 +348,9 @@
         private System.Windows.Forms.GroupBox groupBoxOdemeTutari;
         private System.Windows.Forms.CheckBox chkTutarTamaminiKullan;
         private System.Windows.Forms.Label lblToplamBedelBilgi;
+        private System.Windows.Forms.Label lblTeminatBilgi;
+        private System.Windows.Forms.RichTextBox rtxtAciklama;
+        private System.Windows.Forms.Label lblÖdemeAciklama;
+        private System.Windows.Forms.Label lblOdemeTutari;
     }
 }

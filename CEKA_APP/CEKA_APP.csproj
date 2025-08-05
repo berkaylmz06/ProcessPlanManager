@@ -225,6 +225,7 @@
     <Compile Include="Concretes\KullaniciAdiOgren.cs" />
     <Compile Include="DataBase\ERP\AutoCadAktarimData.cs" />
     <Compile Include="DataBase\Genel\DataBaseHelper.cs" />
+    <Compile Include="DataBase\ProjeFinans\ProjeFinans_OdemeHareketleriData.cs" />
     <Compile Include="DataBase\Sistem\DuyurularData.cs" />
     <Compile Include="DataBase\KesimTakip\IdUreticiData.cs" />
     <Compile Include="DataBase\ERP\KarsilastirmaTablosuData.cs" />
@@ -247,6 +248,7 @@
     <Compile Include="DataBase\ProjeFinans\ProjeFinans_TeminatMektuplariData.cs" />
     <Compile Include="DataBase\Sistem\SorunBildirimleriData.cs" />
     <Compile Include="Entitys\ERP\AutoCadAktarimDetay.cs" />
+    <Compile Include="Entitys\ProjeFinans\OdemeHareketleri.cs" />
     <Compile Include="Entitys\Sistem\Duyurular.cs" />
     <Compile Include="Entitys\ERP\KarsilastirmaTablosu.cs" />
     <Compile Include="Entitys\KesimTakip\KesimDetaylari.cs" />
@@ -301,6 +303,12 @@
       <DependentUpon>frmKullaniciEkle.cs</DependentUpon>
     </Compile>
     <Compile Include="Entitys\Sistem\Kullanicilar.cs" />
+    <Compile Include="Forms\frmOdemeHareketleri .cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmOdemeHareketleri .Designer.cs">
+      <DependentUpon>frmOdemeHareketleri .cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\frmStandartProjeler.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -494,6 +502,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmKullaniciEkle.resx">
       <DependentUpon>frmKullaniciEkle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmOdemeHareketleri .resx">
+      <DependentUpon>frmOdemeHareketleri .cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmStandartProjeler.resx">
       <DependentUpon>frmStandartProjeler.cs</DependentUpon>

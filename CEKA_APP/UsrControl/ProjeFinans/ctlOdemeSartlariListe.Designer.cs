@@ -53,6 +53,7 @@
             this.dataGridOdemeSartlari.RowTemplate.Height = 24;
             this.dataGridOdemeSartlari.Size = new System.Drawing.Size(1535, 1001);
             this.dataGridOdemeSartlari.TabIndex = 8;
+            this.dataGridOdemeSartlari.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridOdemeSartlari_CellClick);
             // 
             // ctlOdemeSartlariListe
             // 

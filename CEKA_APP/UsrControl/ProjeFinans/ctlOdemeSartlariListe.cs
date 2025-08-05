@@ -3,13 +3,8 @@ using CEKA_APP.Entitys.ProjeFinans;
 using CEKA_APP.Helper;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
+using CEKA_APP.Forms;
 
 namespace CEKA_APP.UsrControl.ProjeFinans
 {
@@ -18,32 +13,28 @@ namespace CEKA_APP.UsrControl.ProjeFinans
         public ctlOdemeSartlariListe()
         {
             InitializeComponent();
-
             DataGridViewHelper.StilUygulaProjeFinans(dataGridOdemeSartlari);
         }
 
         private void ctlOdemeSartlariListe_Load(object sender, EventArgs e)
         {
             ctlBaslik1.Baslik = "Ödeme Şartları Liste";
-
             LoadOdemeSartlariToDataGridView();
+            dataGridOdemeSartlari.CellFormatting += new DataGridViewCellFormattingEventHandler(dataGridOdemeSartlari_CellFormatting);
         }
+
         public void LoadOdemeSartlariToDataGridView()
         {
             ProjeFinans_OdemeSartlariData odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
             try
             {
                 List<OdemeSartlari> odemeSekilleri = odemeSekilleriData.GetOdemeBilgileri();
-
                 dataGridOdemeSartlari.DataSource = odemeSekilleri;
+
                 if (dataGridOdemeSartlari.Columns.Contains("odemeId"))
-                {
                     dataGridOdemeSartlari.Columns["odemeId"].Visible = false;
-                }
                 if (dataGridOdemeSartlari.Columns.Contains("kilometreTasiId"))
-                {
                     dataGridOdemeSartlari.Columns["kilometreTasiId"].Visible = false;
-                }
                 if (dataGridOdemeSartlari.Columns.Contains("projeNo"))
                 {
                     dataGridOdemeSartlari.Columns["projeNo"].HeaderText = "Proje No";
@@ -79,7 +70,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                     dataGridOdemeSartlari.Columns["tahminiTarih"].HeaderText = "Tahmini Tarih";
                     dataGridOdemeSartlari.Columns["tahminiTarih"].DisplayIndex = 5;
                     dataGridOdemeSartlari.Columns["tahminiTarih"].DefaultCellStyle.Format = "dd.MM.yyyy";
-                    dataGridOdemeSartlari.Columns["tahminiTarih"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+                    dataGridOdemeSartlari.Columns["tahminiTarih"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
                 }
                 if (dataGridOdemeSartlari.Columns.Contains("gerceklesenTarih"))
                 {
@@ -96,7 +87,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 }
                 if (dataGridOdemeSartlari.Columns.Contains("teminatMektubu"))
                 {
-                    dataGridOdemeSartlari.Columns["teminatMektubu"].HeaderText = "Teminat Mektubu Var Mi?";
+                    dataGridOdemeSartlari.Columns["teminatMektubu"].HeaderText = "Teminat Mektubu Var Mı?";
                     dataGridOdemeSartlari.Columns["teminatMektubu"].DisplayIndex = 8;
                     dataGridOdemeSartlari.Columns["teminatMektubu"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
                 }
@@ -112,10 +103,115 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                     dataGridOdemeSartlari.Columns["durum"].DisplayIndex = 10;
                     dataGridOdemeSartlari.Columns["durum"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
                 }
+                if (dataGridOdemeSartlari.Columns.Contains("kalanTutar"))
+                {
+                    dataGridOdemeSartlari.Columns["kalanTutar"].HeaderText = "Kalan Tutar";
+                    dataGridOdemeSartlari.Columns["kalanTutar"].DisplayIndex = 11;
+                    dataGridOdemeSartlari.Columns["kalanTutar"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                }
+                if (dataGridOdemeSartlari.Columns.Contains("odemeTarihi"))
+                {
+                    dataGridOdemeSartlari.Columns["odemeTarihi"].HeaderText = "Ödeme Tarihi";
+                    dataGridOdemeSartlari.Columns["odemeTarihi"].DisplayIndex = 12;
+                    dataGridOdemeSartlari.Columns["odemeTarihi"].DefaultCellStyle.Format = "dd.MM.yyyy";
+                    dataGridOdemeSartlari.Columns["odemeTarihi"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                }
+                if (dataGridOdemeSartlari.Columns.Contains("faturaNo"))
+                {
+                    dataGridOdemeSartlari.Columns["faturaNo"].HeaderText = "Fatura No";
+                    dataGridOdemeSartlari.Columns["faturaNo"].DisplayIndex = 13;
+                    dataGridOdemeSartlari.Columns["faturaNo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
+                }
+
+                if (!dataGridOdemeSartlari.Columns.Contains("OdemeSapmasi"))
+                {
+                    DataGridViewTextBoxColumn sapmaColumn = new DataGridViewTextBoxColumn
+                    {
+                        Name = "OdemeSapmasi",
+                        HeaderText = "Ödeme Sapması (Gün)",
+                        DisplayIndex = 14,
+                        AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                    };
+                    dataGridOdemeSartlari.Columns.Add(sapmaColumn);
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Odeme şartlari bilgileri yüklenirken bir sorun oluştu: {ex.Message}", "Veri Yükleme Hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Ödeme şartları bilgileri yüklenirken bir sorun oluştu: {ex.Message}", "Veri Yükleme Hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void dataGridOdemeSartlari_CellClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= dataGridOdemeSartlari.RowCount)
+            {
+                return;
+            }
+
+            int odemeId;
+            try
+            {
+                odemeId = Convert.ToInt32(dataGridOdemeSartlari.Rows[e.RowIndex].Cells["odemeId"].Value);
+            }
+            catch
+            {
+                MessageBox.Show("Seçilen satırda geçerli bir 'odemeId' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var odemeHareketleriData = new ProjeFinans_OdemeHareketleriData();
+            List<OdemeHareketleri> hareketler = odemeHareketleriData.GetOdemeHareketleriByOdemeId(odemeId);
+
+            if (hareketler != null && hareketler.Count > 0)
+            {
+                frmOdemeHareketleri odemeHareketleriForm = new frmOdemeHareketleri(hareketler);
+                odemeHareketleriForm.ShowDialog();
+            }
+        }
+
+        private void dataGridOdemeSartlari_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
+        {
+            if (dataGridOdemeSartlari.Columns[e.ColumnIndex].Name == "OdemeSapmasi")
+            {
+                var row = dataGridOdemeSartlari.Rows[e.RowIndex];
+                var gerceklesenTarih = row.Cells["gerceklesenTarih"].Value;
+                var odemeTarihi = row.Cells["odemeTarihi"].Value;
+
+                if (gerceklesenTarih != null && odemeTarihi != null && gerceklesenTarih != DBNull.Value && odemeTarihi != DBNull.Value)
+                {
+                    try
+                    {
+                        DateTime gerceklesen = Convert.ToDateTime(gerceklesenTarih);
+                        DateTime odeme = Convert.ToDateTime(odemeTarihi);
+                        int sapma = (odeme - gerceklesen).Days;
+
+                        if (sapma > 0)
+                        {
+                            e.Value = $"-{sapma}";
+                            e.CellStyle.ForeColor = System.Drawing.Color.Red;
+                        }
+                        else if (sapma < 0)
+                        {
+                            e.Value = $"+{Math.Abs(sapma)}"; 
+                            e.CellStyle.ForeColor = System.Drawing.Color.Green;
+                        }
+                        else
+                        {
+                            e.Value = "0"; 
+                            e.CellStyle.ForeColor = System.Drawing.Color.Black;
+                        }
+                    }
+                    catch
+                    {
+                        e.Value = "-";
+                        e.CellStyle.ForeColor = System.Drawing.Color.Black;
+                    }
+                }
+                else
+                {
+                    e.Value = "-";
+                    e.CellStyle.ForeColor = System.Drawing.Color.Black;
+                }
             }
         }
     }

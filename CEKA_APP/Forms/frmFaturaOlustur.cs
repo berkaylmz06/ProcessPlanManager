@@ -22,7 +22,7 @@ namespace CEKA_APP.Forms
         private string tutar;
         private string aciklama;
         private string tarih;
-        private string musteriAdi;
+        private string proje;
         private int notSayisi = 0;
         private List<RichTextBox> notRichTextBoxes = new List<RichTextBox>();
         private List<Label> notLabels = new List<Label>();
@@ -31,13 +31,13 @@ namespace CEKA_APP.Forms
         private readonly string projeNo;
         private readonly int kilometreTasiId;
         private readonly int? odemeId;
-        public frmFaturaOlustur(string tutar, string aciklama, string tarih, string musteriAdi, int kilometreTasiId = 0, int? odemeId = null)
+        public frmFaturaOlustur(string tutar, string aciklama, string tarih, string proje, int kilometreTasiId = 0, int? odemeId = null)
         {
             this.tutar = tutar ?? "0";
             this.aciklama = aciklama ?? "";
             this.tarih = tarih ?? "Belirtilmemiş";
-            this.musteriAdi = musteriAdi ?? "Bilinmiyor";
-            this.projeNo = musteriAdi?.Trim();
+            this.proje = proje ?? "Bilinmiyor";
+            this.projeNo = proje?.Trim();
             this.kilometreTasiId = kilometreTasiId;
             this.odemeId = odemeId;
             InitializeComponent();
@@ -50,12 +50,15 @@ namespace CEKA_APP.Forms
         private void frmFaturaOlustur_Load(object sender, EventArgs e)
         {
             // Değerleri logla (hata ayıklamayı kolaylaştırmak için)
-            Console.WriteLine($"tutar: {tutar}, aciklama: {aciklama}, tarih: {tarih}, musteriAdi: {musteriAdi}");
+            Console.WriteLine($"tutar: {tutar}, aciklama: {aciklama}, tarih: {tarih}");
 
             txtTutar.Text = tutar;
             txtAciklama.Text = aciklama;
             txtTarih.Text = tarih;
-            txtMusteri.Text = musteriAdi;
+            txtProjeNo.Text = proje;
+
+            // Bu satır kaldırıldı. Müşteri adı veritabanından çekilerek atanacak.
+            // txtMusteri.Text = musteriAdi; 
 
             this.Icon = Properties.Resources.cekalogokirmizi;
 
@@ -82,6 +85,9 @@ namespace CEKA_APP.Forms
 
                     if (musteriBilgi != null)
                     {
+                        // Müşteri adını txtMusteri'ye atayan doğru satır
+                        txtMusteri.Text = musteriBilgi.musteriAdi ?? "";
+
                         txtMusteriAdresi.Text = musteriBilgi.adres ?? "";
                         txtVergiMerkezi.Text = musteriBilgi.vergiDairesi ?? "";
                         txtVergiNo.Text = musteriBilgi.vergiNo ?? "";
@@ -565,12 +571,12 @@ namespace CEKA_APP.Forms
                 using (var fileStream = new FileStream(configFilePath, FileMode.Open, FileAccess.ReadWrite, FileShare.None))
                 using (var streamWriter = new StreamWriter(fileStream))
                 {
-                    fileStream.Lock(0, fileStream.Length); // Dosyayı kilitle
+                    fileStream.Lock(0, fileStream.Length);
 
                     var updatedConfig = new Dictionary<string, string>(configValues);
                     updatedConfig["invoiceCounter"] = counter.ToString();
 
-                    streamWriter.BaseStream.Seek(0, SeekOrigin.Begin); // Dosyanın başına git
+                    streamWriter.BaseStream.Seek(0, SeekOrigin.Begin); 
                     streamWriter.Write(string.Join(Environment.NewLine, updatedConfig.Select(kv => $"{kv.Key}={kv.Value}")));
                     streamWriter.Flush();
                     fileStream.SetLength(fileStream.Position);
@@ -583,7 +589,7 @@ namespace CEKA_APP.Forms
             catch (UnauthorizedAccessException ex)
             {
                 MessageBox.Show($"Config dosyasına yazma izni yok: {ex.Message}. Lütfen ağ izinlerini kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return $"{baseInvoiceNumber}001"; // İzin yoksa varsayılan bir değer döndür
+                return $"{baseInvoiceNumber}001"; 
             }
 
             string invoiceFolderPath = ConfigurationManager.AppSettings["InvoiceFolderPath"];
@@ -600,7 +606,6 @@ namespace CEKA_APP.Forms
                 fullPath = Path.Combine(invoiceFolderPath, $"{finalInvoiceNumber}.pdf");
             }
 
-            // Eğer counter değiştiyse, config'i tekrar güncelle
             if (counter > lastCounter)
             {
                 try
@@ -734,35 +739,61 @@ namespace CEKA_APP.Forms
             string text4_4 = configValues.TryGetValue("textBox4_4", out string val4_4) ? val4_4 : "Metin 4.4";
 
             string textOnly;
-            string singleAmountValue = txtTutar?.Text ?? "0.00";
 
-            if (string.IsNullOrEmpty(singleAmountValue) || !double.TryParse(singleAmountValue.Replace(',', '.'), out _))
+            string singleAmountValue = txtTutar?.Text ?? "0,00";
+            string textKdvValue = txtKdv?.Text ?? "0";
+
+            double tutar = 0;
+            double kdvOrani = 0;
+            double kdvTutari = 0;
+            double grandTotal = 0;
+
+            var culture = new System.Globalization.CultureInfo("tr-TR");
+
+            string cleanKdvValue = textKdvValue.Replace("%", "").Trim();
+
+            bool isTutarValid = double.TryParse(singleAmountValue, System.Globalization.NumberStyles.Any, culture, out tutar);
+            bool isKdvValid = double.TryParse(cleanKdvValue, System.Globalization.NumberStyles.Any, culture, out kdvOrani);
+
+            if (isTutarValid && isKdvValid)
+            {
+                kdvTutari = tutar * (kdvOrani / 100);
+                grandTotal = tutar + kdvTutari;
+            }
+            else
+            {
+                MessageBox.Show("Lütfen geçerli bir KDV oranı ve tutar girin.", "Hesaplama Hatası", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                textKdvValue = "N/A";
+            }
+
+            // Formatlı değerleri hazırla (görüntü için)
+            string formattedKdvTutari = kdvTutari.ToString("N2", culture);
+            string formattedGrandTotal = grandTotal.ToString("N2", culture);
+            string formattedKdvOrani = textKdvValue != "N/A" ? $"%{cleanKdvValue}" : "N/A";
+
+            // Sayıdan yazıya çevir
+            if (string.IsNullOrEmpty(singleAmountValue) || !isTutarValid)
             {
                 MessageBox.Show("Lütfen geçerli bir sayı girin.", "Geçersiz Giriş", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 textOnly = "N/A";
             }
-            else if (chkTurkish.Checked)
-            {
-                textOnly = SayiyiYaziyaCevir(singleAmountValue, "tr");
-            }
-            else if (chkEnglish.Checked)
-            {
-                textOnly = SayiyiYaziyaCevir(singleAmountValue, "en");
-            }
             else
             {
-                textOnly = "N/A";
+                string lang = chkEnglish.Checked ? "en" : "tr";
+                textOnly = SayiyiYaziyaCevir(grandTotal.ToString(new System.Globalization.CultureInfo(lang == "en" ? "en-US" : "tr-TR")), lang);
             }
+
+            string textTotalValue = tutar.ToString("N2", culture);
+            string textGrandTotalValue = formattedGrandTotal;
+
 
             string textShippingNo = configValues.TryGetValue("textBoxShippingNo", out string shippingNo) ? shippingNo : "";
             string textShippingDate = configValues.TryGetValue("textBoxShippingDate", out string shippingDate) ? shippingDate : "";
             string textInvoiceDateValue = txtTarih?.Text ?? "N/A";
             string textDescriptionData = txtAciklama?.Text ?? "";
             string textToValue = txtMusteri?.Text ?? "N/A";
-            string textInvoiceNumber = GenerateInvoiceNumber(txtMusteri.Text);
+            string textInvoiceNumber = GenerateInvoiceNumber(txtProjeNo.Text);
 
-            string textTotalValue = singleAmountValue;
-            string textGrandTotalValue = singleAmountValue;
 
             string leftInfoText = configValues.TryGetValue("textBoxLeftInfo", out string valLeftInfo) ? valLeftInfo : "Sol Bilgi Metni";
             string rightInfoText = configValues.TryGetValue("textBoxRightInfo", out string valRightInfo) ? valRightInfo : "Sağ Bilgi Metni";
@@ -869,12 +900,12 @@ namespace CEKA_APP.Forms
             gfx.DrawString(invoiceText, fontInvoice, XBrushes.Black, new XPoint(invoiceX, invoiceY_local + invoiceSize.Height));
 
             string[] invoiceLines = {
-                "Serial:",
-                "Invoice No:",
-                "Invoice Date:",
-                "Shipping Date:",
-                "Shipping No:"
-            };
+        "Serial:",
+        "Invoice No:",
+        "Invoice Date:",
+        "Shipping Date:",
+        "Shipping No:"
+    };
 
             double singleLineInvoiceDetailHeight = new XFont("Arial", 8, XFontStyleEx.Regular).Height + lineSpacing;
             double targetInvoiceDetailsBlockHeight = totalBlockHeight - (invoiceY_local + invoiceSize.Height + 20 - leftBoxesYStart);
@@ -944,15 +975,33 @@ namespace CEKA_APP.Forms
             XRect toValueRect = new XRect(toLabelPoint.X + gfx.MeasureString("To:", panelFont).Width + 5,
                                           toLabelPoint.Y - panelFont.Height + 3,
                                           toPanelRect.Width - (toLabelPoint.X + gfx.MeasureString("To:", panelFont).Width + 5) + toPanelRect.X - cellPadding,
-                                          toPanelHeightPoints - (2 * cellPadding));
+                                          panelFont.Height);
             tf.DrawString(textToValue, panelFont, XBrushes.Black, toValueRect, XStringFormats.TopLeft);
 
+            string textAddressValue = txtMusteriAdresi?.Text ?? "N/A";
+            textAddressValue = textAddressValue.Replace("\r\n", " ").Replace("\n", " ");
+            string wrappedAddressValue = ForceWordWrap(gfx, textAddressValue, panelFont, toPanelRect.Width - (toLabelPoint.X + gfx.MeasureString("To:", panelFont).Width + 5) + toPanelRect.X - cellPadding);
+            double addressY = toValueRect.Y + panelFont.Height + 5;
+            XRect addressRect = new XRect(toLabelPoint.X + gfx.MeasureString("To:", panelFont).Width + 5,
+                                          addressY,
+                                          toPanelRect.Width - (toLabelPoint.X + gfx.MeasureString("To:", panelFont).Width + 5) + toPanelRect.X - cellPadding,
+                                          toPanelHeightPoints - addressY + toPanelRect.Y - (2 * cellPadding));
+            tf.DrawString(wrappedAddressValue, panelFont, XBrushes.Black, addressRect, XStringFormats.TopLeft);
+
+            string textVergiMerkeziValue = txtVergiMerkezi?.Text ?? "N/A";
             gfx.DrawString("Client Tax Center:", panelFont, XBrushes.Black,
                 new XPoint(toPanelRect.X + cellPadding, toPanelRect.Y + toPanelHeightPoints - cellPadding - panelFont.Height));
+            gfx.DrawString(textVergiMerkeziValue, panelFont, XBrushes.Black,
+                new XPoint(toPanelRect.X + cellPadding + gfx.MeasureString("Client Tax Center:", panelFont).Width + 5,
+                           toPanelRect.Y + toPanelHeightPoints - cellPadding - panelFont.Height));
 
+            string textVergiNoValue = txtVergiNo?.Text ?? "N/A";
             double clientTaxIdX = toPanelRect.Right - 5 * 72 / 2.54;
             gfx.DrawString("Client Tax ID:", panelFont, XBrushes.Black,
                 new XPoint(clientTaxIdX, toPanelRect.Y + toPanelHeightPoints - cellPadding - panelFont.Height));
+            gfx.DrawString(textVergiNoValue, panelFont, XBrushes.Black,
+                new XPoint(clientTaxIdX + gfx.MeasureString("Client Tax ID:", panelFont).Width + 5,
+                           toPanelRect.Y + toPanelHeightPoints - cellPadding - panelFont.Height));
 
             double newPanelsYStart = toPanelRect.Bottom + 5;
 
@@ -974,7 +1023,7 @@ namespace CEKA_APP.Forms
             double defaultMainPanelHeightPoints = defaultMainPanelHeightCm * 72 / 2.54;
 
             double headerHeight = 0.6 * 72 / 2.54;
-            double subPanelHeightPoints = headerHeight;
+            double subPanelHeightPoints = headerHeight * 1.5;
             double subPanelVerticalSpacing = 5;
 
             double currentPanelX_local = margin;
@@ -1118,17 +1167,17 @@ namespace CEKA_APP.Forms
 
             currentSubPanelY_local += subPanelHeightPoints + subPanelVerticalSpacing;
 
-            XRect subPanel3_2Rect = new XRect(panel3StartX, currentSubPanelY_local, panel3Width, subPanelHeightPoints);
-            gfx.DrawRectangle(thinPen, subPanel3_2Rect);
-            gfx.DrawRectangle(XBrushes.Black, subPanel3_2Rect);
-            DrawCenteredHeaderText("VAT", subPanel3_2Rect, boldHeaderFont, XBrushes.White);
+            XRect vatPanelRect = new XRect(panel3StartX, currentSubPanelY_local, panel3Width, subPanelHeightPoints);
+            gfx.DrawRectangle(thinPen, vatPanelRect);
+            gfx.DrawRectangle(XBrushes.Black, vatPanelRect);
+            DrawCenteredHeaderText("VAT", vatPanelRect, boldHeaderFont, XBrushes.White);
 
             currentSubPanelY_local += subPanelHeightPoints + subPanelVerticalSpacing;
 
-            XRect subPanel3_3Rect = new XRect(panel3StartX, currentSubPanelY_local, panel3Width, subPanelHeightPoints);
-            gfx.DrawRectangle(thinPen, subPanel3_3Rect);
-            gfx.DrawRectangle(XBrushes.Black, subPanel3_3Rect);
-            DrawCenteredHeaderText("GRAND TOTAL", subPanel3_3Rect, boldHeaderFont, XBrushes.White);
+            XRect grandTotalPanelRect = new XRect(panel3StartX, currentSubPanelY_local, panel3Width, subPanelHeightPoints);
+            gfx.DrawRectangle(thinPen, grandTotalPanelRect);
+            gfx.DrawRectangle(XBrushes.Black, grandTotalPanelRect);
+            DrawCenteredHeaderText("GRAND TOTAL", grandTotalPanelRect, boldHeaderFont, XBrushes.White);
 
             XRect panel4Rect = new XRect(panel4StartX_Calculated, newPanelsYStart, panel4Width, panel3CalculatedHeightPoints);
             gfx.DrawRectangle(thinPen, panel4Rect);
@@ -1153,6 +1202,19 @@ namespace CEKA_APP.Forms
             XRect subPanel4_2Rect = new XRect(panel4StartX_Calculated, currentSubPanelY_Panel4, panel4Width, subPanelHeightPoints);
             gfx.DrawRectangle(XBrushes.White, subPanel4_2Rect);
             gfx.DrawRectangle(thinPen, subPanel4_2Rect);
+
+            double desiredShiftX = 48.039;
+            double minWidth = 20;
+            double vatWidth = panel4Width - (2 * cellPadding - 1) - desiredShiftX;
+            double vatValueWidth = Math.Max(minWidth, vatWidth); // Negatif genişlik önleme
+            XRect vatValueRect = new XRect(
+                subPanel4_2Rect.X + cellPadding + desiredShiftX,
+                subPanel4_2Rect.Y + cellPadding + 5,
+                vatValueWidth,
+                subPanelHeightPoints - cellPadding
+            );
+            string wrappedKdvOrani = ForceWordWrap(gfx, formattedKdvOrani, panelFont, vatValueWidth - (2 * cellPadding));
+            tf.DrawString(wrappedKdvOrani, panelFont, XBrushes.Black, vatValueRect, XStringFormats.TopLeft);
 
             currentSubPanelY_Panel4 += subPanelHeightPoints + subPanelVerticalSpacing;
 
@@ -1250,7 +1312,6 @@ namespace CEKA_APP.Forms
                 MessageBox.Show($"PDF dosyası oluşturulurken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void btnGoruntule_Click(object sender, EventArgs e)
         {
             if (odemeId > 0)
@@ -1310,7 +1371,9 @@ namespace CEKA_APP.Forms
 
                     try
                     {
-                        if (File.Exists(fullPath))
+                        bool fileExistsBeforeDelete = File.Exists(fullPath);
+
+                        if (fileExistsBeforeDelete)
                         {
                             File.Delete(fullPath);
                         }
@@ -1324,7 +1387,7 @@ namespace CEKA_APP.Forms
                             btnSil.Enabled = false;
                             btnPdfOlustur.Enabled = true;
 
-                            if (File.Exists(fullPath))
+                            if (fileExistsBeforeDelete)
                             {
                                 MessageBox.Show("Fatura başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             }

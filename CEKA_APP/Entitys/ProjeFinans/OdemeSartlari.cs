@@ -21,8 +21,8 @@ namespace CEKA_APP.Entitys.ProjeFinans
         public bool teminatMektubu { get; set; }
         public string teminatDurumu { get; set; }
         public string durum { get; set; }
-        public decimal odenenTutar { get; set; } 
         public decimal kalanTutar { get; set; }
         public string faturaNo { get; set; }
+        public DateTime? odemeTarihi { get; set; }
     }
 }
