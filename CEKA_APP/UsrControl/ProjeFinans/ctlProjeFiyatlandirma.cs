@@ -368,11 +368,14 @@ namespace CEKA_APP.UsrControl
                         txt.TextChanged += HesaplaVeGuncelle;
                         txt.KeyPress += (s, e) =>
                         {
-                            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != '.')
+                            char decimalSeparator = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0];
+
+                            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != decimalSeparator)
                             {
                                 e.Handled = true;
                             }
-                            if (e.KeyChar == '.' && (s as TextBox).Text.Contains("."))
+
+                            if (e.KeyChar == decimalSeparator && (s as TextBox).Text.Contains(decimalSeparator.ToString()))
                             {
                                 e.Handled = true;
                             }
@@ -643,7 +646,7 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-        private void btnProjeAra_Click(object sender, EventArgs e)
+        public void btnProjeAra_Click(object sender, EventArgs e)
         {
             string arananProjeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeNo.Text.Trim();
             if (string.IsNullOrEmpty(arananProjeNo))
@@ -755,6 +758,85 @@ namespace CEKA_APP.UsrControl
 
             var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
             btnYeniKalemEkle.Enabled = projeBilgi != null;
+        }
+
+        private void btnSil_Click(object sender, EventArgs e)
+        {
+            string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeNo.Text.Trim();
+            if (string.IsNullOrEmpty(projeNo))
+            {
+                MessageBox.Show("Lütfen bir proje numarası giriniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
+            if (projeBilgi == null)
+            {
+                MessageBox.Show($"Proje '{projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var odemeSartlariData = new ProjeFinans_OdemeSartlariData();
+            var projeIliskiData = new ProjeFinans_ProjeIliskiData();
+            bool hasOdemeSartlari = false;
+            List<string> ilgiliProjeler = new List<string> { projeNo };
+
+            var altProjeler = ProjeFinans_ProjeIliskiData.GetAltProjeler(projeNo);
+            if (altProjeler != null && altProjeler.Any())
+            {
+                ilgiliProjeler.AddRange(altProjeler);
+            }
+
+            var ustProjeNo = ProjeFinans_ProjeIliskiData.GetUstProjeNo(projeNo);
+            if (!string.IsNullOrEmpty(ustProjeNo))
+            {
+                ilgiliProjeler.Add(ustProjeNo);
+            }
+
+            foreach (var proje in ilgiliProjeler)
+            {
+                var odemeBilgileri = odemeSartlariData.GetOdemeBilgileriByProjeNo(proje);
+                if (odemeBilgileri.Any())
+                {
+                    hasOdemeSartlari = true;
+                    break;
+                }
+            }
+
+            if (hasOdemeSartlari)
+            {
+                MessageBox.Show($"Proje '{projeNo}' veya ilişkili üst/alt projeleri için Ödeme Şartlari'nda kaydı var, silinemedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var result = MessageBox.Show($"Proje '{projeNo}' için tüm fiyatlandırma kayıtları silinecek. Onaylıyor musunuz?", "Fiyatlandırma Silme", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
+            if (fiyatlandirmaData.FiyatlandirmaSil(projeNo))
+            {
+                MessageBox.Show("Fiyatlandırma kayıtları başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                InitializeTableStructure(); 
+                UpdateTotalsRow();
+                UpdateKalemEkleButtonState();
+                OnFiyatlandirmaKaydedildi?.Invoke(projeNo);
+            }
+            else
+            {
+                MessageBox.Show("Fiyatlandırma kayıtları silinirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void txtProjeNo_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                this.btnProjeAra.PerformClick();
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Globalization;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace CEKA_APP.DataBase.ProjeFinans
@@ -177,6 +178,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     SELECT
                         o.odemeId,
                         o.projeNo,
+                    	p.musteriAdi,
                         o.kilometreTasiId,
                         k.kilometreTasiAdi AS kilometreTasiAdi,
                         o.siralama,
@@ -192,7 +194,8 @@ namespace CEKA_APP.DataBase.ProjeFinans
                         o.kalanTutar,
                         o.odemeTarihi
                     FROM ProjeFinans_OdemeSartlari o
-                    JOIN ProjeFinans_KilometreTaslari k ON o.kilometreTasiId = k.kilometreTasiId";
+                    JOIN ProjeFinans_KilometreTaslari k ON o.kilometreTasiId = k.kilometreTasiId
+                    Join ProjeFinans_ProjeKutuk p ON p.projeNo = o.projeNo";
 
                 using (var cmd = new SqlCommand(query, connection))
                 {
@@ -204,6 +207,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                             {
                                 odemeId = Convert.ToInt32(reader["odemeId"]),
                                 projeNo = reader["projeNo"].ToString(),
+                                musteriAdi = reader["musteriAdi"].ToString(),
                                 kilometreTasiId = Convert.ToInt32(reader["kilometreTasiId"]),
                                 kilometreTasiAdi = reader["kilometreTasiAdi"].ToString(),
                                 siralama = Convert.ToInt32(reader["siralama"]),
@@ -469,6 +473,310 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 MessageBox.Show($"Fatura numarası güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return false;
             }
+        }
+        public bool OdemeSartlariSil(string projeNo)
+        {
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            List<int> odemeIds = new List<int>();
+                            string selectQuery = @"
+                        SELECT odemeId 
+                        FROM ProjeFinans_OdemeSartlari 
+                        WHERE projeNo = @projeNo";
+                            using (var selectCmd = new SqlCommand(selectQuery, connection, transaction))
+                            {
+                                selectCmd.Parameters.AddWithValue("@projeNo", projeNo.Trim());
+                                using (var reader = selectCmd.ExecuteReader())
+                                {
+                                    while (reader.Read())
+                                    {
+                                        odemeIds.Add(reader.GetInt32(0));
+                                    }
+                                }
+                            }
+
+                            var odemeHareketleriData = new ProjeFinans_OdemeHareketleriData();
+                            if (!odemeHareketleriData.DeleteOdemeHareketleriByOdemeIds(odemeIds))
+                            {
+                                throw new Exception("Ödeme hareketleri silinirken hata oluştu.");
+                            }
+
+                            string deleteQuery = @"
+                        DELETE FROM ProjeFinans_OdemeSartlari
+                        WHERE projeNo = @projeNo";
+                            using (var deleteCmd = new SqlCommand(deleteQuery, connection, transaction))
+                            {
+                                deleteCmd.Parameters.AddWithValue("@projeNo", projeNo.Trim());
+                                deleteCmd.ExecuteNonQuery();
+                            }
+
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            MessageBox.Show($"Ödeme şartları silinirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return false;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Bağlantı hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+        }
+        public DataTable FiltreleOdemeBilgileri(Dictionary<string, TextBox> filtreKutulari, DataGridView dataGrid)
+        {
+            try
+            {
+                using (var connection = DataBaseHelper.GetConnection())
+                {
+                    connection.Open();
+                    string baseQuery = @"
+                        SELECT
+                            o.odemeId,
+                            o.projeNo,
+                            p.musteriAdi,
+                            o.kilometreTasiId,
+                            k.kilometreTasiAdi AS kilometreTasiAdi,
+                            o.siralama,
+                            o.oran,
+                            o.tutar,
+                            o.tahminiTarih,
+                            o.gerceklesenTarih,
+                            o.aciklama,
+                            o.teminatMektubu,
+                            o.teminatDurumu,
+                            o.durum,
+                            o.faturaNo,
+                            o.kalanTutar,
+                            o.odemeTarihi,
+                            CASE 
+                                WHEN o.gerceklesenTarih IS NOT NULL AND o.odemeTarihi IS NOT NULL 
+                                THEN CAST(DATEDIFF(DAY, o.gerceklesenTarih, o.odemeTarihi) AS NVARCHAR(10))
+                                ELSE '-' 
+                            END AS OdemeSapmasi
+                        FROM ProjeFinans_OdemeSartlari o
+                        JOIN ProjeFinans_KilometreTaslari k ON o.kilometreTasiId = k.kilometreTasiId
+                        JOIN ProjeFinans_ProjeKutuk p ON p.projeNo = o.projeNo
+                        WHERE 1=1";
+
+                    var conditions = new List<string>();
+                    var parameters = new List<SqlParameter>();
+                    int paramIndex = 0;
+
+                    foreach (var kutu in filtreKutulari)
+                    {
+                        string hamDeger = kutu.Value.Text.Trim();
+                        if (!string.IsNullOrEmpty(hamDeger))
+                        {
+                            string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
+                                .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(kutu.Key) ||
+                                                    NormalizeColumnName(c.Name) == NormalizeColumnName(kutu.Key))?.Name;
+
+                            if (string.IsNullOrEmpty(columnName))
+                            {
+                                MessageBox.Show($"Sütun bulunamadı: {kutu.Key}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                continue;
+                            }
+
+                            string paramName = $"@p{paramIndex++}";
+                            string condition = string.Empty;
+
+                            switch (columnName)
+                            {
+                                case "projeNo":
+                                    condition = $"o.projeNo LIKE {paramName}";
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger });
+                                    break;
+                                case "musteriAdi":
+                                    condition = $"p.musteriAdi LIKE {paramName}";
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger });
+                                    break;
+                                case "kilometreTasiAdi":
+                                    condition = $"k.kilometreTasiAdi LIKE {paramName}";
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger });
+                                    break;
+                                case "siralama":
+                                    if (int.TryParse(hamDeger, out int siralama))
+                                    {
+                                        condition = $"o.siralama = {paramName}";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Int) { Value = siralama });
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Geçersiz sıralama değeri: {hamDeger}");
+                                    }
+                                    break;
+                                case "oran":
+                                    if (decimal.TryParse(hamDeger, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal oran))
+                                    {
+                                        condition = $"ABS(o.oran - {paramName}) < 0.01";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Decimal) { Value = oran });
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Geçersiz oran değeri: {hamDeger}");
+                                    }
+                                    break;
+                                case "tutar":
+                                    if (decimal.TryParse(hamDeger, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal tutar))
+                                    {
+                                        condition = $"ABS(o.tutar - {paramName}) < 0.01";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Decimal) { Value = tutar });
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Geçersiz tutar değeri: {hamDeger}");
+                                    }
+                                    break;
+                                case "tahminiTarih":
+                                    if (DateTime.TryParse(hamDeger, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime tahminiTarih))
+                                    {
+                                        condition = $"CAST(o.tahminiTarih AS DATE) = {paramName}";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Date) { Value = tahminiTarih.Date });
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Geçersiz tahmini tarih değeri: {hamDeger}");
+                                    }
+                                    break;
+                                case "gerceklesenTarih":
+                                    if (DateTime.TryParse(hamDeger, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime gerceklesenTarih))
+                                    {
+                                        condition = $"CAST(o.gerceklesenTarih AS DATE) = {paramName}";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Date) { Value = gerceklesenTarih.Date });
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Geçersiz gerçekleşen tarih değeri: {hamDeger}");
+                                    }
+                                    break;
+                                case "aciklama":
+                                    condition = $"o.aciklama LIKE {paramName}";
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger });
+                                    break;
+                                case "teminatMektubu":
+                                    bool? teminatMektubu = null;
+                                    if (hamDeger.Contains("evet") || hamDeger.Contains("true") || hamDeger == "1" || hamDeger.Contains("var"))
+                                        teminatMektubu = true;
+                                    else if (hamDeger.Contains("hayır") || hamDeger.Contains("false") || hamDeger == "0" || hamDeger.Contains("yok"))
+                                        teminatMektubu = false;
+                                    if (teminatMektubu.HasValue)
+                                    {
+                                        condition = $"o.teminatMektubu = {paramName}";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Bit) { Value = teminatMektubu.Value });
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Geçersiz teminat mektubu değeri: {hamDeger}");
+                                    }
+                                    break;
+                                case "teminatDurumu":
+                                    condition = $"o.teminatDurumu LIKE {paramName}";
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger });
+                                    break;
+                                case "durum":
+                                    condition = $"o.durum LIKE {paramName}";
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger });
+                                    break;
+                                case "kalanTutar":
+                                    if (decimal.TryParse(hamDeger, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal kalanTutar))
+                                    {
+                                        condition = $"ABS(o.kalanTutar - {paramName}) < 0.01";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Decimal) { Value = kalanTutar });
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Geçersiz kalan tutar değeri: {hamDeger}");
+                                    }
+                                    break;
+                                case "odemeTarihi":
+                                    if (DateTime.TryParse(hamDeger, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime odemeTarihi))
+                                    {
+                                        condition = $"CAST(o.odemeTarihi AS DATE) = {paramName}";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Date) { Value = odemeTarihi.Date });
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Geçersiz ödeme tarihi değeri: {hamDeger}");
+                                    }
+                                    break;
+                                case "faturaNo":
+                                    condition = $"o.faturaNo LIKE {paramName}";
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger });
+                                    break;
+                                case "OdemeSapmasi":
+                                    if (int.TryParse(hamDeger, out int sapma))
+                                    {
+                                        condition = $"DATEDIFF(DAY, o.gerceklesenTarih, o.odemeTarihi) = {paramName}";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Int) { Value = sapma });
+                                    }
+                                    else if (hamDeger == "-")
+                                    {
+                                        condition = "(o.gerceklesenTarih IS NULL OR o.odemeTarihi IS NULL)";
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Geçersiz ödeme sapması değeri: {hamDeger}");
+                                    }
+                                    break;
+                                default:
+                                    Console.WriteLine($"Bilinmeyen sütun: {columnName}");
+                                    break;
+                            }
+
+                            if (!string.IsNullOrEmpty(condition))
+                            {
+                                conditions.Add(condition);
+                            }
+                        }
+                    }
+
+                    if (conditions.Any())
+                    {
+                        baseQuery += " AND " + string.Join(" AND ", conditions);
+                    }
+
+                    using (var cmd = new SqlCommand(baseQuery, connection))
+                    {
+                        cmd.Parameters.AddRange(parameters.ToArray());
+
+                        using (var adapter = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            adapter.Fill(dt);
+                            return dt;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Arama sırasında hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"Hata detayı: {ex.ToString()}");
+                return null;
+            }
+        }
+
+        private string NormalizeColumnName(string columnName)
+        {
+            if (string.IsNullOrEmpty(columnName)) return columnName;
+            return columnName.Replace("ı", "i").Replace("İ", "I").Replace("ş", "s").Replace("Ş", "S")
+                            .Replace("ğ", "g").Replace("Ğ", "G").Replace("ü", "u").Replace("Ü", "U")
+                            .Replace("ç", "c").Replace("Ç", "C").Replace("ö", "o").Replace("Ö", "O")
+                            .ToLower();
         }
     }
 }

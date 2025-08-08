@@ -29,36 +29,33 @@ namespace CEKA_APP.Forms
         private List<Button> notKapatButonlari = new List<Button>();
         private Panel notPanel;
         private readonly string projeNo;
-        private readonly int kilometreTasiId;
-        private readonly int? odemeId;
-        public frmFaturaOlustur(string tutar, string aciklama, string tarih, string proje, int kilometreTasiId = 0, int? odemeId = null)
+        private readonly List<int> kilometreTasiIds;
+        private readonly List<int?> odemeIds;
+        public frmFaturaOlustur(string tutar, string aciklama, string tarih, string proje, List<int> kilometreTasiIds = null, List<int?> odemeIds = null)
         {
             this.tutar = tutar ?? "0";
             this.aciklama = aciklama ?? "";
             this.tarih = tarih ?? "Belirtilmemiş";
             this.proje = proje ?? "Bilinmiyor";
             this.projeNo = proje?.Trim();
-            this.kilometreTasiId = kilometreTasiId;
-            this.odemeId = odemeId;
+            this.kilometreTasiIds = kilometreTasiIds ?? new List<int>();
+            this.odemeIds = odemeIds ?? new List<int?>();
             InitializeComponent();
 
             PdfSharp.Fonts.GlobalFontSettings.FontResolver = new PlatformFontResolver();
 
             ReadConfigFile();
         }
-
+        public frmFaturaOlustur(string tutar, string aciklama, string tarih, string proje, int kilometreTasiId = 0, int? odemeId = null)
+    : this(tutar, aciklama, tarih, proje, new List<int> { kilometreTasiId }, odemeId.HasValue ? new List<int?> { odemeId } : new List<int?>())
+        {
+        }
         private void frmFaturaOlustur_Load(object sender, EventArgs e)
         {
-            // Değerleri logla (hata ayıklamayı kolaylaştırmak için)
-            Console.WriteLine($"tutar: {tutar}, aciklama: {aciklama}, tarih: {tarih}");
-
             txtTutar.Text = tutar;
             txtAciklama.Text = aciklama;
             txtTarih.Text = tarih;
             txtProjeNo.Text = proje;
-
-            // Bu satır kaldırıldı. Müşteri adı veritabanından çekilerek atanacak.
-            // txtMusteri.Text = musteriAdi; 
 
             this.Icon = Properties.Resources.cekalogokirmizi;
 
@@ -73,7 +70,6 @@ namespace CEKA_APP.Forms
             };
             this.Controls.Add(notPanel);
 
-            // Proje numarasına göre müşteri bilgilerini çek
             if (!string.IsNullOrEmpty(projeNo))
             {
                 var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
@@ -85,18 +81,11 @@ namespace CEKA_APP.Forms
 
                     if (musteriBilgi != null)
                     {
-                        // Müşteri adını txtMusteri'ye atayan doğru satır
                         txtMusteri.Text = musteriBilgi.musteriAdi ?? "";
-
                         txtMusteriAdresi.Text = musteriBilgi.adres ?? "";
                         txtVergiMerkezi.Text = musteriBilgi.vergiDairesi ?? "";
                         txtVergiNo.Text = musteriBilgi.vergiNo ?? "";
-
-                        // Müşteri menşeisini logla
-                        Console.WriteLine($"musteriMensei: '{musteriBilgi.musteriMensei}'");
-
-                        // KDV textbox'ını menşeiye göre ayarla
-                        txtKdv.Text = ""; // Varsayılan değer
+                        txtKdv.Text = "";
                         txtKdv.Enabled = !string.IsNullOrEmpty(musteriBilgi.musteriMensei) &&
                                        musteriBilgi.musteriMensei.Trim().ToLower() == "türkiye";
                     }
@@ -111,24 +100,43 @@ namespace CEKA_APP.Forms
                 }
             }
 
-            if (kilometreTasiId > 0)
+            var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
+            var faturaNoSet = new HashSet<string>();
+            bool hasNullFaturaNo = false;
+
+            foreach (var kmId in kilometreTasiIds)
             {
-                var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
-                var odemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kilometreTasiId);
-                if (odemeBilgi != null && !string.IsNullOrEmpty(odemeBilgi.faturaNo?.ToString()))
+                if (kmId > 0)
                 {
-                    lblFaturaBilgi.Text = $"Bu kilometre taşı için {odemeBilgi.faturaNo} fatura no ile daha önceden fatura oluşturulmuş!";
-                    btnGoruntule.Enabled = true;
-                    btnSil.Enabled = true;
-                    btnPdfOlustur.Enabled = false;
+                    var odemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kmId);
+                    if (odemeBilgi != null)
+                    {
+                        if (string.IsNullOrEmpty(odemeBilgi.faturaNo))
+                        {
+                            hasNullFaturaNo = true;
+                        }
+                        else
+                        {
+                            faturaNoSet.Add(odemeBilgi.faturaNo);
+                        }
+                    }
                 }
-                else
-                {
-                    lblFaturaBilgi.Text = "";
-                    btnGoruntule.Enabled = false;
-                    btnSil.Enabled = false;
-                    btnPdfOlustur.Enabled = true;
-                }
+            }
+
+            if (faturaNoSet.Count == 1 && !hasNullFaturaNo)
+            {
+                string faturaNo = faturaNoSet.First();
+                lblFaturaBilgi.Text = $"Seçili kilometre taşları için {faturaNo} fatura no ile daha önceden fatura oluşturulmuş!";
+                btnGoruntule.Enabled = true;
+                btnSil.Enabled = true;
+                btnPdfOlustur.Enabled = false;
+            }
+            else if (faturaNoSet.Count > 1 || hasNullFaturaNo)
+            {
+                lblFaturaBilgi.Text = "";
+                btnGoruntule.Enabled = false;
+                btnSil.Enabled = false;
+                btnPdfOlustur.Enabled = true;
             }
             else
             {
@@ -255,39 +263,44 @@ namespace CEKA_APP.Forms
         private void ReadConfigFile()
         {
             configValues = new Dictionary<string, string>();
-            string configFilePath = @"\\192.168.2.3\proje\CEKA APP\config.txt";
+            string configFilePath = ConfigurationManager.AppSettings["ConfigYolu"];
 
-            if (File.Exists(configFilePath))
+            if (string.IsNullOrEmpty(configFilePath))
             {
-                try
-                {
-                    string[] lines = File.ReadAllLines(configFilePath);
-                    foreach (string line in lines)
-                    {
-                        string trimmedLine = line.Trim();
-                        if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith("#"))
-                            continue;
+                MessageBox.Show("Config dosyası yolu AppSettings'de tanımlı değil.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new InvalidOperationException("Config dosyası yolu AppSettings'de tanımlı değil.");
+            }
 
-                        int equalsIndex = trimmedLine.IndexOf('=');
-                        if (equalsIndex > 0)
-                        {
-                            string key = trimmedLine.Substring(0, equalsIndex).Trim();
-                            string value = trimmedLine.Substring(equalsIndex + 1).Trim();
-                            configValues[key] = value;
-                        }
+            if (!File.Exists(configFilePath))
+            {
+                MessageBox.Show($"config.txt belirtilen yolda bulunamadı: {configFilePath}.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new FileNotFoundException($"Config dosyası bulunamadı: {configFilePath}");
+            }
+
+            try
+            {
+                string[] lines = File.ReadAllLines(configFilePath);
+                foreach (string line in lines)
+                {
+                    string trimmedLine = line.Trim();
+                    if (string.IsNullOrEmpty(trimmedLine) || trimmedLine.StartsWith("#"))
+                        continue;
+
+                    int equalsIndex = trimmedLine.IndexOf('=');
+                    if (equalsIndex > 0)
+                    {
+                        string key = trimmedLine.Substring(0, equalsIndex).Trim();
+                        string value = trimmedLine.Substring(equalsIndex + 1).Trim();
+                        configValues[key] = value;
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Config dosyası okunurken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
             }
-            else
+            catch (Exception ex)
             {
-                MessageBox.Show("config.txt belirtilen yolda bulunamadı. Varsayılan değerler kullanılıyor.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Config dosyası okunurken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw;
             }
         }
-
         private double MeasureTextHeightWithFormatter(XGraphics gfx, string text, XFont font, double desiredWidth)
         {
             if (string.IsNullOrEmpty(text))
@@ -550,13 +563,21 @@ namespace CEKA_APP.Forms
         private string GenerateInvoiceNumber(string projeNo)
         {
             if (string.IsNullOrEmpty(projeNo))
-                return "N/A";
+            {
+                MessageBox.Show("Proje numarası boş olamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new ArgumentException("Proje numarası boş olamaz.");
+            }
 
             string yearLastTwo = DateTime.Now.Year.ToString().Substring(2);
             string baseInvoiceNumber = $"{yearLastTwo}P{projeNo}_";
 
             int lastCounter = 0;
-            string configFilePath = @"\\192.168.2.3\proje\CEKA APP\config.txt";
+            string configFilePath = ConfigurationManager.AppSettings["ConfigYolu"];
+            if (string.IsNullOrEmpty(configFilePath))
+            {
+                MessageBox.Show("Config dosyası yolu AppSettings'de tanımlı değil.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new InvalidOperationException("Config dosyası yolu AppSettings'de tanımlı değil.");
+            }
 
             if (configValues.TryGetValue("invoiceCounter", out string counterValue) && int.TryParse(counterValue, out int parsedCounter))
             {
@@ -576,7 +597,7 @@ namespace CEKA_APP.Forms
                     var updatedConfig = new Dictionary<string, string>(configValues);
                     updatedConfig["invoiceCounter"] = counter.ToString();
 
-                    streamWriter.BaseStream.Seek(0, SeekOrigin.Begin); 
+                    streamWriter.BaseStream.Seek(0, SeekOrigin.Begin);
                     streamWriter.Write(string.Join(Environment.NewLine, updatedConfig.Select(kv => $"{kv.Key}={kv.Value}")));
                     streamWriter.Flush();
                     fileStream.SetLength(fileStream.Position);
@@ -584,18 +605,33 @@ namespace CEKA_APP.Forms
             }
             catch (IOException ex)
             {
-                MessageBox.Show($"Config dosyasına erişim sırasında hata oluştu: {ex.Message}. Varsayılan sayaç kullanılacak.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show($"Config dosyasına erişim sırasında hata oluştu: {ex.Message}.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw;
             }
             catch (UnauthorizedAccessException ex)
             {
                 MessageBox.Show($"Config dosyasına yazma izni yok: {ex.Message}. Lütfen ağ izinlerini kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return $"{baseInvoiceNumber}001"; 
+                throw;
             }
 
             string invoiceFolderPath = ConfigurationManager.AppSettings["InvoiceFolderPath"];
-            if (!string.IsNullOrEmpty(invoiceFolderPath) && !Directory.Exists(invoiceFolderPath))
+            if (string.IsNullOrEmpty(invoiceFolderPath))
             {
-                Directory.CreateDirectory(invoiceFolderPath);
+                MessageBox.Show("Fatura klasör yolu AppSettings'de tanımlı değil.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                throw new InvalidOperationException("Fatura klasör yolu AppSettings'de tanımlı değil.");
+            }
+
+            if (!Directory.Exists(invoiceFolderPath))
+            {
+                try
+                {
+                    Directory.CreateDirectory(invoiceFolderPath);
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Fatura klasörü oluşturulurken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    throw;
+                }
             }
 
             string fullPath = Path.Combine(invoiceFolderPath, $"{finalInvoiceNumber}.pdf");
@@ -625,12 +661,12 @@ namespace CEKA_APP.Forms
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Config dosyası güncellenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    throw;
                 }
             }
 
             return finalInvoiceNumber;
         }
-
         private void btnPdfOlustur_Click(object sender, EventArgs e)
         {
             var chkTurkish = this.Controls.Find("chkTurkish", true).FirstOrDefault() as CheckBox;
@@ -738,8 +774,7 @@ namespace CEKA_APP.Forms
             string text4_3 = configValues.TryGetValue("textBox4_3", out string val4_3) ? val4_3 : "Metin 4.3";
             string text4_4 = configValues.TryGetValue("textBox4_4", out string val4_4) ? val4_4 : "Metin 4.4";
 
-            string textOnly;
-
+            string textDescriptionData = (txtAciklama?.Text ?? "").Replace("\\n", "\n");
             string singleAmountValue = txtTutar?.Text ?? "0,00";
             string textKdvValue = txtKdv?.Text ?? "0";
 
@@ -750,31 +785,47 @@ namespace CEKA_APP.Forms
 
             var culture = new System.Globalization.CultureInfo("tr-TR");
 
-            string cleanKdvValue = textKdvValue.Replace("%", "").Trim();
+            string[] amountLines = singleAmountValue.Split(new[] { "\\n" }, StringSplitOptions.None);
+            List<double> validAmounts = new List<double>();
+            foreach (var line in amountLines)
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                if (double.TryParse(line, System.Globalization.NumberStyles.Any, culture, out double amount))
+                {
+                    validAmounts.Add(amount);
+                }
+                else
+                {
+                    MessageBox.Show($"Tutar alanında geçersiz bir değer bulundu: '{line}'. Lütfen yalnızca sayılar ve \\n kullanın.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            tutar = validAmounts.Sum();
 
-            bool isTutarValid = double.TryParse(singleAmountValue, System.Globalization.NumberStyles.Any, culture, out tutar);
+            string cleanKdvValue = txtKdv?.Text.Replace("%", "").Trim() ?? "0";
             bool isKdvValid = double.TryParse(cleanKdvValue, System.Globalization.NumberStyles.Any, culture, out kdvOrani);
 
-            if (isTutarValid && isKdvValid)
+            if (isKdvValid && kdvOrani > 0)
             {
                 kdvTutari = tutar * (kdvOrani / 100);
                 grandTotal = tutar + kdvTutari;
             }
             else
             {
-                MessageBox.Show("Lütfen geçerli bir KDV oranı ve tutar girin.", "Hesaplama Hatası", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                textKdvValue = "N/A";
+                kdvTutari = 0;
+                grandTotal = tutar;
             }
 
-            // Formatlı değerleri hazırla (görüntü için)
+            string formattedTutar = tutar.ToString("N2", culture);
             string formattedKdvTutari = kdvTutari.ToString("N2", culture);
             string formattedGrandTotal = grandTotal.ToString("N2", culture);
-            string formattedKdvOrani = textKdvValue != "N/A" ? $"%{cleanKdvValue}" : "N/A";
 
-            // Sayıdan yazıya çevir
-            if (string.IsNullOrEmpty(singleAmountValue) || !isTutarValid)
+            string formattedKdvOrani = kdvOrani > 0 ? $"%{kdvOrani.ToString(culture)}" : "";
+
+            string textOnly;
+            if (tutar == 0)
             {
-                MessageBox.Show("Lütfen geçerli bir sayı girin.", "Geçersiz Giriş", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Lütfen geçerli bir tutar girin.", "Geçersiz Giriş", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 textOnly = "N/A";
             }
             else
@@ -783,14 +834,13 @@ namespace CEKA_APP.Forms
                 textOnly = SayiyiYaziyaCevir(grandTotal.ToString(new System.Globalization.CultureInfo(lang == "en" ? "en-US" : "tr-TR")), lang);
             }
 
-            string textTotalValue = tutar.ToString("N2", culture);
+            string textTotalValue = formattedTutar;
             string textGrandTotalValue = formattedGrandTotal;
 
 
             string textShippingNo = configValues.TryGetValue("textBoxShippingNo", out string shippingNo) ? shippingNo : "";
             string textShippingDate = configValues.TryGetValue("textBoxShippingDate", out string shippingDate) ? shippingDate : "";
             string textInvoiceDateValue = txtTarih?.Text ?? "N/A";
-            string textDescriptionData = txtAciklama?.Text ?? "";
             string textToValue = txtMusteri?.Text ?? "N/A";
             string textInvoiceNumber = GenerateInvoiceNumber(txtProjeNo.Text);
 
@@ -1044,11 +1094,10 @@ namespace CEKA_APP.Forms
             gfx.DrawRectangle(XBrushes.Black, panel1HeaderRect);
             DrawCenteredHeaderText("DESCRIPTION - SERIAL NUMBER", panel1HeaderRect, boldHeaderFont, XBrushes.White);
 
-            string wrappedDescriptionData = ForceWordWrap(gfx, textDescriptionData, panelFont, panel1Rect.Width - (2 * cellPadding));
-            double descriptionHeight = MeasureTextHeightWithFormatter(gfx, wrappedDescriptionData, panelFont, panel1Rect.Width - (2 * cellPadding));
             XRect descriptionDataRect = new XRect(panel1Rect.X + cellPadding, panel1HeaderRect.Bottom + cellPadding,
-                                                  panel1Rect.Width - (2 * cellPadding), descriptionHeight);
-            tf.DrawString(wrappedDescriptionData, panelFont, XBrushes.Black, descriptionDataRect, XStringFormats.TopLeft);
+                                      panel1Rect.Width - (2 * cellPadding), panel1Rect.Height - headerHeight - (2 * cellPadding));
+            tf.Alignment = XParagraphAlignment.Left;
+            tf.DrawString(textDescriptionData, panelFont, XBrushes.Black, descriptionDataRect, XStringFormats.TopLeft);
 
             double notesWidth = panel1Rect.Width;
             double totalNotesHeight = 0;
@@ -1066,35 +1115,47 @@ namespace CEKA_APP.Forms
                 }
             }
 
+
+            double descriptionHeight = MeasureTextHeightWithFormatter(gfx, textDescriptionData, panelFont, panel1Rect.Width - (2 * cellPadding));
+
+            descriptionDataRect.Height = descriptionHeight;
+            tf.Alignment = XParagraphAlignment.Left;
+            tf.DrawString(textDescriptionData, panelFont, XBrushes.Black, descriptionDataRect, XStringFormats.TopLeft);
+
             double availableDrawingHeightForNotes = panel1Rect.Bottom - descriptionDataRect.Bottom - cellPadding;
+
             double currentNotesYPosition;
 
-            if (totalNotesHeight < availableDrawingHeightForNotes)
+            if (availableDrawingHeightForNotes <= 0 || totalNotesHeight > availableDrawingHeightForNotes)
             {
-                currentNotesYPosition = panel1Rect.Bottom - totalNotesHeight - cellPadding;
+                page = document.AddPage();
+                gfx = XGraphics.FromPdfPage(page);
+                tf = new XTextFormatter(gfx);
+                notesWidth = pageWidth - (2 * margin);
+                currentNotesYPosition = margin;
+                gfx.DrawString("Notlar (Devam)", boldHeaderFont, XBrushes.Black, new XPoint(margin, margin), XStringFormats.TopLeft);
+                currentNotesYPosition += boldHeaderFont.Height + 10;
             }
             else
             {
-                currentNotesYPosition = descriptionDataRect.Bottom + cellPadding;
+                currentNotesYPosition = totalNotesHeight < availableDrawingHeightForNotes
+                    ? panel1Rect.Bottom - totalNotesHeight - cellPadding
+                    : descriptionDataRect.Bottom + cellPadding;
             }
 
             foreach (var (notText, notHeight) in processedNotes)
             {
-                if (currentNotesYPosition + notHeight <= panel1Rect.Bottom - cellPadding)
+                double remainingHeight = availableDrawingHeightForNotes <= 0 ? pageHeight - margin - currentNotesYPosition : panel1Rect.Bottom - currentNotesYPosition - cellPadding;
+                if (remainingHeight <= 0)
                 {
-                    XRect notRect = new XRect(panel1Rect.X + cellPadding, currentNotesYPosition, notesWidth - (2 * cellPadding), notHeight);
-                    tf.DrawString(notText, panelFont, XBrushes.Black, notRect, XStringFormats.TopLeft);
-                    currentNotesYPosition += notHeight + (cellPadding / 2);
-                }
-                else
-                {
-                    XRect notRect = new XRect(panel1Rect.X + cellPadding, currentNotesYPosition, notesWidth - (2 * cellPadding), panel1Rect.Bottom - currentNotesYPosition - cellPadding);
-                    if (notRect.Height > 0)
-                    {
-                        tf.DrawString(notText, panelFont, XBrushes.Black, notRect, XStringFormats.TopLeft);
-                    }
+                    MessageBox.Show("Notlar için yeterli alan kalmadı, bazı notlar görüntülenemedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     break;
                 }
+
+                double rectHeight = Math.Min(notHeight, remainingHeight);
+                XRect notRect = new XRect(margin + cellPadding, currentNotesYPosition, notesWidth - (2 * cellPadding), rectHeight);
+                tf.DrawString(notText, panelFont, XBrushes.Black, notRect, XStringFormats.TopLeft);
+                currentNotesYPosition += notHeight + (cellPadding / 2);
             }
 
             double labelIndent = 0;
@@ -1156,8 +1217,18 @@ namespace CEKA_APP.Forms
 
             XRect unitPriceValueRect = new XRect(panel3Rect.X + cellPadding, panel3HeaderRect.Bottom + cellPadding,
                                                  panel3Rect.Width - (2 * cellPadding), panel3Rect.Height - headerHeight - (2 * cellPadding));
-            tf.DrawString(singleAmountValue, panelFont, XBrushes.Black, unitPriceValueRect, XStringFormats.TopLeft);
-
+            tf.Alignment = XParagraphAlignment.Left;
+            double unitPriceCurrentY = unitPriceValueRect.Y;
+            foreach (var line in amountLines)
+            {
+                if (string.IsNullOrWhiteSpace(line)) continue;
+                if (double.TryParse(line, System.Globalization.NumberStyles.Any, culture, out double amount))
+                {
+                    string formattedAmount = amount.ToString("N2", culture);
+                    tf.DrawString(formattedAmount, panelFont, XBrushes.Black, new XRect(unitPriceValueRect.X, unitPriceCurrentY, unitPriceValueRect.Width, panelFont.Height), XStringFormats.TopLeft);
+                    unitPriceCurrentY += panelFont.Height + 2;
+                }
+            }
             currentSubPanelY_local = subPanelYStartOffset;
 
             XRect subPanel3_1Rect = new XRect(panel3StartX, currentSubPanelY_local, panel3Width, subPanelHeightPoints);
@@ -1181,21 +1252,21 @@ namespace CEKA_APP.Forms
 
             XRect panel4Rect = new XRect(panel4StartX_Calculated, newPanelsYStart, panel4Width, panel3CalculatedHeightPoints);
             gfx.DrawRectangle(thinPen, panel4Rect);
-
             XRect panel4HeaderRect = new XRect(panel4Rect.X, panel4Rect.Y, panel4Rect.Width, headerHeight);
             gfx.DrawRectangle(XBrushes.Black, panel4HeaderRect);
             DrawCenteredHeaderText("TOTAL PRICE", panel4HeaderRect, boldHeaderFont, XBrushes.White);
 
             XRect totalPriceValueRect = new XRect(panel4Rect.X + cellPadding, panel4HeaderRect.Bottom + cellPadding,
-                                                  panel4Rect.Width - (2 * cellPadding), panel4Rect.Height - headerHeight - (2 * cellPadding));
-            tf.DrawString(singleAmountValue, panelFont, XBrushes.Black, totalPriceValueRect, XStringFormats.TopLeft);
+                                                panel4Rect.Width - (2 * cellPadding), panel4Rect.Height - headerHeight - (2 * cellPadding));
+            tf.Alignment = XParagraphAlignment.Left;
+            tf.DrawString(formattedTutar, panelFont, XBrushes.Black, totalPriceValueRect, XStringFormats.TopLeft);
 
             double currentSubPanelY_Panel4 = subPanelYStartOffset;
 
             XRect subPanel4_1Rect = new XRect(panel4StartX_Calculated, currentSubPanelY_Panel4, panel4Width, subPanelHeightPoints);
             gfx.DrawRectangle(XBrushes.White, subPanel4_1Rect);
             gfx.DrawRectangle(thinPen, subPanel4_1Rect);
-            DrawCenteredHeaderText(textTotalValue, subPanel4_1Rect, boldHeaderFont, XBrushes.Black);
+            DrawCenteredHeaderText(formattedTutar, subPanel4_1Rect, boldHeaderFont, XBrushes.Black);
 
             currentSubPanelY_Panel4 += subPanelHeightPoints + subPanelVerticalSpacing;
 
@@ -1203,17 +1274,17 @@ namespace CEKA_APP.Forms
             gfx.DrawRectangle(XBrushes.White, subPanel4_2Rect);
             gfx.DrawRectangle(thinPen, subPanel4_2Rect);
 
-            double desiredShiftX = 48.039;
+            double desiredShiftX = 28.039;
             double minWidth = 20;
             double vatWidth = panel4Width - (2 * cellPadding - 1) - desiredShiftX;
-            double vatValueWidth = Math.Max(minWidth, vatWidth); // Negatif genişlik önleme
+            double vatValueWidth = Math.Max(minWidth, vatWidth);
             XRect vatValueRect = new XRect(
                 subPanel4_2Rect.X + cellPadding + desiredShiftX,
-                subPanel4_2Rect.Y + cellPadding + 5,
+                subPanel4_2Rect.Y + cellPadding + 4,
                 vatValueWidth,
                 subPanelHeightPoints - cellPadding
             );
-            string wrappedKdvOrani = ForceWordWrap(gfx, formattedKdvOrani, panelFont, vatValueWidth - (2 * cellPadding));
+            string kdvDisplay = !string.IsNullOrEmpty(formattedKdvOrani) ? $"{formattedKdvOrani} ({formattedKdvTutari})" : ""; string wrappedKdvOrani = ForceWordWrap(gfx, kdvDisplay, panelFont, vatValueWidth - (2 * cellPadding));
             tf.DrawString(wrappedKdvOrani, panelFont, XBrushes.Black, vatValueRect, XStringFormats.TopLeft);
 
             currentSubPanelY_Panel4 += subPanelHeightPoints + subPanelVerticalSpacing;
@@ -1221,7 +1292,7 @@ namespace CEKA_APP.Forms
             XRect subPanel4_3Rect = new XRect(panel4StartX_Calculated, currentSubPanelY_Panel4, panel4Width, subPanelHeightPoints);
             gfx.DrawRectangle(XBrushes.White, subPanel4_3Rect);
             gfx.DrawRectangle(thinPen, subPanel4_3Rect);
-            DrawCenteredHeaderText(textGrandTotalValue, subPanel4_3Rect, boldHeaderFont, XBrushes.Black);
+            DrawCenteredHeaderText(formattedGrandTotal, subPanel4_3Rect, boldHeaderFont, XBrushes.Black);
 
             double miniRowHeight = labelFont.Height + 2;
             double eachInnerCellTotalHeight = (3 * miniRowHeight);
@@ -1281,30 +1352,42 @@ namespace CEKA_APP.Forms
                 Directory.CreateDirectory(invoiceFolderPath);
             }
             string filename = Path.Combine(invoiceFolderPath, $"{textInvoiceNumber}.pdf");
+
             try
             {
                 document.Save(filename);
-                if (odemeId.HasValue && odemeId > 0)
+                var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
+                bool allUpdatesSuccessful = true;
+
+                foreach (var odemeId in odemeIds.Where(id => id.HasValue))
                 {
-                    var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
                     bool updateSuccess = odemeSekilleriData.UpdateFaturaNo(odemeId.Value, textInvoiceNumber);
-                    if (updateSuccess)
+                    if (!updateSuccess)
+                    {
+                        allUpdatesSuccessful = false;
+                    }
+                }
+
+                if (odemeIds.Any(id => id.HasValue))
+                {
+                    if (allUpdatesSuccessful)
                     {
                         btnGoruntule.Enabled = true;
-                        lblFaturaBilgi.Text = $"Bu kilometre taşı için daha önce {textInvoiceNumber} numaralı fatura oluşturulmuştur.";
                         btnSil.Enabled = true;
                         btnPdfOlustur.Enabled = false;
-                        MessageBox.Show($"PDF '{textInvoiceNumber}.pdf' Invoice klasörüne başarıyla oluşturuldu ve fatura numarası veritabanına kaydedildi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        lblFaturaBilgi.Text = $"Seçili kilometre taşları için {textInvoiceNumber} numaralı fatura oluşturulmuştur.";
+                        MessageBox.Show($"PDF '{textInvoiceNumber}.pdf' Invoice klasörüne başarıyla oluşturuldu ve fatura numaraları veritabanına kaydedildi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
                     {
-                        MessageBox.Show($"PDF '{textInvoiceNumber}.pdf' oluşturuldu, ancak fatura numarası veritabanına kaydedilemedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        MessageBox.Show($"PDF '{textInvoiceNumber}.pdf' oluşturuldu, ancak bazı fatura numaraları veritabanına kaydedilemedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     }
                 }
                 else
                 {
-                    MessageBox.Show($"PDF '{textInvoiceNumber}.pdf' Invoice klasörüne başarıyla oluşturuldu, ancak ödeme ID'si geçersiz olduğu için fatura numarası kaydedilemedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show($"PDF '{textInvoiceNumber}.pdf' Invoice klasörüne başarıyla oluşturuldu, ancak ödeme ID'leri geçersiz olduğu için fatura numaraları kaydedilemedi.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
+
                 Process.Start(new ProcessStartInfo(filename) { UseShellExecute = true });
             }
             catch (IOException ex)
@@ -1314,115 +1397,148 @@ namespace CEKA_APP.Forms
         }
         private void btnGoruntule_Click(object sender, EventArgs e)
         {
-            if (odemeId > 0)
+            var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
+            var faturaNoSet = new HashSet<string>();
+
+            foreach (var kmId in kilometreTasiIds)
             {
-                try
+                if (kmId > 0)
                 {
-                    var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
-                    var odemeBilgi = odemeSekilleriData.GetOdemeBilgiByOdemeId(odemeId.Value);
+                    var odemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kmId);
                     if (odemeBilgi != null && !string.IsNullOrEmpty(odemeBilgi.faturaNo?.ToString()))
                     {
-                        string invoiceFolderPath = ConfigurationManager.AppSettings["InvoiceFolderPath"];
-                        string fullPath = Path.Combine(invoiceFolderPath, $"{odemeBilgi.faturaNo}.pdf");
-                        if (File.Exists(fullPath))
-                        {
-                            try
-                            {
-                                Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
-                            }
-                            catch (Exception ex)
-                            {
-                                MessageBox.Show($"Fatura görüntülenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show("Fatura dosyası bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        }
-                    }
-                    else
-                    {
-                        MessageBox.Show("Bu ödeme için fatura bulunamadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        faturaNoSet.Add(odemeBilgi.faturaNo.ToString());
                     }
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Fatura görüntülenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                }
             }
-            else
+
+            if (faturaNoSet.Count == 1)
             {
-                MessageBox.Show("Geçersiz ödeme ID'si.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-
-        private void btnSil_Click(object sender, EventArgs e)
-        {
-            if (odemeId.HasValue && odemeId > 0)
-            {
-                var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
-                var odemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kilometreTasiId);
-
-                if (odemeBilgi != null && !string.IsNullOrEmpty(odemeBilgi.faturaNo))
+                string faturaNo = faturaNoSet.First();
+                string invoiceFolderPath = ConfigurationManager.AppSettings["InvoiceFolderPath"];
+                string fullPath = Path.Combine(invoiceFolderPath, $"{faturaNo}.pdf");
+                if (File.Exists(fullPath))
                 {
-                    string invoiceFolderPath = ConfigurationManager.AppSettings["InvoiceFolderPath"];
-                    string fullPath = Path.Combine(invoiceFolderPath, $"{odemeBilgi.faturaNo}.pdf");
-
                     try
                     {
-                        bool fileExistsBeforeDelete = File.Exists(fullPath);
-
-                        if (fileExistsBeforeDelete)
-                        {
-                            File.Delete(fullPath);
-                        }
-
-                        bool updateSuccess = odemeSekilleriData.UpdateFaturaNo(odemeId.Value, null);
-
-                        if (updateSuccess)
-                        {
-                            lblFaturaBilgi.Text = "";
-                            btnGoruntule.Enabled = false;
-                            btnSil.Enabled = false;
-                            btnPdfOlustur.Enabled = true;
-
-                            if (fileExistsBeforeDelete)
-                            {
-                                MessageBox.Show("Fatura başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            }
-                            else
-                            {
-                                MessageBox.Show("Fatura dosyası bulunamadı, ancak fatura numarası veritabanından kaldırıldı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            }
-                        }
-                        else
-                        {
-                            MessageBox.Show("Fatura numarası veritabanından kaldırılamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        }
+                        Process.Start(new ProcessStartInfo(fullPath) { UseShellExecute = true });
                     }
-                    catch (IOException ex)
+                    catch (Exception ex)
                     {
-                        MessageBox.Show($"Fatura dosyası silinirken hata oluştu: {ex.Message}. Dosya başka bir işlem tarafından kullanılıyor olabilir. Lütfen dosyayı kapatıp tekrar deneyin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        MessageBox.Show($"Fatura görüntülenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 else
                 {
-                    MessageBox.Show("Bu ödeme için fatura bulunamadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    lblFaturaBilgi.Text = "";
-                    btnGoruntule.Enabled = false;
-                    btnSil.Enabled = false;
-                    btnPdfOlustur.Enabled = true;
+                    MessageBox.Show("Fatura dosyası bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
+            }
+            else if (faturaNoSet.Count > 1)
+            {
+                MessageBox.Show("Seçili satırların fatura numaraları farklı. Lütfen tek bir fatura numarasıyla ilişkili satırları seçin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
             else
             {
-                MessageBox.Show("Geçersiz ödeme ID'si.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Bu ödeme için fatura bulunamadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+        }
+
+        private void btnSil_Click(object sender, EventArgs e)
+        {
+            var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
+            var faturaNoSet = new HashSet<string>();
+
+            foreach (var kmId in kilometreTasiIds)
+            {
+                if (kmId > 0)
+                {
+                    var odemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kmId);
+                    if (odemeBilgi != null && !string.IsNullOrEmpty(odemeBilgi.faturaNo))
+                    {
+                        faturaNoSet.Add(odemeBilgi.faturaNo);
+                    }
+                }
+            }
+
+            if (faturaNoSet.Count == 1)
+            {
+                string faturaNo = faturaNoSet.First();
+                string invoiceFolderPath = ConfigurationManager.AppSettings["InvoiceFolderPath"];
+                string fullPath = Path.Combine(invoiceFolderPath, $"{faturaNo}.pdf");
+
+                try
+                {
+                    bool fileExistsBeforeDelete = File.Exists(fullPath);
+                    if (fileExistsBeforeDelete)
+                    {
+                        File.Delete(fullPath);
+                    }
+
+                    bool allUpdatesSuccessful = true;
+                    foreach (var odemeId in odemeIds.Where(id => id.HasValue))
+                    {
+                        bool updateSuccess = odemeSekilleriData.UpdateFaturaNo(odemeId.Value, null);
+                        if (!updateSuccess)
+                        {
+                            allUpdatesSuccessful = false;
+                        }
+                    }
+
+                    if (allUpdatesSuccessful)
+                    {
+                        lblFaturaBilgi.Text = "";
+                        btnGoruntule.Enabled = false;
+                        btnSil.Enabled = false;
+                        btnPdfOlustur.Enabled = true;
+
+                        if (fileExistsBeforeDelete)
+                        {
+                            MessageBox.Show("Fatura başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        else
+                        {
+                            MessageBox.Show("Fatura dosyası bulunamadı, ancak fatura numaraları veritabanından kaldırıldı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                    }
+                    else
+                    {
+                        MessageBox.Show("Bazı fatura numaraları veritabanından kaldırılamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    }
+                }
+                catch (IOException ex)
+                {
+                    MessageBox.Show($"Fatura dosyası silinirken hata oluştu: {ex.Message}. Dosya başka bir işlem tarafından kullanılıyor olabilir.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+            else if (faturaNoSet.Count > 1)
+            {
+                MessageBox.Show("Seçili satırların fatura numaraları farklı. Lütfen tek bir fatura numarasıyla ilişkili satırları seçin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+            else
+            {
+                MessageBox.Show("Bu ödeme için fatura bulunamadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 lblFaturaBilgi.Text = "";
                 btnGoruntule.Enabled = false;
                 btnSil.Enabled = false;
                 btnPdfOlustur.Enabled = true;
+            }
+        }
+        private void txtKdv_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (char.IsControl(e.KeyChar))
+            {
+                return;
+            }
+
+            if ((e.KeyChar == ',' || e.KeyChar == '.') && txtKdv.Text.Contains(","))
+            {
+                e.Handled = true;
+                return;
+            }
+
+            if (!char.IsDigit(e.KeyChar) && e.KeyChar != ',' && e.KeyChar != '.')
+            {
+                e.Handled = true;
             }
         }
     }

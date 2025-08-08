@@ -30,11 +30,12 @@
         {
             this.components = new System.ComponentModel.Container();
             this.dataGridTeminatMektuplari = new System.Windows.Forms.DataGridView();
-            this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.cmsTeminatMektubuIslemleri = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.tsmiMektupEkle = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiMektupGuncelle = new System.Windows.Forms.ToolStripMenuItem();
             this.tsmiMektupSil = new System.Windows.Forms.ToolStripMenuItem();
+            this.tsmiAra = new System.Windows.Forms.ToolStripMenuItem();
+            this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridTeminatMektuplari)).BeginInit();
             this.cmsTeminatMektubuIslemleri.SuspendLayout();
             this.SuspendLayout();
@@ -54,24 +55,16 @@
             this.dataGridTeminatMektuplari.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridTeminatMektuplari_CellMouseDown);
             this.dataGridTeminatMektuplari.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridTeminatMektuplari_DataBindingComplete);
             // 
-            // ctlBaslik1
-            // 
-            this.ctlBaslik1.Baslik = "Başlık";
-            this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
-            this.ctlBaslik1.Name = "ctlBaslik1";
-            this.ctlBaslik1.Size = new System.Drawing.Size(1665, 50);
-            this.ctlBaslik1.TabIndex = 5;
-            // 
             // cmsTeminatMektubuIslemleri
             // 
             this.cmsTeminatMektubuIslemleri.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.cmsTeminatMektubuIslemleri.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.tsmiMektupEkle,
             this.tsmiMektupGuncelle,
-            this.tsmiMektupSil});
+            this.tsmiMektupSil,
+            this.tsmiAra});
             this.cmsTeminatMektubuIslemleri.Name = "cmsTeminatMektubuIslemleri";
-            this.cmsTeminatMektubuIslemleri.Size = new System.Drawing.Size(255, 76);
+            this.cmsTeminatMektubuIslemleri.Size = new System.Drawing.Size(255, 128);
             this.cmsTeminatMektubuIslemleri.Opening += new System.ComponentModel.CancelEventHandler(this.cmsTeminatMektubuIslemleri_Opening);
             // 
             // tsmiMektupEkle
@@ -94,6 +87,22 @@
             this.tsmiMektupSil.Size = new System.Drawing.Size(254, 24);
             this.tsmiMektupSil.Text = "Teminat Mektubu Sil";
             this.tsmiMektupSil.Click += new System.EventHandler(this.tsmiMektupSil_Click);
+            // 
+            // tsmiAra
+            // 
+            this.tsmiAra.Name = "tsmiAra";
+            this.tsmiAra.Size = new System.Drawing.Size(254, 24);
+            this.tsmiAra.Text = "Ara";
+            this.tsmiAra.Click += new System.EventHandler(this.tsmiAra_Click);
+            // 
+            // ctlBaslik1
+            // 
+            this.ctlBaslik1.Baslik = "Başlık";
+            this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
+            this.ctlBaslik1.Name = "ctlBaslik1";
+            this.ctlBaslik1.Size = new System.Drawing.Size(1665, 50);
+            this.ctlBaslik1.TabIndex = 5;
             // 
             // ctlTeminatMektuplari
             // 
@@ -118,5 +127,6 @@
         private System.Windows.Forms.ToolStripMenuItem tsmiMektupEkle;
         private System.Windows.Forms.ToolStripMenuItem tsmiMektupGuncelle;
         private System.Windows.Forms.ToolStripMenuItem tsmiMektupSil;
+        private System.Windows.Forms.ToolStripMenuItem tsmiAra;
     }
 }

@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CEKA_APP.DataBase.ProjeFinans
@@ -21,17 +19,17 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     connection.Open();
                     string query = @"
                         INSERT INTO ProjeFinans_Musteriler
-                        (musteriNo, musteriAdi, vergiNo, vergiDairesi, adres , musteriMensei, doviz)
+                        (musteriNo, musteriAdi, vergiNo, vergiDairesi, adres, musteriMensei, doviz)
                         VALUES (@musteriNo, @musteriAdi, @vergiNo, @vergiDairesi, @adres, @musteriMensei, @doviz)";
                     using (var cmd = new SqlCommand(query, connection))
                     {
-                        cmd.Parameters.AddWithValue("@musteriNo", musteri.musteriNo);
-                        cmd.Parameters.AddWithValue("@musteriAdi", musteri.musteriAdi);
-                        cmd.Parameters.AddWithValue("@vergiNo", musteri.vergiNo);
-                        cmd.Parameters.AddWithValue("@vergiDairesi", musteri.vergiDairesi);
-                        cmd.Parameters.AddWithValue("@adres", musteri.adres);
-                        cmd.Parameters.AddWithValue("@musteriMensei", musteri.musteriMensei);
-                        cmd.Parameters.AddWithValue("@doviz", musteri.doviz);
+                        cmd.Parameters.AddWithValue("@musteriNo", musteri.musteriNo ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@musteriAdi", musteri.musteriAdi ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@vergiNo", musteri.vergiNo ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@vergiDairesi", musteri.vergiDairesi ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@adres", musteri.adres ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@musteriMensei", musteri.musteriMensei ?? (object)DBNull.Value);
+                        cmd.Parameters.AddWithValue("@doviz", musteri.doviz ?? (object)DBNull.Value);
 
                         cmd.ExecuteNonQuery();
                     }
@@ -66,6 +64,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
+
         public Musteriler GetMusteriByMusteriNo(string musteriNo)
         {
             Musteriler musteri = null;
@@ -74,7 +73,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 try
                 {
                     connection.Open();
-                    string query = "SELECT musteriNo, musteriAdi, vergiNo, vergiDairesi, adres , musteriMensei, doviz FROM ProjeFinans_Musteriler WHERE musteriNo = @musteriNo";
+                    string query = "SELECT musteriNo, musteriAdi, vergiNo, vergiDairesi, adres, musteriMensei, doviz FROM ProjeFinans_Musteriler WHERE musteriNo = @musteriNo";
                     using (var cmd = new SqlCommand(query, connection))
                     {
                         cmd.Parameters.AddWithValue("@musteriNo", musteriNo);
@@ -82,14 +81,16 @@ namespace CEKA_APP.DataBase.ProjeFinans
                         {
                             if (reader.Read())
                             {
-                                musteri = new Musteriler();
-                                musteri.musteriNo = reader["musteriNo"] as string;
-                                musteri.musteriAdi = reader["musteriAdi"] as string;
-                                musteri.vergiNo = reader["vergiNo"] as string;
-                                musteri.vergiDairesi = reader["vergiDairesi"] as string;
-                                musteri.adres = reader["adres"] as string;
-                                musteri.musteriMensei = reader["musteriMensei"] as string;
-                                musteri.doviz = reader["doviz"] as string;
+                                musteri = new Musteriler
+                                {
+                                    musteriNo = reader["musteriNo"] as string,
+                                    musteriAdi = reader["musteriAdi"] as string,
+                                    vergiNo = reader["vergiNo"] as string,
+                                    vergiDairesi = reader["vergiDairesi"] as string,
+                                    adres = reader["adres"] as string,
+                                    musteriMensei = reader["musteriMensei"] as string,
+                                    doviz = reader["doviz"] as string
+                                };
                             }
                         }
                     }
@@ -102,6 +103,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
             return musteri;
         }
+
         public List<Musteriler> GetMusteriler()
         {
             List<Musteriler> musterilerListesi = new List<Musteriler>();
@@ -110,22 +112,23 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 try
                 {
                     connection.Open();
-                    string query = "SELECT musteriNo, musteriAdi, vergiNo, vergiDairesi, adres , musteriMensei, doviz FROM ProjeFinans_Musteriler ORDER BY musteriAdi";
+                    string query = "SELECT musteriNo, musteriAdi, vergiNo, vergiDairesi, adres, musteriMensei, doviz FROM ProjeFinans_Musteriler ORDER BY musteriAdi";
                     using (var cmd = new SqlCommand(query, connection))
                     {
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                Musteriler musteri = new Musteriler();
-                                musteri.musteriNo = reader["musteriNo"] as string;
-                                musteri.musteriAdi = reader["musteriAdi"] as string;
-                                musteri.vergiNo = reader["vergiNo"] as string;
-                                musteri.vergiDairesi = reader["vergiDairesi"] as string;
-                                musteri.adres = reader["adres"] as string;
-                                musteri.musteriMensei = reader["musteriMensei"] as string;
-                                musteri.doviz = reader["doviz"] as string;
-
+                                Musteriler musteri = new Musteriler
+                                {
+                                    musteriNo = reader["musteriNo"] as string,
+                                    musteriAdi = reader["musteriAdi"] as string,
+                                    vergiNo = reader["vergiNo"] as string,
+                                    vergiDairesi = reader["vergiDairesi"] as string,
+                                    adres = reader["adres"] as string,
+                                    musteriMensei = reader["musteriMensei"] as string,
+                                    doviz = reader["doviz"] as string
+                                };
                                 musterilerListesi.Add(musteri);
                             }
                         }
@@ -139,7 +142,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
             return musterilerListesi;
         }
-       
+
         public void TumMusterileriSil()
         {
             using (var connection = DataBaseHelper.GetConnection())
@@ -159,6 +162,87 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     throw;
                 }
             }
+        }
+
+        public DataTable FiltreleMusteriBilgileri(Dictionary<string, TextBox> filtreKutulari, DataGridView dataGrid)
+        {
+            try
+            {
+                using (var connection = DataBaseHelper.GetConnection())
+                {
+                    connection.Open();
+                    string baseQuery = @"
+                        SELECT
+                            musteriNo,
+                            musteriAdi,
+                            vergiDairesi,
+                            vergiNo,
+                            adres,
+                            musteriMensei,
+                            doviz
+                        FROM ProjeFinans_Musteriler
+                        WHERE 1=1";
+
+                    var conditions = new List<string>();
+                    var parameters = new List<SqlParameter>();
+                    int paramIndex = 0;
+
+                    foreach (var kutu in filtreKutulari)
+                    {
+                        string hamDeger = kutu.Value.Text.Trim();
+                        if (!string.IsNullOrEmpty(hamDeger))
+                        {
+                            string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
+                                .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(kutu.Key) ||
+                                                    NormalizeColumnName(c.Name) == NormalizeColumnName(kutu.Key))?.Name;
+
+                            if (string.IsNullOrEmpty(columnName))
+                            {
+                                MessageBox.Show($"Sütun bulunamadı: {kutu.Key}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                continue;
+                            }
+
+                            string paramName = $"@p{paramIndex++}";
+                            string condition = $"LOWER({columnName}) LIKE {paramName}";
+                            conditions.Add(condition);
+                            parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger.ToLower() });
+                        }
+                    }
+
+                    if (conditions.Any())
+                    {
+                        baseQuery += " AND " + string.Join(" AND ", conditions);
+                    }
+
+                    baseQuery += " ORDER BY musteriAdi";
+
+                    using (var cmd = new SqlCommand(baseQuery, connection))
+                    {
+                        cmd.Parameters.AddRange(parameters.ToArray());
+
+                        using (var adapter = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            adapter.Fill(dt);
+                            return dt;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Arama sırasında hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"Hata detayı: {ex.ToString()}");
+                return null;
+            }
+        }
+
+        private string NormalizeColumnName(string columnName)
+        {
+            if (string.IsNullOrEmpty(columnName)) return columnName;
+            return columnName.Replace("ı", "i").Replace("İ", "I").Replace("ş", "s").Replace("Ş", "S")
+                            .Replace("ğ", "g").Replace("Ğ", "G").Replace("ü", "u").Replace("Ü", "U")
+                            .Replace("ç", "c").Replace("Ç", "C").ToLower();
         }
     }
 }

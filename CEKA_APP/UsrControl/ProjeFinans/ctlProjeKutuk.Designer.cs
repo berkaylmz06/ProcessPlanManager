@@ -53,6 +53,7 @@ namespace CEKA_APP.UsrControl
             this.chkCogul = new System.Windows.Forms.CheckBox();
             this.chkTekil = new System.Windows.Forms.CheckBox();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
+            this.btnSil = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // label1
@@ -181,6 +182,7 @@ namespace CEKA_APP.UsrControl
             // 
             this.txtMusteriAdi.BackColor = System.Drawing.Color.White;
             this.txtMusteriAdi.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtMusteriAdi.Enabled = false;
             this.txtMusteriAdi.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtMusteriAdi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
             this.txtMusteriAdi.Location = new System.Drawing.Point(670, 216);
@@ -338,6 +340,7 @@ namespace CEKA_APP.UsrControl
             this.txtProjeAra.Name = "txtProjeAra";
             this.txtProjeAra.Size = new System.Drawing.Size(219, 27);
             this.txtProjeAra.TabIndex = 315;
+            this.txtProjeAra.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtProjeAra_KeyDown);
             // 
             // btnAra
             // 
@@ -372,7 +375,7 @@ namespace CEKA_APP.UsrControl
             this.lblAltProjeHata.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
             this.lblAltProjeHata.Location = new System.Drawing.Point(666, 743);
             this.lblAltProjeHata.Name = "lblAltProjeHata";
-            this.lblAltProjeHata.Size = new System.Drawing.Size(0, 25);
+            this.lblAltProjeHata.Size = new System.Drawing.Size(0, 20);
             this.lblAltProjeHata.TabIndex = 318;
             // 
             // chkEuro
@@ -470,11 +473,27 @@ namespace CEKA_APP.UsrControl
             this.ctlBaslik1.Size = new System.Drawing.Size(1297, 50);
             this.ctlBaslik1.TabIndex = 26;
             // 
+            // btnSil
+            // 
+            this.btnSil.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnSil.FlatAppearance.BorderSize = 0;
+            this.btnSil.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSil.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btnSil.ForeColor = System.Drawing.Color.White;
+            this.btnSil.Location = new System.Drawing.Point(481, 68);
+            this.btnSil.Name = "btnSil";
+            this.btnSil.Size = new System.Drawing.Size(100, 28);
+            this.btnSil.TabIndex = 326;
+            this.btnSil.Text = "Sil";
+            this.btnSil.UseVisualStyleBackColor = false;
+            this.btnSil.Click += new System.EventHandler(this.btnSil_Click);
+            // 
             // ctlProjeKutuk
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
+            this.Controls.Add(this.btnSil);
             this.Controls.Add(this.chkCogul);
             this.Controls.Add(this.chkTekil);
             this.Controls.Add(this.label13);
@@ -555,5 +574,6 @@ namespace CEKA_APP.UsrControl
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.CheckBox chkCogul;
         private System.Windows.Forms.CheckBox chkTekil;
+        private System.Windows.Forms.Button btnSil;
     }
 }

@@ -8,8 +8,9 @@ using CEKA_APP.UsrControl.ProjeFinans;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Globalization;
+using System.Linq;
 using System.Windows.Forms;
+using System.Globalization;
 
 namespace CEKA_APP
 {
@@ -34,6 +35,8 @@ namespace CEKA_APP
         public ctlProjeBilgileri projeBilgileri;
         private ctlKullaniciAyarlari kullaniciAyarlari;
 
+        private Dictionary<string, List<(string Text, Action ClickAction, bool Visible)>> buttonGroups;
+
         public frmAnaSayfa(Kullanicilar kullanici)
         {
             InitializeComponent();
@@ -50,7 +53,7 @@ namespace CEKA_APP
             ShowCurrentDateTime();
 
             panelAraYuz.Dock = DockStyle.Left;
-            panelAraYuz.Width = 150;
+            panelAraYuz.Width = 250; 
             panelSistem.Height = 300;
             panelYardim.Height = 300;
             panelDuyuru.Height = 300;
@@ -63,6 +66,9 @@ namespace CEKA_APP
 
             pictureBoxGeri.Enabled = false;
             pictureBoxIleri.Enabled = false;
+
+            InitializeButtonGroups();
+            SetupDynamicMenu();
         }
 
         private frmAnaSayfa() { }
@@ -75,6 +81,206 @@ namespace CEKA_APP
             lblSistemSaat.Text = currentTime;
         }
 
+        private void InitializeButtonGroups()
+        {
+            buttonGroups = new Dictionary<string, List<(string Text, Action ClickAction, bool Visible)>>
+            {
+                {
+                    "Kesim İşlemleri", new List<(string Text, Action ClickAction, bool Visible)>
+                    {
+                        ("Kesim Planı Ekle", () => btnKesimPlaniEkle_Click(null, null), false),
+                        ("Kesim Yap", () => btnKesimYap_Click(null, null), false),
+                        ("Yapılan Kesimleri Gör", () => btnYapilanKesimleriGor_Click(null, null), false),
+                        ("Kesim Detayları", () => btnKesimDetaylari_Click(null, null), false),
+                        ("Yerleşim Planı Bilgileri", () => btnYerlesimPlaniBilgileri_Click(null, null), false)
+                    }
+                },
+                {
+                    "Proje Finans", new List<(string Text, Action ClickAction, bool Visible)>
+                    {
+                        ("Müşteriler", () => btnMusteriler_Click(null, null), false),
+                        ("Proje Kütük", () => btnProjeKutuk_Click(null, null), false),
+                        ("Proje Fiyatlandırma", () => btnProjeFiyatlandirma_Click(null, null), false),
+                        ("Ödeme Şartları", () => btnOdemeSartlari_Click(null, null), false),
+                        ("Ödeme Şartları Liste", () => btnOdemeSarlariListe_Click(null, null), false),
+                        ("Teminat Mektupları", () => btnTeminatMektuplari_Click(null, null), false),
+                        ("Sevkiyat", () => btnSevkiyat_Click(null, null), false)
+                    }
+                },
+                {
+                    "ERP", new List<(string Text, Action ClickAction, bool Visible)>
+                    {
+                        ("Proje Öğeleri", () => btnProjeOgeleri_Click(null, null), false),
+                        ("AutoCAD Aktarım", () => btnAutoCad_Click(null, null), false),
+                        ("Karşılaştırma Tabloları", () => btnKarsilastirmaTablolari_Click(null, null), false)
+                    }
+                },
+                {
+                    "Sistem ve Ayarlar", new List<(string Text, Action ClickAction, bool Visible)>
+                    {
+                        ("Kullanıcı Ayarları", () => btnKullaniciAyarlari_Click(null, null), false),
+                        ("İletilen Sorunlar", () => btnIletilenSorunlar_Click(null, null), false),
+                        ("Sistem Hareketleri", () => btnSistemHareketleri_Click(null, null), false),
+                        ("Sistem Bilgisi", () => btnSistemBilgisiAnaSayfa_Click(null, null), false)
+                    }
+                },
+                {
+                    "Genel", new List<(string Text, Action ClickAction, bool Visible)>
+                    {
+                        ("Oturumu Kapat", () => btnOturumuKapat_Click(null, null), true)
+                    }
+                }
+            };
+
+            switch (aktifKullanici.kullaniciRol)
+            {
+                case "Yönetici":
+                    SetButtonVisibility("Kesim İşlemleri", true);
+                    SetButtonVisibility("Proje Finans", true);
+                    SetButtonVisibility("ERP", true);
+                    SetButtonVisibility("Sistem ve Ayarlar", true);
+                    break;
+                case "Destek":
+                    SetButtonVisibility("Kesim İşlemleri", true);
+                    SetButtonVisibility("Proje Finans", true);
+                    SetButtonVisibility("ERP", true);
+                    SetButtonVisibility("Sistem ve Ayarlar", true);
+                    break;
+                case "İş Hazırlama":
+                    SetButtonVisibility("Kesim İşlemleri", new List<string> { "Kesim Planı Ekle", "Kesim Yap", "Yapılan Kesimleri Gör", "Kesim Detayları", "Yerleşim Planı Bilgileri" });
+                    break;
+                case "Muhasebe":
+                    SetButtonVisibility("Proje Finans", true);
+                    break;
+                case "Operatör":
+                    SetButtonVisibility("Kesim İşlemleri", new List<string> { "Kesim Yap", "Yapılan Kesimleri Gör" });
+                    break;
+                case "Kullanıcı":
+                    lblKullaniciBilgi.Visible = true;
+                    break;
+                case "Ressam":
+                case "Erp":
+                    SetButtonVisibility("ERP", true);
+                    break;
+            }
+        }
+
+        private void SetButtonVisibility(string groupName, bool visible)
+        {
+            if (buttonGroups.ContainsKey(groupName))
+            {
+                var buttons = buttonGroups[groupName];
+                for (int i = 0; i < buttons.Count; i++)
+                {
+                    var button = buttons[i];
+                    button.Visible = visible;
+                    buttons[i] = button;
+                }
+                buttonGroups[groupName] = buttons;
+            }
+        }
+
+        private void SetButtonVisibility(string groupName, List<string> buttonNames)
+        {
+            if (buttonGroups.ContainsKey(groupName))
+            {
+                var buttons = buttonGroups[groupName];
+                for (int i = 0; i < buttons.Count; i++)
+                {
+                    var button = buttons[i];
+                    button.Visible = buttonNames.Contains(button.Text);
+                    buttons[i] = button;
+                }
+                buttonGroups[groupName] = buttons;
+            }
+        }
+
+        private void SetupDynamicMenu()
+        {
+            panelAraYuz.Controls.Clear();
+            panelAraYuz.AutoScroll = true; 
+            int y = 15;
+
+            foreach (var group in buttonGroups)
+            {
+                if (group.Value.Any(b => b.Visible))
+                {
+                    var groupButton = new Button
+                    {
+                        Text = group.Key,
+                        Size = new Size(220, 40),
+                        Location = new Point(15, y),
+                        BackColor = ColorTranslator.FromHtml("#34495E"),
+                        ForeColor = Color.White,
+                        FlatStyle = FlatStyle.Flat,
+                        TextAlign = ContentAlignment.MiddleLeft
+                    };
+                    groupButton.Click += (s, e) => ShowSubMenu(group.Key);
+                    panelAraYuz.Controls.Add(groupButton);
+                    y += 50;
+                }
+            }
+
+            var logoutButton = new Button
+            {
+                Text = "Oturumu Kapat",
+                Size = new Size(220, 30),
+                Location = new Point(15, y),
+                BackColor = ColorTranslator.FromHtml("#E74C3C"), 
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat
+            };
+            logoutButton.Click += btnOturumuKapat_Click;
+            panelAraYuz.Controls.Add(logoutButton);
+
+            panelAraYuz.Refresh();
+        }
+
+        private void ShowSubMenu(string groupName)
+        {
+            panelAraYuz.Controls.Clear();
+            panelAraYuz.AutoScroll = true;
+            int y = 15;
+            List<Button> subButtons = new List<Button>(); 
+
+            foreach (var button in buttonGroups[groupName])
+            {
+                if (button.Visible)
+                {
+                    var subButton = new Button
+                    {
+                        Text = button.Text,
+                        Size = new Size(220, 30),
+                        Location = new Point(15, y),
+                        FlatStyle = FlatStyle.Flat
+                    };
+                    ButonGenelHelper.StilUygula(subButton);
+                    subButton.Click += (s, e) => button.ClickAction.Invoke();
+                    subButtons.Add(subButton); 
+                    y += 35;
+                }
+            }
+
+            var backButton = new Button
+            {
+                Text = "Geri",
+                Size = new Size(220, 30),
+                Location = new Point(15, y), 
+                BackColor = ColorTranslator.FromHtml("#7F8C8D"),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat
+            };
+            backButton.Click += (s, e) => SetupDynamicMenu();
+
+            foreach (var subButton in subButtons)
+            {
+                panelAraYuz.Controls.Add(subButton);
+            }
+
+            panelAraYuz.Controls.Add(backButton);
+
+            panelAraYuz.Refresh();
+        }
         public void NavigateToUserControl(UserControl uc)
         {
             UserControlEkle(uc);
@@ -83,160 +289,13 @@ namespace CEKA_APP
         private void frmAnaSayfa_Load(object sender, EventArgs e)
         {
             panelContainer.Size = new Size(1696, 197);
+            MenuStripGenelHelper.StilUygula(menuStrip1);
 
-            ButonGenelHelper.StilUygula(btnKesimPlaniEkle);
-            ButonGenelHelper.StilUygula(btnKesimYap);
-            ButonGenelHelper.StilUygula(btnYapilanKesimleriGor);
-            ButonGenelHelper.StilUygula(btnKesimDetaylari);
-            ButonGenelHelper.StilUygula(btnKullaniciAyarlari);
-            ButonGenelHelper.StilUygula(btnIletilenSorunlar);
-            ButonGenelHelper.StilUygula(btnOturumuKapat);
-            ButonGenelHelper.StilUygula(btnSistemHareketleri);
-            ButonGenelHelper.StilUygula(btnSistemBilgisiAnaSayfa);
-            ButonGenelHelper.StilUygula(btnAutoCad);
-            ButonGenelHelper.StilUygula(btnProjeOgeleri);
-            ButonGenelHelper.StilUygula(btnKarsilastirmaTablolari);
-            ButonGenelHelper.StilUygula(btnProjeKutuk);
-            ButonGenelHelper.StilUygula(btnProjeFiyatlandirma);
-            ButonGenelHelper.StilUygula(btnYerlesimPlaniBilgileri);
-            ButonGenelHelper.StilUygula(btnOdemeSartlari);
-            ButonGenelHelper.StilUygula(btnTeminatMektuplari);
-            ButonGenelHelper.StilUygula(btnMusteriler);
-            ButonGenelHelper.StilUygula(btnOdemeSarlariListe);
-            ButonGenelHelper.StilUygula(btnSevkiyat);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnSistem);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnDuyuru);
-            MenuStripGenelHelper.StilUygula(menuStrip1);
 
             lblSistemKullanici.Text = aktifKullanici.kullaniciAdi;
-
-            btnKesimPlaniEkle.Visible = false;
-            btnKesimYap.Visible = false;
-            btnYapilanKesimleriGor.Visible = false;
-            btnKesimDetaylari.Visible = false;
-            btnKullaniciAyarlari.Visible = false;
-            btnIletilenSorunlar.Visible = false;
-            btnSistemHareketleri.Visible = false;
-            lblKullaniciBilgi.Visible = false;
-            btnSistemBilgisiAnaSayfa.Visible = false;
-            btnAutoCad.Visible = false;
-            btnProjeOgeleri.Visible = false;
-            btnKarsilastirmaTablolari.Visible = false;
-            panelKesimPlaniEkleVeri.Visible = false;
-            btnDuyuru.Visible = false;
-            btnProjeKutuk.Visible = false;
-            btnProjeFiyatlandirma.Visible = false;
-            btnYerlesimPlaniBilgileri.Visible = false;
-            btnOdemeSartlari.Visible = false;
-            btnTeminatMektuplari.Visible = false;
-            btnMusteriler.Visible = false;
-            btnOdemeSarlariListe.Visible = false;
-            btnSevkiyat.Visible = false;
-
-            switch (aktifKullanici.kullaniciRol)
-            {
-                case "Yönetici":
-                    btnKesimPlaniEkle.Visible = true;
-                    btnKesimYap.Visible = true;
-                    btnYapilanKesimleriGor.Visible = true;
-                    btnKesimDetaylari.Visible = true;
-                    btnKullaniciAyarlari.Visible = true;
-                    btnSistemHareketleri.Visible = true;
-                    btnProjeOgeleri.Visible = true;
-                    panelKesimPlaniEkleVeri.Visible = true;
-                    btnKarsilastirmaTablolari.Visible = true;
-                    btnDuyuru.Visible = true;
-                    btnProjeKutuk.Visible = true;
-                    btnProjeFiyatlandirma.Visible = true;
-                    btnYerlesimPlaniBilgileri.Visible = true;
-                    btnOdemeSartlari.Visible = true;
-                    btnTeminatMektuplari.Visible = true;
-                    btnMusteriler.Visible = true;
-                    btnOdemeSarlariListe.Visible = true;
-                    btnSevkiyat.Visible = true;
-                    break;
-                case "Destek":
-                    btnKesimPlaniEkle.Visible = true;
-                    btnKesimYap.Visible = true;
-                    btnYapilanKesimleriGor.Visible = true;
-                    btnKesimDetaylari.Visible = true;
-                    btnKullaniciAyarlari.Visible = true;
-                    btnIletilenSorunlar.Visible = true;
-                    btnSistemHareketleri.Visible = true;
-                    btnSistemBilgisiAnaSayfa.Visible = true;
-                    btnAutoCad.Visible = true;
-                    btnProjeOgeleri.Visible = true;
-                    panelKesimPlaniEkleVeri.Visible = true;
-                    btnKarsilastirmaTablolari.Visible = true;
-                    btnDuyuru.Visible = true;
-                    btnProjeKutuk.Visible = true;
-                    btnProjeFiyatlandirma.Visible = true;
-                    btnYerlesimPlaniBilgileri.Visible = true;
-                    btnOdemeSartlari.Visible = true;
-                    btnTeminatMektuplari.Visible = true;
-                    btnMusteriler.Visible = true;
-                    btnOdemeSarlariListe.Visible = true;
-                    btnSevkiyat.Visible = true;
-                    break;
-                case "İş Hazırlama":
-                    btnKesimPlaniEkle.Visible = true;
-                    btnKesimYap.Visible = true;
-                    btnYapilanKesimleriGor.Visible = true;
-                    panelKesimPlaniEkleVeri.Visible = true;
-                    btnKesimDetaylari.Visible = true;
-                    btnYerlesimPlaniBilgileri.Visible = true;
-                    break;
-                case "Muhasebe":
-                    btnProjeKutuk.Visible = true;
-                    btnProjeFiyatlandirma.Visible = true;
-                    btnOdemeSartlari.Visible = true;
-                    btnTeminatMektuplari.Visible = true;
-                    btnMusteriler.Visible = true;
-                    btnOdemeSarlariListe.Visible = true;
-                    btnSevkiyat.Visible = true;
-                    break;
-                case "Operatör":
-                    btnKesimYap.Visible = true;
-                    btnYapilanKesimleriGor.Visible = true;
-                    break;
-                case "Kullanıcı":
-                    lblKullaniciBilgi.Visible = true;
-                    break;
-                case "Ressam":
-                    btnAutoCad.Visible = true;
-                    btnProjeOgeleri.Visible = true;
-                    break;
-                case "Erp":
-                    btnAutoCad.Visible = true;
-                    btnProjeOgeleri.Visible = true;
-                    break;
-
-            }
-
-            DuzenliButonGoster(
-                panelAraYuz,
-                btnKesimPlaniEkle,
-                btnYerlesimPlaniBilgileri,
-                btnKesimYap,
-                btnYapilanKesimleriGor,
-                btnKesimDetaylari,
-                btnKullaniciAyarlari,
-                btnIletilenSorunlar,
-                btnSistemHareketleri,
-                btnSistemBilgisiAnaSayfa,
-                btnAutoCad,
-                btnProjeOgeleri,
-                btnKarsilastirmaTablolari,
-                btnMusteriler,
-                btnProjeKutuk,
-                btnProjeFiyatlandirma,
-                btnOdemeSartlari,
-                btnTeminatMektuplari,
-                btnOdemeSarlariListe,
-                btnSevkiyat,
-                btnOturumuKapat
-            );
 
             pictureBoxKullanici.Image = Properties.Resources.kullanici;
             pictureBoxKullanici.SizeMode = PictureBoxSizeMode.Zoom;
@@ -255,30 +314,20 @@ namespace CEKA_APP
             pictureBoxIleri.Cursor = Cursors.Hand;
 
             panelNavigasyon.Padding = new Padding(5);
-            panelAraYuz.Width = 170;
+            panelAraYuz.Width = 250;
 
             DuyurularData duyurularData = new DuyurularData();
             Duyurular sonDuyuru = duyurularData.GetSonDuyuru();
             lblDuyuru.Text = sonDuyuru != null ? $"🗨️ {sonDuyuru.duyuru}" : "Henüz bir duyuru yok.";
             ctlBaslik1.Baslik = "Ana Sayfa";
+
+            // İlk yüklemede menüyü güncelle
+            SetupDynamicMenu();
         }
+
         private void btnSistem_Click(object sender, EventArgs e)
         {
             PanelGosterYardimMenu(panelSistem);
-        }
-
-        private void DuzenliButonGoster(Panel panel, params Button[] butonlar)
-        {
-            int y = 15;
-            foreach (var btn in butonlar)
-            {
-                if (btn.Visible)
-                {
-                    int x = (panel.Width - btn.Width) / 2;
-                    btn.Location = new Point(x, y);
-                    y += btn.Height + 10;
-                }
-            }
         }
 
         private void btnOturumuKapat_Click(object sender, EventArgs e)
@@ -312,7 +361,7 @@ namespace CEKA_APP
         {
             if (string.IsNullOrEmpty(txtSorun.Text))
             {
-                MessageBox.Show("Bildiri metnini doldurunuz!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Bildiriyi doldurunuz!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
@@ -527,7 +576,7 @@ namespace CEKA_APP
             if (panelAnaSayfa != null)
             {
                 panelAnaSayfaContainer.Controls.Add(panelAnaSayfa);
-                Console.WriteLine("btnMusteriler eklendi, gezinme geçmişine dahil değil.");
+                Console.WriteLine("Ana sayfa eklendi, gezinme geçmişine dahil değil.");
             }
         }
 
@@ -566,10 +615,7 @@ namespace CEKA_APP
 
         private void btnProjeKutuk_Click(object sender, EventArgs e)
         {
-            if (projeKutuk == null)
-            {
-                projeKutuk = new ctlProjeKutuk();
-            }
+            var projeKutuk = new ctlProjeKutuk();
             UserControlEkle(projeKutuk);
         }
 

@@ -155,20 +155,20 @@ namespace CEKA_APP.UsrControl
 
                                 var columnMap = new Dictionary<string, string>
                                 {
-                                    { "musterino", "Musterıno" },
-                                    { "musteriadi", "Musterıadı" },
-                                    { "vergidairesi", "Vergidairesi" },
-                                    { "vergino", "Vergıno" },
-                                    { "adres", "Adres" },
-                                    { "ulke", "Ulke" },
-                                    { "doviz", "Dovız" }
+                                    { "musteriNo", "MUSTERINO" },
+                                    { "musteriAdi", "MUSTERIADI" },
+                                    { "vergiDairesi", "VERGIDAIRESI" },
+                                    { "vergiNo", "VERGINO" },
+                                    { "adres", "ADRES" },
+                                    { "musteriMensei", "ULKE" },
+                                    { "doviz", "DOVIZ" }
                                 };
 
                                 foreach (var column in columnMap.Values)
                                 {
                                     if (!dt.Columns.Cast<DataColumn>().Any(c => NormalizeColumnName(c.ColumnName) == NormalizeColumnName(column)))
                                     {
-                                        MessageBox.Show($"Excel dosyasında '{column}' sütunu bulunamadı. Lütfen sütun adlarını kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                        MessageBox.Show($"Lütfen excel formatını kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                                         return;
                                     }
                                 }
@@ -180,12 +180,12 @@ namespace CEKA_APP.UsrControl
                                 {
                                     Musteriler musteri = new Musteriler
                                     {
-                                        musteriNo = GetExcelColumnValue(row, columnMap["musterino"]),
-                                        musteriAdi = GetExcelColumnValue(row, columnMap["musteriadi"]),
-                                        vergiDairesi = GetExcelColumnValue(row, columnMap["vergidairesi"]),
-                                        vergiNo = GetExcelColumnValue(row, columnMap["vergino"]),
+                                        musteriNo = GetExcelColumnValue(row, columnMap["musteriNo"]),
+                                        musteriAdi = GetExcelColumnValue(row, columnMap["musteriAdi"]),
+                                        vergiDairesi = GetExcelColumnValue(row, columnMap["vergiDairesi"]),
+                                        vergiNo = GetExcelColumnValue(row, columnMap["vergiNo"]),
                                         adres = GetExcelColumnValue(row, columnMap["adres"]),
-                                        musteriMensei = GetExcelColumnValue(row, columnMap["ulke"]),
+                                        musteriMensei = GetExcelColumnValue(row, columnMap["musteriMensei"]),
                                         doviz = GetExcelColumnValue(row, columnMap["doviz"]) ?? "Belirtilmemiş"
                                     };
 
@@ -238,7 +238,7 @@ namespace CEKA_APP.UsrControl
         private void tsmiAra_Click(object sender, EventArgs e)
         {
             frmAra araForm = new frmAra(
-                dataGridMusteriler.Columns, 
+                dataGridMusteriler.Columns,
                 FiltreleMusteriler,
                 GuncelleDataGrid,
                 false,
@@ -249,89 +249,23 @@ namespace CEKA_APP.UsrControl
 
         private DataTable FiltreleMusteriler(Dictionary<string, TextBox> filtreKutulari)
         {
-            ProjeFinans_MusterilerData musteriData = new ProjeFinans_MusterilerData();
             try
             {
-                List<Musteriler> musteriler = musteriData.GetMusteriler();
-                var filtrelenmisMusteriler = musteriler.AsEnumerable();
-
+                ProjeFinans_MusterilerData musteriData = new ProjeFinans_MusterilerData();
                 sonFiltreKriterleri.Clear();
                 foreach (var kutu in filtreKutulari)
                 {
-                    sonFiltreKriterleri[kutu.Key] = kutu.Value.Text.Trim();
-                }
-
-                foreach (var kutu in filtreKutulari)
-                {
-                    string deger = kutu.Value.Text.Trim().ToLower();
-                    if (!string.IsNullOrEmpty(deger))
+                    if (!string.IsNullOrEmpty(kutu.Value.Text.Trim()))
                     {
-                        string columnName = dataGridMusteriler.Columns.Cast<DataGridViewColumn>()
-                            .FirstOrDefault(c => c.HeaderText == kutu.Key)?.Name;
-
-                        if (string.IsNullOrEmpty(columnName))
-                        {
-                            columnName = dataGridMusteriler.Columns.Cast<DataGridViewColumn>()
-                                .FirstOrDefault(c => c.Name == kutu.Key)?.Name ?? kutu.Key;
-                        }
-
-                        switch (columnName)
-                        {
-                            case "musteriNo":
-                                filtrelenmisMusteriler = filtrelenmisMusteriler.Where(m => m.musteriNo?.ToLower().Contains(deger) ?? false);
-                                break;
-                            case "musteriAdi":
-                                filtrelenmisMusteriler = filtrelenmisMusteriler.Where(m => m.musteriAdi?.ToLower().Contains(deger) ?? false);
-                                break;
-                            case "vergiDairesi":
-                                filtrelenmisMusteriler = filtrelenmisMusteriler.Where(m => m.vergiDairesi?.ToLower().Contains(deger) ?? false);
-                                break;
-                            case "vergiNo":
-                                filtrelenmisMusteriler = filtrelenmisMusteriler.Where(m => m.vergiNo?.ToLower().Contains(deger) ?? false);
-                                break;
-                            case "adres":
-                                filtrelenmisMusteriler = filtrelenmisMusteriler.Where(m => m.adres?.ToLower().Contains(deger) ?? false);
-                                break;
-                            case "musteriMensei":
-                                filtrelenmisMusteriler = filtrelenmisMusteriler.Where(m => m.musteriMensei?.ToLower().Contains(deger) ?? false);
-                                break;
-                            case "doviz":
-                                filtrelenmisMusteriler = filtrelenmisMusteriler.Where(m => m.doviz?.ToLower().Contains(deger) ?? false);
-                                break;
-                            default:
-                                Console.WriteLine($"Bilinmeyen sütun: {columnName}");
-                                break;
-                        }
+                        sonFiltreKriterleri[kutu.Key] = kutu.Value.Text.Trim();
                     }
                 }
-
-                DataTable dt = new DataTable();
-                dt.Columns.Add("musteriNo", typeof(string));
-                dt.Columns.Add("musteriAdi", typeof(string));
-                dt.Columns.Add("vergiDairesi", typeof(string));
-                dt.Columns.Add("vergiNo", typeof(string));
-                dt.Columns.Add("adres", typeof(string));
-                dt.Columns.Add("musteriMensei", typeof(string));
-                dt.Columns.Add("doviz", typeof(string));
-
-                foreach (var musteri in filtrelenmisMusteriler)
-                {
-                    dt.Rows.Add(
-                        musteri.musteriNo,
-                        musteri.musteriAdi,
-                        musteri.vergiDairesi,
-                        musteri.vergiNo,
-                        musteri.adres,
-                        musteri.musteriMensei,
-                        musteri.doviz
-                    );
-                }
-
-                return dt;
+                return musteriData.FiltreleMusteriBilgileri(filtreKutulari, dataGridMusteriler);
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Arama sırasında hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"Hata detayı: {ex.ToString()}");
                 return null;
             }
         }

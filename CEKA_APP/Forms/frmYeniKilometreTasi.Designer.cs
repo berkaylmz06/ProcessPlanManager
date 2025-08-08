@@ -106,6 +106,7 @@
             // 
             // cmbOran
             // 
+            this.cmbOran.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbOran.FormattingEnabled = true;
             this.cmbOran.Location = new System.Drawing.Point(191, 344);
             this.cmbOran.Name = "cmbOran";

@@ -17,7 +17,7 @@ namespace CEKA_APP.UsrControl
     public partial class ctlKesimYap : UserControl
     {
         private IKullaniciAdiOgren _kullaniciAdi;
-        private Dictionary<string, string> sonFiltreKriterleri = new Dictionary<string, string>(); 
+        private Dictionary<string, string> sonFiltreKriterleri = new Dictionary<string, string>();
 
         public ctlKesimYap()
         {
@@ -140,7 +140,7 @@ namespace CEKA_APP.UsrControl
                 }
 
                 frmAra frm = new frmAra(
-                    tempGrid.Columns, 
+                    tempGrid.Columns,
                     KesimListesiFiltrele,
                     AramaSonucuGeldi,
                     true,
@@ -153,13 +153,25 @@ namespace CEKA_APP.UsrControl
 
         private DataTable KesimListesiFiltrele(Dictionary<string, TextBox> filtreler)
         {
-            sonFiltreKriterleri.Clear();
-            foreach (var filtre in filtreler)
+            try
             {
-                sonFiltreKriterleri[filtre.Key] = filtre.Value.Text.Trim();
+                KesimListesiPaketData kesimData = new KesimListesiPaketData();
+                sonFiltreKriterleri.Clear();
+                foreach (var filtre in filtreler)
+                {
+                    if (!string.IsNullOrEmpty(filtre.Value.Text.Trim()))
+                    {
+                        sonFiltreKriterleri[filtre.Key] = filtre.Value.Text.Trim();
+                    }
+                }
+                return kesimData.FiltreleKesimListesiPaket(filtreler, dataGridKesimListesi);
             }
-
-            return KesimListesiPaketData.KesimListesiniPaketFiltrele(filtreler);
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Arama sırasında hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"Hata detayı: {ex.ToString()}");
+                return null;
+            }
         }
 
         private void AramaSonucuGeldi(DataTable tablo)
@@ -169,6 +181,15 @@ namespace CEKA_APP.UsrControl
                 dataGridKesimListesi.Columns["id"].Visible = false;
 
             tabloDuzenle();
+            // Detay sütununu tekrar ekle
+            if (!tablo.Columns.Contains("Detay"))
+            {
+                tablo.Columns.Add("Detay", typeof(string));
+                foreach (DataRow row in tablo.Rows)
+                {
+                    row["Detay"] = "Detay Görmek İçin Tıklayınız.";
+                }
+            }
         }
 
         private void btnPaketKes_Click(object sender, EventArgs e)

@@ -159,18 +159,19 @@ namespace CEKA_APP.UsrControl
 
                         if (form.ShowDialog() == DialogResult.OK && form.Tag != null)
                         {
-                            parentFormFiyat.projeFiyatlandirma.LoadProjeFiyatlandirma(form.Tag.ToString(), autoSearch: true, altProjeler: altProjeler);
+                            parentFormFiyat.projeFiyatlandirma.LoadProjeFiyatlandirma(form.Tag.ToString(), autoSearch: false, altProjeler: altProjeler);
                             parentFormFiyat.NavigateToUserControl(parentFormFiyat.projeFiyatlandirma);
+                            parentFormFiyat.projeFiyatlandirma.btnProjeAra_Click(null, EventArgs.Empty);
                         }
                     }
                 }
                 else
                 {
-                    parentFormFiyat.projeFiyatlandirma.LoadProjeFiyatlandirma(projeNo, autoSearch: true, altProjeler: altProjeler);
+                    parentFormFiyat.projeFiyatlandirma.LoadProjeFiyatlandirma(projeNo, autoSearch: false, altProjeler: altProjeler);
                     parentFormFiyat.NavigateToUserControl(parentFormFiyat.projeFiyatlandirma);
+                    parentFormFiyat.projeFiyatlandirma.btnProjeAra_Click(null, EventArgs.Empty);
                 }
             };
-
             flpAltProjeTextBoxes = new FlowLayoutPanel
             {
                 AutoSize = false,
@@ -764,8 +765,8 @@ namespace CEKA_APP.UsrControl
                 hataMesajlari.Add("Proje No boş olamaz.");
             else if (chkAltProjeVar.Checked)
             {
-                string projeNo = txtProjeNo.Text.Trim();
-                if (!Regex.IsMatch(projeNo, @"^\d{5}$|^\d{5}\.00$"))
+                string projeNumarasi = txtProjeNo.Text.Trim();
+                if (!Regex.IsMatch(projeNumarasi, @"^\d{5}$|^\d{5}\.00$"))
                     hataMesajlari.Add("Proje No 5 haneli bir sayı (ör: 12345 veya 12345.00) olmalıdır.");
             }
 
@@ -821,13 +822,21 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
+            string projeNo = txtProjeNo.Text.Trim();
+            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
+            if (projeBilgi == null)
+            {
+                MessageBox.Show("Lütfen önce proje bilgilerini kaydedin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             var kutuk = new ProjeKutuk
             {
                 musteriNo = txtMusteriNo.Text.Trim(),
                 musteriAdi = txtMusteriAdi.Text.Trim(),
                 teklifNo = txtTeklifNo.Text.Trim(),
                 isFirsatiNo = txtIsFirsatiNo.Text.Trim(),
-                projeNo = txtProjeNo.Text.Trim(),
+                projeNo = projeNo,
                 altProjeVarMi = chkAltProjeVar.Checked,
                 digerProjeIliskisiVarMi = chkProjeIliskisiVar.Checked
                     ? string.Join(",", flpIliskiTextBoxes.Controls.OfType<Panel>()
@@ -848,49 +857,66 @@ namespace CEKA_APP.UsrControl
                 paraBirimi = chkEuro.Checked ? "EUR" : chkDolar.Checked ? "USD" : "TL"
             };
 
-            string proje = txtProjeNo.Text.Trim();
+            bool isProjeKayitli = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo) != null;
 
-            if (ProjeFinans_ProjeKutukData.ProjeKutukAra(proje) != null)
+            if (isProjeKayitli)
             {
-                MessageBox.Show($"Proje No '{proje}' zaten kayıtlı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (ProjeFinans_ProjeKutukData.ProjeKutukEkle(kutuk))
-            {
-                if (chkAltProjeVar.Checked && kutuk.altProjeBilgileri.Any())
+                if (ProjeFinans_ProjeKutukData.ProjeKutukGuncelle(kutuk))
                 {
-                    foreach (var altProje in kutuk.altProjeBilgileri)
-                    {
-                        if (!ProjeFinans_ProjeKutukData.AltProjeEkle(proje, altProje))
-                        {
-                            MessageBox.Show($"Alt Proje '{altProje}' için ilişki kaydı eklenirken hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                    }
+                    var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
+                    var altProjeler = chkAltProjeVar.Checked
+                        ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
+                            .SelectMany(p => p.Controls.OfType<TextBox>())
+                            .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
+                            .Select(txt => txt.Text.Trim())
+                            .ToList()
+                        : null;
+                    var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
+                    UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler);
+                    MessageBox.Show("Proje başarıyla güncellendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
-
-                MessageBox.Show("Kayıt başarıyla eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                projeBilgileriKaydedildi = false;
-                UpdateContextMenu();
-
-                var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
-                var altProjeler = chkAltProjeVar.Checked
-                    ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
-                        .SelectMany(p => p.Controls.OfType<TextBox>())
-                        .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
-                        .Select(txt => txt.Text.Trim())
-                        .ToList()
-                    : null;
-                var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(proje, altProjeler);
-                UpdateToplamBedelUI(proje, toplamBedel, eksikFiyatlandirmaProjeler);
+                else
+                {
+                    MessageBox.Show("Proje güncellenirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             else
             {
-                MessageBox.Show("Kayıt eklenirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if (ProjeFinans_ProjeKutukData.ProjeKutukEkle(kutuk))
+                {
+                    if (chkAltProjeVar.Checked && kutuk.altProjeBilgileri.Any())
+                    {
+                        foreach (var altProje in kutuk.altProjeBilgileri)
+                        {
+                            if (!ProjeFinans_ProjeKutukData.AltProjeEkle(projeNo, altProje))
+                            {
+                                MessageBox.Show($"Alt Proje '{altProje}' için ilişki kaydı eklenirken hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
+                        }
+                    }
+
+                    MessageBox.Show("Kayıt başarıyla eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    projeBilgileriKaydedildi = false;
+                    UpdateContextMenu();
+
+                    var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
+                    var altProjeler = chkAltProjeVar.Checked
+                        ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
+                            .SelectMany(p => p.Controls.OfType<TextBox>())
+                            .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
+                            .Select(txt => txt.Text.Trim())
+                            .ToList()
+                        : null;
+                    var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
+                    UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler);
+                }
+                else
+                {
+                    MessageBox.Show("Kayıt eklenirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
         }
-
         private void txtMusteriNo_Leave(object sender, EventArgs e)
         {
             string musteriNo = txtMusteriNo.Text.Trim();
@@ -912,6 +938,97 @@ namespace CEKA_APP.UsrControl
             else
             {
                 txtMusteriAdi.Text = "";
+            }
+        }
+
+        private void btnSil_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtProjeNo.Text))
+            {
+                MessageBox.Show("Lütfen silinecek proje numarasını girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string projeNo = txtProjeNo.Text.Trim();
+            var altProjeler = chkAltProjeVar.Checked
+                ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
+                    .SelectMany(p => p.Controls.OfType<TextBox>())
+                    .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
+                    .Select(txt => txt.Text.Trim())
+                    .ToList()
+                : null;
+
+            // İlgili tablolarda kayıt var mı kontrol et
+            if (ProjeFinans_ProjeKutukData.HasRelatedRecords(projeNo, altProjeler))
+            {
+                return; // Hata mesajı zaten HasRelatedRecords içinde gösteriliyor
+            }
+
+            // Kullanıcıya silme işlemini onaylat
+            var result = MessageBox.Show($"Proje '{projeNo}' ve varsa alt projeleri silinecek. Onaylıyor musunuz?", "Proje Silme", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            // Silme işlemini gerçekleştir
+            if (ProjeFinans_ProjeKutukData.ProjeKutukSil(projeNo, altProjeler))
+            {
+                MessageBox.Show("Proje ve alt projeleri başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                // Formu sıfırla
+                txtMusteriNo.Text = "";
+                txtMusteriAdi.Text = "";
+                txtTeklifNo.Text = "";
+                txtIsFirsatiNo.Text = "";
+                txtProjeNo.Text = "";
+                txtToplamBedel.Text = "";
+                chkAltProjeVar.Checked = false;
+                chkAltProjeYok.Checked = true;
+                chkProjeIliskisiVar.Checked = false;
+                chkProjeIliskisiYok.Checked = true;
+                chkNakliyeVar.Checked = false;
+                chkNakliyeYok.Checked = true;
+                chkTekil.Checked = false;
+                chkCogul.Checked = false;
+                chkEuro.Checked = false;
+                chkDolar.Checked = false;
+                chkTL.Checked = false;
+                flpAltProjeTextBoxes.Controls.Clear();
+                flpIliskiTextBoxes.Controls.Clear();
+                flpAltProjeTextBoxes.Controls.Add(new Label
+                {
+                    Text = "Alt Projeler",
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                    AutoSize = true,
+                    Margin = new Padding((flpAltProjeTextBoxes.Width - 80) / 2, 0, 0, 5),
+                    ForeColor = Color.FromArgb(44, 62, 80)
+                });
+                flpIliskiTextBoxes.Controls.Add(new Label
+                {
+                    Text = "İlişkili Projeler",
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                    AutoSize = true,
+                    Margin = new Padding((flpIliskiTextBoxes.Width - 100) / 2, 0, 0, 5),
+                    ForeColor = Color.FromArgb(44, 62, 80)
+                });
+                AddEkleButton(flpAltProjeTextBoxes, "AltProje");
+                AddEkleButton(flpIliskiTextBoxes, "Iliski");
+                UpdateContextMenu();
+                UpdatePanelLayout();
+            }
+            else
+            {
+                MessageBox.Show("Proje silinirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void txtProjeAra_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                this.btnAra.PerformClick();
             }
         }
     }

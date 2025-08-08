@@ -1,5 +1,4 @@
-﻿// ctlSevkiyat.cs
-using CEKA_APP.DataBase;
+﻿using CEKA_APP.DataBase;
 using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Forms;
 using System;
@@ -673,6 +672,49 @@ namespace CEKA_APP.UsrControl.ProjeFinans
 
             btnPaketEkle.Enabled = isProjeValid;
             btnSevkiyatEkle.Enabled = isProjeValid;
+        }
+
+        private void btnSil_Click(object sender, EventArgs e)
+        {
+            string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeAra.Text.Trim();
+            if (string.IsNullOrEmpty(projeNo))
+            {
+                MessageBox.Show("Lütfen bir proje numarası giriniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
+            if (projeBilgi == null)
+            {
+                MessageBox.Show($"Proje '{projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var result = MessageBox.Show($"Proje '{projeNo}' için tüm sevkiyat kayıtları silinecek. Onaylıyor musunuz?", "Sevkiyat Silme", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            if (sevkiyatData.SevkiyatSil(projeNo))
+            {
+                MessageBox.Show("Sevkiyat kayıtları başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                InitializeTableStructure(); 
+                UpdateButtonsState();
+            }
+            else
+            {
+                MessageBox.Show("Sevkiyat silinirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void txtProjeAra_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                this.btnAra.PerformClick();
+            }
         }
     }
 }

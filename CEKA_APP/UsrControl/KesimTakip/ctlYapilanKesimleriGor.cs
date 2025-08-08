@@ -16,7 +16,7 @@ namespace CEKA_APP.UsrControl
     public partial class ctlYapilanKesimleriGor : UserControl
     {
         private IKullaniciAdiOgren _kullaniciAdi;
-        private Dictionary<string, string> sonFiltreKriterleri = new Dictionary<string, string>(); 
+        private Dictionary<string, string> sonFiltreKriterleri = new Dictionary<string, string>();
 
         public ctlYapilanKesimleriGor()
         {
@@ -68,7 +68,7 @@ namespace CEKA_APP.UsrControl
                 KesimListesiFiltrele,
                 AramaSonucuGeldi,
                 false,
-                sonFiltreKriterleri 
+                sonFiltreKriterleri
             );
 
             frm.ShowDialog();
@@ -76,13 +76,25 @@ namespace CEKA_APP.UsrControl
 
         private DataTable KesimListesiFiltrele(Dictionary<string, TextBox> filtreler)
         {
-            sonFiltreKriterleri.Clear();
-            foreach (var filtre in filtreler)
+            try
             {
-                sonFiltreKriterleri[filtre.Key] = filtre.Value.Text.Trim();
+                KesimTamamlanmisData kesimData = new KesimTamamlanmisData();
+                sonFiltreKriterleri.Clear();
+                foreach (var filtre in filtreler)
+                {
+                    if (!string.IsNullOrEmpty(filtre.Value.Text.Trim()))
+                    {
+                        sonFiltreKriterleri[filtre.Key] = filtre.Value.Text.Trim();
+                    }
+                }
+                return kesimData.FiltreleKesimBilgileri(filtreler, dataGridViewTamamlanmisKesimListesi);
             }
-
-            return KesimTamamlanmisData.KesimTamamlanmisFiltrele(filtreler);
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Arama sırasında hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"Hata detayı: {ex.ToString()}");
+                return null;
+            }
         }
 
         private void AramaSonucuGeldi(DataTable tablo)

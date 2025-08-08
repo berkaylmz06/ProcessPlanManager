@@ -40,6 +40,7 @@
             this.btnKaydet = new System.Windows.Forms.Button();
             this.panelLeft = new System.Windows.Forms.Panel();
             this.groupBoxOdemeTutari = new System.Windows.Forms.GroupBox();
+            this.lblOdemeTarihi = new System.Windows.Forms.Label();
             this.lblOdemeTutari = new System.Windows.Forms.Label();
             this.lblÖdemeAciklama = new System.Windows.Forms.Label();
             this.rtxtAciklama = new System.Windows.Forms.RichTextBox();
@@ -48,9 +49,11 @@
             this.btnHesapla = new System.Windows.Forms.Button();
             this.btnKilometreTasiEkle = new System.Windows.Forms.Button();
             this.panelUst = new System.Windows.Forms.Panel();
+            this.btnSil = new System.Windows.Forms.Button();
             this.lblToplamBedelBilgi = new System.Windows.Forms.Label();
             this.panelFill = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.dtOdemeTarihi = new System.Windows.Forms.DateTimePicker();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.panelAlt.SuspendLayout();
             this.panelRight.SuspendLayout();
@@ -62,48 +65,65 @@
             // 
             // txtToplamBedel
             // 
-            this.txtToplamBedel.Location = new System.Drawing.Point(1188, 31);
+            this.txtToplamBedel.BackColor = System.Drawing.Color.White;
+            this.txtToplamBedel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtToplamBedel.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtToplamBedel.Location = new System.Drawing.Point(1191, 27);
             this.txtToplamBedel.Name = "txtToplamBedel";
-            this.txtToplamBedel.Size = new System.Drawing.Size(293, 22);
+            this.txtToplamBedel.Size = new System.Drawing.Size(293, 30);
             this.txtToplamBedel.TabIndex = 0;
             // 
             // lblToplamBedel
             // 
             this.lblToplamBedel.AutoSize = true;
-            this.lblToplamBedel.Location = new System.Drawing.Point(1083, 34);
+            this.lblToplamBedel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblToplamBedel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.lblToplamBedel.Location = new System.Drawing.Point(1055, 30);
             this.lblToplamBedel.Name = "lblToplamBedel";
-            this.lblToplamBedel.Size = new System.Drawing.Size(93, 16);
+            this.lblToplamBedel.Size = new System.Drawing.Size(124, 23);
             this.lblToplamBedel.TabIndex = 1;
-            this.lblToplamBedel.Text = "Toplam Bedel";
+            this.lblToplamBedel.Text = "Toplam Bedel:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(58, 29);
+            this.label2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.label2.Location = new System.Drawing.Point(25, 30);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(63, 16);
+            this.label2.Size = new System.Drawing.Size(56, 23);
             this.label2.TabIndex = 3;
-            this.label2.Text = "Proje Ara";
+            this.label2.Text = "Proje:";
             // 
             // txtProjeAra
             // 
-            this.txtProjeAra.Location = new System.Drawing.Point(127, 26);
+            this.txtProjeAra.BackColor = System.Drawing.Color.White;
+            this.txtProjeAra.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtProjeAra.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtProjeAra.Location = new System.Drawing.Point(90, 27);
             this.txtProjeAra.Name = "txtProjeAra";
-            this.txtProjeAra.Size = new System.Drawing.Size(163, 22);
+            this.txtProjeAra.Size = new System.Drawing.Size(163, 30);
             this.txtProjeAra.TabIndex = 2;
+            this.txtProjeAra.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtProjeAra_KeyDown);
             // 
             // btnAra
             // 
-            this.btnAra.Location = new System.Drawing.Point(296, 22);
+            this.btnAra.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnAra.FlatAppearance.BorderSize = 0;
+            this.btnAra.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnAra.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnAra.ForeColor = System.Drawing.Color.White;
+            this.btnAra.Location = new System.Drawing.Point(260, 27);
             this.btnAra.Name = "btnAra";
             this.btnAra.Size = new System.Drawing.Size(149, 31);
             this.btnAra.TabIndex = 4;
             this.btnAra.Text = "Ara";
-            this.btnAra.UseVisualStyleBackColor = true;
+            this.btnAra.UseVisualStyleBackColor = false;
             this.btnAra.Click += new System.EventHandler(this.btnAra_Click);
             // 
             // panelAlt
             // 
+            this.panelAlt.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
             this.panelAlt.Controls.Add(this.lblTeminatBilgi);
             this.panelAlt.Controls.Add(this.panelRight);
             this.panelAlt.Controls.Add(this.panelLeft);
@@ -116,14 +136,17 @@
             // lblTeminatBilgi
             // 
             this.lblTeminatBilgi.AutoSize = true;
+            this.lblTeminatBilgi.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblTeminatBilgi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
             this.lblTeminatBilgi.Location = new System.Drawing.Point(443, 22);
             this.lblTeminatBilgi.Name = "lblTeminatBilgi";
-            this.lblTeminatBilgi.Size = new System.Drawing.Size(34, 16);
+            this.lblTeminatBilgi.Size = new System.Drawing.Size(36, 20);
             this.lblTeminatBilgi.TabIndex = 10;
             this.lblTeminatBilgi.Text = ".........";
             // 
             // panelRight
             // 
+            this.panelRight.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
             this.panelRight.Controls.Add(this.btnTopluFaturaOlustur);
             this.panelRight.Controls.Add(this.btnKaydet);
             this.panelRight.Dock = System.Windows.Forms.DockStyle.Right;
@@ -134,26 +157,37 @@
             // 
             // btnTopluFaturaOlustur
             // 
+            this.btnTopluFaturaOlustur.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(156)))), ((int)(((byte)(18)))));
+            this.btnTopluFaturaOlustur.FlatAppearance.BorderSize = 0;
+            this.btnTopluFaturaOlustur.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnTopluFaturaOlustur.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnTopluFaturaOlustur.ForeColor = System.Drawing.Color.White;
             this.btnTopluFaturaOlustur.Location = new System.Drawing.Point(38, 242);
             this.btnTopluFaturaOlustur.Name = "btnTopluFaturaOlustur";
             this.btnTopluFaturaOlustur.Size = new System.Drawing.Size(146, 48);
             this.btnTopluFaturaOlustur.TabIndex = 5;
             this.btnTopluFaturaOlustur.Text = "Toplu Fatura Oluştur";
-            this.btnTopluFaturaOlustur.UseVisualStyleBackColor = true;
+            this.btnTopluFaturaOlustur.UseVisualStyleBackColor = false;
             this.btnTopluFaturaOlustur.Click += new System.EventHandler(this.btnTopluFaturaOlustur_Click);
             // 
             // btnKaydet
             // 
+            this.btnKaydet.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnKaydet.FlatAppearance.BorderSize = 0;
+            this.btnKaydet.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnKaydet.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnKaydet.ForeColor = System.Drawing.Color.White;
             this.btnKaydet.Location = new System.Drawing.Point(202, 242);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(146, 48);
             this.btnKaydet.TabIndex = 3;
             this.btnKaydet.Text = "Kaydet";
-            this.btnKaydet.UseVisualStyleBackColor = true;
+            this.btnKaydet.UseVisualStyleBackColor = false;
             this.btnKaydet.Click += new System.EventHandler(this.btnKaydet_Click);
             // 
             // panelLeft
             // 
+            this.panelLeft.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
             this.panelLeft.Controls.Add(this.groupBoxOdemeTutari);
             this.panelLeft.Controls.Add(this.btnKilometreTasiEkle);
             this.panelLeft.Dock = System.Windows.Forms.DockStyle.Left;
@@ -164,6 +198,8 @@
             // 
             // groupBoxOdemeTutari
             // 
+            this.groupBoxOdemeTutari.Controls.Add(this.dtOdemeTarihi);
+            this.groupBoxOdemeTutari.Controls.Add(this.lblOdemeTarihi);
             this.groupBoxOdemeTutari.Controls.Add(this.lblOdemeTutari);
             this.groupBoxOdemeTutari.Controls.Add(this.lblÖdemeAciklama);
             this.groupBoxOdemeTutari.Controls.Add(this.rtxtAciklama);
@@ -171,34 +207,50 @@
             this.groupBoxOdemeTutari.Controls.Add(this.txtEksilenTutar);
             this.groupBoxOdemeTutari.Controls.Add(this.btnHesapla);
             this.groupBoxOdemeTutari.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.groupBoxOdemeTutari.Location = new System.Drawing.Point(0, 76);
+            this.groupBoxOdemeTutari.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.groupBoxOdemeTutari.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.groupBoxOdemeTutari.Location = new System.Drawing.Point(0, 60);
             this.groupBoxOdemeTutari.Name = "groupBoxOdemeTutari";
-            this.groupBoxOdemeTutari.Size = new System.Drawing.Size(416, 232);
+            this.groupBoxOdemeTutari.Size = new System.Drawing.Size(416, 248);
             this.groupBoxOdemeTutari.TabIndex = 10;
             this.groupBoxOdemeTutari.TabStop = false;
             this.groupBoxOdemeTutari.Text = "Ödeme Tutarı";
             // 
+            // lblOdemeTarihi
+            // 
+            this.lblOdemeTarihi.AutoSize = true;
+            this.lblOdemeTarihi.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblOdemeTarihi.Location = new System.Drawing.Point(12, 96);
+            this.lblOdemeTarihi.Name = "lblOdemeTarihi";
+            this.lblOdemeTarihi.Size = new System.Drawing.Size(100, 20);
+            this.lblOdemeTarihi.TabIndex = 13;
+            this.lblOdemeTarihi.Text = "Ödeme Tarihi:";
+            // 
             // lblOdemeTutari
             // 
             this.lblOdemeTutari.AutoSize = true;
+            this.lblOdemeTutari.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblOdemeTutari.Location = new System.Drawing.Point(13, 33);
             this.lblOdemeTutari.Name = "lblOdemeTutari";
-            this.lblOdemeTutari.Size = new System.Drawing.Size(41, 16);
+            this.lblOdemeTutari.Size = new System.Drawing.Size(46, 20);
             this.lblOdemeTutari.TabIndex = 12;
             this.lblOdemeTutari.Text = "Tutar:";
             // 
             // lblÖdemeAciklama
             // 
             this.lblÖdemeAciklama.AutoSize = true;
-            this.lblÖdemeAciklama.Location = new System.Drawing.Point(13, 93);
+            this.lblÖdemeAciklama.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblÖdemeAciklama.Location = new System.Drawing.Point(13, 133);
             this.lblÖdemeAciklama.Name = "lblÖdemeAciklama";
-            this.lblÖdemeAciklama.Size = new System.Drawing.Size(66, 16);
+            this.lblÖdemeAciklama.Size = new System.Drawing.Size(73, 20);
             this.lblÖdemeAciklama.TabIndex = 11;
             this.lblÖdemeAciklama.Text = "Açıklama:";
             // 
             // rtxtAciklama
             // 
-            this.rtxtAciklama.Location = new System.Drawing.Point(123, 93);
+            this.rtxtAciklama.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.rtxtAciklama.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.rtxtAciklama.Location = new System.Drawing.Point(123, 133);
             this.rtxtAciklama.Name = "rtxtAciklama";
             this.rtxtAciklama.Size = new System.Drawing.Size(258, 77);
             this.rtxtAciklama.TabIndex = 6;
@@ -207,9 +259,10 @@
             // chkTutarTamaminiKullan
             // 
             this.chkTutarTamaminiKullan.AutoSize = true;
+            this.chkTutarTamaminiKullan.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.chkTutarTamaminiKullan.Location = new System.Drawing.Point(123, 61);
             this.chkTutarTamaminiKullan.Name = "chkTutarTamaminiKullan";
-            this.chkTutarTamaminiKullan.Size = new System.Drawing.Size(199, 20);
+            this.chkTutarTamaminiKullan.Size = new System.Drawing.Size(228, 24);
             this.chkTutarTamaminiKullan.TabIndex = 10;
             this.chkTutarTamaminiKullan.Text = "Kalan tutarın tamamını kullan.";
             this.chkTutarTamaminiKullan.UseVisualStyleBackColor = true;
@@ -217,33 +270,48 @@
             // 
             // txtEksilenTutar
             // 
+            this.txtEksilenTutar.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtEksilenTutar.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtEksilenTutar.Location = new System.Drawing.Point(123, 33);
             this.txtEksilenTutar.Name = "txtEksilenTutar";
-            this.txtEksilenTutar.Size = new System.Drawing.Size(258, 22);
+            this.txtEksilenTutar.Size = new System.Drawing.Size(258, 27);
             this.txtEksilenTutar.TabIndex = 6;
+            this.txtEksilenTutar.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtCikarilacakTutar_KeyPress);
             // 
             // btnHesapla
             // 
-            this.btnHesapla.Location = new System.Drawing.Point(194, 185);
+            this.btnHesapla.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnHesapla.FlatAppearance.BorderSize = 0;
+            this.btnHesapla.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnHesapla.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnHesapla.ForeColor = System.Drawing.Color.White;
+            this.btnHesapla.Location = new System.Drawing.Point(194, 216);
             this.btnHesapla.Name = "btnHesapla";
             this.btnHesapla.Size = new System.Drawing.Size(100, 29);
             this.btnHesapla.TabIndex = 7;
             this.btnHesapla.Text = "Hesapla";
-            this.btnHesapla.UseVisualStyleBackColor = true;
+            this.btnHesapla.UseVisualStyleBackColor = false;
             this.btnHesapla.Click += new System.EventHandler(this.btnHesapla_Click);
             // 
             // btnKilometreTasiEkle
             // 
+            this.btnKilometreTasiEkle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnKilometreTasiEkle.FlatAppearance.BorderSize = 0;
+            this.btnKilometreTasiEkle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnKilometreTasiEkle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnKilometreTasiEkle.ForeColor = System.Drawing.Color.White;
             this.btnKilometreTasiEkle.Location = new System.Drawing.Point(16, 6);
             this.btnKilometreTasiEkle.Name = "btnKilometreTasiEkle";
             this.btnKilometreTasiEkle.Size = new System.Drawing.Size(146, 48);
             this.btnKilometreTasiEkle.TabIndex = 4;
             this.btnKilometreTasiEkle.Text = "+ Kilometre Taşı Ekle";
-            this.btnKilometreTasiEkle.UseVisualStyleBackColor = true;
+            this.btnKilometreTasiEkle.UseVisualStyleBackColor = false;
             this.btnKilometreTasiEkle.Click += new System.EventHandler(this.btnKilometreTasiEkle_Click);
             // 
             // panelUst
             // 
+            this.panelUst.BackColor = System.Drawing.Color.White;
+            this.panelUst.Controls.Add(this.btnSil);
             this.panelUst.Controls.Add(this.lblToplamBedelBilgi);
             this.panelUst.Controls.Add(this.txtToplamBedel);
             this.panelUst.Controls.Add(this.txtProjeAra);
@@ -251,26 +319,44 @@
             this.panelUst.Controls.Add(this.lblToplamBedel);
             this.panelUst.Controls.Add(this.label2);
             this.panelUst.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelUst.Location = new System.Drawing.Point(0, 63);
+            this.panelUst.Location = new System.Drawing.Point(0, 50);
             this.panelUst.Name = "panelUst";
-            this.panelUst.Size = new System.Drawing.Size(1674, 95);
+            this.panelUst.Size = new System.Drawing.Size(1674, 90);
             this.panelUst.TabIndex = 7;
+            // 
+            // btnSil
+            // 
+            this.btnSil.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
+            this.btnSil.FlatAppearance.BorderSize = 0;
+            this.btnSil.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSil.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnSil.ForeColor = System.Drawing.Color.White;
+            this.btnSil.Location = new System.Drawing.Point(415, 27);
+            this.btnSil.Name = "btnSil";
+            this.btnSil.Size = new System.Drawing.Size(149, 31);
+            this.btnSil.TabIndex = 6;
+            this.btnSil.Text = "Sil";
+            this.btnSil.UseVisualStyleBackColor = false;
+            this.btnSil.Click += new System.EventHandler(this.btnSil_Click);
             // 
             // lblToplamBedelBilgi
             // 
             this.lblToplamBedelBilgi.AutoSize = true;
-            this.lblToplamBedelBilgi.Location = new System.Drawing.Point(1185, 56);
+            this.lblToplamBedelBilgi.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblToplamBedelBilgi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.lblToplamBedelBilgi.Location = new System.Drawing.Point(1187, 60);
             this.lblToplamBedelBilgi.Name = "lblToplamBedelBilgi";
-            this.lblToplamBedelBilgi.Size = new System.Drawing.Size(0, 16);
+            this.lblToplamBedelBilgi.Size = new System.Drawing.Size(0, 20);
             this.lblToplamBedelBilgi.TabIndex = 5;
             // 
             // panelFill
             // 
+            this.panelFill.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
             this.panelFill.Controls.Add(this.tableLayoutPanel1);
             this.panelFill.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelFill.Location = new System.Drawing.Point(0, 158);
+            this.panelFill.Location = new System.Drawing.Point(0, 140);
             this.panelFill.Name = "panelFill";
-            this.panelFill.Size = new System.Drawing.Size(1674, 533);
+            this.panelFill.Size = new System.Drawing.Size(1674, 551);
             this.panelFill.TabIndex = 8;
             // 
             // tableLayoutPanel1
@@ -290,8 +376,17 @@
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1674, 533);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1674, 551);
             this.tableLayoutPanel1.TabIndex = 0;
+            // 
+            // dtOdemeTarihi
+            // 
+            this.dtOdemeTarihi.Checked = false;
+            this.dtOdemeTarihi.Location = new System.Drawing.Point(123, 94);
+            this.dtOdemeTarihi.Name = "dtOdemeTarihi";
+            this.dtOdemeTarihi.ShowCheckBox = true;
+            this.dtOdemeTarihi.Size = new System.Drawing.Size(258, 27);
+            this.dtOdemeTarihi.TabIndex = 11;
             // 
             // ctlBaslik1
             // 
@@ -299,13 +394,14 @@
             this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
             this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
             this.ctlBaslik1.Name = "ctlBaslik1";
-            this.ctlBaslik1.Size = new System.Drawing.Size(1674, 63);
+            this.ctlBaslik1.Size = new System.Drawing.Size(1674, 50);
             this.ctlBaslik1.TabIndex = 5;
             // 
             // ctlOdemeSartlari
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(236)))), ((int)(((byte)(240)))), ((int)(((byte)(241)))));
             this.Controls.Add(this.panelFill);
             this.Controls.Add(this.panelUst);
             this.Controls.Add(this.panelAlt);
@@ -352,5 +448,8 @@
         private System.Windows.Forms.RichTextBox rtxtAciklama;
         private System.Windows.Forms.Label lblÖdemeAciklama;
         private System.Windows.Forms.Label lblOdemeTutari;
+        private System.Windows.Forms.Button btnSil;
+        private System.Windows.Forms.Label lblOdemeTarihi;
+        private System.Windows.Forms.DateTimePicker dtOdemeTarihi;
     }
 }

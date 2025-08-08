@@ -166,5 +166,44 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
             return (toplamBedel, eksikFiyatlandirmaProjeler);
         }
+        public bool FiyatlandirmaSil(string projeNo)
+        {
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            string query = @"
+                        DELETE FROM ProjeFinans_Fiyatlandirma
+                        WHERE projeNo = @projeNo";
+                            using (var cmd = new SqlCommand(query, connection, transaction))
+                            {
+                                cmd.Parameters.AddWithValue("@projeNo", projeNo.Trim());
+                                cmd.ExecuteNonQuery();
+                            }
+
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            MessageBox.Show($"Fiyatlandırma kayıtları silinirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return false;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Bağlantı hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+        }
     }
 }

@@ -1543,5 +1543,14 @@ namespace CEKA_APP.UsrControl
             frmStandartProjeler standartProjeler = new frmStandartProjeler();
             standartProjeler.ShowDialog();
         }
+
+        private void txtProjeNo_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                this.btnAra.PerformClick();
+            }
+        }
     }
 }

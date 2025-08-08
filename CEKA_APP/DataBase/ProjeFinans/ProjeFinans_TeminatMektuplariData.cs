@@ -2,6 +2,7 @@
 using CEKA_APP.Entitys.ProjeFinans;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -39,8 +40,8 @@ namespace CEKA_APP.DataBase.ProjeFinans
                         command.Parameters.AddWithValue("@komisyonTutari", mektup.komisyonTutari);
                         command.Parameters.AddWithValue("@komisyonOrani", mektup.komisyonOrani);
                         command.Parameters.AddWithValue("@komisyonVadesi", mektup.komisyonVadesi);
-                        command.Parameters.AddWithValue("@projeNo", mektup.projeNo ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@kilometreTasiId", mektup.kilometreTasiId); 
+                        command.Parameters.AddWithValue("@projeNo", string.IsNullOrEmpty(mektup.projeNo) ? "-" : mektup.projeNo);
+                        command.Parameters.AddWithValue("@kilometreTasiId", mektup.kilometreTasiId);
 
                         command.ExecuteNonQuery();
                     }
@@ -53,6 +54,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
+
         public List<TeminatMektuplari> GetTeminatMektuplari()
         {
             List<TeminatMektuplari> teminatMektuplari = new List<TeminatMektuplari>();
@@ -61,29 +63,50 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 try
                 {
                     connection.Open();
-                    string query = "SELECT mektupNo, musteriNo, musteriAdi, paraBirimi, banka, mektupTuru, tutar, vadeTarihi, iadeTarihi, komisyonTutari, komisyonOrani, komisyonVadesi, projeNo, kilometreTasiId FROM ProjeFinans_TeminatMektuplari";
+                    string query = @"
+                        SELECT 
+                            t.mektupNo, 
+                            t.musteriNo, 
+                            t.musteriAdi,
+                            k.kilometreTasiAdi,
+                            t.paraBirimi, 
+                            t.banka, 
+                            t.mektupTuru, 
+                            t.tutar, 
+                            t.vadeTarihi, 
+                            t.iadeTarihi, 
+                            t.komisyonTutari, 
+                            t.komisyonOrani, 
+                            t.komisyonVadesi, 
+                            t.projeNo,
+                            t.kilometreTasiId
+                        FROM ProjeFinans_TeminatMektuplari t
+                        LEFT JOIN ProjeFinans_KilometreTaslari k ON t.kilometreTasiId = k.kilometreTasiId
+                        ORDER BY t.mektupNo";
                     using (var cmd = new SqlCommand(query, connection))
                     {
                         using (SqlDataReader reader = cmd.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                TeminatMektuplari mektup = new TeminatMektuplari();
-                                mektup.mektupNo = reader["mektupNo"] as string ?? "";
-                                mektup.musteriNo = reader["musteriNo"] as string ?? "";
-                                mektup.musteriAdi = reader["musteriAdi"] as string ?? "";
-                                mektup.paraBirimi = reader["paraBirimi"] as string ?? "";
-                                mektup.banka = reader["banka"] as string ?? "";
-                                mektup.mektupTuru = reader["mektupTuru"] as string ?? "";
-                                mektup.tutar = reader.GetDecimal(reader.GetOrdinal("tutar"));
-                                mektup.vadeTarihi = !reader.IsDBNull(reader.GetOrdinal("vadeTarihi")) ? (DateTime?)reader.GetDateTime(reader.GetOrdinal("vadeTarihi")) : null;
-                                mektup.iadeTarihi = reader.GetDateTime(reader.GetOrdinal("iadeTarihi"));
-                                mektup.komisyonTutari = reader.GetDecimal(reader.GetOrdinal("komisyonTutari"));
-                                mektup.komisyonOrani = reader.GetDecimal(reader.GetOrdinal("komisyonOrani"));
-                                mektup.komisyonVadesi = reader.GetInt32(reader.GetOrdinal("komisyonVadesi"));
-                                mektup.projeNo = reader["projeNo"] as string ?? "";
-                                mektup.kilometreTasiId = reader.GetInt32(reader.GetOrdinal("kilometreTasiId")); 
-                                Console.WriteLine($"GetTeminatMektuplari: KilometreTasiId={mektup.kilometreTasiId}, ProjeNo={mektup.projeNo}");
+                                TeminatMektuplari mektup = new TeminatMektuplari
+                                {
+                                    mektupNo = reader["mektupNo"] as string ?? "",
+                                    musteriNo = reader["musteriNo"] as string ?? "",
+                                    musteriAdi = reader["musteriAdi"] as string ?? "",
+                                    kilometreTasiAdi = reader["kilometreTasiAdi"] as string ?? "",
+                                    paraBirimi = reader["paraBirimi"] as string ?? "",
+                                    banka = reader["banka"] as string ?? "",
+                                    mektupTuru = reader["mektupTuru"] as string ?? "",
+                                    tutar = reader.GetDecimal(reader.GetOrdinal("tutar")),
+                                    vadeTarihi = !reader.IsDBNull(reader.GetOrdinal("vadeTarihi")) ? (DateTime?)reader.GetDateTime(reader.GetOrdinal("vadeTarihi")) : null,
+                                    iadeTarihi = reader.GetDateTime(reader.GetOrdinal("iadeTarihi")),
+                                    komisyonTutari = reader.GetDecimal(reader.GetOrdinal("komisyonTutari")),
+                                    komisyonOrani = reader.GetDecimal(reader.GetOrdinal("komisyonOrani")),
+                                    komisyonVadesi = reader.GetInt32(reader.GetOrdinal("komisyonVadesi")),
+                                    projeNo = reader["projeNo"] as string ?? "",
+                                    kilometreTasiId = reader.GetInt32(reader.GetOrdinal("kilometreTasiId"))
+                                };
                                 teminatMektuplari.Add(mektup);
                             }
                         }
@@ -97,6 +120,147 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
             return teminatMektuplari;
         }
+
+        public DataTable FiltreleTeminatMektuplari(Dictionary<string, TextBox> filtreKutulari, DataGridView dataGrid)
+        {
+            try
+            {
+                using (var connection = DataBaseHelper.GetConnection())
+                {
+                    connection.Open();
+                    string baseQuery = @"
+                        SELECT 
+                            t.mektupNo,
+                            t.musteriNo,
+                            t.musteriAdi,
+                            k.kilometreTasiAdi,
+                            t.paraBirimi,
+                            t.banka,
+                            t.mektupTuru,
+                            t.tutar,
+                            t.vadeTarihi,
+                            t.iadeTarihi,
+                            t.komisyonTutari,
+                            t.komisyonOrani,
+                            t.komisyonVadesi,
+                            t.projeNo,
+                            t.kilometreTasiId
+                        FROM ProjeFinans_TeminatMektuplari t
+                        LEFT JOIN ProjeFinans_KilometreTaslari k ON t.kilometreTasiId = k.kilometreTasiId
+                        WHERE 1=1";
+
+                    var conditions = new List<string>();
+                    var parameters = new List<SqlParameter>();
+                    int paramIndex = 0;
+
+                    foreach (var kutu in filtreKutulari)
+                    {
+                        string hamDeger = kutu.Value.Text.Trim();
+                        if (!string.IsNullOrEmpty(hamDeger))
+                        {
+                            string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
+                                .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(kutu.Key) ||
+                                                    NormalizeColumnName(c.Name) == NormalizeColumnName(kutu.Key))?.Name;
+
+                            if (string.IsNullOrEmpty(columnName))
+                            {
+                                MessageBox.Show($"Sütun bulunamadı: {kutu.Key}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                continue;
+                            }
+
+                            string paramName = $"@p{paramIndex++}";
+                            string condition = string.Empty;
+
+                            switch (columnName)
+                            {
+                                case "mektupNo":
+                                case "musteriNo":
+                                case "musteriAdi":
+                                case "kilometreTasiAdi":
+                                case "paraBirimi":
+                                case "banka":
+                                case "mektupTuru":
+                                case "projeNo":
+                                    condition = $"LOWER({(columnName == "kilometreTasiAdi" ? "k" : "t")}.{columnName}) LIKE {paramName}";
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = $"%{hamDeger.ToLower()}%" });
+                                    break;
+                                case "tutar":
+                                case "komisyonTutari":
+                                case "komisyonOrani":
+                                    if (decimal.TryParse(hamDeger, out decimal deger))
+                                    {
+                                        condition = $"t.{columnName} = {paramName}";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Decimal) { Value = deger });
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Geçersiz {columnName} değeri: {hamDeger}");
+                                    }
+                                    break;
+                                case "komisyonVadesi":
+                                    if (int.TryParse(hamDeger, out int vade))
+                                    {
+                                        condition = $"t.{columnName} = {paramName}";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Int) { Value = vade });
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Geçersiz {columnName} değeri: {hamDeger}");
+                                    }
+                                    break;
+                                case "vadeTarihi":
+                                case "iadeTarihi":
+                                    if (DateTime.TryParse(hamDeger, System.Globalization.CultureInfo.CreateSpecificCulture("tr-TR"), System.Globalization.DateTimeStyles.None, out DateTime tarih))
+                                    {
+                                        condition = $"CAST(t.{columnName} AS DATE) = {paramName}";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Date) { Value = tarih.Date });
+                                    }
+                                    else
+                                    {
+                                        Console.WriteLine($"Geçersiz {columnName} değeri: {hamDeger}");
+                                    }
+                                    break;
+                            }
+
+                            if (!string.IsNullOrEmpty(condition))
+                            {
+                                conditions.Add(condition);
+                            }
+                        }
+                    }
+
+                    if (conditions.Any())
+                    {
+                        baseQuery += " AND " + string.Join(" AND ", conditions);
+                    }
+
+                    baseQuery += " ORDER BY t.mektupNo";
+
+                    Console.WriteLine($"Oluşturulan SQL Sorgusu: {baseQuery}");
+                    Console.WriteLine($"Parametreler: {string.Join(", ", parameters.Select(p => $"{p.ParameterName}: {p.Value}"))}");
+
+                    using (var cmd = new SqlCommand(baseQuery, connection))
+                    {
+                        cmd.Parameters.AddRange(parameters.ToArray());
+
+                        using (var adapter = new SqlDataAdapter(cmd))
+                        {
+                            DataTable dt = new DataTable();
+                            adapter.Fill(dt);
+                            Console.WriteLine($"Filtrelenen satır sayısı: {dt.Rows.Count}");
+                            return dt;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Arama sırasında hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"Hata detayı: {ex.ToString()}");
+                return null;
+            }
+        }
+
         public bool MektupNoVarMi(string mektupNo)
         {
             using (var connection = DataBaseHelper.GetConnection())
@@ -119,6 +283,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
+
         public void MektupGuncelle(string eskiMektupNo, TeminatMektuplari guncelMektup)
         {
             using (var connection = DataBaseHelper.GetConnection())
@@ -156,8 +321,8 @@ namespace CEKA_APP.DataBase.ProjeFinans
                         cmd.Parameters.AddWithValue("@komisyonTutari", guncelMektup.komisyonTutari);
                         cmd.Parameters.AddWithValue("@komisyonOrani", guncelMektup.komisyonOrani);
                         cmd.Parameters.AddWithValue("@komisyonVadesi", guncelMektup.komisyonVadesi);
-                        cmd.Parameters.AddWithValue("@projeNo", guncelMektup.projeNo ?? (object)DBNull.Value);
-                        cmd.Parameters.AddWithValue("@kilometreTasiId", guncelMektup.kilometreTasiId); 
+                        cmd.Parameters.AddWithValue("@projeNo", string.IsNullOrEmpty(guncelMektup.projeNo) ? "-" : guncelMektup.projeNo);
+                        cmd.Parameters.AddWithValue("@kilometreTasiId", guncelMektup.kilometreTasiId);
                         cmd.Parameters.AddWithValue("@eskiMektupNo", eskiMektupNo ?? (object)DBNull.Value);
 
                         cmd.ExecuteNonQuery();
@@ -170,6 +335,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
+
         public void MektupSil(string mektupNo)
         {
             using (var connection = DataBaseHelper.GetConnection())
@@ -190,6 +356,14 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     throw;
                 }
             }
+        }
+
+        private string NormalizeColumnName(string columnName)
+        {
+            if (string.IsNullOrEmpty(columnName)) return columnName;
+            return columnName.Replace("ı", "i").Replace("İ", "I").Replace("ş", "s").Replace("Ş", "S")
+                            .Replace("ğ", "g").Replace("Ğ", "G").Replace("ü", "u").Replace("Ü", "U")
+                            .Replace("ç", "c").Replace("Ç", "C").ToLower();
         }
     }
 }

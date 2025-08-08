@@ -433,7 +433,6 @@ namespace CEKA_APP.UsrControl
                 string dg1Key = dg1Entry.Key;
                 int dg1Adet = dg1Entry.Value;
 
-                bool foundMatchForThisDg1KeyInAnyDg2Variant = false;
 
                 foreach (var dg2GroupedEntry in dg2GroupedByFullKey)
                 {
@@ -458,7 +457,6 @@ namespace CEKA_APP.UsrControl
 
                     if (dg1Key == dg2BaseKeyCandidate)
                     {
-                        foundMatchForThisDg1KeyInAnyDg2Variant = true;
                         processedDg1Keys.Add(dg1Key);
 
                         if (dg1Adet != dg2TotalCalculatedAdet)

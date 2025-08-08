@@ -371,5 +371,296 @@ namespace CEKA_APP.DataBase
                 }
             }
         }
+        public static bool HasRelatedRecords(string projeNo, List<string> altProjeler)
+        {
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+
+                    var projeler = new List<string> { projeNo };
+                    if (altProjeler != null && altProjeler.Any())
+                    {
+                        projeler.AddRange(altProjeler);
+                    }
+
+                    var ilgiliTablolar = new List<string>();
+
+                    string fiyatlandirmaSql = @"
+                        SELECT COUNT(*) 
+                        FROM ProjeFinans_Fiyatlandirma 
+                        WHERE projeNo IN ({0})";
+
+                    string odemeSartlariSql = @"
+                        SELECT COUNT(*) 
+                        FROM ProjeFinans_OdemeSartlari 
+                        WHERE projeNo IN ({0})";
+
+                    string sevkiyatSql = @"
+                        SELECT COUNT(*) 
+                        FROM ProjeFinans_Sevkiyat 
+                        WHERE projeNo IN ({0})";
+
+                    var parameters = projeler.Select((p, i) => "@p" + i).ToList();
+                    string inClause = string.Join(",", parameters);
+                    fiyatlandirmaSql = string.Format(fiyatlandirmaSql, inClause);
+                    odemeSartlariSql = string.Format(odemeSartlariSql, inClause);
+                    sevkiyatSql = string.Format(sevkiyatSql, inClause);
+
+                    using (SqlCommand command = new SqlCommand(fiyatlandirmaSql, connection))
+                    {
+                        for (int i = 0; i < projeler.Count; i++)
+                        {
+                            command.Parameters.AddWithValue("@p" + i, projeler[i].Trim());
+                        }
+                        int count = (int)command.ExecuteScalar();
+                        if (count > 0)
+                        {
+                            ilgiliTablolar.Add("Fiyatlandırma");
+                        }
+                    }
+
+                    using (SqlCommand command = new SqlCommand(odemeSartlariSql, connection))
+                    {
+                        for (int i = 0; i < projeler.Count; i++)
+                        {
+                            command.Parameters.AddWithValue("@p" + i, projeler[i].Trim());
+                        }
+                        int count = (int)command.ExecuteScalar();
+                        if (count > 0)
+                        {
+                            ilgiliTablolar.Add("Ödeme Şartları");
+                        }
+                    }
+
+                    using (SqlCommand command = new SqlCommand(sevkiyatSql, connection))
+                    {
+                        for (int i = 0; i < projeler.Count; i++)
+                        {
+                            command.Parameters.AddWithValue("@p" + i, projeler[i].Trim());
+                        }
+                        int count = (int)command.ExecuteScalar();
+                        if (count > 0)
+                        {
+                            ilgiliTablolar.Add("Sevkiyat");
+                        }
+                    }
+
+                    if (ilgiliTablolar.Any())
+                    {
+                        string hataMesaji = $"Proje veya alt projeleri için aşağıdaki sayfalarda kayıt bulunmaktadır:\n- {string.Join("\n- ", ilgiliTablolar)}\nLütfen önce bu kayıtları siliniz.";
+                        MessageBox.Show(hataMesaji, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return true;
+                    }
+
+                    return false;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Kayıt kontrolü sırasında hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return true;
+                }
+            }
+        }
+
+        public static bool ProjeKutukGuncelle(ProjeKutuk yeniKutuk)
+        {
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+
+                    ProjeKutuk mevcutKutuk = ProjeKutukAra(yeniKutuk.projeNo);
+                    if (mevcutKutuk == null)
+                    {
+                        MessageBox.Show($"Proje '{yeniKutuk.projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return false;
+                    }
+
+                    bool degisiklikVar =
+                        mevcutKutuk.musteriNo != yeniKutuk.musteriNo ||
+                        mevcutKutuk.musteriAdi != yeniKutuk.musteriAdi ||
+                        mevcutKutuk.teklifNo != yeniKutuk.teklifNo ||
+                        mevcutKutuk.isFirsatiNo != yeniKutuk.isFirsatiNo ||
+                        mevcutKutuk.altProjeVarMi != yeniKutuk.altProjeVarMi ||
+                        mevcutKutuk.digerProjeIliskisiVarMi != yeniKutuk.digerProjeIliskisiVarMi ||
+                        mevcutKutuk.siparisSozlesmeTarihi != yeniKutuk.siparisSozlesmeTarihi ||
+                        mevcutKutuk.paraBirimi != yeniKutuk.paraBirimi ||
+                        mevcutKutuk.toplamBedel != yeniKutuk.toplamBedel ||
+                        mevcutKutuk.faturalamaSekli != yeniKutuk.faturalamaSekli ||
+                        mevcutKutuk.nakliyeVarMi != yeniKutuk.nakliyeVarMi ||
+                        !mevcutKutuk.altProjeBilgileri.OrderBy(x => x).SequenceEqual(yeniKutuk.altProjeBilgileri.OrderBy(x => x));
+
+                    if (!degisiklikVar)
+                    {
+                        MessageBox.Show("Herhangi bir değişiklik yapılmadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        return false;
+                    }
+
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            string sql = @"
+                                UPDATE ProjeFinans_ProjeKutuk 
+                                SET musteriNo = @musteriNo, 
+                                    musteriAdi = @musteriAdi, 
+                                    teklifNo = @teklifNo, 
+                                    isFirsatiNo = @isFirsatiNo, 
+                                    altProjeVarMi = @altProjeVarMi, 
+                                    digerProjeIliskisiVarMi = @digerProjeIliskisiVarMi, 
+                                    siparisSozlesmeTarihi = @siparisSozlesmeTarihi, 
+                                    paraBirimi = @paraBirimi, 
+                                    toplamBedel = @toplamBedel, 
+                                    faturalamaSekli = @faturalamaSekli, 
+                                    nakliyeVarMi = @nakliyeVarMi
+                                WHERE projeNo = @projeNo";
+
+                            using (SqlCommand command = new SqlCommand(sql, connection, transaction))
+                            {
+                                command.Parameters.AddWithValue("@musteriNo", yeniKutuk.musteriNo ?? (object)DBNull.Value);
+                                command.Parameters.AddWithValue("@musteriAdi", yeniKutuk.musteriAdi ?? (object)DBNull.Value);
+                                command.Parameters.AddWithValue("@teklifNo", yeniKutuk.teklifNo ?? (object)DBNull.Value);
+                                command.Parameters.AddWithValue("@isFirsatiNo", yeniKutuk.isFirsatiNo ?? (object)DBNull.Value);
+                                command.Parameters.AddWithValue("@projeNo", yeniKutuk.projeNo ?? (object)DBNull.Value);
+                                command.Parameters.AddWithValue("@altProjeVarMi", yeniKutuk.altProjeVarMi);
+                                command.Parameters.AddWithValue("@digerProjeIliskisiVarMi", string.IsNullOrEmpty(yeniKutuk.digerProjeIliskisiVarMi) ? (object)DBNull.Value : yeniKutuk.digerProjeIliskisiVarMi);
+                                command.Parameters.AddWithValue("@siparisSozlesmeTarihi", yeniKutuk.siparisSozlesmeTarihi);
+                                command.Parameters.AddWithValue("@paraBirimi", yeniKutuk.paraBirimi ?? (object)DBNull.Value);
+                                command.Parameters.AddWithValue("@toplamBedel", yeniKutuk.toplamBedel);
+                                command.Parameters.AddWithValue("@faturalamaSekli", yeniKutuk.faturalamaSekli ?? (object)DBNull.Value);
+                                command.Parameters.AddWithValue("@nakliyeVarMi", yeniKutuk.nakliyeVarMi);
+                                command.ExecuteNonQuery();
+                            }
+
+                            if (yeniKutuk.altProjeVarMi)
+                            {
+                                string altProjeSilSql = @"
+                                    DELETE FROM ProjeFinans_ProjeIliski 
+                                    WHERE ustProjeNo = @projeNo";
+                                using (SqlCommand command = new SqlCommand(altProjeSilSql, connection, transaction))
+                                {
+                                    command.Parameters.AddWithValue("@projeNo", yeniKutuk.projeNo.Trim());
+                                    command.ExecuteNonQuery();
+                                }
+
+                                foreach (var altProje in yeniKutuk.altProjeBilgileri)
+                                {
+                                    string altProjeEkleSql = @"
+                                        INSERT INTO ProjeFinans_ProjeIliski 
+                                        (ustProjeNo, altProjeNo)
+                                        VALUES 
+                                        (@ustProjeNo, @altProjeNo)";
+                                    using (SqlCommand command = new SqlCommand(altProjeEkleSql, connection, transaction))
+                                    {
+                                        command.Parameters.AddWithValue("@ustProjeNo", yeniKutuk.projeNo ?? (object)DBNull.Value);
+                                        command.Parameters.AddWithValue("@altProjeNo", altProje ?? (object)DBNull.Value);
+                                        command.ExecuteNonQuery();
+                                    }
+                                }
+                            }
+
+                            transaction.Commit();
+                            MessageBox.Show($"Proje '{yeniKutuk.projeNo}' başarıyla güncellendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            MessageBox.Show($"Proje güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return false;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Bağlantı hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+        }
+        public static bool ProjeKutukSil(string projeNo, List<string> altProjeler)
+        {
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+
+                    using (var transaction = connection.BeginTransaction())
+                    {
+                        try
+                        {
+                            var projeler = new List<string> { projeNo };
+                            if (altProjeler != null && altProjeler.Any())
+                            {
+                                projeler.AddRange(altProjeler);
+                            }
+
+                            var parameters = projeler.Select((p, i) => "@p" + i).ToList();
+                            string inClause = string.Join(",", parameters);
+
+                            string projeKutukSilSql = @"
+                                DELETE FROM ProjeFinans_ProjeKutuk 
+                                WHERE projeNo IN ({0})";
+                            projeKutukSilSql = string.Format(projeKutukSilSql, inClause);
+
+                            using (SqlCommand command = new SqlCommand(projeKutukSilSql, connection, transaction))
+                            {
+                                for (int i = 0; i < projeler.Count; i++)
+                                {
+                                    command.Parameters.AddWithValue("@p" + i, projeler[i].Trim());
+                                }
+                                command.ExecuteNonQuery();
+                            }
+
+                            string altProjeIliskiSilSql = @"
+                                DELETE FROM ProjeFinans_ProjeIliski 
+                                WHERE ustProjeNo IN ({0}) OR altProjeNo IN ({0})";
+                            altProjeIliskiSilSql = string.Format(altProjeIliskiSilSql, inClause);
+
+                            using (SqlCommand command = new SqlCommand(altProjeIliskiSilSql, connection, transaction))
+                            {
+                                for (int i = 0; i < projeler.Count; i++)
+                                {
+                                    command.Parameters.AddWithValue("@p" + i, projeler[i].Trim());
+                                }
+                                command.ExecuteNonQuery();
+                            }
+
+                            string projeFinansSilSql = @"
+                                DELETE FROM ProjeFinans_Projeler 
+                                WHERE projeNo IN ({0})";
+                            projeFinansSilSql = string.Format(projeFinansSilSql, inClause);
+
+                            using (SqlCommand command = new SqlCommand(projeFinansSilSql, connection, transaction))
+                            {
+                                for (int i = 0; i < projeler.Count; i++)
+                                {
+                                    command.Parameters.AddWithValue("@p" + i, projeler[i].Trim());
+                                }
+                                command.ExecuteNonQuery();
+                            }
+
+                            transaction.Commit();
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            MessageBox.Show($"Proje silinirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return false;
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Bağlantı hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+        }
     }
 }

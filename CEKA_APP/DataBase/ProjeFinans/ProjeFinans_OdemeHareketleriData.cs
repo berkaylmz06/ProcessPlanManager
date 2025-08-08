@@ -75,5 +75,65 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
             return odemeHareketleriList;
         }
+        public bool DeleteOdemeHareketleriByOdemeIds(List<int> odemeIds)
+        {
+            if (odemeIds == null || odemeIds.Count == 0)
+            {
+                return true; 
+            }
+
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+
+                    string createTempTableQuery = @"
+                CREATE TABLE #TempOdemeIds (odemeId INT);
+            ";
+                    using (var createCmd = new SqlCommand(createTempTableQuery, connection))
+                    {
+                        createCmd.ExecuteNonQuery();
+                    }
+
+                    using (var bulkCopy = new SqlBulkCopy(connection))
+                    {
+                        bulkCopy.DestinationTableName = "#TempOdemeIds";
+                        bulkCopy.ColumnMappings.Add("odemeId", "odemeId");
+
+                        DataTable dt = new DataTable();
+                        dt.Columns.Add("odemeId", typeof(int));
+                        foreach (var id in odemeIds)
+                        {
+                            dt.Rows.Add(id);
+                        }
+
+                        bulkCopy.WriteToServer(dt);
+                    }
+
+                    string deleteQuery = @"
+                DELETE FROM ProjeFinans_OdemeHareketleri
+                WHERE odemeId IN (SELECT odemeId FROM #TempOdemeIds);
+            ";
+                    using (var deleteCmd = new SqlCommand(deleteQuery, connection))
+                    {
+                        deleteCmd.ExecuteNonQuery();
+                    }
+
+                    string dropTempTableQuery = "DROP TABLE #TempOdemeIds;";
+                    using (var dropCmd = new SqlCommand(dropTempTableQuery, connection))
+                    {
+                        dropCmd.ExecuteNonQuery();
+                    }
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Ödeme hareketleri silinirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
+                }
+            }
+        }
     }
 }

@@ -16,11 +16,13 @@ namespace CEKA_APP.UsrControl
 {
     public partial class ctlTeminatMektuplari : UserControl
     {
+        private Dictionary<string, string> sonFiltreKriterleri = new Dictionary<string, string>();
         public ctlTeminatMektuplari()
         {
             InitializeComponent();
 
             DataGridViewHelper.StilUygulaProjeFinans(dataGridTeminatMektuplari);
+            dataGridTeminatMektuplari.AutoGenerateColumns = false; // Otomatik sütun oluşturmayı kapat
 
             if (this.dataGridTeminatMektuplari.ContextMenuStrip != null)
             {
@@ -33,100 +35,29 @@ namespace CEKA_APP.UsrControl
                     else if (item.Name == "tsmiMektupGuncelle")
                         tsmiMektupGuncelle = (ToolStripMenuItem)item;
                     else if (item.Name == "tsmiMektupSil")
-                        tsmiMektupSil= (ToolStripMenuItem)item;
+                        tsmiMektupSil = (ToolStripMenuItem)item;
+                    else if (item.Name == "tsmiAra")
+                        tsmiAra = (ToolStripMenuItem)item;
                 }
             }
+
+            ConfigureDataGridViewColumns(); // Sütunları baştan oluştur
         }
 
         private void ctlTeminatMektuplari_Load(object sender, EventArgs e)
         {
             ctlBaslik1.Baslik = "Teminat Mektupları";
-
             LoadMektuplarToDataGridView();
         }
-        public void LoadMektuplarToDataGridView()
+
+        private void LoadMektuplarToDataGridView()
         {
             ProjeFinans_TeminatMektuplariData mektupData = new ProjeFinans_TeminatMektuplariData();
             try
             {
-                List<TeminatMektuplari> mektuplar = mektupData.GetTeminatMektuplari();
-
+                dataGridTeminatMektuplari.DataSource = null;
+                var mektuplar = mektupData.GetTeminatMektuplari();
                 dataGridTeminatMektuplari.DataSource = mektuplar;
-
-                if (dataGridTeminatMektuplari.Columns.Contains("mektupNo"))
-                {
-                    dataGridTeminatMektuplari.Columns["mektupNo"].HeaderText = "Mektup No";
-                    dataGridTeminatMektuplari.Columns["mektupNo"].DisplayIndex = 0;
-                    dataGridTeminatMektuplari.Columns["mektupNo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                }
-                if (dataGridTeminatMektuplari.Columns.Contains("musteriNo"))
-                {
-                    dataGridTeminatMektuplari.Columns["musteriNo"].HeaderText = "Müşteri No";
-                    dataGridTeminatMektuplari.Columns["musteriNo"].DisplayIndex = 1;
-                    dataGridTeminatMektuplari.Columns["musteriNo"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-                }
-                if (dataGridTeminatMektuplari.Columns.Contains("musteriAdi"))
-                {
-                    dataGridTeminatMektuplari.Columns["musteriAdi"].HeaderText = "Müşteri Adı";
-                    dataGridTeminatMektuplari.Columns["musteriAdi"].DisplayIndex = 2;
-                    dataGridTeminatMektuplari.Columns["musteriAdi"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                }
-                if (dataGridTeminatMektuplari.Columns.Contains("paraBirimi"))
-                {
-                    dataGridTeminatMektuplari.Columns["paraBirimi"].HeaderText = "Para Birimi";
-                    dataGridTeminatMektuplari.Columns["paraBirimi"].DisplayIndex = 3;
-                    dataGridTeminatMektuplari.Columns["paraBirimi"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                }
-                if (dataGridTeminatMektuplari.Columns.Contains("banka"))
-                {
-                    dataGridTeminatMektuplari.Columns["banka"].HeaderText = "Banka";
-                    dataGridTeminatMektuplari.Columns["banka"].DisplayIndex = 4;
-                    dataGridTeminatMektuplari.Columns["banka"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                }
-                if (dataGridTeminatMektuplari.Columns.Contains("mektupTuru"))
-                {
-                    dataGridTeminatMektuplari.Columns["mektupTuru"].HeaderText = "Mektup Türü";
-                    dataGridTeminatMektuplari.Columns["mektupTuru"].DisplayIndex = 5;
-                    dataGridTeminatMektuplari.Columns["mektupTuru"].AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill; 
-                }
-                if (dataGridTeminatMektuplari.Columns.Contains("tutar"))
-                {
-                    dataGridTeminatMektuplari.Columns["tutar"].HeaderText = "Tutar";
-                    dataGridTeminatMektuplari.Columns["tutar"].DisplayIndex = 6;
-                    dataGridTeminatMektuplari.Columns["tutar"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                }
-                if (dataGridTeminatMektuplari.Columns.Contains("vadeTarihi"))
-                {
-                    dataGridTeminatMektuplari.Columns["vadeTarihi"].HeaderText = "Vade Tarihi";
-                    dataGridTeminatMektuplari.Columns["vadeTarihi"].DisplayIndex = 7;
-                    dataGridTeminatMektuplari.Columns["vadeTarihi"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
-                    dataGridTeminatMektuplari.Columns["vadeTarihi"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                }
-                if (dataGridTeminatMektuplari.Columns.Contains("iadeTarihi"))
-                {
-                    dataGridTeminatMektuplari.Columns["iadeTarihi"].HeaderText = "İade Tarihi";
-                    dataGridTeminatMektuplari.Columns["iadeTarihi"].DisplayIndex = 8;
-                    dataGridTeminatMektuplari.Columns["iadeTarihi"].DefaultCellStyle.Format = "dd.MM.yyyy HH:mm";
-                    dataGridTeminatMektuplari.Columns["iadeTarihi"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                }
-                if (dataGridTeminatMektuplari.Columns.Contains("komisyonTutari"))
-                {
-                    dataGridTeminatMektuplari.Columns["komisyonTutari"].HeaderText = "Komisyon Tutarı";
-                    dataGridTeminatMektuplari.Columns["komisyonTutari"].DisplayIndex = 9;
-                    dataGridTeminatMektuplari.Columns["komisyonTutari"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                }
-                if (dataGridTeminatMektuplari.Columns.Contains("komisyonOrani"))
-                {
-                    dataGridTeminatMektuplari.Columns["komisyonOrani"].HeaderText = "Komisyon Oranı";
-                    dataGridTeminatMektuplari.Columns["komisyonOrani"].DisplayIndex = 10;
-                    dataGridTeminatMektuplari.Columns["komisyonOrani"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                }
-                if (dataGridTeminatMektuplari.Columns.Contains("komisyonVadesi"))
-                {
-                    dataGridTeminatMektuplari.Columns["komisyonVadesi"].HeaderText = "Komisyon Vadesi";
-                    dataGridTeminatMektuplari.Columns["komisyonVadesi"].DisplayIndex = 11;
-                    dataGridTeminatMektuplari.Columns["komisyonVadesi"].AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells;
-                }
             }
             catch (Exception ex)
             {
@@ -134,16 +65,157 @@ namespace CEKA_APP.UsrControl
             }
         }
 
+        private void ConfigureDataGridViewColumns()
+        {
+            // Mevcut sütunları temizle
+            dataGridTeminatMektuplari.Columns.Clear();
+
+            // Sütunları manuel olarak ekle
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "mektupNo",
+                Name = "mektupNo",
+                HeaderText = "Mektup No",
+                DisplayIndex = 0,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "musteriNo",
+                Name = "musteriNo",
+                HeaderText = "Müşteri No",
+                DisplayIndex = 1,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "musteriAdi",
+                Name = "musteriAdi",
+                HeaderText = "Müşteri Adı",
+                DisplayIndex = 2,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "kilometreTasiAdi",
+                Name = "kilometreTasiAdi",
+                HeaderText = "Kilometre Taşı Adı",
+                DisplayIndex = 3,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "paraBirimi",
+                Name = "paraBirimi",
+                HeaderText = "Para Birimi",
+                DisplayIndex = 4,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "banka",
+                Name = "banka",
+                HeaderText = "Banka",
+                DisplayIndex = 5,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "mektupTuru",
+                Name = "mektupTuru",
+                HeaderText = "Mektup Türü",
+                DisplayIndex = 6,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "tutar",
+                Name = "tutar",
+                HeaderText = "Tutar",
+                DisplayIndex = 7,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "vadeTarihi",
+                Name = "vadeTarihi",
+                HeaderText = "Vade Tarihi",
+                DisplayIndex = 8,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "dd.MM.yyyy HH:mm" }
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "iadeTarihi",
+                Name = "iadeTarihi",
+                HeaderText = "İade Tarihi",
+                DisplayIndex = 9,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                DefaultCellStyle = new DataGridViewCellStyle { Format = "dd.MM.yyyy HH:mm" }
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "komisyonTutari",
+                Name = "komisyonTutari",
+                HeaderText = "Komisyon Tutarı",
+                DisplayIndex = 10,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "komisyonOrani",
+                Name = "komisyonOrani",
+                HeaderText = "Komisyon Oranı",
+                DisplayIndex = 11,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "komisyonVadesi",
+                Name = "komisyonVadesi",
+                HeaderText = "Komisyon Vadesi",
+                DisplayIndex = 12,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "projeNo",
+                Name = "projeNo",
+                HeaderText = "Proje No",
+                DisplayIndex = 13,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+            });
+
+            dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
+            {
+                DataPropertyName = "kilometreTasiId",
+                Name = "kilometreTasiId",
+                HeaderText = "Kilometre Taşı ID",
+                DisplayIndex = 14,
+                Visible = false
+            });
+        }
+
         private void dataGridTeminatMektuplari_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
-            if (e.Button == MouseButtons.Right)
+            if (e.Button == MouseButtons.Right && e.RowIndex >= 0)
             {
-                if (e.RowIndex >= 0)
-                {
-                    dataGridTeminatMektuplari.ClearSelection();
-                    dataGridTeminatMektuplari.Rows[e.RowIndex].Selected = true;
-                    dataGridTeminatMektuplari.CurrentCell = dataGridTeminatMektuplari.Rows[e.RowIndex].Cells[e.ColumnIndex];
-                }
+                dataGridTeminatMektuplari.ClearSelection();
+                dataGridTeminatMektuplari.Rows[e.RowIndex].Selected = true;
+                dataGridTeminatMektuplari.CurrentCell = dataGridTeminatMektuplari.Rows[e.RowIndex].Cells[e.ColumnIndex];
             }
         }
 
@@ -151,6 +223,7 @@ namespace CEKA_APP.UsrControl
         {
             if (tsmiMektupGuncelle != null) tsmiMektupGuncelle.Enabled = false;
             if (tsmiMektupSil != null) tsmiMektupSil.Enabled = false;
+            if (tsmiAra != null) tsmiAra.Enabled = true;
 
             if (dataGridTeminatMektuplari.CurrentRow != null && dataGridTeminatMektuplari.CurrentRow.Index >= 0)
             {
@@ -220,7 +293,7 @@ namespace CEKA_APP.UsrControl
                         }
                         catch (Exception ex)
                         {
-                            MessageBox.Show($"Mektup silinirken bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            MessageBox.Show($"Mektup silinirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
                 }
@@ -228,6 +301,61 @@ namespace CEKA_APP.UsrControl
             else
             {
                 MessageBox.Show("Lütfen silmek için bir mektup seçin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void tsmiAra_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                frmAra araForm = new frmAra(
+                    dataGridTeminatMektuplari.Columns,
+                    TeminatMektuplariFiltrele,
+                    GuncelleDataGrid,
+                    false,
+                    sonFiltreKriterleri
+                );
+                araForm.ShowDialog();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Arama işlemi başlatılırken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private DataTable TeminatMektuplariFiltrele(Dictionary<string, TextBox> filtreKutulari)
+        {
+            try
+            {
+                ProjeFinans_TeminatMektuplariData mektupData = new ProjeFinans_TeminatMektuplariData();
+                sonFiltreKriterleri.Clear();
+                foreach (var kutu in filtreKutulari)
+                {
+                    if (!string.IsNullOrEmpty(kutu.Value.Text.Trim()))
+                    {
+                        sonFiltreKriterleri[kutu.Key] = kutu.Value.Text.Trim();
+                    }
+                }
+                return mektupData.FiltreleTeminatMektuplari(filtreKutulari, dataGridTeminatMektuplari);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Arama sırasında hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"Hata detayı: {ex.ToString()}");
+                return null;
+            }
+        }
+
+        private void GuncelleDataGrid(DataTable sonucTablo)
+        {
+            try
+            {
+                dataGridTeminatMektuplari.DataSource = null;
+                dataGridTeminatMektuplari.DataSource = sonucTablo;
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Arama sonuçları yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

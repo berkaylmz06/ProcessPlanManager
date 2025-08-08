@@ -39,7 +39,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
             }
         }
-        public static bool UpdateProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi)
+        public static bool UpdateProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi, out bool degisiklikVar)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {
@@ -51,26 +51,26 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     if (mevcutBilgi == null)
                     {
                         MessageBox.Show($"Proje '{projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        degisiklikVar = false;
                         return false;
                     }
 
-                    bool degisiklikVar =
+                    degisiklikVar =
                         (mevcutBilgi.Aciklama ?? "") != (aciklama ?? "") ||
                         (mevcutBilgi.ProjeAdi ?? "") != (projeAdi ?? "") ||
                         mevcutBilgi.OlusturmaTarihi != olusturmaTarihi;
 
                     if (!degisiklikVar)
                     {
-                        MessageBox.Show("Herhangi bir değişiklik yapılmadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        return false;
+                        return true; // Değişiklik yoksa hata değil, başarılı say
                     }
 
                     string sorgu = @"
-                        UPDATE ProjeFinans_Projeler
-                        SET aciklama = @aciklama, 
-                            projeAdi = @projeAdi, 
-                            olusturmaTarihi = @olusturmaTarihi
-                        WHERE projeNo = @projeNo";
+                UPDATE ProjeFinans_Projeler
+                SET aciklama = @aciklama, 
+                    projeAdi = @projeAdi, 
+                    olusturmaTarihi = @olusturmaTarihi
+                WHERE projeNo = @projeNo";
 
                     using (SqlCommand command = new SqlCommand(sorgu, connection))
                     {
@@ -80,13 +80,13 @@ namespace CEKA_APP.DataBase.ProjeFinans
                         command.Parameters.AddWithValue("@olusturmaTarihi", olusturmaTarihi);
                         command.ExecuteNonQuery();
 
-                        MessageBox.Show($"Proje '{projeNo}' kaydedildi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return true;
                     }
                 }
                 catch (Exception ex)
                 {
                     MessageBox.Show($"Proje finans güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    degisiklikVar = false;
                     return false;
                 }
             }

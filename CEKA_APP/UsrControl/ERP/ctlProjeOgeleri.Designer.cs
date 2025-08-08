@@ -139,6 +139,7 @@
             this.txtProjeNo.Name = "txtProjeNo";
             this.txtProjeNo.Size = new System.Drawing.Size(316, 22);
             this.txtProjeNo.TabIndex = 140;
+            this.txtProjeNo.KeyDown += new System.Windows.Forms.KeyEventHandler(this.txtProjeNo_KeyDown);
             // 
             // label1
             // 

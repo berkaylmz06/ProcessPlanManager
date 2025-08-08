@@ -30,7 +30,7 @@ namespace CEKA_APP.UsrControl
             tableLayoutPanel1.AutoScroll = true;
             tableLayoutPanel1.MinimumSize = new Size(tableLayoutPanel1.Width, 200);
 
-            tableLayoutPanel1.ColumnCount = 13; // Durum Değiştir kolonu kaldırıldı
+            tableLayoutPanel1.ColumnCount = 13;
             tableLayoutPanel1.ColumnStyles.Clear();
 
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30f));
@@ -939,12 +939,6 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            if (tableLayoutPanel1.RowCount <= 2 && !_pendingDeletions.Any() && !_newlyAddedMilestones.Any() && !_odemeHareketleri.Any())
-            {
-                MessageBox.Show("Kaydedilecek veya silinecek ödeme bilgisi bulunmamaktadır.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
             var projeNo = txtProjeAra.Text.Trim();
             var proje = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
             if (proje == null)
@@ -1029,16 +1023,37 @@ namespace CEKA_APP.UsrControl
                     string teminatDurumu = lblTeminatDurum?.Text ?? "Pasif";
                     string faturaNo = odemeSekilleriData.GetFaturaNo(projeNo, kilometreTasiId) ?? "";
 
-                    // Ödeme tarihi kontrolü
+                    // Ödeme tarihi belirleme
                     string odemeTarihi = null;
                     var existingOdemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kilometreTasiId);
-                    if (kalanTutar == 0 && durum == "Ödendi" && (existingOdemeBilgi == null || existingOdemeBilgi.odemeTarihi == null))
+                    if (kalanTutar == 0 && durum == "Ödendi")
                     {
-                        odemeTarihi = DateTime.Now.ToString("yyyy-MM-dd");
+                        // Kalan tutar 0 ve durum Ödendi ise, en son ödeme hareketinden tarihi al
+                        var relatedOdemeHareketi = _odemeHareketleri
+                            .Where(oh => oh.odemeId == existingOdemeBilgi?.odemeId)
+                            .OrderByDescending(oh => oh.odemeTarihi)
+                            .FirstOrDefault();
+                        if (relatedOdemeHareketi != null)
+                        {
+                            odemeTarihi = relatedOdemeHareketi.odemeTarihi.ToString("yyyy-MM-dd");
+                        }
+                        else
+                        {
+                            MessageBox.Show($"Satır {row}: Ödeme durumu 'Ödendi' ancak ödeme hareketi bulunamadı. Lütfen ödeme hareketini ekleyin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return;
+                        }
                     }
                     else if (existingOdemeBilgi != null && existingOdemeBilgi.odemeTarihi != null)
                     {
+                        // Mevcut kayıttaki tarihi koru
                         odemeTarihi = existingOdemeBilgi.odemeTarihi.Value.ToString("yyyy-MM-dd");
+                    }
+
+                    // Ödendi durumunda odemeTarihi zorunlu olsun
+                    if (durum == "Ödendi" && string.IsNullOrEmpty(odemeTarihi))
+                    {
+                        MessageBox.Show($"Satır {row}: Ödeme durumu 'Ödendi' seçiliyken ödeme tarihi belirtilmelidir.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
                     }
 
                     odemeSekilleriData.SaveOrUpdateOdemeBilgi(
@@ -1061,11 +1076,7 @@ namespace CEKA_APP.UsrControl
 
                 var odemeHareketleriData = new ProjeFinans_OdemeHareketleriData();
 
-                if (!_odemeHareketleri.Any())
-                {
-                    MessageBox.Show("Kaydedilecek ödeme hareketi bulunamadı. Önce 'Hesapla' butonuna basarak ödeme hareketlerini oluşturmalısınız.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                }
-                else
+                if (_odemeHareketleri.Any())
                 {
                     foreach (var odemeHareketi in _odemeHareketleri)
                     {
@@ -1085,137 +1096,6 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show($"Ödeme bilgileri kaydedilirken/güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-        private void BtnOdendi_Click(object sender, EventArgs e)
-        {
-            var button = sender as Button;
-            if (button != null)
-            {
-                int rowIndex = tableLayoutPanel1.GetRow(button);
-
-                string projeNo = txtProjeAra.Text.Trim();
-                if (string.IsNullOrEmpty(projeNo))
-                {
-                    MessageBox.Show("Proje numarası boş olduğu için ödeme durumu güncellenemedi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                var lblKilometreTasiAdi = GetLabelAt(rowIndex, 2);
-                var lblOran = GetLabelAt(rowIndex, 3);
-                var txtTutar = GetTextBoxAt(rowIndex, 4);
-                var txtKalanTutar = GetTextBoxAt(rowIndex, 13);
-                var dtpTahminiTarih = GetDateTimePickerAt(rowIndex, 5);
-                var dtpGerceklesenTarih = GetDateTimePickerAt(rowIndex, 6);
-                var rtbAciklama = GetRichTextBoxAt(rowIndex, 7);
-                var txtFaturaNo = GetTextBoxAt(rowIndex, 13);
-                var pnlTeminatMektubu = tableLayoutPanel1.GetControlFromPosition(8, rowIndex) as Panel;
-                var chkTeminatMektubuVar = pnlTeminatMektubu?.Controls.OfType<CheckBox>().FirstOrDefault(c => c.Text == "Var");
-                var lblDurum = GetLabelAt(rowIndex, 11);
-                var lblTeminatDurum = GetLabelAt(rowIndex, 9);
-                string teminatDurumu = lblTeminatDurum?.Text;
-
-                if (lblKilometreTasiAdi == null || string.IsNullOrWhiteSpace(lblKilometreTasiAdi.Text))
-                {
-                    MessageBox.Show("Kilometre taşı adı bulunamadı. Ödeme durumu güncellenemedi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                var kilometreTasiData = new ProjeFinans_FiyatlandirmaKilometreTaslariData();
-                int kilometreTasiId = kilometreTasiData.GetKilometreTasiId(lblKilometreTasiAdi.Text);
-
-                if (kilometreTasiId == 0)
-                {
-                    MessageBox.Show($"Kilometre taşı '{lblKilometreTasiAdi.Text}' için ID bulunamadı. Ödeme durumu güncellenemedi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                string currentStatus = lblDurum.Text;
-                string newStatus = "";
-                string buttonText = "";
-                Color statusColor;
-                string confirmationMessage = "";
-
-                if (currentStatus == "Ödendi")
-                {
-                    newStatus = "Bekliyor";
-                    buttonText = "Ödendi Yap";
-                    statusColor = Color.Red;
-                    confirmationMessage = "Bu ödemeyi 'Bekliyor' olarak işaretlemek istediğinizden emin misiniz?";
-                }
-                else
-                {
-                    newStatus = "Ödendi";
-                    buttonText = "Bekliyor Yap";
-                    statusColor = Color.Green;
-                    confirmationMessage = "Bu ödemeyi 'Ödendi' olarak işaretlemek istediğinizden emin misiniz?";
-                }
-
-                DialogResult result = MessageBox.Show(
-                    confirmationMessage,
-                    "Onay",
-                    MessageBoxButtons.YesNo,
-                    MessageBoxIcon.Question
-                );
-
-                if (result == DialogResult.Yes)
-                {
-                    try
-                    {
-                        string oranText = lblOran.Text.Replace("%", "").Trim();
-                        decimal oran = decimal.Parse(oranText, CultureInfo.InvariantCulture);
-
-                        string tutarText = txtTutar.Text.Trim();
-                        decimal tutar = decimal.Parse(tutarText, NumberStyles.Currency | NumberStyles.Number, CultureInfo.CurrentCulture);
-
-                        string kalanTutarText = txtKalanTutar.Text.Trim();
-                        decimal kalanTutar = 0m;
-                        if (!string.IsNullOrEmpty(kalanTutarText) && decimal.TryParse(kalanTutarText, NumberStyles.Currency | NumberStyles.Number, CultureInfo.CurrentCulture, out decimal parsedKalanTutar))
-                        {
-                            kalanTutar = parsedKalanTutar;
-                        }
-
-                        string tahminiTarih = dtpTahminiTarih.Checked ? dtpTahminiTarih.Value.ToString("yyyy-MM-dd") : "";
-                        string gerceklesenTarih = dtpGerceklesenTarih.Checked ? dtpGerceklesenTarih.Value.ToString("yyyy-MM-dd") : "";
-                        string aciklama = rtbAciklama.Text;
-                        bool teminatMektubu = chkTeminatMektubuVar != null && chkTeminatMektubuVar.Checked;
-                        int siralama = rowIndex;
-                        string faturaNo = "";
-
-                        var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
-                        odemeSekilleriData.SaveOrUpdateOdemeBilgi(
-                            projeNo,
-                            kilometreTasiId,
-                            siralama,
-                            oran.ToString("F2", CultureInfo.InvariantCulture),
-                            tutar.ToString("F2", CultureInfo.InvariantCulture),
-                            tahminiTarih,
-                            gerceklesenTarih,
-                            aciklama,
-                            teminatMektubu,
-                            teminatDurumu,
-                            newStatus,
-                            faturaNo,
-                            kalanTutar.ToString("F2", CultureInfo.InvariantCulture)
-                        );
-
-                        LoadOdemeBilgileri(projeNo);
-                        UpdateBulkInvoiceButtonText();
-
-                        MessageBox.Show("Ödeme durumu veritabanında güncellendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    }
-                    catch (Exception ex)
-                    {
-                        MessageBox.Show($"Ödeme durumu güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        if (lblDurum != null)
-                        {
-                            lblDurum.Text = currentStatus;
-                            lblDurum.ForeColor = currentStatus == "Ödendi" ? Color.Green : Color.Red;
-                        }
-                        button.Text = currentStatus == "Ödendi" ? "Bekliyor Yap" : "Ödendi Yap";
-                    }
-                }
-            }
-        }
-
         private void chkSelect_CheckedChanged(object sender, EventArgs e)
         {
             UpdateBulkInvoiceButtonText();
@@ -1249,6 +1129,8 @@ namespace CEKA_APP.UsrControl
             decimal totalTutar = 0m;
             string proje = txtProjeAra.Text.Trim();
             var culture = CultureInfo.CurrentCulture;
+            List<int> kilometreTasiIds = new List<int>();
+            List<int?> odemeIds = new List<int?>();
 
             for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
             {
@@ -1308,7 +1190,6 @@ namespace CEKA_APP.UsrControl
                 }
                 else
                 {
-                    // Veritabanından ödeme bilgisini tekrar sorgula
                     var odemeData = new ProjeFinans_OdemeSartlariData();
                     var odemeInfo = odemeData.GetOdemeBilgileriByProjeNo(proje)
                         .FirstOrDefault(o => o.kilometreTasiId == kilometreTasiId);
@@ -1333,37 +1214,76 @@ namespace CEKA_APP.UsrControl
             }
             else
             {
-                if (selectedRowIndexes.Count == 0)
+                string combinedDescriptions = "";
+                string combinedAmounts = "";
+
+                List<int> rowsToProcess = selectedRowIndexes.Count > 0
+                    ? selectedRowIndexes
+                    : Enumerable.Range(1, tableLayoutPanel1.RowCount - 2).ToList();
+
+                foreach (int rowIndex in rowsToProcess)
                 {
-                    for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
+                    Label lblKmTasiAdi = GetLabelAt(rowIndex, 2);
+                    TextBox txtTutar = GetTextBoxAt(rowIndex, 4);
+                    var checkBox = tableLayoutPanel1.GetControlFromPosition(0, rowIndex) as CheckBox;
+                    var kilometreTasiData = new ProjeFinans_FiyatlandirmaKilometreTaslariData();
+                    int kilometreTasiId = kilometreTasiData.GetKilometreTasiId(lblKmTasiAdi.Text);
+
+                    int? odemeId = null;
+                    if (checkBox != null && checkBox.Tag is OdemeSartlari odemeBilgi)
                     {
-                        TextBox txtTutar = GetTextBoxAt(row, 4);
-                        if (txtTutar != null && decimal.TryParse(txtTutar.Text, NumberStyles.Currency | NumberStyles.Number, culture, out decimal tutar))
-                        {
-                            totalTutar += tutar;
-                        }
+                        odemeId = odemeBilgi.odemeId;
                     }
-                }
-                else
-                {
-                    foreach (int rowIndex in selectedRowIndexes)
+                    else
                     {
-                        TextBox txtTutar = GetTextBoxAt(rowIndex, 4);
-                        if (txtTutar != null && decimal.TryParse(txtTutar.Text, NumberStyles.Currency | NumberStyles.Number, culture, out decimal tutar))
-                        {
-                            totalTutar += tutar;
-                        }
+                        var odemeData = new ProjeFinans_OdemeSartlariData();
+                        var odemeInfo = odemeData.GetOdemeBilgileriByProjeNo(proje)
+                            .FirstOrDefault(o => o.kilometreTasiId == kilometreTasiId);
+                        odemeId = odemeInfo?.odemeId;
+                    }
+
+                    if (odemeId.HasValue && odemeId > 0)
+                    {
+                        kilometreTasiIds.Add(kilometreTasiId);
+                        odemeIds.Add(odemeId);
+                    }
+
+                    if (txtTutar != null && decimal.TryParse(txtTutar.Text, NumberStyles.Currency | NumberStyles.Number, culture, out decimal tutar))
+                    {
+                        totalTutar += tutar;
+                        combinedAmounts += tutar.ToString("N2", culture) + "\\n";
+                    }
+
+                    if (lblKmTasiAdi != null && !string.IsNullOrWhiteSpace(lblKmTasiAdi.Text))
+                    {
+                        combinedDescriptions += lblKmTasiAdi.Text.Trim() + "\\n";
                     }
                 }
 
+                if (combinedDescriptions.EndsWith("\\n"))
+                    combinedDescriptions = combinedDescriptions.Substring(0, combinedDescriptions.Length - 2);
+
+                if (combinedAmounts.EndsWith("\\n"))
+                    combinedAmounts = combinedAmounts.Substring(0, combinedAmounts.Length - 2);
+
+                if (odemeIds.Count == 0)
+                {
+                    MessageBox.Show("Seçili satırlara ait ödeme ID'leri bulunamadı. Lütfen önce 'Kaydet' butonuna basarak ödeme bilgilerini kaydedin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 var frm = new frmFaturaOlustur(
-                    totalTutar.ToString("N2", culture),
-                    "",
-                    "",
-                    proje
+                    tutar: combinedAmounts,
+                    aciklama: combinedDescriptions,
+                    tarih: "",
+                    proje: proje,
+                    kilometreTasiIds: kilometreTasiIds,
+                    odemeIds: odemeIds
                 );
                 frm.ShowDialog();
             }
+
+            UpdateBulkInvoiceButtonText();
         }
         private void btnHesapla_Click(object sender, EventArgs e)
         {
@@ -1388,6 +1308,11 @@ namespace CEKA_APP.UsrControl
             if (string.IsNullOrWhiteSpace(rtxtAciklama.Text))
             {
                 MessageBox.Show("Lütfen ödeme için bir açıklama girin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!dtOdemeTarihi.Checked)
+            {
+                MessageBox.Show("Lütfen bir ödeme tarihi seçin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1433,9 +1358,8 @@ namespace CEKA_APP.UsrControl
 
                 foreach (int rowIndex in selectedRowIndexes)
                 {
-                    TextBox txtKalanTutar = GetTextBoxAt(rowIndex, 12); // Kalan Tutar kolonu 12'ye kaydı
-                    Label lblDurum = GetLabelAt(rowIndex, 11); // Durum kolonu 11'de
-
+                    TextBox txtKalanTutar = GetTextBoxAt(rowIndex, 12);
+                    Label lblDurum = GetLabelAt(rowIndex, 11);
                     var odemeBilgi = GetCheckBoxAt(rowIndex, 0).Tag as OdemeSartlari;
                     if (odemeBilgi == null || odemeBilgi.odemeId <= 0)
                     {
@@ -1463,7 +1387,7 @@ namespace CEKA_APP.UsrControl
                             {
                                 odemeId = odemeBilgi.odemeId,
                                 odemeMiktari = odemeMiktari,
-                                odemeTarihi = DateTime.Now,
+                                odemeTarihi = dtOdemeTarihi.Value, // Her zaman dtOdemeTarihi.Value kullanılır
                                 odemeAciklama = aciklama
                             });
 
@@ -1472,7 +1396,6 @@ namespace CEKA_APP.UsrControl
                                 lblDurum.Text = "Ödendi";
                                 lblDurum.ForeColor = Color.Green;
 
-                                // Veritabanında durumu güncelle
                                 var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
                                 odemeSekilleriData.SaveOrUpdateOdemeBilgi(
                                     projeNo: odemeBilgi.projeNo,
@@ -1488,6 +1411,7 @@ namespace CEKA_APP.UsrControl
                                     durum: "Ödendi",
                                     faturaNo: odemeSekilleriData.GetFaturaNo(odemeBilgi.projeNo, odemeBilgi.kilometreTasiId) ?? "",
                                     kalanTutar: newKalanTutar.ToString("F2", CultureInfo.InvariantCulture)
+                                // odemeTarihi burada belirtilmiyor, btnKaydet_Click'te ayarlanacak
                                 );
                             }
                         }
@@ -1511,7 +1435,7 @@ namespace CEKA_APP.UsrControl
                                 {
                                     odemeId = odemeBilgi.odemeId,
                                     odemeMiktari = odemeMiktari,
-                                    odemeTarihi = DateTime.Now,
+                                    odemeTarihi = dtOdemeTarihi.Value, // Her zaman dtOdemeTarihi.Value kullanılır
                                     odemeAciklama = aciklama
                                 });
 
@@ -1520,7 +1444,6 @@ namespace CEKA_APP.UsrControl
                                     lblDurum.Text = "Ödendi";
                                     lblDurum.ForeColor = Color.Green;
 
-                                    // Veritabanında durumu güncelle
                                     var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
                                     odemeSekilleriData.SaveOrUpdateOdemeBilgi(
                                         projeNo: odemeBilgi.projeNo,
@@ -1536,6 +1459,7 @@ namespace CEKA_APP.UsrControl
                                         durum: "Ödendi",
                                         faturaNo: odemeSekilleriData.GetFaturaNo(odemeBilgi.projeNo, odemeBilgi.kilometreTasiId) ?? "",
                                         kalanTutar: newKalanTutar.ToString("F2", CultureInfo.InvariantCulture)
+                                    // odemeTarihi burada belirtilmiyor, btnKaydet_Click'te ayarlanacak
                                     );
                                 }
                             }
@@ -1611,6 +1535,53 @@ namespace CEKA_APP.UsrControl
                 chkTutarTamaminiKullan.CheckedChanged -= ChkTutarTamaminiKullan_CheckedChanged;
                 chkTutarTamaminiKullan.Checked = false;
                 chkTutarTamaminiKullan.CheckedChanged += ChkTutarTamaminiKullan_CheckedChanged;
+            }
+        }
+
+        private void btnSil_Click(object sender, EventArgs e)
+        {
+            string projeNo = txtProjeAra.Text.Trim();
+            if (string.IsNullOrEmpty(projeNo))
+            {
+                MessageBox.Show("Lütfen bir proje numarası giriniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
+            if (projeBilgi == null)
+            {
+                MessageBox.Show($"Proje '{projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var result = MessageBox.Show($"Proje '{projeNo}' için tüm ödeme şartları kayıtları silinecek. Onaylıyor musunuz?", "Ödeme Şartları Silme", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
+            if (odemeSekilleriData.OdemeSartlariSil(projeNo))
+            {
+                MessageBox.Show("Ödeme şartları kayıtları başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _pendingDeletions.Clear();
+                _newlyAddedMilestones.Clear();
+                AddHeaderRow();
+                AddBottomSpacer();
+                UpdateBulkInvoiceButtonText();
+            }
+            else
+            {
+                MessageBox.Show("Ödeme şartları silinirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void txtProjeAra_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                e.SuppressKeyPress = true;
+                this.btnAra.PerformClick();
             }
         }
     }

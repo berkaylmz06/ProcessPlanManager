@@ -58,15 +58,15 @@
             // 
             // txtMektupNo
             // 
-            this.txtMektupNo.Location = new System.Drawing.Point(192, 56);
+            this.txtMektupNo.Location = new System.Drawing.Point(191, 45);
             this.txtMektupNo.Name = "txtMektupNo";
             this.txtMektupNo.Size = new System.Drawing.Size(279, 22);
-            this.txtMektupNo.TabIndex = 0;
+            this.txtMektupNo.TabIndex = 1;
             // 
             // lblMektupNo
             // 
             this.lblMektupNo.AutoSize = true;
-            this.lblMektupNo.Location = new System.Drawing.Point(68, 59);
+            this.lblMektupNo.Location = new System.Drawing.Point(67, 48);
             this.lblMektupNo.Name = "lblMektupNo";
             this.lblMektupNo.Size = new System.Drawing.Size(77, 16);
             this.lblMektupNo.TabIndex = 1;
@@ -75,7 +75,7 @@
             // lblMusteriAdi
             // 
             this.lblMusteriAdi.AutoSize = true;
-            this.lblMusteriAdi.Location = new System.Drawing.Point(68, 160);
+            this.lblMusteriAdi.Location = new System.Drawing.Point(67, 151);
             this.lblMusteriAdi.Name = "lblMusteriAdi";
             this.lblMusteriAdi.Size = new System.Drawing.Size(76, 16);
             this.lblMusteriAdi.TabIndex = 3;
@@ -83,7 +83,7 @@
             // 
             // txtMusteriNo
             // 
-            this.txtMusteriNo.Location = new System.Drawing.Point(192, 103);
+            this.txtMusteriNo.Location = new System.Drawing.Point(191, 94);
             this.txtMusteriNo.Name = "txtMusteriNo";
             this.txtMusteriNo.Size = new System.Drawing.Size(279, 22);
             this.txtMusteriNo.TabIndex = 2;
@@ -91,7 +91,7 @@
             // lblTutar
             // 
             this.lblTutar.AutoSize = true;
-            this.lblTutar.Location = new System.Drawing.Point(68, 250);
+            this.lblTutar.Location = new System.Drawing.Point(67, 241);
             this.lblTutar.Name = "lblTutar";
             this.lblTutar.Size = new System.Drawing.Size(41, 16);
             this.lblTutar.TabIndex = 5;
@@ -99,15 +99,15 @@
             // 
             // txtTutar
             // 
-            this.txtTutar.Location = new System.Drawing.Point(192, 247);
+            this.txtTutar.Location = new System.Drawing.Point(191, 238);
             this.txtTutar.Name = "txtTutar";
             this.txtTutar.Size = new System.Drawing.Size(279, 22);
-            this.txtTutar.TabIndex = 4;
+            this.txtTutar.TabIndex = 7;
             // 
             // lblBanka
             // 
             this.lblBanka.AutoSize = true;
-            this.lblBanka.Location = new System.Drawing.Point(68, 307);
+            this.lblBanka.Location = new System.Drawing.Point(67, 298);
             this.lblBanka.Name = "lblBanka";
             this.lblBanka.Size = new System.Drawing.Size(49, 16);
             this.lblBanka.TabIndex = 7;
@@ -116,7 +116,7 @@
             // lblMektupTur
             // 
             this.lblMektupTur.AutoSize = true;
-            this.lblMektupTur.Location = new System.Drawing.Point(68, 366);
+            this.lblMektupTur.Location = new System.Drawing.Point(67, 357);
             this.lblMektupTur.Name = "lblMektupTur";
             this.lblMektupTur.Size = new System.Drawing.Size(84, 16);
             this.lblMektupTur.TabIndex = 9;
@@ -125,37 +125,37 @@
             // chkTL
             // 
             this.chkTL.AutoSize = true;
-            this.chkTL.Location = new System.Drawing.Point(359, 206);
+            this.chkTL.Location = new System.Drawing.Point(358, 197);
             this.chkTL.Name = "chkTL";
             this.chkTL.Size = new System.Drawing.Size(109, 20);
-            this.chkTL.TabIndex = 10;
+            this.chkTL.TabIndex = 6;
             this.chkTL.Text = "Türk Lirası (₺)";
             this.chkTL.UseVisualStyleBackColor = true;
             // 
             // chkDolar
             // 
             this.chkDolar.AutoSize = true;
-            this.chkDolar.Location = new System.Drawing.Point(211, 206);
+            this.chkDolar.Location = new System.Drawing.Point(210, 197);
             this.chkDolar.Name = "chkDolar";
             this.chkDolar.Size = new System.Drawing.Size(80, 20);
-            this.chkDolar.TabIndex = 11;
+            this.chkDolar.TabIndex = 5;
             this.chkDolar.Text = "Dolar ($)";
             this.chkDolar.UseVisualStyleBackColor = true;
             // 
             // chkEuro
             // 
             this.chkEuro.AutoSize = true;
-            this.chkEuro.Location = new System.Drawing.Point(68, 206);
+            this.chkEuro.Location = new System.Drawing.Point(67, 197);
             this.chkEuro.Name = "chkEuro";
             this.chkEuro.Size = new System.Drawing.Size(75, 20);
-            this.chkEuro.TabIndex = 12;
+            this.chkEuro.TabIndex = 4;
             this.chkEuro.Text = "Euro (€)";
             this.chkEuro.UseVisualStyleBackColor = true;
             // 
             // lblVadeTarihi
             // 
             this.lblVadeTarihi.AutoSize = true;
-            this.lblVadeTarihi.Location = new System.Drawing.Point(68, 427);
+            this.lblVadeTarihi.Location = new System.Drawing.Point(67, 418);
             this.lblVadeTarihi.Name = "lblVadeTarihi";
             this.lblVadeTarihi.Size = new System.Drawing.Size(43, 16);
             this.lblVadeTarihi.TabIndex = 14;
@@ -163,22 +163,22 @@
             // 
             // dtVadeTarihi
             // 
-            this.dtVadeTarihi.Location = new System.Drawing.Point(192, 421);
+            this.dtVadeTarihi.Location = new System.Drawing.Point(191, 412);
             this.dtVadeTarihi.Name = "dtVadeTarihi";
             this.dtVadeTarihi.Size = new System.Drawing.Size(279, 22);
-            this.dtVadeTarihi.TabIndex = 15;
+            this.dtVadeTarihi.TabIndex = 10;
             // 
             // dtIadeTarihi
             // 
-            this.dtIadeTarihi.Location = new System.Drawing.Point(192, 660);
+            this.dtIadeTarihi.Location = new System.Drawing.Point(191, 651);
             this.dtIadeTarihi.Name = "dtIadeTarihi";
             this.dtIadeTarihi.Size = new System.Drawing.Size(279, 22);
-            this.dtIadeTarihi.TabIndex = 17;
+            this.dtIadeTarihi.TabIndex = 14;
             // 
             // lblIadeTarihi
             // 
             this.lblIadeTarihi.AutoSize = true;
-            this.lblIadeTarihi.Location = new System.Drawing.Point(68, 666);
+            this.lblIadeTarihi.Location = new System.Drawing.Point(67, 657);
             this.lblIadeTarihi.Name = "lblIadeTarihi";
             this.lblIadeTarihi.Size = new System.Drawing.Size(74, 16);
             this.lblIadeTarihi.TabIndex = 16;
@@ -187,7 +187,7 @@
             // lblKomisyonTutari
             // 
             this.lblKomisyonTutari.AutoSize = true;
-            this.lblKomisyonTutari.Location = new System.Drawing.Point(68, 611);
+            this.lblKomisyonTutari.Location = new System.Drawing.Point(67, 602);
             this.lblKomisyonTutari.Name = "lblKomisyonTutari";
             this.lblKomisyonTutari.Size = new System.Drawing.Size(106, 16);
             this.lblKomisyonTutari.TabIndex = 19;
@@ -196,15 +196,15 @@
             // txtKomisyonTutari
             // 
             this.txtKomisyonTutari.Enabled = false;
-            this.txtKomisyonTutari.Location = new System.Drawing.Point(192, 608);
+            this.txtKomisyonTutari.Location = new System.Drawing.Point(191, 599);
             this.txtKomisyonTutari.Name = "txtKomisyonTutari";
             this.txtKomisyonTutari.Size = new System.Drawing.Size(279, 22);
-            this.txtKomisyonTutari.TabIndex = 18;
+            this.txtKomisyonTutari.TabIndex = 13;
             // 
             // lblKomisyonOrani
             // 
             this.lblKomisyonOrani.AutoSize = true;
-            this.lblKomisyonOrani.Location = new System.Drawing.Point(68, 550);
+            this.lblKomisyonOrani.Location = new System.Drawing.Point(67, 541);
             this.lblKomisyonOrani.Name = "lblKomisyonOrani";
             this.lblKomisyonOrani.Size = new System.Drawing.Size(104, 16);
             this.lblKomisyonOrani.TabIndex = 21;
@@ -212,16 +212,16 @@
             // 
             // txtKomisyonOrani
             // 
-            this.txtKomisyonOrani.Location = new System.Drawing.Point(192, 547);
+            this.txtKomisyonOrani.Location = new System.Drawing.Point(191, 538);
             this.txtKomisyonOrani.Name = "txtKomisyonOrani";
             this.txtKomisyonOrani.Size = new System.Drawing.Size(279, 22);
-            this.txtKomisyonOrani.TabIndex = 20;
+            this.txtKomisyonOrani.TabIndex = 12;
             this.txtKomisyonOrani.TextChanged += new System.EventHandler(this.txtKomisyonOrani_TextChanged);
             // 
             // lblKomisyonVadesi
             // 
             this.lblKomisyonVadesi.AutoSize = true;
-            this.lblKomisyonVadesi.Location = new System.Drawing.Point(68, 489);
+            this.lblKomisyonVadesi.Location = new System.Drawing.Point(67, 480);
             this.lblKomisyonVadesi.Name = "lblKomisyonVadesi";
             this.lblKomisyonVadesi.Size = new System.Drawing.Size(115, 16);
             this.lblKomisyonVadesi.TabIndex = 23;
@@ -229,10 +229,10 @@
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(158, 718);
+            this.btnKaydet.Location = new System.Drawing.Point(157, 709);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(202, 51);
-            this.btnKaydet.TabIndex = 24;
+            this.btnKaydet.TabIndex = 15;
             this.btnKaydet.Text = "Kaydet";
             this.btnKaydet.UseVisualStyleBackColor = true;
             this.btnKaydet.Click += new System.EventHandler(this.btnKaydet_Click);
@@ -240,7 +240,7 @@
             // llbMusteriNo
             // 
             this.llbMusteriNo.AutoSize = true;
-            this.llbMusteriNo.Location = new System.Drawing.Point(68, 106);
+            this.llbMusteriNo.Location = new System.Drawing.Point(67, 97);
             this.llbMusteriNo.Name = "llbMusteriNo";
             this.llbMusteriNo.Size = new System.Drawing.Size(74, 16);
             this.llbMusteriNo.TabIndex = 25;
@@ -248,10 +248,10 @@
             // 
             // txtMusteriAdi
             // 
-            this.txtMusteriAdi.Location = new System.Drawing.Point(192, 157);
+            this.txtMusteriAdi.Location = new System.Drawing.Point(191, 148);
             this.txtMusteriAdi.Name = "txtMusteriAdi";
             this.txtMusteriAdi.Size = new System.Drawing.Size(279, 22);
-            this.txtMusteriAdi.TabIndex = 26;
+            this.txtMusteriAdi.TabIndex = 3;
             // 
             // cmbMektupTuru
             // 
@@ -262,10 +262,10 @@
             "Avans",
             "Kati",
             "Geçici"});
-            this.cmbMektupTuru.Location = new System.Drawing.Point(192, 363);
+            this.cmbMektupTuru.Location = new System.Drawing.Point(191, 354);
             this.cmbMektupTuru.Name = "cmbMektupTuru";
             this.cmbMektupTuru.Size = new System.Drawing.Size(279, 24);
-            this.cmbMektupTuru.TabIndex = 27;
+            this.cmbMektupTuru.TabIndex = 9;
             // 
             // cmbKomisyonVadesi
             // 
@@ -274,10 +274,10 @@
             this.cmbKomisyonVadesi.Items.AddRange(new object[] {
             "1 Aylık",
             "3 Aylık"});
-            this.cmbKomisyonVadesi.Location = new System.Drawing.Point(189, 486);
+            this.cmbKomisyonVadesi.Location = new System.Drawing.Point(188, 477);
             this.cmbKomisyonVadesi.Name = "cmbKomisyonVadesi";
             this.cmbKomisyonVadesi.Size = new System.Drawing.Size(279, 24);
-            this.cmbKomisyonVadesi.TabIndex = 28;
+            this.cmbKomisyonVadesi.TabIndex = 11;
             // 
             // cmbBankalar
             // 
@@ -288,16 +288,17 @@
             "Avans",
             "Kati",
             "Geçici"});
-            this.cmbBankalar.Location = new System.Drawing.Point(192, 307);
+            this.cmbBankalar.Location = new System.Drawing.Point(191, 298);
             this.cmbBankalar.Name = "cmbBankalar";
             this.cmbBankalar.Size = new System.Drawing.Size(279, 24);
-            this.cmbBankalar.TabIndex = 29;
+            this.cmbBankalar.TabIndex = 8;
             // 
             // frmTeminatMektubuEkle
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(541, 781);
+            this.BackColor = System.Drawing.SystemColors.Window;
+            this.ClientSize = new System.Drawing.Size(542, 793);
             this.Controls.Add(this.cmbBankalar);
             this.Controls.Add(this.cmbKomisyonVadesi);
             this.Controls.Add(this.cmbMektupTuru);

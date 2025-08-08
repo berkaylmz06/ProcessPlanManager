@@ -174,7 +174,7 @@
             // lblFaturaBilgi
             // 
             this.lblFaturaBilgi.AutoSize = true;
-            this.lblFaturaBilgi.Location = new System.Drawing.Point(12, 597);
+            this.lblFaturaBilgi.Location = new System.Drawing.Point(12, 612);
             this.lblFaturaBilgi.Name = "lblFaturaBilgi";
             this.lblFaturaBilgi.Size = new System.Drawing.Size(0, 16);
             this.lblFaturaBilgi.TabIndex = 16;
@@ -243,6 +243,7 @@
             this.txtKdv.Name = "txtKdv";
             this.txtKdv.Size = new System.Drawing.Size(216, 22);
             this.txtKdv.TabIndex = 25;
+            this.txtKdv.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtKdv_KeyPress);
             // 
             // lblKdv
             // 

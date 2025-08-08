@@ -28,8 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.dataGridOdemeSartlari = new System.Windows.Forms.DataGridView();
+            this.cmsOdemeSartlari = new System.Windows.Forms.ContextMenuStrip(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridOdemeSartlari)).BeginInit();
             this.SuspendLayout();
             // 
@@ -55,6 +57,12 @@
             this.dataGridOdemeSartlari.TabIndex = 8;
             this.dataGridOdemeSartlari.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridOdemeSartlari_CellClick);
             // 
+            // cmsOdemeSartlari
+            // 
+            this.cmsOdemeSartlari.ImageScalingSize = new System.Drawing.Size(20, 20);
+            this.cmsOdemeSartlari.Name = "cmsOdemeSartlari";
+            this.cmsOdemeSartlari.Size = new System.Drawing.Size(211, 32);
+            // 
             // ctlOdemeSartlariListe
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -73,5 +81,6 @@
 
         private ctlBaslik ctlBaslik1;
         private System.Windows.Forms.DataGridView dataGridOdemeSartlari;
+        private System.Windows.Forms.ContextMenuStrip cmsOdemeSartlari;
     }
 }

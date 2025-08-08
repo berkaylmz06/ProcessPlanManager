@@ -10,6 +10,7 @@ namespace CEKA_APP.Entitys.ProjeFinans
     {
         public int odemeId { get; set; } 
         public string projeNo { get; set; }
+        public string musteriAdi { get; set; }
         public int kilometreTasiId { get; set; }
         public string kilometreTasiAdi { get; set; } 
         public int siralama { get; set; }

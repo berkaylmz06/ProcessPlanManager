@@ -14,7 +14,7 @@ namespace CEKA_APP
         private Func<Dictionary<string, TextBox>, DataTable> filtrelemeFonksiyonu;
         private Action<DataTable> aramaSonucuCallback;
         private readonly bool detayEklenecekMi;
-        private readonly Dictionary<string, string> sonFiltreKriterleri; 
+        private readonly Dictionary<string, string> sonFiltreKriterleri;
         private Dictionary<string, TextBox> filtreKutulari = new Dictionary<string, TextBox>();
 
         public frmAra(DataGridViewColumnCollection columns, Func<Dictionary<string, TextBox>, DataTable> filtreFonksiyonu,
@@ -36,20 +36,26 @@ namespace CEKA_APP
 
         private void AraFormDinamikLabel(DataGridViewColumnCollection columns)
         {
-            int yOffset = 100;
-            int xOffset = 40;
+            panelFiltreler.Controls.Clear();
+            panelFiltreler.AutoScroll = true; 
+
+            int yOffset = 10;
+            int xOffset = 10;
             int textBoxWidth = 150;
             int labelWidth = 100;
 
-            for (int i = 0; i < columns.Count; i++)
-            {
-                DataGridViewColumn column = columns[i];
+            var sortedColumns = columns.Cast<DataGridViewColumn>()
+                                       .Where(c => c.Visible)
+                                       .OrderBy(c => c.DisplayIndex)
+                                       .ToList();
 
+            foreach (var column in sortedColumns)
+            {
                 Label label = new Label();
                 label.Text = column.HeaderText + ":";
                 label.AutoSize = true;
                 label.Location = new Point(xOffset, yOffset);
-                this.Controls.Add(label);
+                panelFiltreler.Controls.Add(label);
 
                 TextBox textBox = new TextBox();
                 textBox.Name = column.HeaderText;
@@ -61,7 +67,7 @@ namespace CEKA_APP
                     textBox.Text = sonFiltreKriterleri[column.HeaderText];
                 }
 
-                this.Controls.Add(textBox);
+                panelFiltreler.Controls.Add(textBox);
                 filtreKutulari[column.HeaderText] = textBox;
 
                 yOffset += Math.Max(label.Height, textBox.Height) + 10;
@@ -84,6 +90,14 @@ namespace CEKA_APP
 
             aramaSonucuCallback?.Invoke(sonucTablo);
             this.Close();
+        }
+
+        private void btnTemizle_Click(object sender, EventArgs e)
+        {
+            foreach (var textBox in filtreKutulari.Values)
+            {
+                textBox.Text = string.Empty;
+            }
         }
     }
 }

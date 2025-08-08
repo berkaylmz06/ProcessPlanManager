@@ -31,6 +31,8 @@
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.btnAra = new System.Windows.Forms.Button();
+            this.panelFiltreler = new System.Windows.Forms.Panel();
+            this.btnTemizle = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -66,11 +68,31 @@
             this.btnAra.UseVisualStyleBackColor = true;
             this.btnAra.Click += new System.EventHandler(this.btnAra_Click);
             // 
+            // panelFiltreler
+            // 
+            this.panelFiltreler.Location = new System.Drawing.Point(12, 94);
+            this.panelFiltreler.Name = "panelFiltreler";
+            this.panelFiltreler.Size = new System.Drawing.Size(461, 532);
+            this.panelFiltreler.TabIndex = 3;
+            // 
+            // btnTemizle
+            // 
+            this.btnTemizle.Location = new System.Drawing.Point(479, 147);
+            this.btnTemizle.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.btnTemizle.Name = "btnTemizle";
+            this.btnTemizle.Size = new System.Drawing.Size(101, 38);
+            this.btnTemizle.TabIndex = 4;
+            this.btnTemizle.Text = "Temizle";
+            this.btnTemizle.UseVisualStyleBackColor = true;
+            this.btnTemizle.Click += new System.EventHandler(this.btnTemizle_Click);
+            // 
             // frmAra
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(591, 638);
+            this.Controls.Add(this.btnTemizle);
+            this.Controls.Add(this.panelFiltreler);
             this.Controls.Add(this.btnAra);
             this.Controls.Add(this.panel1);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
@@ -88,5 +110,7 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Button btnAra;
+        private System.Windows.Forms.Panel panelFiltreler;
+        private System.Windows.Forms.Button btnTemizle;
     }
 }
