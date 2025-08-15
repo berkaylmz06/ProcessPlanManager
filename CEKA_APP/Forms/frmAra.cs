@@ -37,7 +37,7 @@ namespace CEKA_APP
         private void AraFormDinamikLabel(DataGridViewColumnCollection columns)
         {
             panelFiltreler.Controls.Clear();
-            panelFiltreler.AutoScroll = true; 
+            panelFiltreler.AutoScroll = true;
 
             int yOffset = 10;
             int xOffset = 10;
@@ -45,9 +45,9 @@ namespace CEKA_APP
             int labelWidth = 100;
 
             var sortedColumns = columns.Cast<DataGridViewColumn>()
-                                       .Where(c => c.Visible)
-                                       .OrderBy(c => c.DisplayIndex)
-                                       .ToList();
+                          .Where(c => c.Visible)
+                          .OrderBy(c => c.DisplayIndex)
+                          .ToList();
 
             foreach (var column in sortedColumns)
             {
@@ -62,6 +62,8 @@ namespace CEKA_APP
                 textBox.Location = new Point(xOffset + labelWidth + 40, yOffset);
                 textBox.Width = textBoxWidth;
 
+                textBox.KeyDown += new KeyEventHandler(this.btnAra_KeyDown);
+
                 if (sonFiltreKriterleri != null && sonFiltreKriterleri.ContainsKey(column.HeaderText))
                 {
                     textBox.Text = sonFiltreKriterleri[column.HeaderText];
@@ -73,7 +75,6 @@ namespace CEKA_APP
                 yOffset += Math.Max(label.Height, textBox.Height) + 10;
             }
         }
-
         private void btnAra_Click(object sender, EventArgs e)
         {
             DataTable sonucTablo = filtrelemeFonksiyonu?.Invoke(filtreKutulari);
@@ -97,6 +98,15 @@ namespace CEKA_APP
             foreach (var textBox in filtreKutulari.Values)
             {
                 textBox.Text = string.Empty;
+            }
+        }
+
+        private void btnAra_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnAra_Click(sender, e);
+                e.SuppressKeyPress = true; 
             }
         }
     }

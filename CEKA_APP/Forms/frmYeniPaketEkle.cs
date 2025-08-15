@@ -1,12 +1,6 @@
 ﻿using CEKA_APP.DataBase.ProjeFinans;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CEKA_APP.Forms
@@ -15,13 +9,23 @@ namespace CEKA_APP.Forms
     {
         public string PaketAdi { get; private set; }
         private ProjeFinans_SevkiyatPaketleriData paketData = new ProjeFinans_SevkiyatPaketleriData();
+
+        private const int VerticalMargin = 12;
+
         public frmYeniPaketEkle()
         {
             InitializeComponent();
             LoadPaketler();
 
+            panelYeniPaket.Visible = false;
+
+            SetFormSize(false);
+
             this.Icon = Properties.Resources.cekalogokirmizi;
+
+            txtPaketAdi.TextChanged += txtPaketAdi_TextChanged;
         }
+
         private void LoadPaketler()
         {
             var paketler = paketData.GetPaketler();
@@ -32,27 +36,98 @@ namespace CEKA_APP.Forms
             }
             listPaketler.SelectedIndex = -1;
         }
-        private void btnEkle_Click(object sender, EventArgs e)
-        {
-            if (!txtPaketAdi.Visible)
-            {
-                txtPaketAdi.Clear();
 
-                btnEkle.Text = "Onayla";
-                this.Height += 30;
-            }
-            else if (!string.IsNullOrEmpty(txtPaketAdi.Text))
+        private void btnSec_Click(object sender, EventArgs e)
+        {
+            if (listPaketler.SelectedIndex >= 0)
             {
-                PaketAdi = txtPaketAdi.Text;
-                paketData.PaketEkle(PaketAdi);
-                LoadPaketler();
-                btnEkle.Text = "Yeni Ekle";
-                this.Height -= 30;
-                MessageBox.Show("Yeni paket eklendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                PaketAdi = listPaketler.SelectedItem.ToString();
+                this.DialogResult = DialogResult.OK;
             }
             else
             {
-                MessageBox.Show("Lütfen yeni paket adını girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Lütfen bir paket seçin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
+        }
+
+        private void btnEkle_Click(object sender, EventArgs e)
+        {
+            if (btnEkle.Text == "Yeni Ekle")
+            {
+                btnSec.Visible = false;
+                panelYeniPaket.Visible = true;
+                txtPaketAdi.Clear();
+
+                btnEkle.Text = "İptal";
+                btnEkle.BackColor = Color.Red;
+
+                SetFormSize(true);
+            }
+            else if (btnEkle.Text == "İptal")
+            {
+                GeriDon();
+            }
+            else if (btnEkle.Text == "Onayla")
+            {
+                if (!string.IsNullOrEmpty(txtPaketAdi.Text))
+                {
+                    PaketAdi = txtPaketAdi.Text;
+                    paketData.PaketEkle(PaketAdi);
+                    LoadPaketler();
+
+                    GeriDon();
+
+                    MessageBox.Show("Yeni paket başarıyla eklendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Lütfen yeni paket adını girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+
+        private void txtPaketAdi_TextChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtPaketAdi.Text))
+            {
+                btnEkle.Text = "İptal";
+                btnEkle.BackColor = Color.Red;
+            }
+            else
+            {
+                btnEkle.Text = "Onayla";
+                btnEkle.BackColor = Color.FromArgb(46, 204, 113); // Onay için yeşil
+            }
+        }
+
+        private void SetFormSize(bool expanded)
+        {
+            if (expanded)
+            {
+                this.ClientSize = new Size(this.ClientSize.Width, panelYeniPaket.Bottom + VerticalMargin);
+            }
+            else
+            {
+                this.ClientSize = new Size(this.ClientSize.Width, btnEkle.Bottom + VerticalMargin);
+            }
+        }
+
+        private void GeriDon()
+        {
+            panelYeniPaket.Visible = false;
+            btnSec.Visible = true;
+            btnEkle.Text = "Yeni Ekle";
+            btnEkle.BackColor = Color.Gray;
+
+            SetFormSize(false);
+        }
+
+        private void frmYeniPaketEkle_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (this.DialogResult == DialogResult.None && string.IsNullOrEmpty(PaketAdi))
+            {
+                e.Cancel = true;
+                MessageBox.Show("Lütfen bir paket seçin veya yeni bir paket ekleyin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
     }

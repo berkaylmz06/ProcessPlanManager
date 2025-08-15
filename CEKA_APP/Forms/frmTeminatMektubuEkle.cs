@@ -398,11 +398,11 @@ namespace CEKA_APP.Forms
                 try
                 {
                     string[] satirlar = File.ReadAllLines(filePath);
-                    string bankalarSatiri = satirlar.FirstOrDefault(s => s.Trim().StartsWith("Bankalar =", StringComparison.OrdinalIgnoreCase));
+                    string bankalarSatiri = satirlar.FirstOrDefault(s => s.Trim().StartsWith("Bankalar", StringComparison.OrdinalIgnoreCase));
 
                     if (bankalarSatiri != null)
                     {
-                        string bankalarString = bankalarSatiri.Substring("Bankalar =".Length).Trim();
+                        string bankalarString = bankalarSatiri.Substring(bankalarSatiri.IndexOf('=') + 1).Trim();
                         string[] bankalar = bankalarString.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
                         cmbBankalar.Items.Clear();
@@ -413,7 +413,7 @@ namespace CEKA_APP.Forms
                     }
                     else
                     {
-                        MessageBox.Show("config.txt dosyasında 'Bankalar =' satırı bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        MessageBox.Show("config.txt dosyasında 'Bankalar' satırı bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     }
                 }
                 catch (Exception ex)
@@ -426,10 +426,36 @@ namespace CEKA_APP.Forms
                 MessageBox.Show("Banka listesi dosyası bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-
         private void txtKomisyonOrani_TextChanged(object sender, EventArgs e)
         {
             HesaplaKomisyonTutari();
+        }
+
+        private void chkEuro_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkEuro.Checked)
+            {
+                chkTL.Checked = false;
+                chkDolar.Checked = false;
+            }
+        }
+
+        private void chkDolar_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkDolar.Checked)
+            {
+                chkTL.Checked = false;
+                chkEuro.Checked = false;
+            }
+        }
+
+        private void chkTL_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chkTL.Checked)
+            {
+                chkDolar.Checked = false;
+                chkEuro.Checked = false;
+            }
         }
     }
 }

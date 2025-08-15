@@ -250,21 +250,24 @@ namespace CEKA_APP.UsrControl
 
         private void panel3_Resize(object sender, EventArgs e)
         {
-            int spacing = 60;
-            int totalWidth = panelKart1.Width + panelKart2.Width + panelKart3.Width + panelKart4.Width + (3 * spacing);
-            int startX = Math.Max((panelKartContainer.Width - totalWidth) / 2, 0);
+            int margin = 30;
 
             int y1 = Math.Max((panelKartContainer.Height - panelKart1.Height) / 2, 0);
             int y2 = Math.Max((panelKartContainer.Height - panelKart2.Height) / 2, 0);
             int y3 = Math.Max((panelKartContainer.Height - panelKart3.Height) / 2, 0);
             int y4 = Math.Max((panelKartContainer.Height - panelKart4.Height) / 2, 0);
 
-            panelKart1.Location = new Point(startX, y1);
-            panelKart2.Location = new Point(startX + panelKart1.Width + spacing, y2);
-            panelKart3.Location = new Point(startX + panelKart1.Width + spacing + panelKart2.Width + spacing, y3);
-            panelKart4.Location = new Point(startX + panelKart1.Width + spacing + panelKart2.Width + spacing + panelKart3.Width + spacing, y4);
-        }
+            int totalCardWidth = panelKart1.Width + panelKart2.Width + panelKart3.Width + panelKart4.Width;
 
+            int availableSpacing = panelKartContainer.Width - totalCardWidth - (2 * margin);
+
+            int spacing = Math.Max(availableSpacing / 3, 0);
+
+            panelKart1.Location = new Point(margin, y1);
+            panelKart2.Location = new Point(panelKart1.Location.X + panelKart1.Width + spacing, y2);
+            panelKart3.Location = new Point(panelKart2.Location.X + panelKart2.Width + spacing, y3);
+            panelKart4.Location = new Point(panelKart3.Location.X + panelKart3.Width + spacing, y4);
+        }
         private void ctlKesimDetaylari_Load(object sender, EventArgs e)
         {
             txtArama.Text = placeholderText;

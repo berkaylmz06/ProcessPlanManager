@@ -67,6 +67,7 @@
             this.btnAra.Text = "Ara";
             this.btnAra.UseVisualStyleBackColor = true;
             this.btnAra.Click += new System.EventHandler(this.btnAra_Click);
+            this.btnAra.KeyDown += new System.Windows.Forms.KeyEventHandler(this.btnAra_KeyDown);
             // 
             // panelFiltreler
             // 

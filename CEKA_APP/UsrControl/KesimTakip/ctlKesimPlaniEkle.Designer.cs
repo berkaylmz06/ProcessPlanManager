@@ -142,6 +142,7 @@
             // 
             // btnYazdir
             // 
+            this.btnYazdir.Enabled = false;
             this.btnYazdir.Location = new System.Drawing.Point(600, 715);
             this.btnYazdir.Name = "btnYazdir";
             this.btnYazdir.Size = new System.Drawing.Size(79, 42);

@@ -365,6 +365,12 @@
     <Compile Include="UsrControl\ERP\ctlAutoCadAktarim.Designer.cs">
       <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
     </Compile>
+    <Compile Include="UsrControl\KesimTakip\ctlKesimPlaniEkle.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UsrControl\KesimTakip\ctlKesimPlaniEkle.Designer.cs">
+      <DependentUpon>ctlKesimPlaniEkle.cs</DependentUpon>
+    </Compile>
     <Compile Include="UsrControl\ProjeFinans\ctlOdemeSartlariListe.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -394,12 +400,6 @@
     </Compile>
     <Compile Include="UsrControl\KesimTakip\ctlKesimDetaylari.Designer.cs">
       <DependentUpon>ctlKesimDetaylari.cs</DependentUpon>
-    </Compile>
-    <Compile Include="UsrControl\KesimTakip\ctlKesimPlaniEkle.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="UsrControl\KesimTakip\ctlKesimPlaniEkle.Designer.cs">
-      <DependentUpon>ctlKesimPlaniEkle.cs</DependentUpon>
     </Compile>
     <Compile Include="UsrControl\KesimTakip\ctlKesimYap.cs">
       <SubType>UserControl</SubType>
@@ -534,6 +534,9 @@
     <EmbeddedResource Include="UsrControl\ERP\ctlAutoCadAktarim.resx">
       <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="UsrControl\KesimTakip\ctlKesimPlaniEkle.resx">
+      <DependentUpon>ctlKesimPlaniEkle.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\ProjeFinans\ctlOdemeSartlariListe.resx">
       <DependentUpon>ctlOdemeSartlariListe.cs</DependentUpon>
     </EmbeddedResource>
@@ -548,9 +551,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\KesimTakip\ctlKesimDetaylari.resx">
       <DependentUpon>ctlKesimDetaylari.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\KesimTakip\ctlKesimPlaniEkle.resx">
-      <DependentUpon>ctlKesimPlaniEkle.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UsrControl\KesimTakip\ctlKesimYap.resx">
       <DependentUpon>ctlKesimYap.cs</DependentUpon>

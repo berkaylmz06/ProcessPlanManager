@@ -32,12 +32,8 @@ namespace CEKA_APP.UsrControl
 
             RoundedPanelHelper.ApplyRoundedBorder(panelList, 10);
             RoundedPanelHelper.ApplyRoundedBorder(panelSearch, 10);
-            RoundedPanelHelper.ApplyRoundedBorder(panelHeader, 10);
 
-            splitContainer1.Panel1.BackColor = ColorTranslator.FromHtml("#ADD8E6");
-            splitContainer1.Panel2.BackColor = ColorTranslator.FromHtml("#ADD8E6");
             panelSearch.BackColor = ColorTranslator.FromHtml("#2C3E50");
-            panelHeader.BackColor = ColorTranslator.FromHtml("#2C3E50");
 
             ButonGenelHelper.KullaniciEkleButonAyari(btnKaydet);
             ButonGenelHelper.KullaniciEkleButonAyari(btnYeni);
@@ -1551,6 +1547,13 @@ namespace CEKA_APP.UsrControl
                 e.SuppressKeyPress = true;
                 this.btnAra.PerformClick();
             }
+        }
+
+        private void ctlProjeOgeleri_Resize(object sender, EventArgs e)
+        {
+            panelList.Invalidate();
+            treeView1.Invalidate();
+            panelSearch.Invalidate();
         }
     }
 }

@@ -54,6 +54,9 @@ namespace CEKA_APP.UsrControl
             if (dataGridViewTamamlanmisKesimListesi.Columns.Contains("kesilmisPlanSayisi"))
                 dataGridViewTamamlanmisKesimListesi.Columns["kesilmisPlanSayisi"].HeaderText = "Kesilmiş Plan Sayısı";
 
+            if (dataGridViewTamamlanmisKesimListesi.Columns.Contains("kesilenLot"))
+                dataGridViewTamamlanmisKesimListesi.Columns["kesilenLot"].HeaderText = "Kesilen Lot";
+
             if (dataGridViewTamamlanmisKesimListesi.Columns.Contains("kesimTarihi"))
                 dataGridViewTamamlanmisKesimListesi.Columns["kesimTarihi"].HeaderText = "Kesim Tarihi";
 

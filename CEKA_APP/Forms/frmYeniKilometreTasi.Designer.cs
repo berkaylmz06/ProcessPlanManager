@@ -28,77 +28,66 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.lblYeniKilometreTasi = new System.Windows.Forms.Label();
-            this.lblYeniKilometreTasiBilgi = new System.Windows.Forms.Label();
-            this.txtKilometreTasi = new System.Windows.Forms.TextBox();
-            this.btnEkle = new System.Windows.Forms.Button();
-            this.btnSec = new System.Windows.Forms.Button();
             this.listKilometreTaslari = new System.Windows.Forms.ListBox();
+            this.btnSec = new System.Windows.Forms.Button();
+            this.btnEkle = new System.Windows.Forms.Button();
             this.lblOran = new System.Windows.Forms.Label();
             this.cmbOran = new System.Windows.Forms.ComboBox();
+            this.panelYeniKilometreTasi = new System.Windows.Forms.Panel();
+            this.txtKilometreTasi = new System.Windows.Forms.TextBox();
+            this.lblYeniKilometreTasiBilgi = new System.Windows.Forms.Label();
+            this.lblYeniKilometreTasi = new System.Windows.Forms.Label();
+            this.panelYeniKilometreTasi.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // lblYeniKilometreTasi
-            // 
-            this.lblYeniKilometreTasi.AutoSize = true;
-            this.lblYeniKilometreTasi.Location = new System.Drawing.Point(19, 312);
-            this.lblYeniKilometreTasi.Name = "lblYeniKilometreTasi";
-            this.lblYeniKilometreTasi.Size = new System.Drawing.Size(119, 16);
-            this.lblYeniKilometreTasi.TabIndex = 13;
-            this.lblYeniKilometreTasi.Text = "Kilometre Taşı Adı:";
-            this.lblYeniKilometreTasi.Visible = false;
-            // 
-            // lblYeniKilometreTasiBilgi
-            // 
-            this.lblYeniKilometreTasiBilgi.AutoSize = true;
-            this.lblYeniKilometreTasiBilgi.Location = new System.Drawing.Point(95, 277);
-            this.lblYeniKilometreTasiBilgi.Name = "lblYeniKilometreTasiBilgi";
-            this.lblYeniKilometreTasiBilgi.Size = new System.Drawing.Size(192, 16);
-            this.lblYeniKilometreTasiBilgi.TabIndex = 12;
-            this.lblYeniKilometreTasiBilgi.Text = "Lütfen yeni kilometre taşı giriniz.";
-            this.lblYeniKilometreTasiBilgi.Visible = false;
-            // 
-            // txtKilometreTasi
-            // 
-            this.txtKilometreTasi.Location = new System.Drawing.Point(191, 309);
-            this.txtKilometreTasi.Name = "txtKilometreTasi";
-            this.txtKilometreTasi.Size = new System.Drawing.Size(176, 22);
-            this.txtKilometreTasi.TabIndex = 11;
-            this.txtKilometreTasi.Visible = false;
-            // 
-            // btnEkle
-            // 
-            this.btnEkle.Location = new System.Drawing.Point(216, 386);
-            this.btnEkle.Name = "btnEkle";
-            this.btnEkle.Size = new System.Drawing.Size(116, 38);
-            this.btnEkle.TabIndex = 10;
-            this.btnEkle.Text = "Ekle";
-            this.btnEkle.UseVisualStyleBackColor = true;
-            this.btnEkle.Click += new System.EventHandler(this.btnEkle_Click);
-            // 
-            // btnSec
-            // 
-            this.btnSec.Location = new System.Drawing.Point(42, 386);
-            this.btnSec.Name = "btnSec";
-            this.btnSec.Size = new System.Drawing.Size(116, 38);
-            this.btnSec.TabIndex = 9;
-            this.btnSec.Text = "Seç";
-            this.btnSec.UseVisualStyleBackColor = true;
-            this.btnSec.Click += new System.EventHandler(this.btnSec_Click);
             // 
             // listKilometreTaslari
             // 
+            this.listKilometreTaslari.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.listKilometreTaslari.FormattingEnabled = true;
             this.listKilometreTaslari.ItemHeight = 16;
-            this.listKilometreTaslari.Location = new System.Drawing.Point(22, 22);
+            this.listKilometreTaslari.Location = new System.Drawing.Point(20, 20);
             this.listKilometreTaslari.Name = "listKilometreTaslari";
-            this.listKilometreTaslari.Size = new System.Drawing.Size(345, 244);
+            this.listKilometreTaslari.Size = new System.Drawing.Size(345, 196);
             this.listKilometreTaslari.TabIndex = 8;
+            // 
+            // btnSec
+            // 
+            this.btnSec.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.btnSec.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
+            this.btnSec.FlatAppearance.BorderSize = 0;
+            this.btnSec.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSec.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.btnSec.ForeColor = System.Drawing.Color.White;
+            this.btnSec.Location = new System.Drawing.Point(198, 269);
+            this.btnSec.Name = "btnSec";
+            this.btnSec.Size = new System.Drawing.Size(167, 45);
+            this.btnSec.TabIndex = 9;
+            this.btnSec.Text = "Seç";
+            this.btnSec.UseVisualStyleBackColor = false;
+            this.btnSec.Click += new System.EventHandler(this.btnSec_Click);
+            // 
+            // btnEkle
+            // 
+            this.btnEkle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
+            this.btnEkle.BackColor = System.Drawing.Color.Gray;
+            this.btnEkle.FlatAppearance.BorderSize = 0;
+            this.btnEkle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnEkle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.btnEkle.ForeColor = System.Drawing.Color.White;
+            this.btnEkle.Location = new System.Drawing.Point(20, 269);
+            this.btnEkle.Name = "btnEkle";
+            this.btnEkle.Size = new System.Drawing.Size(167, 45);
+            this.btnEkle.TabIndex = 10;
+            this.btnEkle.Text = "Yeni Ekle";
+            this.btnEkle.UseVisualStyleBackColor = false;
+            this.btnEkle.Click += new System.EventHandler(this.btnEkle_Click);
             // 
             // lblOran
             // 
             this.lblOran.AutoSize = true;
-            this.lblOran.Location = new System.Drawing.Point(19, 344);
+            this.lblOran.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblOran.Location = new System.Drawing.Point(17, 237);
             this.lblOran.Name = "lblOran";
             this.lblOran.Size = new System.Drawing.Size(39, 16);
             this.lblOran.TabIndex = 15;
@@ -106,30 +95,79 @@
             // 
             // cmbOran
             // 
+            this.cmbOran.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbOran.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbOran.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.cmbOran.FormattingEnabled = true;
-            this.cmbOran.Location = new System.Drawing.Point(191, 344);
+            this.cmbOran.Location = new System.Drawing.Point(198, 234);
             this.cmbOran.Name = "cmbOran";
-            this.cmbOran.Size = new System.Drawing.Size(176, 24);
+            this.cmbOran.Size = new System.Drawing.Size(167, 24);
             this.cmbOran.TabIndex = 16;
+            // 
+            // panelYeniKilometreTasi
+            // 
+            this.panelYeniKilometreTasi.Controls.Add(this.txtKilometreTasi);
+            this.panelYeniKilometreTasi.Controls.Add(this.lblYeniKilometreTasiBilgi);
+            this.panelYeniKilometreTasi.Controls.Add(this.lblYeniKilometreTasi);
+            this.panelYeniKilometreTasi.Location = new System.Drawing.Point(10, 320);
+            this.panelYeniKilometreTasi.Name = "panelYeniKilometreTasi";
+            this.panelYeniKilometreTasi.Size = new System.Drawing.Size(365, 80);
+            this.panelYeniKilometreTasi.TabIndex = 17;
+            this.panelYeniKilometreTasi.Visible = false;
+            // 
+            // txtKilometreTasi
+            // 
+            this.txtKilometreTasi.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.txtKilometreTasi.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.txtKilometreTasi.Location = new System.Drawing.Point(188, 44);
+            this.txtKilometreTasi.Name = "txtKilometreTasi";
+            this.txtKilometreTasi.Size = new System.Drawing.Size(167, 22);
+            this.txtKilometreTasi.TabIndex = 11;
+            // 
+            // lblYeniKilometreTasiBilgi
+            // 
+            this.lblYeniKilometreTasiBilgi.AutoSize = true;
+            this.lblYeniKilometreTasiBilgi.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblYeniKilometreTasiBilgi.ForeColor = System.Drawing.Color.DimGray;
+            this.lblYeniKilometreTasiBilgi.Location = new System.Drawing.Point(85, 12);
+            this.lblYeniKilometreTasiBilgi.Name = "lblYeniKilometreTasiBilgi";
+            this.lblYeniKilometreTasiBilgi.Size = new System.Drawing.Size(192, 16);
+            this.lblYeniKilometreTasiBilgi.TabIndex = 12;
+            this.lblYeniKilometreTasiBilgi.Text = "Lütfen yeni kilometre taşı giriniz.";
+            // 
+            // lblYeniKilometreTasi
+            // 
+            this.lblYeniKilometreTasi.AutoSize = true;
+            this.lblYeniKilometreTasi.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblYeniKilometreTasi.Location = new System.Drawing.Point(10, 47);
+            this.lblYeniKilometreTasi.Name = "lblYeniKilometreTasi";
+            this.lblYeniKilometreTasi.Size = new System.Drawing.Size(119, 16);
+            this.lblYeniKilometreTasi.TabIndex = 13;
+            this.lblYeniKilometreTasi.Text = "Kilometre Taşı Adı:";
             // 
             // frmYeniKilometreTasi
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(391, 436);
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
+            this.ClientSize = new System.Drawing.Size(391, 336);
+            this.Controls.Add(this.panelYeniKilometreTasi);
             this.Controls.Add(this.cmbOran);
             this.Controls.Add(this.lblOran);
-            this.Controls.Add(this.lblYeniKilometreTasi);
-            this.Controls.Add(this.lblYeniKilometreTasiBilgi);
-            this.Controls.Add(this.txtKilometreTasi);
             this.Controls.Add(this.btnEkle);
             this.Controls.Add(this.btnSec);
             this.Controls.Add(this.listKilometreTaslari);
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
             this.Name = "frmYeniKilometreTasi";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Kilometre Taşı Ekle";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmYeniKilometreTasi_FormClosing);
+            this.panelYeniKilometreTasi.ResumeLayout(false);
+            this.panelYeniKilometreTasi.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -137,13 +175,14 @@
 
         #endregion
 
-        private System.Windows.Forms.Label lblYeniKilometreTasi;
-        private System.Windows.Forms.Label lblYeniKilometreTasiBilgi;
-        private System.Windows.Forms.TextBox txtKilometreTasi;
-        private System.Windows.Forms.Button btnEkle;
-        private System.Windows.Forms.Button btnSec;
         private System.Windows.Forms.ListBox listKilometreTaslari;
+        private System.Windows.Forms.Button btnSec;
+        private System.Windows.Forms.Button btnEkle;
         private System.Windows.Forms.Label lblOran;
         private System.Windows.Forms.ComboBox cmbOran;
+        private System.Windows.Forms.Panel panelYeniKilometreTasi;
+        private System.Windows.Forms.TextBox txtKilometreTasi;
+        private System.Windows.Forms.Label lblYeniKilometreTasiBilgi;
+        private System.Windows.Forms.Label lblYeniKilometreTasi;
     }
 }

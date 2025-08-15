@@ -1,12 +1,8 @@
 ﻿using CEKA_APP.DataBase.ProjeFinans;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq; // System.Linq kütüphanesi eklendi
-using System.Text;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Windows.Forms;
 
 namespace CEKA_APP.Forms
@@ -18,6 +14,8 @@ namespace CEKA_APP.Forms
         private ProjeFinans_FiyatlandirmaKilometreTaslariData kilometreTasiData = new ProjeFinans_FiyatlandirmaKilometreTaslariData();
         private List<string> _alreadySelectedMilestones;
 
+        private const int VerticalMargin = 12;
+
         public frmYeniKilometreTasi(List<string> alreadySelectedMilestones = null)
         {
             InitializeComponent();
@@ -25,10 +23,15 @@ namespace CEKA_APP.Forms
 
             _alreadySelectedMilestones = alreadySelectedMilestones ?? new List<string>();
 
-            cmbOran.Items.AddRange(new string[] { "%10", "%15", "%20", "%25", "%30", "%35", "%40", "%45", "%50", "%55", "%60", "%65", "%70", "%75", "%80", "%85", "%90", "%95", "%100" });
-            this.Controls.Add(cmbOran);
+            cmbOran.Items.AddRange(new string[] { "%5", "%10", "%15", "%20", "%25", "%30", "%35", "%40", "%45", "%50", "%55", "%60", "%65", "%70", "%75", "%80", "%85", "%90", "%95", "%100" });
+
+            panelYeniKilometreTasi.Visible = false;
 
             LoadKilometreTasi();
+
+            SetFormSize(false);
+
+            txtKilometreTasi.TextChanged += txtKilometreTasi_TextChanged;
         }
 
         private void LoadKilometreTasi()
@@ -63,50 +66,91 @@ namespace CEKA_APP.Forms
 
         private void btnEkle_Click(object sender, EventArgs e)
         {
-            if (!txtKilometreTasi.Visible)
+            if (btnEkle.Text == "Yeni Ekle")
             {
-                txtKilometreTasi.Clear();
-                txtKilometreTasi.Visible = true;
-                lblYeniKilometreTasi.Visible = true;
-                lblYeniKilometreTasiBilgi.Visible = true;
-
-                lblOran.Visible = false;
                 cmbOran.Visible = false;
+                lblOran.Visible = false;
+                btnSec.Visible = false;
 
-                btnEkle.Text = "Onayla";
-                this.Height += 40;
+                panelYeniKilometreTasi.Visible = true;
+                txtKilometreTasi.Clear();
+
+                btnEkle.Text = "İptal";
+                btnEkle.BackColor = Color.Red;
+
+                SetFormSize(true);
             }
-            else if (!string.IsNullOrEmpty(txtKilometreTasi.Text.Trim())) 
+            else if (btnEkle.Text == "İptal")
             {
-                string yeniKilometreTasiAdi = txtKilometreTasi.Text.Trim();
-
-                var mevcutVeritabaniKilometreTaslari = kilometreTasiData.GetFiyatlandirmaKilometreTasi();
-                if (mevcutVeritabaniKilometreTaslari.Any(kt => kt.Adi.Equals(yeniKilometreTasiAdi, StringComparison.OrdinalIgnoreCase)))
+                GeriDon();
+            }
+            else if (btnEkle.Text == "Onayla")
+            {
+                if (!string.IsNullOrEmpty(txtKilometreTasi.Text.Trim()))
                 {
-                    MessageBox.Show("Bu kilometre taşı veritabanında zaten mevcut. Lütfen farklı bir ad girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return; 
+                    string yeniKilometreTasiAdi = txtKilometreTasi.Text.Trim();
+
+                    var mevcutVeritabaniKilometreTaslari = kilometreTasiData.GetFiyatlandirmaKilometreTasi();
+                    if (mevcutVeritabaniKilometreTaslari.Any(kt => kt.Adi.Equals(yeniKilometreTasiAdi, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        MessageBox.Show("Bu kilometre taşı veritabanında zaten mevcut. Lütfen farklı bir ad girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    KilometreTasiAdi = yeniKilometreTasiAdi;
+                    kilometreTasiData.FiyatlandirmaKilometreTasiEkle(KilometreTasiAdi);
+                    LoadKilometreTasi();
+
+                    GeriDon();
+
+                    MessageBox.Show("Yeni kilometre taşı eklendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
+                else
+                {
+                    MessageBox.Show("Lütfen yeni kilometre taşı adını girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
 
-                KilometreTasiAdi = yeniKilometreTasiAdi;
-
-                kilometreTasiData.FiyatlandirmaKilometreTasiEkle(KilometreTasiAdi);
-                LoadKilometreTasi(); 
-
-                txtKilometreTasi.Visible = false;
-                lblYeniKilometreTasi.Visible = false;
-                lblYeniKilometreTasiBilgi.Visible = false;
-
-                lblOran.Visible = true;
-                cmbOran.Visible = true;
-
-                btnEkle.Text = "Yeni Ekle";
-                this.Height -= 40;
-                MessageBox.Show("Yeni kilometre taşı eklendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        private void txtKilometreTasi_TextChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtKilometreTasi.Text))
+            {
+                btnEkle.Text = "İptal";
+                btnEkle.BackColor = Color.Red;
             }
             else
             {
-                MessageBox.Show("Lütfen yeni kilometre taşı adını girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                btnEkle.Text = "Onayla";
+                btnEkle.BackColor = Color.FromArgb(46, 204, 113);
             }
+        }
+
+        private void SetFormSize(bool expanded)
+        {
+            if (expanded)
+            {
+                this.ClientSize = new Size(this.ClientSize.Width, panelYeniKilometreTasi.Bottom + VerticalMargin);
+            }
+            else
+            {
+                this.ClientSize = new Size(this.ClientSize.Width, btnEkle.Bottom + VerticalMargin);
+            }
+        }
+
+        private void GeriDon()
+        {
+            panelYeniKilometreTasi.Visible = false;
+
+            listKilometreTaslari.Visible = true;
+            cmbOran.Visible = true;
+            lblOran.Visible = true;
+            btnSec.Visible = true;
+
+            btnEkle.Text = "Yeni Ekle";
+            btnEkle.BackColor = Color.Gray;
+
+            SetFormSize(false);
         }
 
         private void frmYeniKilometreTasi_FormClosing(object sender, FormClosingEventArgs e)

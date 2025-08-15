@@ -31,18 +31,19 @@
             System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
             System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
             System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            this.lstPozlar = new System.Windows.Forms.ListBox();
-            this.txtArama = new System.Windows.Forms.TextBox();
-            this.chartKesim = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panelDisContainer = new System.Windows.Forms.Panel();
             this.panelList = new System.Windows.Forms.Panel();
+            this.lstPozlar = new System.Windows.Forms.ListBox();
             this.panelSpacer1 = new System.Windows.Forms.Panel();
             this.panelHeader = new System.Windows.Forms.Panel();
             this.lblPozListesi = new System.Windows.Forms.Label();
             this.panelSpacer2 = new System.Windows.Forms.Panel();
             this.panelSearch = new System.Windows.Forms.Panel();
+            this.txtArama = new System.Windows.Forms.TextBox();
             this.panel2 = new System.Windows.Forms.Panel();
             this.panelChart = new System.Windows.Forms.Panel();
+            this.chartKesim = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.panelSpacer3 = new System.Windows.Forms.Panel();
             this.panelKartContainer = new System.Windows.Forms.Panel();
             this.panelKart4 = new System.Windows.Forms.Panel();
@@ -58,19 +59,61 @@
             this.label1 = new System.Windows.Forms.Label();
             this.lblKesilecekPoz = new System.Windows.Forms.Label();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
-            ((System.ComponentModel.ISupportInitialize)(this.chartKesim)).BeginInit();
+            this.tableLayoutPanel1.SuspendLayout();
             this.panelDisContainer.SuspendLayout();
             this.panelList.SuspendLayout();
             this.panelHeader.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.panel2.SuspendLayout();
             this.panelChart.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.chartKesim)).BeginInit();
             this.panelKartContainer.SuspendLayout();
             this.panelKart4.SuspendLayout();
             this.panelKart3.SuspendLayout();
             this.panelKart2.SuspendLayout();
             this.panelKart1.SuspendLayout();
             this.SuspendLayout();
+            // 
+            // tableLayoutPanel1
+            // 
+            this.tableLayoutPanel1.ColumnCount = 2;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 560F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.Controls.Add(this.panelDisContainer, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.panel2, 1, 0);
+            this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 50);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.RowCount = 1;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1677, 942);
+            this.tableLayoutPanel1.TabIndex = 139;
+            // 
+            // panelDisContainer
+            // 
+            this.panelDisContainer.BackColor = System.Drawing.SystemColors.Control;
+            this.panelDisContainer.Controls.Add(this.panelList);
+            this.panelDisContainer.Controls.Add(this.panelSpacer1);
+            this.panelDisContainer.Controls.Add(this.panelHeader);
+            this.panelDisContainer.Controls.Add(this.panelSpacer2);
+            this.panelDisContainer.Controls.Add(this.panelSearch);
+            this.panelDisContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelDisContainer.Location = new System.Drawing.Point(3, 3);
+            this.panelDisContainer.Name = "panelDisContainer";
+            this.panelDisContainer.Padding = new System.Windows.Forms.Padding(10);
+            this.panelDisContainer.Size = new System.Drawing.Size(554, 936);
+            this.panelDisContainer.TabIndex = 138;
+            // 
+            // panelList
+            // 
+            this.panelList.Controls.Add(this.lstPozlar);
+            this.panelList.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelList.Location = new System.Drawing.Point(10, 95);
+            this.panelList.Margin = new System.Windows.Forms.Padding(10);
+            this.panelList.Name = "panelList";
+            this.panelList.Size = new System.Drawing.Size(534, 831);
+            this.panelList.TabIndex = 139;
             // 
             // lstPozlar
             // 
@@ -80,8 +123,56 @@
             this.lstPozlar.ItemHeight = 16;
             this.lstPozlar.Location = new System.Drawing.Point(0, 0);
             this.lstPozlar.Name = "lstPozlar";
-            this.lstPozlar.Size = new System.Drawing.Size(540, 837);
+            this.lstPozlar.Size = new System.Drawing.Size(534, 831);
             this.lstPozlar.TabIndex = 128;
+            // 
+            // panelSpacer1
+            // 
+            this.panelSpacer1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelSpacer1.Location = new System.Drawing.Point(10, 85);
+            this.panelSpacer1.Name = "panelSpacer1";
+            this.panelSpacer1.Size = new System.Drawing.Size(534, 10);
+            this.panelSpacer1.TabIndex = 140;
+            // 
+            // panelHeader
+            // 
+            this.panelHeader.BackColor = System.Drawing.Color.DarkSlateGray;
+            this.panelHeader.Controls.Add(this.lblPozListesi);
+            this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelHeader.Location = new System.Drawing.Point(10, 52);
+            this.panelHeader.Name = "panelHeader";
+            this.panelHeader.Padding = new System.Windows.Forms.Padding(5);
+            this.panelHeader.Size = new System.Drawing.Size(534, 33);
+            this.panelHeader.TabIndex = 138;
+            // 
+            // lblPozListesi
+            // 
+            this.lblPozListesi.AutoSize = true;
+            this.lblPozListesi.BackColor = System.Drawing.Color.Transparent;
+            this.lblPozListesi.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblPozListesi.ForeColor = System.Drawing.Color.Orange;
+            this.lblPozListesi.Location = new System.Drawing.Point(28, 5);
+            this.lblPozListesi.Name = "lblPozListesi";
+            this.lblPozListesi.Size = new System.Drawing.Size(92, 18);
+            this.lblPozListesi.TabIndex = 137;
+            this.lblPozListesi.Text = "Poz Listesi";
+            // 
+            // panelSpacer2
+            // 
+            this.panelSpacer2.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelSpacer2.Location = new System.Drawing.Point(10, 42);
+            this.panelSpacer2.Name = "panelSpacer2";
+            this.panelSpacer2.Size = new System.Drawing.Size(534, 10);
+            this.panelSpacer2.TabIndex = 139;
+            // 
+            // panelSearch
+            // 
+            this.panelSearch.Controls.Add(this.txtArama);
+            this.panelSearch.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panelSearch.Location = new System.Drawing.Point(10, 10);
+            this.panelSearch.Name = "panelSearch";
+            this.panelSearch.Size = new System.Drawing.Size(534, 32);
+            this.panelSearch.TabIndex = 137;
             // 
             // txtArama
             // 
@@ -89,8 +180,30 @@
             this.txtArama.Dock = System.Windows.Forms.DockStyle.Fill;
             this.txtArama.Location = new System.Drawing.Point(0, 0);
             this.txtArama.Name = "txtArama";
-            this.txtArama.Size = new System.Drawing.Size(540, 15);
+            this.txtArama.Size = new System.Drawing.Size(534, 15);
             this.txtArama.TabIndex = 136;
+            // 
+            // panel2
+            // 
+            this.panel2.BackColor = System.Drawing.SystemColors.Control;
+            this.panel2.Controls.Add(this.panelChart);
+            this.panel2.Controls.Add(this.panelSpacer3);
+            this.panel2.Controls.Add(this.panelKartContainer);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(563, 3);
+            this.panel2.Name = "panel2";
+            this.panel2.Padding = new System.Windows.Forms.Padding(10);
+            this.panel2.Size = new System.Drawing.Size(1111, 936);
+            this.panel2.TabIndex = 139;
+            // 
+            // panelChart
+            // 
+            this.panelChart.Controls.Add(this.chartKesim);
+            this.panelChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelChart.Location = new System.Drawing.Point(10, 10);
+            this.panelChart.Name = "panelChart";
+            this.panelChart.Size = new System.Drawing.Size(1091, 718);
+            this.panelChart.TabIndex = 139;
             // 
             // chartKesim
             // 
@@ -113,112 +226,17 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             this.chartKesim.Series.Add(series1);
-            this.chartKesim.Size = new System.Drawing.Size(1097, 718);
+            this.chartKesim.Size = new System.Drawing.Size(1091, 718);
             this.chartKesim.TabIndex = 137;
             this.chartKesim.TabStop = false;
             this.chartKesim.Text = "chart1";
-            // 
-            // panelDisContainer
-            // 
-            this.panelDisContainer.BackColor = System.Drawing.SystemColors.Control;
-            this.panelDisContainer.Controls.Add(this.panelList);
-            this.panelDisContainer.Controls.Add(this.panelSpacer1);
-            this.panelDisContainer.Controls.Add(this.panelHeader);
-            this.panelDisContainer.Controls.Add(this.panelSpacer2);
-            this.panelDisContainer.Controls.Add(this.panelSearch);
-            this.panelDisContainer.Dock = System.Windows.Forms.DockStyle.Left;
-            this.panelDisContainer.Location = new System.Drawing.Point(0, 50);
-            this.panelDisContainer.Name = "panelDisContainer";
-            this.panelDisContainer.Padding = new System.Windows.Forms.Padding(10);
-            this.panelDisContainer.Size = new System.Drawing.Size(560, 942);
-            this.panelDisContainer.TabIndex = 138;
-            // 
-            // panelList
-            // 
-            this.panelList.Controls.Add(this.lstPozlar);
-            this.panelList.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelList.Location = new System.Drawing.Point(10, 95);
-            this.panelList.Margin = new System.Windows.Forms.Padding(10);
-            this.panelList.Name = "panelList";
-            this.panelList.Size = new System.Drawing.Size(540, 837);
-            this.panelList.TabIndex = 139;
-            // 
-            // panelSpacer1
-            // 
-            this.panelSpacer1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelSpacer1.Location = new System.Drawing.Point(10, 85);
-            this.panelSpacer1.Name = "panelSpacer1";
-            this.panelSpacer1.Size = new System.Drawing.Size(540, 10);
-            this.panelSpacer1.TabIndex = 140;
-            // 
-            // panelHeader
-            // 
-            this.panelHeader.BackColor = System.Drawing.Color.DarkSlateGray;
-            this.panelHeader.Controls.Add(this.lblPozListesi);
-            this.panelHeader.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelHeader.Location = new System.Drawing.Point(10, 52);
-            this.panelHeader.Name = "panelHeader";
-            this.panelHeader.Padding = new System.Windows.Forms.Padding(5);
-            this.panelHeader.Size = new System.Drawing.Size(540, 33);
-            this.panelHeader.TabIndex = 138;
-            // 
-            // lblPozListesi
-            // 
-            this.lblPozListesi.AutoSize = true;
-            this.lblPozListesi.BackColor = System.Drawing.Color.Transparent;
-            this.lblPozListesi.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblPozListesi.ForeColor = System.Drawing.Color.Orange;
-            this.lblPozListesi.Location = new System.Drawing.Point(28, 5);
-            this.lblPozListesi.Name = "lblPozListesi";
-            this.lblPozListesi.Size = new System.Drawing.Size(92, 18);
-            this.lblPozListesi.TabIndex = 137;
-            this.lblPozListesi.Text = "Poz Listesi";
-            // 
-            // panelSpacer2
-            // 
-            this.panelSpacer2.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelSpacer2.Location = new System.Drawing.Point(10, 42);
-            this.panelSpacer2.Name = "panelSpacer2";
-            this.panelSpacer2.Size = new System.Drawing.Size(540, 10);
-            this.panelSpacer2.TabIndex = 139;
-            // 
-            // panelSearch
-            // 
-            this.panelSearch.Controls.Add(this.txtArama);
-            this.panelSearch.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panelSearch.Location = new System.Drawing.Point(10, 10);
-            this.panelSearch.Name = "panelSearch";
-            this.panelSearch.Size = new System.Drawing.Size(540, 32);
-            this.panelSearch.TabIndex = 137;
-            // 
-            // panel2
-            // 
-            this.panel2.BackColor = System.Drawing.SystemColors.Control;
-            this.panel2.Controls.Add(this.panelChart);
-            this.panel2.Controls.Add(this.panelSpacer3);
-            this.panel2.Controls.Add(this.panelKartContainer);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(560, 50);
-            this.panel2.Name = "panel2";
-            this.panel2.Padding = new System.Windows.Forms.Padding(10);
-            this.panel2.Size = new System.Drawing.Size(1117, 942);
-            this.panel2.TabIndex = 139;
-            // 
-            // panelChart
-            // 
-            this.panelChart.Controls.Add(this.chartKesim);
-            this.panelChart.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panelChart.Location = new System.Drawing.Point(10, 10);
-            this.panelChart.Name = "panelChart";
-            this.panelChart.Size = new System.Drawing.Size(1097, 718);
-            this.panelChart.TabIndex = 139;
             // 
             // panelSpacer3
             // 
             this.panelSpacer3.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelSpacer3.Location = new System.Drawing.Point(10, 728);
             this.panelSpacer3.Name = "panelSpacer3";
-            this.panelSpacer3.Size = new System.Drawing.Size(1097, 10);
+            this.panelSpacer3.Size = new System.Drawing.Size(1091, 10);
             this.panelSpacer3.TabIndex = 129;
             // 
             // panelKartContainer
@@ -230,7 +248,7 @@
             this.panelKartContainer.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panelKartContainer.Location = new System.Drawing.Point(10, 738);
             this.panelKartContainer.Name = "panelKartContainer";
-            this.panelKartContainer.Size = new System.Drawing.Size(1097, 194);
+            this.panelKartContainer.Size = new System.Drawing.Size(1091, 188);
             this.panelKartContainer.TabIndex = 138;
             this.panelKartContainer.Resize += new System.EventHandler(this.panel3_Resize);
             // 
@@ -369,20 +387,19 @@
             this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
             this.ctlBaslik1.Name = "ctlBaslik1";
             this.ctlBaslik1.Size = new System.Drawing.Size(1677, 50);
-            this.ctlBaslik1.TabIndex = 138;
+            this.ctlBaslik1.TabIndex = 140;
             // 
             // ctlKesimDetaylari
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.Controls.Add(this.panel2);
-            this.Controls.Add(this.panelDisContainer);
+            this.Controls.Add(this.tableLayoutPanel1);
             this.Controls.Add(this.ctlBaslik1);
             this.Name = "ctlKesimDetaylari";
             this.Size = new System.Drawing.Size(1677, 992);
             this.Load += new System.EventHandler(this.ctlKesimDetaylari_Load);
             this.Resize += new System.EventHandler(this.ctlKesimDetaylari_Resize);
-            ((System.ComponentModel.ISupportInitialize)(this.chartKesim)).EndInit();
+            this.tableLayoutPanel1.ResumeLayout(false);
             this.panelDisContainer.ResumeLayout(false);
             this.panelList.ResumeLayout(false);
             this.panelHeader.ResumeLayout(false);
@@ -391,6 +408,7 @@
             this.panelSearch.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.panelChart.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.chartKesim)).EndInit();
             this.panelKartContainer.ResumeLayout(false);
             this.panelKart4.ResumeLayout(false);
             this.panelKart4.PerformLayout();
@@ -405,32 +423,34 @@
         }
 
         #endregion
-        private System.Windows.Forms.ListBox lstPozlar;
-        private System.Windows.Forms.TextBox txtArama;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chartKesim;
+
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panelDisContainer;
-        private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panelKartContainer;
-        private System.Windows.Forms.Label lblKesilecekPoz;
-        private System.Windows.Forms.Panel panelKart1;
-        private System.Windows.Forms.Label lblKesilmisPoz;
-        private System.Windows.Forms.Panel panelKart3;
-        private System.Windows.Forms.Label lblToplamPoz;
-        private System.Windows.Forms.Panel panelKart2;
-        private System.Windows.Forms.Label label3;
-        private System.Windows.Forms.Label label2;
-        private System.Windows.Forms.Label label1;
-        private System.Windows.Forms.Panel panelSearch;
-        private System.Windows.Forms.Label lblPozListesi;
-        private System.Windows.Forms.Panel panelHeader;
         private System.Windows.Forms.Panel panelList;
-        private System.Windows.Forms.Panel panelSpacer2;
+        private System.Windows.Forms.ListBox lstPozlar;
         private System.Windows.Forms.Panel panelSpacer1;
+        private System.Windows.Forms.Panel panelHeader;
+        private System.Windows.Forms.Label lblPozListesi;
+        private System.Windows.Forms.Panel panelSpacer2;
+        private System.Windows.Forms.Panel panelSearch;
+        private System.Windows.Forms.TextBox txtArama;
+        private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel panelChart;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartKesim;
         private System.Windows.Forms.Panel panelSpacer3;
-        private ctlBaslik ctlBaslik1;
+        private System.Windows.Forms.Panel panelKartContainer;
         private System.Windows.Forms.Panel panelKart4;
         private System.Windows.Forms.Label label4;
         private System.Windows.Forms.Label lblToplamPozIfsKarsiligi;
+        private System.Windows.Forms.Panel panelKart3;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label lblToplamPoz;
+        private System.Windows.Forms.Panel panelKart2;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lblKesilmisPoz;
+        private System.Windows.Forms.Panel panelKart1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label lblKesilecekPoz;
+        private ctlBaslik ctlBaslik1;
     }
 }

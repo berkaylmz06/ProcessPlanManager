@@ -1,14 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Data;
-using System.Drawing;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using CEKA_APP.Abstracts;
-using CEKA_APP.Concretes;
 using CEKA_APP.DataBase;
 using CEKA_APP.Helper;
 
@@ -181,7 +177,6 @@ namespace CEKA_APP.UsrControl
                 dataGridKesimListesi.Columns["id"].Visible = false;
 
             tabloDuzenle();
-            // Detay sütununu tekrar ekle
             if (!tablo.Columns.Contains("Detay"))
             {
                 tablo.Columns.Add("Detay", typeof(string));
@@ -210,12 +205,8 @@ namespace CEKA_APP.UsrControl
             {
                 string kesimId = selectedRow.Cells["kesimId"].Value?.ToString() ?? "0";
                 string olusturan = selectedRow.Cells["olusturan"].Value?.ToString();
-
-                if (!int.TryParse(txtKesilecekPlanSayisi.Text, out int carpan) || carpan <= 0)
-                {
-                    MessageBox.Show("Kesilecek Plan Sayısını geçerli bir pozitif sayı ile doldurun.", "Dikkat!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    return;
-                }
+                string kesilenLot = txtKesilecekLot.Text.Trim();
+                int carpan = 1;
 
                 if (string.IsNullOrEmpty(olusturan))
                 {
@@ -339,13 +330,13 @@ namespace CEKA_APP.UsrControl
                     }
                 }
 
-                bool sonuc1 = KesimTamamlanmisData.TablodanKesimTamamlanmisEkleme(olusturan, kesimId, carpan, tarih, saat);
+                bool sonuc1 = KesimTamamlanmisData.TablodanKesimTamamlanmisEkleme(olusturan, kesimId, carpan, tarih, saat, kesilenLot);
                 bool sonuc2 = KesimTamamlanmisHareket.TablodanKesimTamamlanmisHareketEkleme(olusturan, kesimId, carpan, tarih, saat);
 
                 if (sonuc1 && sonuc2)
                 {
                     var userController = new LogEkle(_kullaniciAdi.lblSistemKullaniciMetinAl());
-                    userController.LogYap("KesimPlaniKesildi", "Kesim Yap", $"Kullanıcı {kesimId} numaralı kesim planından {txtKesilecekPlanSayisi.Text} adet kesimini tamamladı.");
+                    userController.LogYap("KesimPlaniKesildi", "Kesim Yap", $"Kullanıcı {kesimId} numaralı kesim planının kesimini tamamladı. Kesilen Lot: {kesilenLot}");
                 }
                 else
                 {

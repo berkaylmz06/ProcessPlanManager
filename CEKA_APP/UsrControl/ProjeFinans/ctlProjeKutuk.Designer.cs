@@ -45,15 +45,15 @@ namespace CEKA_APP.UsrControl
             this.btnAra = new System.Windows.Forms.Button();
             this.label11 = new System.Windows.Forms.Label();
             this.lblAltProjeHata = new System.Windows.Forms.Label();
-            this.chkEuro = new System.Windows.Forms.CheckBox();
-            this.chkDolar = new System.Windows.Forms.CheckBox();
-            this.chkTL = new System.Windows.Forms.CheckBox();
             this.label12 = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.chkCogul = new System.Windows.Forms.CheckBox();
             this.chkTekil = new System.Windows.Forms.CheckBox();
-            this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.btnSil = new System.Windows.Forms.Button();
+            this.panelContainer = new System.Windows.Forms.Panel();
+            this.cmbParaBirimi = new System.Windows.Forms.ComboBox();
+            this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
+            this.panelContainer.SuspendLayout();
             this.SuspendLayout();
             // 
             // label1
@@ -61,7 +61,7 @@ namespace CEKA_APP.UsrControl
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label1.Location = new System.Drawing.Point(44, 170);
+            this.label1.Location = new System.Drawing.Point(44, 129);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(99, 23);
             this.label1.TabIndex = 0;
@@ -72,7 +72,7 @@ namespace CEKA_APP.UsrControl
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label2.Location = new System.Drawing.Point(44, 220);
+            this.label2.Location = new System.Drawing.Point(44, 179);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(101, 23);
             this.label2.TabIndex = 1;
@@ -83,7 +83,7 @@ namespace CEKA_APP.UsrControl
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label3.Location = new System.Drawing.Point(44, 270);
+            this.label3.Location = new System.Drawing.Point(44, 229);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(79, 23);
             this.label3.TabIndex = 2;
@@ -94,7 +94,7 @@ namespace CEKA_APP.UsrControl
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label4.Location = new System.Drawing.Point(44, 320);
+            this.label4.Location = new System.Drawing.Point(44, 279);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(103, 23);
             this.label4.TabIndex = 3;
@@ -105,7 +105,7 @@ namespace CEKA_APP.UsrControl
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label5.Location = new System.Drawing.Point(44, 375);
+            this.label5.Location = new System.Drawing.Point(44, 334);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(81, 23);
             this.label5.TabIndex = 4;
@@ -116,7 +116,7 @@ namespace CEKA_APP.UsrControl
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label6.Location = new System.Drawing.Point(44, 424);
+            this.label6.Location = new System.Drawing.Point(44, 383);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(140, 23);
             this.label6.TabIndex = 5;
@@ -127,7 +127,7 @@ namespace CEKA_APP.UsrControl
             this.label7.AutoSize = true;
             this.label7.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label7.Location = new System.Drawing.Point(44, 470);
+            this.label7.Location = new System.Drawing.Point(44, 429);
             this.label7.Name = "label7";
             this.label7.Size = new System.Drawing.Size(244, 23);
             this.label7.TabIndex = 6;
@@ -138,7 +138,7 @@ namespace CEKA_APP.UsrControl
             this.label8.AutoSize = true;
             this.label8.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label8.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label8.Location = new System.Drawing.Point(44, 520);
+            this.label8.Location = new System.Drawing.Point(44, 479);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(184, 23);
             this.label8.TabIndex = 7;
@@ -149,7 +149,7 @@ namespace CEKA_APP.UsrControl
             this.label9.AutoSize = true;
             this.label9.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label9.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label9.Location = new System.Drawing.Point(44, 708);
+            this.label9.Location = new System.Drawing.Point(44, 687);
             this.label9.Name = "label9";
             this.label9.Size = new System.Drawing.Size(116, 23);
             this.label9.TabIndex = 8;
@@ -160,7 +160,7 @@ namespace CEKA_APP.UsrControl
             this.label10.AutoSize = true;
             this.label10.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label10.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label10.Location = new System.Drawing.Point(44, 654);
+            this.label10.Location = new System.Drawing.Point(44, 633);
             this.label10.Name = "label10";
             this.label10.Size = new System.Drawing.Size(130, 23);
             this.label10.TabIndex = 9;
@@ -172,7 +172,7 @@ namespace CEKA_APP.UsrControl
             this.txtMusteriNo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtMusteriNo.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtMusteriNo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtMusteriNo.Location = new System.Drawing.Point(670, 166);
+            this.txtMusteriNo.Location = new System.Drawing.Point(670, 125);
             this.txtMusteriNo.Name = "txtMusteriNo";
             this.txtMusteriNo.Size = new System.Drawing.Size(402, 27);
             this.txtMusteriNo.TabIndex = 10;
@@ -185,7 +185,7 @@ namespace CEKA_APP.UsrControl
             this.txtMusteriAdi.Enabled = false;
             this.txtMusteriAdi.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtMusteriAdi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtMusteriAdi.Location = new System.Drawing.Point(670, 216);
+            this.txtMusteriAdi.Location = new System.Drawing.Point(670, 175);
             this.txtMusteriAdi.Name = "txtMusteriAdi";
             this.txtMusteriAdi.Size = new System.Drawing.Size(402, 27);
             this.txtMusteriAdi.TabIndex = 11;
@@ -196,7 +196,7 @@ namespace CEKA_APP.UsrControl
             this.txtTeklifNo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtTeklifNo.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtTeklifNo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtTeklifNo.Location = new System.Drawing.Point(670, 266);
+            this.txtTeklifNo.Location = new System.Drawing.Point(670, 225);
             this.txtTeklifNo.Name = "txtTeklifNo";
             this.txtTeklifNo.Size = new System.Drawing.Size(402, 27);
             this.txtTeklifNo.TabIndex = 12;
@@ -207,7 +207,7 @@ namespace CEKA_APP.UsrControl
             this.txtIsFirsatiNo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtIsFirsatiNo.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtIsFirsatiNo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtIsFirsatiNo.Location = new System.Drawing.Point(670, 316);
+            this.txtIsFirsatiNo.Location = new System.Drawing.Point(670, 275);
             this.txtIsFirsatiNo.Name = "txtIsFirsatiNo";
             this.txtIsFirsatiNo.Size = new System.Drawing.Size(402, 27);
             this.txtIsFirsatiNo.TabIndex = 13;
@@ -218,7 +218,7 @@ namespace CEKA_APP.UsrControl
             this.txtProjeNo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtProjeNo.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtProjeNo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtProjeNo.Location = new System.Drawing.Point(670, 371);
+            this.txtProjeNo.Location = new System.Drawing.Point(670, 330);
             this.txtProjeNo.Name = "txtProjeNo";
             this.txtProjeNo.Size = new System.Drawing.Size(402, 27);
             this.txtProjeNo.TabIndex = 14;
@@ -230,7 +230,7 @@ namespace CEKA_APP.UsrControl
             this.txtToplamBedel.Enabled = false;
             this.txtToplamBedel.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtToplamBedel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtToplamBedel.Location = new System.Drawing.Point(670, 704);
+            this.txtToplamBedel.Location = new System.Drawing.Point(670, 683);
             this.txtToplamBedel.Name = "txtToplamBedel";
             this.txtToplamBedel.Size = new System.Drawing.Size(402, 27);
             this.txtToplamBedel.TabIndex = 18;
@@ -240,7 +240,7 @@ namespace CEKA_APP.UsrControl
             this.chkAltProjeVar.AutoSize = true;
             this.chkAltProjeVar.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.chkAltProjeVar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.chkAltProjeVar.Location = new System.Drawing.Point(670, 421);
+            this.chkAltProjeVar.Location = new System.Drawing.Point(670, 380);
             this.chkAltProjeVar.Name = "chkAltProjeVar";
             this.chkAltProjeVar.Size = new System.Drawing.Size(52, 24);
             this.chkAltProjeVar.TabIndex = 20;
@@ -252,7 +252,7 @@ namespace CEKA_APP.UsrControl
             this.chkAltProjeYok.AutoSize = true;
             this.chkAltProjeYok.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.chkAltProjeYok.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.chkAltProjeYok.Location = new System.Drawing.Point(787, 421);
+            this.chkAltProjeYok.Location = new System.Drawing.Point(787, 380);
             this.chkAltProjeYok.Name = "chkAltProjeYok";
             this.chkAltProjeYok.Size = new System.Drawing.Size(54, 24);
             this.chkAltProjeYok.TabIndex = 21;
@@ -264,7 +264,7 @@ namespace CEKA_APP.UsrControl
             this.chkProjeIliskisiYok.AutoSize = true;
             this.chkProjeIliskisiYok.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.chkProjeIliskisiYok.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.chkProjeIliskisiYok.Location = new System.Drawing.Point(787, 467);
+            this.chkProjeIliskisiYok.Location = new System.Drawing.Point(787, 426);
             this.chkProjeIliskisiYok.Name = "chkProjeIliskisiYok";
             this.chkProjeIliskisiYok.Size = new System.Drawing.Size(54, 24);
             this.chkProjeIliskisiYok.TabIndex = 23;
@@ -276,7 +276,7 @@ namespace CEKA_APP.UsrControl
             this.chkProjeIliskisiVar.AutoSize = true;
             this.chkProjeIliskisiVar.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.chkProjeIliskisiVar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.chkProjeIliskisiVar.Location = new System.Drawing.Point(670, 467);
+            this.chkProjeIliskisiVar.Location = new System.Drawing.Point(670, 426);
             this.chkProjeIliskisiVar.Name = "chkProjeIliskisiVar";
             this.chkProjeIliskisiVar.Size = new System.Drawing.Size(52, 24);
             this.chkProjeIliskisiVar.TabIndex = 22;
@@ -288,7 +288,7 @@ namespace CEKA_APP.UsrControl
             this.chkNakliyeYok.AutoSize = true;
             this.chkNakliyeYok.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.chkNakliyeYok.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.chkNakliyeYok.Location = new System.Drawing.Point(787, 655);
+            this.chkNakliyeYok.Location = new System.Drawing.Point(787, 634);
             this.chkNakliyeYok.Name = "chkNakliyeYok";
             this.chkNakliyeYok.Size = new System.Drawing.Size(54, 24);
             this.chkNakliyeYok.TabIndex = 25;
@@ -300,7 +300,7 @@ namespace CEKA_APP.UsrControl
             this.chkNakliyeVar.AutoSize = true;
             this.chkNakliyeVar.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.chkNakliyeVar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.chkNakliyeVar.Location = new System.Drawing.Point(670, 655);
+            this.chkNakliyeVar.Location = new System.Drawing.Point(670, 634);
             this.chkNakliyeVar.Name = "chkNakliyeVar";
             this.chkNakliyeVar.Size = new System.Drawing.Size(52, 24);
             this.chkNakliyeVar.TabIndex = 24;
@@ -314,7 +314,7 @@ namespace CEKA_APP.UsrControl
             this.btnKaydet.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnKaydet.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnKaydet.ForeColor = System.Drawing.Color.White;
-            this.btnKaydet.Location = new System.Drawing.Point(205, 780);
+            this.btnKaydet.Location = new System.Drawing.Point(740, 752);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(219, 47);
             this.btnKaydet.TabIndex = 27;
@@ -325,7 +325,7 @@ namespace CEKA_APP.UsrControl
             // dtpSiparisSozlesmeTarihi
             // 
             this.dtpSiparisSozlesmeTarihi.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.dtpSiparisSozlesmeTarihi.Location = new System.Drawing.Point(670, 517);
+            this.dtpSiparisSozlesmeTarihi.Location = new System.Drawing.Point(670, 476);
             this.dtpSiparisSozlesmeTarihi.Name = "dtpSiparisSozlesmeTarihi";
             this.dtpSiparisSozlesmeTarihi.Size = new System.Drawing.Size(402, 27);
             this.dtpSiparisSozlesmeTarihi.TabIndex = 314;
@@ -336,7 +336,7 @@ namespace CEKA_APP.UsrControl
             this.txtProjeAra.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtProjeAra.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtProjeAra.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtProjeAra.Location = new System.Drawing.Point(150, 68);
+            this.txtProjeAra.Location = new System.Drawing.Point(150, 27);
             this.txtProjeAra.Name = "txtProjeAra";
             this.txtProjeAra.Size = new System.Drawing.Size(219, 27);
             this.txtProjeAra.TabIndex = 315;
@@ -349,7 +349,7 @@ namespace CEKA_APP.UsrControl
             this.btnAra.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAra.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnAra.ForeColor = System.Drawing.Color.White;
-            this.btnAra.Location = new System.Drawing.Point(375, 68);
+            this.btnAra.Location = new System.Drawing.Point(375, 27);
             this.btnAra.Name = "btnAra";
             this.btnAra.Size = new System.Drawing.Size(100, 28);
             this.btnAra.TabIndex = 316;
@@ -362,7 +362,7 @@ namespace CEKA_APP.UsrControl
             this.label11.AutoSize = true;
             this.label11.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label11.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label11.Location = new System.Drawing.Point(28, 71);
+            this.label11.Location = new System.Drawing.Point(28, 30);
             this.label11.Name = "label11";
             this.label11.Size = new System.Drawing.Size(81, 23);
             this.label11.TabIndex = 317;
@@ -373,53 +373,17 @@ namespace CEKA_APP.UsrControl
             this.lblAltProjeHata.AutoSize = true;
             this.lblAltProjeHata.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblAltProjeHata.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
-            this.lblAltProjeHata.Location = new System.Drawing.Point(666, 743);
+            this.lblAltProjeHata.Location = new System.Drawing.Point(666, 713);
             this.lblAltProjeHata.Name = "lblAltProjeHata";
             this.lblAltProjeHata.Size = new System.Drawing.Size(0, 20);
             this.lblAltProjeHata.TabIndex = 318;
-            // 
-            // chkEuro
-            // 
-            this.chkEuro.AutoSize = true;
-            this.chkEuro.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.chkEuro.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.chkEuro.Location = new System.Drawing.Point(672, 567);
-            this.chkEuro.Name = "chkEuro";
-            this.chkEuro.Size = new System.Drawing.Size(83, 24);
-            this.chkEuro.TabIndex = 321;
-            this.chkEuro.Text = "Euro (€)";
-            this.chkEuro.UseVisualStyleBackColor = true;
-            // 
-            // chkDolar
-            // 
-            this.chkDolar.AutoSize = true;
-            this.chkDolar.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.chkDolar.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.chkDolar.Location = new System.Drawing.Point(815, 567);
-            this.chkDolar.Name = "chkDolar";
-            this.chkDolar.Size = new System.Drawing.Size(90, 24);
-            this.chkDolar.TabIndex = 320;
-            this.chkDolar.Text = "Dolar ($)";
-            this.chkDolar.UseVisualStyleBackColor = true;
-            // 
-            // chkTL
-            // 
-            this.chkTL.AutoSize = true;
-            this.chkTL.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.chkTL.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.chkTL.Location = new System.Drawing.Point(963, 567);
-            this.chkTL.Name = "chkTL";
-            this.chkTL.Size = new System.Drawing.Size(119, 24);
-            this.chkTL.TabIndex = 319;
-            this.chkTL.Text = "Türk Lirası (₺)";
-            this.chkTL.UseVisualStyleBackColor = true;
             // 
             // label12
             // 
             this.label12.AutoSize = true;
             this.label12.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label12.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label12.Location = new System.Drawing.Point(44, 568);
+            this.label12.Location = new System.Drawing.Point(44, 527);
             this.label12.Name = "label12";
             this.label12.Size = new System.Drawing.Size(95, 23);
             this.label12.TabIndex = 322;
@@ -430,7 +394,7 @@ namespace CEKA_APP.UsrControl
             this.label13.AutoSize = true;
             this.label13.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.label13.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.label13.Location = new System.Drawing.Point(44, 613);
+            this.label13.Location = new System.Drawing.Point(44, 581);
             this.label13.Name = "label13";
             this.label13.Size = new System.Drawing.Size(558, 23);
             this.label13.TabIndex = 323;
@@ -441,7 +405,7 @@ namespace CEKA_APP.UsrControl
             this.chkCogul.AutoSize = true;
             this.chkCogul.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.chkCogul.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.chkCogul.Location = new System.Drawing.Point(787, 612);
+            this.chkCogul.Location = new System.Drawing.Point(787, 580);
             this.chkCogul.Name = "chkCogul";
             this.chkCogul.Size = new System.Drawing.Size(70, 24);
             this.chkCogul.TabIndex = 325;
@@ -453,12 +417,81 @@ namespace CEKA_APP.UsrControl
             this.chkTekil.AutoSize = true;
             this.chkTekil.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.chkTekil.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.chkTekil.Location = new System.Drawing.Point(670, 612);
+            this.chkTekil.Location = new System.Drawing.Point(670, 580);
             this.chkTekil.Name = "chkTekil";
             this.chkTekil.Size = new System.Drawing.Size(61, 24);
             this.chkTekil.TabIndex = 324;
             this.chkTekil.Text = "Tekil";
             this.chkTekil.UseVisualStyleBackColor = true;
+            // 
+            // btnSil
+            // 
+            this.btnSil.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnSil.FlatAppearance.BorderSize = 0;
+            this.btnSil.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnSil.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btnSil.ForeColor = System.Drawing.Color.White;
+            this.btnSil.Location = new System.Drawing.Point(481, 27);
+            this.btnSil.Name = "btnSil";
+            this.btnSil.Size = new System.Drawing.Size(100, 28);
+            this.btnSil.TabIndex = 326;
+            this.btnSil.Text = "Sil";
+            this.btnSil.UseVisualStyleBackColor = false;
+            this.btnSil.Click += new System.EventHandler(this.btnSil_Click);
+            // 
+            // panelContainer
+            // 
+            this.panelContainer.Controls.Add(this.cmbParaBirimi);
+            this.panelContainer.Controls.Add(this.label1);
+            this.panelContainer.Controls.Add(this.btnSil);
+            this.panelContainer.Controls.Add(this.label2);
+            this.panelContainer.Controls.Add(this.chkCogul);
+            this.panelContainer.Controls.Add(this.label3);
+            this.panelContainer.Controls.Add(this.chkTekil);
+            this.panelContainer.Controls.Add(this.label4);
+            this.panelContainer.Controls.Add(this.label13);
+            this.panelContainer.Controls.Add(this.label5);
+            this.panelContainer.Controls.Add(this.label12);
+            this.panelContainer.Controls.Add(this.label6);
+            this.panelContainer.Controls.Add(this.label7);
+            this.panelContainer.Controls.Add(this.label8);
+            this.panelContainer.Controls.Add(this.label9);
+            this.panelContainer.Controls.Add(this.lblAltProjeHata);
+            this.panelContainer.Controls.Add(this.label10);
+            this.panelContainer.Controls.Add(this.label11);
+            this.panelContainer.Controls.Add(this.txtMusteriNo);
+            this.panelContainer.Controls.Add(this.btnAra);
+            this.panelContainer.Controls.Add(this.txtMusteriAdi);
+            this.panelContainer.Controls.Add(this.txtProjeAra);
+            this.panelContainer.Controls.Add(this.txtTeklifNo);
+            this.panelContainer.Controls.Add(this.dtpSiparisSozlesmeTarihi);
+            this.panelContainer.Controls.Add(this.txtIsFirsatiNo);
+            this.panelContainer.Controls.Add(this.btnKaydet);
+            this.panelContainer.Controls.Add(this.txtProjeNo);
+            this.panelContainer.Controls.Add(this.txtToplamBedel);
+            this.panelContainer.Controls.Add(this.chkNakliyeYok);
+            this.panelContainer.Controls.Add(this.chkAltProjeVar);
+            this.panelContainer.Controls.Add(this.chkNakliyeVar);
+            this.panelContainer.Controls.Add(this.chkAltProjeYok);
+            this.panelContainer.Controls.Add(this.chkProjeIliskisiYok);
+            this.panelContainer.Controls.Add(this.chkProjeIliskisiVar);
+            this.panelContainer.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelContainer.Location = new System.Drawing.Point(0, 50);
+            this.panelContainer.Name = "panelContainer";
+            this.panelContainer.Size = new System.Drawing.Size(1264, 882);
+            this.panelContainer.TabIndex = 327;
+            // 
+            // cmbParaBirimi
+            // 
+            this.cmbParaBirimi.FormattingEnabled = true;
+            this.cmbParaBirimi.Items.AddRange(new object[] {
+            "Euro (€)",
+            "Dolar ($)",
+            "Türk Lirası (₺)"});
+            this.cmbParaBirimi.Location = new System.Drawing.Point(670, 529);
+            this.cmbParaBirimi.Name = "cmbParaBirimi";
+            this.cmbParaBirimi.Size = new System.Drawing.Size(402, 24);
+            this.cmbParaBirimi.TabIndex = 327;
             // 
             // ctlBaslik1
             // 
@@ -470,71 +503,22 @@ namespace CEKA_APP.UsrControl
             this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
             this.ctlBaslik1.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.ctlBaslik1.Name = "ctlBaslik1";
-            this.ctlBaslik1.Size = new System.Drawing.Size(1297, 50);
+            this.ctlBaslik1.Size = new System.Drawing.Size(1264, 50);
             this.ctlBaslik1.TabIndex = 26;
-            // 
-            // btnSil
-            // 
-            this.btnSil.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnSil.FlatAppearance.BorderSize = 0;
-            this.btnSil.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSil.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnSil.ForeColor = System.Drawing.Color.White;
-            this.btnSil.Location = new System.Drawing.Point(481, 68);
-            this.btnSil.Name = "btnSil";
-            this.btnSil.Size = new System.Drawing.Size(100, 28);
-            this.btnSil.TabIndex = 326;
-            this.btnSil.Text = "Sil";
-            this.btnSil.UseVisualStyleBackColor = false;
-            this.btnSil.Click += new System.EventHandler(this.btnSil_Click);
             // 
             // ctlProjeKutuk
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(245)))), ((int)(((byte)(247)))), ((int)(((byte)(250)))));
-            this.Controls.Add(this.btnSil);
-            this.Controls.Add(this.chkCogul);
-            this.Controls.Add(this.chkTekil);
-            this.Controls.Add(this.label13);
-            this.Controls.Add(this.label12);
-            this.Controls.Add(this.chkEuro);
-            this.Controls.Add(this.chkDolar);
-            this.Controls.Add(this.chkTL);
-            this.Controls.Add(this.lblAltProjeHata);
-            this.Controls.Add(this.label11);
-            this.Controls.Add(this.btnAra);
-            this.Controls.Add(this.txtProjeAra);
-            this.Controls.Add(this.dtpSiparisSozlesmeTarihi);
-            this.Controls.Add(this.btnKaydet);
+            this.Controls.Add(this.panelContainer);
             this.Controls.Add(this.ctlBaslik1);
-            this.Controls.Add(this.chkNakliyeYok);
-            this.Controls.Add(this.chkNakliyeVar);
-            this.Controls.Add(this.chkProjeIliskisiYok);
-            this.Controls.Add(this.chkProjeIliskisiVar);
-            this.Controls.Add(this.chkAltProjeYok);
-            this.Controls.Add(this.chkAltProjeVar);
-            this.Controls.Add(this.txtToplamBedel);
-            this.Controls.Add(this.txtProjeNo);
-            this.Controls.Add(this.txtIsFirsatiNo);
-            this.Controls.Add(this.txtTeklifNo);
-            this.Controls.Add(this.txtMusteriAdi);
-            this.Controls.Add(this.txtMusteriNo);
-            this.Controls.Add(this.label10);
-            this.Controls.Add(this.label9);
-            this.Controls.Add(this.label8);
-            this.Controls.Add(this.label7);
-            this.Controls.Add(this.label6);
-            this.Controls.Add(this.label5);
-            this.Controls.Add(this.label4);
-            this.Controls.Add(this.label3);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
             this.Name = "ctlProjeKutuk";
-            this.Size = new System.Drawing.Size(1297, 886);
+            this.Size = new System.Drawing.Size(1264, 932);
             this.Load += new System.EventHandler(this.ctlProjeKutuk_Load);
+            this.panelContainer.ResumeLayout(false);
+            this.panelContainer.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -567,13 +551,12 @@ namespace CEKA_APP.UsrControl
         private System.Windows.Forms.Button btnAra;
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label lblAltProjeHata;
-        private System.Windows.Forms.CheckBox chkEuro;
-        private System.Windows.Forms.CheckBox chkDolar;
-        private System.Windows.Forms.CheckBox chkTL;
         private System.Windows.Forms.Label label12;
         private System.Windows.Forms.Label label13;
         private System.Windows.Forms.CheckBox chkCogul;
         private System.Windows.Forms.CheckBox chkTekil;
         private System.Windows.Forms.Button btnSil;
+        private System.Windows.Forms.Panel panelContainer;
+        private System.Windows.Forms.ComboBox cmbParaBirimi;
     }
 }

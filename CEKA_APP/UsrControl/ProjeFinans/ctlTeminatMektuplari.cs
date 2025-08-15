@@ -22,7 +22,7 @@ namespace CEKA_APP.UsrControl
             InitializeComponent();
 
             DataGridViewHelper.StilUygulaProjeFinans(dataGridTeminatMektuplari);
-            dataGridTeminatMektuplari.AutoGenerateColumns = false; // Otomatik sütun oluşturmayı kapat
+            dataGridTeminatMektuplari.AutoGenerateColumns = false;
 
             if (this.dataGridTeminatMektuplari.ContextMenuStrip != null)
             {
@@ -41,7 +41,7 @@ namespace CEKA_APP.UsrControl
                 }
             }
 
-            ConfigureDataGridViewColumns(); // Sütunları baştan oluştur
+            ConfigureDataGridViewColumns();
         }
 
         private void ctlTeminatMektuplari_Load(object sender, EventArgs e)
@@ -67,10 +67,8 @@ namespace CEKA_APP.UsrControl
 
         private void ConfigureDataGridViewColumns()
         {
-            // Mevcut sütunları temizle
             dataGridTeminatMektuplari.Columns.Clear();
 
-            // Sütunları manuel olarak ekle
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "mektupNo",

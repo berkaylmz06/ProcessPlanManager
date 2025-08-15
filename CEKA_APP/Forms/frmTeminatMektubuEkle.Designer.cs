@@ -68,9 +68,9 @@
             this.lblMektupNo.AutoSize = true;
             this.lblMektupNo.Location = new System.Drawing.Point(67, 48);
             this.lblMektupNo.Name = "lblMektupNo";
-            this.lblMektupNo.Size = new System.Drawing.Size(77, 16);
+            this.lblMektupNo.Size = new System.Drawing.Size(94, 20);
             this.lblMektupNo.TabIndex = 1;
-            this.lblMektupNo.Text = "Mektup NO:";
+            this.lblMektupNo.Text = "Mektup No:";
             // 
             // lblMusteriAdi
             // 
@@ -131,6 +131,7 @@
             this.chkTL.TabIndex = 6;
             this.chkTL.Text = "Türk Lirası (₺)";
             this.chkTL.UseVisualStyleBackColor = true;
+            this.chkTL.CheckedChanged += new System.EventHandler(this.chkTL_CheckedChanged);
             // 
             // chkDolar
             // 
@@ -141,6 +142,7 @@
             this.chkDolar.TabIndex = 5;
             this.chkDolar.Text = "Dolar ($)";
             this.chkDolar.UseVisualStyleBackColor = true;
+            this.chkDolar.CheckedChanged += new System.EventHandler(this.chkDolar_CheckedChanged);
             // 
             // chkEuro
             // 
@@ -151,6 +153,7 @@
             this.chkEuro.TabIndex = 4;
             this.chkEuro.Text = "Euro (€)";
             this.chkEuro.UseVisualStyleBackColor = true;
+            this.chkEuro.CheckedChanged += new System.EventHandler(this.chkEuro_CheckedChanged);
             // 
             // lblVadeTarihi
             // 
@@ -170,7 +173,7 @@
             // 
             // dtIadeTarihi
             // 
-            this.dtIadeTarihi.Location = new System.Drawing.Point(191, 651);
+            this.dtIadeTarihi.Location = new System.Drawing.Point(191, 652);
             this.dtIadeTarihi.Name = "dtIadeTarihi";
             this.dtIadeTarihi.Size = new System.Drawing.Size(279, 22);
             this.dtIadeTarihi.TabIndex = 14;
@@ -229,7 +232,7 @@
             // 
             // btnKaydet
             // 
-            this.btnKaydet.Location = new System.Drawing.Point(157, 709);
+            this.btnKaydet.Location = new System.Drawing.Point(149, 718);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(202, 51);
             this.btnKaydet.TabIndex = 15;

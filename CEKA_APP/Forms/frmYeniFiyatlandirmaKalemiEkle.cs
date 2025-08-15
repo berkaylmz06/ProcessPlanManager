@@ -10,13 +10,20 @@ namespace CEKA_APP
         public string KalemAdi { get; private set; }
         private ProjeFinans_FiyatlandirmaKalemleriData kalemData = new ProjeFinans_FiyatlandirmaKalemleriData();
 
+        private const int VerticalMargin = 12;
+
         public frmYeniFiyatlandirmaKalemiEkle()
         {
             InitializeComponent();
             LoadKalemler();
 
+            panelYeniKalem.Visible = false;
+
+            this.ClientSize = new Size(this.ClientSize.Width, btnEkle.Bottom + VerticalMargin);
+
             this.Icon = Properties.Resources.cekalogokirmizi;
 
+            txtYeniKalem.TextChanged += txtYeniKalem_TextChanged;
         }
 
         private void LoadKalemler()
@@ -27,7 +34,7 @@ namespace CEKA_APP
             {
                 listKalemler.Items.Add(Adi);
             }
-            listKalemler.SelectedIndex = -1; 
+            listKalemler.SelectedIndex = -1;
         }
 
         private void btnSec_Click(object sender, EventArgs e)
@@ -45,32 +52,60 @@ namespace CEKA_APP
 
         private void btnEkle_Click(object sender, EventArgs e)
         {
-            if (!txtYeniKalem.Visible)
+            if (btnEkle.Text == "Yeni Ekle")
             {
-                txtYeniKalem.Clear();
-                txtYeniKalem.Visible = true;
-                lblYeniKalemAdi.Visible = true;
-                lblYeniKalemBilgi.Visible = true;
-                
-                btnEkle.Text = "Onayla";
-                this.Height += 30;
+                panelYeniKalem.Visible = true;
+                this.ClientSize = new Size(this.ClientSize.Width, panelYeniKalem.Bottom + VerticalMargin);
+
+                btnEkle.Text = "İptal";
+                btnEkle.BackColor = Color.Red;
             }
-            else if (!string.IsNullOrEmpty(txtYeniKalem.Text))
+            else if (btnEkle.Text == "İptal")
             {
-                KalemAdi = txtYeniKalem.Text;
-                kalemData.FiyatlandirmaKalemleriEkle(KalemAdi);
-                LoadKalemler();
-                txtYeniKalem.Visible = false;
-                lblYeniKalemAdi.Visible = false;
-                lblYeniKalemBilgi.Visible = false;
-                btnEkle.Text = "Yeni Ekle";
-                this.Height -= 30;
-                MessageBox.Show("Yeni kalem eklendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                GeriDon();
+            }
+            else if (btnEkle.Text == "Onayla")
+            {
+                if (!string.IsNullOrEmpty(txtYeniKalem.Text))
+                {
+                    KalemAdi = txtYeniKalem.Text;
+                    kalemData.FiyatlandirmaKalemleriEkle(KalemAdi);
+                    LoadKalemler();
+
+                    GeriDon();
+
+                    MessageBox.Show("Yeni kalem başarıyla eklendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Lütfen yeni kalem adını girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+            }
+        }
+
+        private void txtYeniKalem_TextChanged(object sender, EventArgs e)
+        {
+            if (string.IsNullOrEmpty(txtYeniKalem.Text))
+            {
+                btnEkle.Text = "İptal";
+                btnEkle.BackColor = Color.Gray;
             }
             else
             {
-                MessageBox.Show("Lütfen yeni kalem adını girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                btnEkle.Text = "Onayla";
+                btnEkle.BackColor = Color.FromArgb(46, 204, 113); // Onay için yeşil
             }
+        }
+
+        private void GeriDon()
+        {
+            panelYeniKalem.Visible = false;
+            btnSec.Visible = true;
+            txtYeniKalem.Clear();
+            btnEkle.Text = "Yeni Ekle";
+            btnEkle.BackColor = Color.Gray;
+
+            this.ClientSize = new Size(this.ClientSize.Width, btnEkle.Bottom + VerticalMargin);
         }
 
         private void frmYeniFiyatlandirmaKalemiEkle_FormClosing(object sender, FormClosingEventArgs e)

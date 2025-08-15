@@ -115,46 +115,48 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 try
                 {
                     connection.Open();
+                    var projelerToControl = new List<string>();
                     if (altProjeler != null && altProjeler.Any())
                     {
-                        foreach (var altProje in altProjeler)
-                        {
-                            string query = @"
-                                SELECT SUM(teklifBirimMiktar * teklifBirimFiyat) as ToplamTeklif
-                                FROM ProjeFinans_Fiyatlandirma
-                                WHERE projeNo = @projeNo AND teklifBirimMiktar IS NOT NULL AND teklifBirimFiyat IS NOT NULL";
-                            using (var cmd = new SqlCommand(query, connection))
-                            {
-                                cmd.Parameters.AddWithValue("@projeNo", altProje);
-                                object result = cmd.ExecuteScalar();
-                                if (result != DBNull.Value && result != null)
-                                {
-                                    toplamBedel += Convert.ToDecimal(result);
-                                }
-                                else
-                                {
-                                    eksikFiyatlandirmaProjeler.Add(altProje);
-                                }
-                            }
-                        }
+                        projelerToControl = altProjeler;
                     }
                     else
                     {
-                        string query = @"
+                        projelerToControl.Add(projeNo);
+                    }
+
+                    foreach (var proje in projelerToControl)
+                    {
+                        // Önce proje için herhangi bir fiyatlandırma kaydının olup olmadığını kontrol et
+                        string checkQuery = "SELECT COUNT(*) FROM ProjeFinans_Fiyatlandirma WHERE projeNo = @projeNo";
+                        using (var checkCmd = new SqlCommand(checkQuery, connection))
+                        {
+                            checkCmd.Parameters.AddWithValue("@projeNo", proje);
+                            int count = (int)checkCmd.ExecuteScalar();
+                            if (count == 0)
+                            {
+                                eksikFiyatlandirmaProjeler.Add(proje);
+                                continue;
+                            }
+                        }
+
+                        // Eğer kayıt varsa, toplam bedeli hesapla
+                        string sumQuery = @"
                             SELECT SUM(teklifBirimMiktar * teklifBirimFiyat) as ToplamTeklif
                             FROM ProjeFinans_Fiyatlandirma
                             WHERE projeNo = @projeNo AND teklifBirimMiktar IS NOT NULL AND teklifBirimFiyat IS NOT NULL";
-                        using (var cmd = new SqlCommand(query, connection))
+                        using (var sumCmd = new SqlCommand(sumQuery, connection))
                         {
-                            cmd.Parameters.AddWithValue("@projeNo", projeNo);
-                            object result = cmd.ExecuteScalar();
+                            sumCmd.Parameters.AddWithValue("@projeNo", proje);
+                            object result = sumCmd.ExecuteScalar();
                             if (result != DBNull.Value && result != null)
                             {
                                 toplamBedel += Convert.ToDecimal(result);
                             }
                             else
                             {
-                                eksikFiyatlandirmaProjeler.Add(projeNo);
+                                // Eğer kayıt olmasına rağmen toplam bedel NULL dönüyorsa, bu da bir hata durumudur.
+                                eksikFiyatlandirmaProjeler.Add(proje);
                             }
                         }
                     }
@@ -166,6 +168,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
             }
             return (toplamBedel, eksikFiyatlandirmaProjeler);
         }
+
         public bool FiyatlandirmaSil(string projeNo)
         {
             using (var connection = DataBaseHelper.GetConnection())

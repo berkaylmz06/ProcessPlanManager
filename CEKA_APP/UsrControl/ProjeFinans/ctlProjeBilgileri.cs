@@ -17,19 +17,17 @@ namespace CEKA_APP.UsrControl
         private bool hasNewData;
         private Dictionary<string, (TextBox txtProjeAdi, DateTimePicker dtpOlusturmaTarihi, TextBox txtAciklama)> projeInputs;
 
-        // "Tümünü Kaydet" butonu için sınıf düzeyinde bir alan tanımlandı
         private Button btnKaydetHepsi;
 
-        // Daha Zengin Renk Paleti
         private static class AppColors
         {
-            public static readonly Color PrimaryColor = Color.FromArgb(39, 55, 70); // Koyu Lacivert Gri
-            public static readonly Color SecondaryColor = Color.FromArgb(25, 118, 210); // Koyu Mavi
-            public static readonly Color SuccessColor = Color.FromArgb(67, 160, 71); // Koyu Yeşil
-            public static readonly Color WarningColor = Color.FromArgb(255, 152, 0); // Turuncu
-            public static readonly Color BackgroundColor = Color.FromArgb(245, 248, 250); // Çok Açık Gri (Kirli Beyaz)
-            public static readonly Color CardColor = Color.FromArgb(227, 242, 253); // Açık Gökyüzü Mavisi
-            public static readonly Color CardHoverColor = Color.FromArgb(207, 231, 246); // Açık Gökyüzü Mavisinin Bir Ton Koyu Hali
+            public static readonly Color PrimaryColor = Color.FromArgb(39, 55, 70);
+            public static readonly Color SecondaryColor = Color.FromArgb(25, 118, 210);
+            public static readonly Color SuccessColor = Color.FromArgb(67, 160, 71);
+            public static readonly Color WarningColor = Color.FromArgb(255, 152, 0);
+            public static readonly Color BackgroundColor = Color.FromArgb(245, 248, 250);
+            public static readonly Color CardColor = Color.FromArgb(227, 242, 253);
+            public static readonly Color CardHoverColor = Color.FromArgb(207, 231, 246);
         }
 
         private static class AppFonts
@@ -49,15 +47,13 @@ namespace CEKA_APP.UsrControl
             projeInputs = new Dictionary<string, (TextBox, DateTimePicker, TextBox)>();
             this.BackColor = AppColors.BackgroundColor;
 
-            // Butonun oluşturulması ve ana kontrolün altına sabitlenmesi
             btnKaydetHepsi = CreateStyledButton("Tümünü Kaydet", AppColors.SuccessColor, AppColors.SuccessColor);
             btnKaydetHepsi.Click += BtnKaydetHepsi_Click;
-            btnKaydetHepsi.Dock = DockStyle.Bottom; // Butonu en alta sabitle
+            btnKaydetHepsi.Dock = DockStyle.Bottom;
             this.Controls.Add(btnKaydetHepsi);
 
-            // panelProjeler'in butonun üzerinde kalan alanı doldurması sağlandı
             panelProjeler.Dock = DockStyle.Fill;
-            this.Controls.SetChildIndex(panelProjeler, 0); // panelProjeler'i en arkaya taşı
+            this.Controls.SetChildIndex(panelProjeler, 0);
         }
 
         public void LoadProjects(List<string> projects, string anaProjeNo = null)
@@ -86,41 +82,6 @@ namespace CEKA_APP.UsrControl
                     BackColor = AppColors.BackgroundColor,
                     AutoScroll = true,
                     Tag = "altProjelerPanel"
-                };
-
-                var lblOk = new Label
-                {
-                    Text = "►",
-                    Font = AppFonts.TitleFont,
-                    AutoSize = true,
-                    Location = new Point(anaKart.Width - 40, 20),
-                    ForeColor = AppColors.PrimaryColor,
-                    BackColor = Color.Transparent,
-                    Cursor = Cursors.Hand
-                };
-                anaKart.Controls.Add(lblOk);
-
-                lblOk.Click += (s, e) => {
-                    bool isPanelVisible = altProjelerPanel.Height > 0;
-                    lblOk.Text = isPanelVisible ? "►" : "▼";
-                    if (!isPanelVisible)
-                    {
-                        CopyToSubProjects(anaProjeNo, altProjelerPanel);
-                    }
-                    AnimatePanelHeight(altProjelerPanel, isPanelVisible ? 0 : 300);
-                };
-
-                anaKart.Click += (s, e) =>
-                {
-                    bool isPanelVisible = altProjelerPanel.Height > 0;
-                    lblOk.Text = isPanelVisible ? "►" : "▼";
-
-                    if (!isPanelVisible)
-                    {
-                        CopyToSubProjects(anaProjeNo, altProjelerPanel);
-                    }
-
-                    AnimatePanelHeight(altProjelerPanel, isPanelVisible ? 0 : 300);
                 };
 
                 int xOffset = 20;
@@ -198,7 +159,19 @@ namespace CEKA_APP.UsrControl
             var dtpOlusturmaTarihi = CreateDateTimePicker(projeBilgi?.OlusturmaTarihi, new Point(20, 130));
             var txtAciklama = CreateTextBox(projeBilgi?.Aciklama, PlaceholderText, new Point(20, 190));
 
-            Action onInputChange = () => hasNewData = true;
+            // Ana proje kartı değiştiğinde alt projelere kopyala
+            Action onInputChange = () =>
+            {
+                hasNewData = true;
+                if (isAnaProje)
+                {
+                    var altProjelerPanel = panelProjeler.Controls.OfType<Panel>().FirstOrDefault(p => p.Tag?.ToString() == "altProjelerPanel");
+                    if (altProjelerPanel != null)
+                    {
+                        CopyToSubProjects(projeNo, altProjelerPanel);
+                    }
+                }
+            };
 
             txtProjeAdi.TextChanged += (s, e) => onInputChange();
             dtpOlusturmaTarihi.ValueChanged += (s, e) => onInputChange();
@@ -212,8 +185,62 @@ namespace CEKA_APP.UsrControl
             card.Controls.Add(CreateLabel("Açıklama:", new Point(20, 170)));
             card.Controls.Add(txtAciklama);
 
+            if (isAnaProje)
+            {
+                var lblOk = new Label
+                {
+                    Text = "►",
+                    Font = AppFonts.TitleFont,
+                    AutoSize = true,
+                    Location = new Point(card.Width - 40, 20),
+                    ForeColor = AppColors.PrimaryColor,
+                    BackColor = Color.Transparent,
+                    Cursor = Cursors.Hand
+                };
+                card.Controls.Add(lblOk);
+
+                // Label'ın Click olayını tanımla
+                lblOk.Click += (s, e) =>
+                {
+                    var altProjelerPanel = panelProjeler.Controls.OfType<Panel>().FirstOrDefault(p => p.Tag?.ToString() == "altProjelerPanel");
+                    if (altProjelerPanel != null)
+                    {
+                        bool isPanelVisible = altProjelerPanel.Height > 0;
+                        lblOk.Text = isPanelVisible ? "►" : "▼";
+                        AnimatePanelHeight(altProjelerPanel, isPanelVisible ? 0 : 300);
+                        if (!isPanelVisible)
+                        {
+                            CopyToSubProjects(projeNo, altProjelerPanel);
+                        }
+                    }
+                };
+
+                // card'ın Click olayında Label'ın Click olayını çağır
+                card.Click += (s, e) => lblOk_Click(lblOk, EventArgs.Empty);
+            }
+
             projeInputs[projeNo] = (txtProjeAdi, dtpOlusturmaTarihi, txtAciklama);
             return card;
+        }
+
+        // Label'ın Click olayını çağırmak için yeni bir metot
+        private void lblOk_Click(object sender, EventArgs e)
+        {
+            if (sender is Label lblOk)
+            {
+                var altProjelerPanel = panelProjeler.Controls.OfType<Panel>().FirstOrDefault(p => p.Tag?.ToString() == "altProjelerPanel");
+                if (altProjelerPanel != null)
+                {
+                    bool isPanelVisible = altProjelerPanel.Height > 0;
+                    lblOk.Text = isPanelVisible ? "►" : "▼";
+                    AnimatePanelHeight(altProjelerPanel, isPanelVisible ? 0 : 300);
+                    if (!isPanelVisible)
+                    {
+                        string anaProjeNo = lblOk.Parent.Tag.ToString();
+                        CopyToSubProjects(anaProjeNo, altProjelerPanel);
+                    }
+                }
+            }
         }
 
         private Label CreateLabel(string text, Point location)
@@ -308,14 +335,20 @@ namespace CEKA_APP.UsrControl
                 {
                     if (ctrl is CustomPanel card && projeInputs.TryGetValue(card.Tag.ToString(), out var subInputs))
                     {
-                        subInputs.txtProjeAdi.Text = projeAdi;
-                        subInputs.txtProjeAdi.ForeColor = string.IsNullOrEmpty(projeAdi) ? Color.Gray : AppColors.PrimaryColor;
+                        string altProjeNo = card.Tag.ToString();
+                        var altProjeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(altProjeNo);
 
-                        subInputs.txtAciklama.Text = aciklama;
-                        subInputs.txtAciklama.ForeColor = string.IsNullOrEmpty(aciklama) ? Color.Gray : AppColors.PrimaryColor;
+                        if (altProjeBilgi == null)
+                        {
+                            subInputs.txtProjeAdi.Text = projeAdi;
+                            subInputs.txtProjeAdi.ForeColor = string.IsNullOrEmpty(projeAdi) ? Color.Gray : AppColors.PrimaryColor;
 
-                        subInputs.dtpOlusturmaTarihi.Value = tarih;
-                        hasNewData = true;
+                            subInputs.txtAciklama.Text = aciklama;
+                            subInputs.txtAciklama.ForeColor = string.IsNullOrEmpty(aciklama) ? Color.Gray : AppColors.PrimaryColor;
+
+                            subInputs.dtpOlusturmaTarihi.Value = tarih;
+                            hasNewData = true;
+                        }
                     }
                 }
             }

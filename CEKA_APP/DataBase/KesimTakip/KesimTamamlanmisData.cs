@@ -9,7 +9,7 @@ namespace CEKA_APP.DataBase
 {
     class KesimTamamlanmisData
     {
-        public static bool TablodanKesimTamamlanmisEkleme(string kesimYapan, string kesimId, int kesilmisPlanSayisi, DateTime kesimTarihi, TimeSpan kesimSaati)
+        public static bool TablodanKesimTamamlanmisEkleme(string kesimYapan, string kesimId, int kesilmisPlanSayisi, DateTime kesimTarihi, TimeSpan kesimSaati, string kesilenLot)
         {
             try
             {
@@ -18,23 +18,24 @@ namespace CEKA_APP.DataBase
                     connection.Open();
 
                     string query = @"
-            IF EXISTS (SELECT 1 FROM [KesimTamamlanmisPaket] WHERE [kesimId] = @kesimId)
-            BEGIN
-                UPDATE [KesimTamamlanmisPaket]
-                SET 
-                    [kesilmisPlanSayisi] = [kesilmisPlanSayisi] + @kesilmisPlanSayisi,
-                    [kesimYapan] = @kesimYapan,
-                    [kesimTarihi] = @kesimTarihi,
-                    [kesimSaati] = @kesimSaati
-                WHERE [kesimId] = @kesimId
-            END
-            ELSE
-            BEGIN
-                INSERT INTO [KesimTamamlanmisPaket] 
-                    ([kesimYapan], [kesimId], [kesilmisPlanSayisi], [kesimTarihi], [kesimSaati])
-                VALUES 
-                    (@kesimYapan, @kesimId, @kesilmisPlanSayisi, @kesimTarihi, @kesimSaati)
-            END";
+    IF EXISTS (SELECT 1 FROM [KesimTamamlanmisPaket] WHERE [kesimId] = @kesimId)
+    BEGIN
+        UPDATE [KesimTamamlanmisPaket]
+        SET 
+            [kesilmisPlanSayisi] = [kesilmisPlanSayisi] + @kesilmisPlanSayisi,
+            [kesimYapan] = @kesimYapan,
+            [kesimTarihi] = @kesimTarihi,
+            [kesimSaati] = @kesimSaati,
+            [kesilenLot] = @kesilenLot
+        WHERE [kesimId] = @kesimId
+    END
+    ELSE
+    BEGIN
+        INSERT INTO [KesimTamamlanmisPaket] 
+            ([kesimYapan], [kesimId], [kesilmisPlanSayisi], [kesimTarihi], [kesimSaati], [kesilenLot])
+        VALUES 
+            (@kesimYapan, @kesimId, @kesilmisPlanSayisi, @kesimTarihi, @kesimSaati, @kesilenLot)
+    END";
 
                     using (var command = new SqlCommand(query, connection))
                     {
@@ -43,6 +44,7 @@ namespace CEKA_APP.DataBase
                         command.Parameters.AddWithValue("@kesilmisPlanSayisi", kesilmisPlanSayisi);
                         command.Parameters.AddWithValue("@kesimTarihi", kesimTarihi);
                         command.Parameters.AddWithValue("@kesimSaati", kesimSaati);
+                        command.Parameters.AddWithValue("@kesilenLot", kesilenLot ?? (object)DBNull.Value);
 
                         command.ExecuteNonQuery();
                     }
@@ -55,10 +57,9 @@ namespace CEKA_APP.DataBase
                 return false;
             }
         }
-
         public DataTable GetKesimListesTamamlanmis()
         {
-            string query = "SELECT [kesimYapan], [kesimId], [kesilmisPlanSayisi], [kesimTarihi], [kesimSaati] FROM [KesimTamamlanmisPaket]";
+            string query = "SELECT [kesimYapan], [kesimId], [kesilmisPlanSayisi], [kesilenLot], [kesimTarihi], [kesimSaati] FROM [KesimTamamlanmisPaket]";
             using (var connection = DataBaseHelper.GetConnection())
             {
                 try
@@ -91,6 +92,7 @@ namespace CEKA_APP.DataBase
                             kesimYapan,
                             kesimId,
                             kesilmisPlanSayisi,
+                            kesilenLot,
                             kesimTarihi,
                             kesimSaati
                         FROM KesimTamamlanmisPaket
@@ -138,6 +140,10 @@ namespace CEKA_APP.DataBase
                                     {
                                         Console.WriteLine($"Geçersiz kesilmiş plan sayısı değeri: {hamDeger}");
                                     }
+                                    break;
+                                case "kesilenLot":
+                                    condition = $"LOWER(kesilenLot) LIKE {paramName}";
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger.ToLower() });
                                     break;
                                 case "kesimTarihi":
                                     if (DateTime.TryParse(hamDeger, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime kesimTarihi))

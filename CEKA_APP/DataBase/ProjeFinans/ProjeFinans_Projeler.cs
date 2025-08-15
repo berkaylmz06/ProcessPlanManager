@@ -19,8 +19,8 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 {
                     conn.Open();
                     string sorgu = @"
-                        INSERT INTO ProjeFinans_Projeler (projeNo, aciklama, projeAdi, olusturmaTarihi)
-                        VALUES (@projeNo, @aciklama, @projeAdi, @olusturmaTarihi)";
+                INSERT INTO ProjeFinans_Projeler (projeNo, aciklama, projeAdi, olusturmaTarihi)
+                VALUES (@projeNo, @aciklama, @projeAdi, @olusturmaTarihi)";
 
                     using (SqlCommand komut = new SqlCommand(sorgu, conn))
                     {
@@ -32,13 +32,13 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     }
                     return true;
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    MessageBox.Show($"Proje finans kaydı eklenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return false;
+                    return false; // Hata mesajını UI katmanına bırak
                 }
             }
         }
+
         public static bool UpdateProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi, out bool degisiklikVar)
         {
             using (var connection = DataBaseHelper.GetConnection())
@@ -50,7 +50,6 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     ProjeBilgi mevcutBilgi = GetProjeBilgileri(projeNo);
                     if (mevcutBilgi == null)
                     {
-                        MessageBox.Show($"Proje '{projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         degisiklikVar = false;
                         return false;
                     }
@@ -62,7 +61,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
 
                     if (!degisiklikVar)
                     {
-                        return true; // Değişiklik yoksa hata değil, başarılı say
+                        return true;
                     }
 
                     string sorgu = @"
@@ -83,11 +82,10 @@ namespace CEKA_APP.DataBase.ProjeFinans
                         return true;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
-                    MessageBox.Show($"Proje finans güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     degisiklikVar = false;
-                    return false;
+                    return false; // Hata mesajını UI katmanına bırak
                 }
             }
         }
@@ -133,6 +131,28 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     Console.WriteLine($"Hata: {ex.Message}");
                     MessageBox.Show($"Proje bilgileri alınırken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return null;
+                }
+            }
+        }
+        public static bool ProjeSil(string projeNo)
+        {
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                try
+                {
+                    connection.Open();
+                    string sql = "DELETE FROM ProjeFinans_Projeler WHERE projeNo = @projeNo";
+                    using (SqlCommand command = new SqlCommand(sql, connection))
+                    {
+                        command.Parameters.AddWithValue("@projeNo", projeNo);
+                        command.ExecuteNonQuery();
+                    }
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Proje silinirken bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return false;
                 }
             }
         }
