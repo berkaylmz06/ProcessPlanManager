@@ -1,4 +1,5 @@
-﻿using CEKA_APP.Entitys;
+﻿using CEKA_APP.DataBase.ProjeFinans;
+using CEKA_APP.Entitys;
 using CEKA_APP.Entitys.ProjeFinans;
 using System;
 using System.Collections.Generic;
@@ -661,6 +662,14 @@ namespace CEKA_APP.DataBase
                     return false;
                 }
             }
+        }
+        public static string GetProjeParaBirimi(string projeNo)
+        {
+            string ustProjeNo = ProjeFinans_ProjeIliskiData.GetUstProjeNo(projeNo);
+            string hedefProjeNo = !string.IsNullOrEmpty(ustProjeNo) ? ustProjeNo : projeNo;
+
+            ProjeKutuk kutuk = ProjeKutukAra(hedefProjeNo);
+            return kutuk.paraBirimi;
         }
     }
 }

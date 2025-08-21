@@ -35,6 +35,12 @@
             this.panelAlt = new System.Windows.Forms.Panel();
             this.btnYeniKalemEkle = new System.Windows.Forms.Button();
             this.panelUst = new System.Windows.Forms.Panel();
+            this.panelLeft = new System.Windows.Forms.Panel();
+            this.lblKurBaslik = new System.Windows.Forms.Label();
+            this.btnKurGuncelle = new System.Windows.Forms.Button();
+            this.txtDovizKuru = new System.Windows.Forms.TextBox();
+            this.lblKurBilgi = new System.Windows.Forms.Label();
+            this.lblEskiKur = new System.Windows.Forms.Label();
             this.btnSil = new System.Windows.Forms.Button();
             this.panelFill = new System.Windows.Forms.Panel();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
@@ -42,6 +48,7 @@
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.panelAlt.SuspendLayout();
             this.panelUst.SuspendLayout();
+            this.panelLeft.SuspendLayout();
             this.panelFill.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -103,9 +110,9 @@
             this.panelAlt.Controls.Add(this.btnYeniKalemEkle);
             this.panelAlt.Controls.Add(this.btnKaydet);
             this.panelAlt.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelAlt.Location = new System.Drawing.Point(0, 913);
+            this.panelAlt.Location = new System.Drawing.Point(0, 899);
             this.panelAlt.Name = "panelAlt";
-            this.panelAlt.Size = new System.Drawing.Size(1765, 92);
+            this.panelAlt.Size = new System.Drawing.Size(1766, 115);
             this.panelAlt.TabIndex = 5;
             // 
             // btnYeniKalemEkle
@@ -126,6 +133,8 @@
             // panelUst
             // 
             this.panelUst.BackColor = System.Drawing.Color.White;
+            this.panelUst.Controls.Add(this.panelLeft);
+            this.panelUst.Controls.Add(this.lblEskiKur);
             this.panelUst.Controls.Add(this.btnSil);
             this.panelUst.Controls.Add(this.btnProjeAra);
             this.panelUst.Controls.Add(this.txtProjeNo);
@@ -133,8 +142,72 @@
             this.panelUst.Dock = System.Windows.Forms.DockStyle.Top;
             this.panelUst.Location = new System.Drawing.Point(0, 50);
             this.panelUst.Name = "panelUst";
-            this.panelUst.Size = new System.Drawing.Size(1765, 90);
+            this.panelUst.Size = new System.Drawing.Size(1766, 90);
             this.panelUst.TabIndex = 6;
+            // 
+            // panelLeft
+            // 
+            this.panelLeft.Controls.Add(this.lblKurBaslik);
+            this.panelLeft.Controls.Add(this.btnKurGuncelle);
+            this.panelLeft.Controls.Add(this.txtDovizKuru);
+            this.panelLeft.Controls.Add(this.lblKurBilgi);
+            this.panelLeft.Dock = System.Windows.Forms.DockStyle.Right;
+            this.panelLeft.Location = new System.Drawing.Point(1320, 0);
+            this.panelLeft.Name = "panelLeft";
+            this.panelLeft.Size = new System.Drawing.Size(446, 90);
+            this.panelLeft.TabIndex = 9;
+            // 
+            // lblKurBaslik
+            // 
+            this.lblKurBaslik.AutoSize = true;
+            this.lblKurBaslik.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblKurBaslik.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.lblKurBaslik.Location = new System.Drawing.Point(41, 3);
+            this.lblKurBaslik.Name = "lblKurBaslik";
+            this.lblKurBaslik.Size = new System.Drawing.Size(357, 23);
+            this.lblKurBaslik.TabIndex = 10;
+            this.lblKurBaslik.Text = "Türkiye Cumhuriyet Merkez Bankası Kurları";
+            // 
+            // btnKurGuncelle
+            // 
+            this.btnKurGuncelle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnKurGuncelle.FlatAppearance.BorderSize = 0;
+            this.btnKurGuncelle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnKurGuncelle.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnKurGuncelle.ForeColor = System.Drawing.Color.White;
+            this.btnKurGuncelle.Location = new System.Drawing.Point(306, 30);
+            this.btnKurGuncelle.Name = "btnKurGuncelle";
+            this.btnKurGuncelle.Size = new System.Drawing.Size(130, 29);
+            this.btnKurGuncelle.TabIndex = 5;
+            this.btnKurGuncelle.Text = "Kur Güncelle";
+            this.btnKurGuncelle.UseVisualStyleBackColor = false;
+            this.btnKurGuncelle.Click += new System.EventHandler(this.btnKurGuncelle_Click);
+            // 
+            // txtDovizKuru
+            // 
+            this.txtDovizKuru.Location = new System.Drawing.Point(152, 34);
+            this.txtDovizKuru.Name = "txtDovizKuru";
+            this.txtDovizKuru.Size = new System.Drawing.Size(148, 22);
+            this.txtDovizKuru.TabIndex = 6;
+            // 
+            // lblKurBilgi
+            // 
+            this.lblKurBilgi.AutoSize = true;
+            this.lblKurBilgi.Location = new System.Drawing.Point(3, 40);
+            this.lblKurBilgi.Name = "lblKurBilgi";
+            this.lblKurBilgi.Size = new System.Drawing.Size(16, 16);
+            this.lblKurBilgi.TabIndex = 7;
+            this.lblKurBilgi.Text = "...";
+            this.lblKurBilgi.Visible = false;
+            // 
+            // lblEskiKur
+            // 
+            this.lblEskiKur.AutoSize = true;
+            this.lblEskiKur.Location = new System.Drawing.Point(570, 40);
+            this.lblEskiKur.Name = "lblEskiKur";
+            this.lblEskiKur.Size = new System.Drawing.Size(16, 16);
+            this.lblEskiKur.TabIndex = 8;
+            this.lblEskiKur.Text = "...";
             // 
             // btnSil
             // 
@@ -159,7 +232,7 @@
             this.panelFill.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelFill.Location = new System.Drawing.Point(0, 140);
             this.panelFill.Name = "panelFill";
-            this.panelFill.Size = new System.Drawing.Size(1765, 773);
+            this.panelFill.Size = new System.Drawing.Size(1766, 759);
             this.panelFill.TabIndex = 7;
             // 
             // tableLayoutPanel2
@@ -172,13 +245,13 @@
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 251F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 230F));
             this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 237F));
-            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 196F));
+            this.tableLayoutPanel2.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 253F));
             this.tableLayoutPanel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 704);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(0, 690);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 1;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(1765, 69);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(1766, 69);
             this.tableLayoutPanel2.TabIndex = 1;
             // 
             // tableLayoutPanel1
@@ -191,14 +264,14 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 251F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 228F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 236F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 198F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 255F));
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 2;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1765, 773);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1766, 759);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // ctlBaslik1
@@ -207,7 +280,7 @@
             this.ctlBaslik1.Dock = System.Windows.Forms.DockStyle.Top;
             this.ctlBaslik1.Location = new System.Drawing.Point(0, 0);
             this.ctlBaslik1.Name = "ctlBaslik1";
-            this.ctlBaslik1.Size = new System.Drawing.Size(1765, 50);
+            this.ctlBaslik1.Size = new System.Drawing.Size(1766, 50);
             this.ctlBaslik1.TabIndex = 0;
             // 
             // ctlProjeFiyatlandirma
@@ -220,11 +293,13 @@
             this.Controls.Add(this.panelAlt);
             this.Controls.Add(this.ctlBaslik1);
             this.Name = "ctlProjeFiyatlandirma";
-            this.Size = new System.Drawing.Size(1765, 1005);
+            this.Size = new System.Drawing.Size(1766, 1014);
             this.Load += new System.EventHandler(this.ctlProjeFiyatlandirma_Load);
             this.panelAlt.ResumeLayout(false);
             this.panelUst.ResumeLayout(false);
             this.panelUst.PerformLayout();
+            this.panelLeft.ResumeLayout(false);
+            this.panelLeft.PerformLayout();
             this.panelFill.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -244,5 +319,11 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel2;
         private System.Windows.Forms.Button btnSil;
         private System.Windows.Forms.Button btnProjeAra;
+        private System.Windows.Forms.TextBox txtDovizKuru;
+        private System.Windows.Forms.Label lblKurBilgi;
+        private System.Windows.Forms.Label lblEskiKur;
+        private System.Windows.Forms.Button btnKurGuncelle;
+        private System.Windows.Forms.Panel panelLeft;
+        private System.Windows.Forms.Label lblKurBaslik;
     }
 }

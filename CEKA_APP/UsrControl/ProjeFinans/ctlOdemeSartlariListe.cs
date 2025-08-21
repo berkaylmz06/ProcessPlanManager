@@ -86,6 +86,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             ConfigureDataGridColumns();
 
             dataGridOdemeSartlari.ScrollBars = ScrollBars.Both;
+            dataGridOdemeSartlari.Refresh(); // CellFormatting olayını tetiklemek için
 
             if (sonucTablo.Rows.Count == 0)
             {
@@ -95,114 +96,134 @@ namespace CEKA_APP.UsrControl.ProjeFinans
 
         private void ConfigureDataGridColumns()
         {
+            // Sütunlar oluşturulmadan önce metottan çıkın.
+            if (dataGridOdemeSartlari.Columns.Count == 0)
+            {
+                return;
+            }
+
+            // Otomatik boyutlandırmayı devre dışı bırakıyoruz.
             dataGridOdemeSartlari.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
 
+            // Sütunların istenen sırasını tanımlayan bir liste oluşturuyoruz.
+            var columnOrder = new List<string>
+    {
+        "projeNo",
+        "musteriAdi",
+        "projeAciklama",
+        "kilometreTasiAdi",
+        "siralama",
+        "oran",
+        "tutar",
+        "paraBirimi",
+        "tahminiTarih",
+        "gerceklesenTarih",
+        "odemeAciklama",
+        "teminatMektubu",
+        "teminatDurumu",
+        "durum",
+        "kalanTutar",
+        "odemeTarihi",
+        "faturaNo",      // Fatura No'yu 15. sıraya yerleştiriyoruz
+        "odemeSapmasi"   // Ödeme Sapması'nı Fatura No'dan sonra, 16. sıraya yerleştiriyoruz
+    };
+
+            // Her sütun için döngü yaparak DisplayIndex ve diğer ayarları yapıyoruz.
+            for (int i = 0; i < columnOrder.Count; i++)
+            {
+                string columnName = columnOrder[i];
+                if (dataGridOdemeSartlari.Columns.Contains(columnName))
+                {
+                    dataGridOdemeSartlari.Columns[columnName].DisplayIndex = i;
+
+                    // Sütun adına göre başlık ve genişlik gibi diğer ayarları yapın.
+                    switch (columnName)
+                    {
+                        case "projeNo":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Proje No";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                            break;
+                        case "musteriAdi":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Müşteri Adı";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 200;
+                            break;
+                        case "projeAciklama":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Proje Açıklama";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 200;
+                            break;
+                        case "kilometreTasiAdi":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Kilometre Taşı";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 250;
+                            break;
+                        case "siralama":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Sıra";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 80;
+                            break;
+                        case "oran":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Oran(%)";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 100;
+                            break;
+                        case "tutar":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Tutar";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 120;
+                            break;
+                        case "paraBirimi":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "paraBirimi";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 120;
+                            break;
+                        case "tahminiTarih":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Tahmini Tarih";
+                            dataGridOdemeSartlari.Columns[columnName].DefaultCellStyle.Format = "dd.MM.yyyy";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                            break;
+                        case "gerceklesenTarih":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Gerçekleşen Tarih";
+                            dataGridOdemeSartlari.Columns[columnName].DefaultCellStyle.Format = "dd.MM.yyyy";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                            break;
+                        case "odemeAciklama":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Ödeme Açıklama";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 250;
+                            break;
+                        case "teminatMektubu":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Teminat Mektubu Var Mı?";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 180;
+                            break;
+                        case "teminatDurumu":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Teminat Durumu";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 180;
+                            break;
+                        case "durum":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Durum";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 120;
+                            break;
+                        case "kalanTutar":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Kalan Tutar";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 120;
+                            break;
+                        case "odemeTarihi":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Ödeme Tarihi";
+                            dataGridOdemeSartlari.Columns[columnName].DefaultCellStyle.Format = "dd.MM.yyyy";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                            break;
+                        case "faturaNo":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Fatura No";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 120;
+                            break;
+                        case "odemeSapmasi":
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Ödeme Sapması (Gün)";
+                            dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                            break;
+                    }
+                }
+            }
+
+            // Gizli sütunları belirleyin
             if (dataGridOdemeSartlari.Columns.Contains("odemeId"))
                 dataGridOdemeSartlari.Columns["odemeId"].Visible = false;
             if (dataGridOdemeSartlari.Columns.Contains("kilometreTasiId"))
                 dataGridOdemeSartlari.Columns["kilometreTasiId"].Visible = false;
-
-            if (dataGridOdemeSartlari.Columns.Contains("projeNo"))
-            {
-                dataGridOdemeSartlari.Columns["projeNo"].HeaderText = "Proje No";
-                dataGridOdemeSartlari.Columns["projeNo"].DisplayIndex = 0;
-                dataGridOdemeSartlari.Columns["projeNo"].Width = 150;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("musteriAdi"))
-            {
-                dataGridOdemeSartlari.Columns["musteriAdi"].HeaderText = "Müşteri Adı";
-                dataGridOdemeSartlari.Columns["musteriAdi"].DisplayIndex = 1;
-                dataGridOdemeSartlari.Columns["musteriAdi"].Width = 200;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("kilometreTasiAdi"))
-            {
-                dataGridOdemeSartlari.Columns["kilometreTasiAdi"].HeaderText = "Kilometre Taşı";
-                dataGridOdemeSartlari.Columns["kilometreTasiAdi"].DisplayIndex = 2;
-                dataGridOdemeSartlari.Columns["kilometreTasiAdi"].Width = 250;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("siralama"))
-            {
-                dataGridOdemeSartlari.Columns["siralama"].HeaderText = "Sıra";
-                dataGridOdemeSartlari.Columns["siralama"].DisplayIndex = 3;
-                dataGridOdemeSartlari.Columns["siralama"].Width = 80;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("oran"))
-            {
-                dataGridOdemeSartlari.Columns["oran"].HeaderText = "Oran(%)";
-                dataGridOdemeSartlari.Columns["oran"].DisplayIndex = 4;
-                dataGridOdemeSartlari.Columns["oran"].Width = 100;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("tutar"))
-            {
-                dataGridOdemeSartlari.Columns["tutar"].HeaderText = "Tutar";
-                dataGridOdemeSartlari.Columns["tutar"].DisplayIndex = 5;
-                dataGridOdemeSartlari.Columns["tutar"].Width = 120;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("tahminiTarih"))
-            {
-                dataGridOdemeSartlari.Columns["tahminiTarih"].HeaderText = "Tahmini Tarih";
-                dataGridOdemeSartlari.Columns["tahminiTarih"].DisplayIndex = 6;
-                dataGridOdemeSartlari.Columns["tahminiTarih"].DefaultCellStyle.Format = "dd.MM.yyyy";
-                dataGridOdemeSartlari.Columns["tahminiTarih"].Width = 150;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("gerceklesenTarih"))
-            {
-                dataGridOdemeSartlari.Columns["gerceklesenTarih"].HeaderText = "Gerçekleşen Tarih";
-                dataGridOdemeSartlari.Columns["gerceklesenTarih"].DisplayIndex = 7;
-                dataGridOdemeSartlari.Columns["gerceklesenTarih"].DefaultCellStyle.Format = "dd.MM.yyyy";
-                dataGridOdemeSartlari.Columns["gerceklesenTarih"].Width = 150;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("aciklama"))
-            {
-                dataGridOdemeSartlari.Columns["aciklama"].HeaderText = "Açıklama";
-                dataGridOdemeSartlari.Columns["aciklama"].DisplayIndex = 8;
-                dataGridOdemeSartlari.Columns["aciklama"].Width = 250;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("teminatMektubu"))
-            {
-                dataGridOdemeSartlari.Columns["teminatMektubu"].HeaderText = "Teminat Mektubu Var Mı?";
-                dataGridOdemeSartlari.Columns["teminatMektubu"].DisplayIndex = 9;
-                dataGridOdemeSartlari.Columns["teminatMektubu"].Width = 180;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("teminatDurumu"))
-            {
-                dataGridOdemeSartlari.Columns["teminatDurumu"].HeaderText = "Teminat Durumu";
-                dataGridOdemeSartlari.Columns["teminatDurumu"].DisplayIndex = 10;
-                dataGridOdemeSartlari.Columns["teminatDurumu"].Width = 180;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("durum"))
-            {
-                dataGridOdemeSartlari.Columns["durum"].HeaderText = "Durum";
-                dataGridOdemeSartlari.Columns["durum"].DisplayIndex = 11;
-                dataGridOdemeSartlari.Columns["durum"].Width = 120;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("kalanTutar"))
-            {
-                dataGridOdemeSartlari.Columns["kalanTutar"].HeaderText = "Kalan Tutar";
-                dataGridOdemeSartlari.Columns["kalanTutar"].DisplayIndex = 12;
-                dataGridOdemeSartlari.Columns["kalanTutar"].Width = 120;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("odemeTarihi"))
-            {
-                dataGridOdemeSartlari.Columns["odemeTarihi"].HeaderText = "Ödeme Tarihi";
-                dataGridOdemeSartlari.Columns["odemeTarihi"].DisplayIndex = 13;
-                dataGridOdemeSartlari.Columns["odemeTarihi"].DefaultCellStyle.Format = "dd.MM.yyyy";
-                dataGridOdemeSartlari.Columns["odemeTarihi"].Width = 150;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("faturaNo"))
-            {
-                dataGridOdemeSartlari.Columns["faturaNo"].HeaderText = "Fatura No";
-                dataGridOdemeSartlari.Columns["faturaNo"].DisplayIndex = 14;
-                dataGridOdemeSartlari.Columns["faturaNo"].Width = 120;
-            }
-            if (dataGridOdemeSartlari.Columns.Contains("OdemeSapmasi"))
-            {
-                dataGridOdemeSartlari.Columns["OdemeSapmasi"].HeaderText = "Ödeme Sapması (Gün)";
-                dataGridOdemeSartlari.Columns["OdemeSapmasi"].DisplayIndex = 15;
-                dataGridOdemeSartlari.Columns["OdemeSapmasi"].Width = 150;
-            }
         }
-
         private void tsmiAra_Click(object sender, EventArgs e)
         {
             using (var tempGrid = new DataGridView())
@@ -294,7 +315,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
 
         private void dataGridOdemeSartlari_CellFormatting(object sender, DataGridViewCellFormattingEventArgs e)
         {
-            if (dataGridOdemeSartlari.Columns[e.ColumnIndex].Name == "OdemeSapmasi")
+            if (dataGridOdemeSartlari.Columns[e.ColumnIndex].Name == "odemeSapmasi")
             {
                 var row = dataGridOdemeSartlari.Rows[e.RowIndex];
                 var gerceklesenTarih = row.Cells["gerceklesenTarih"].Value;

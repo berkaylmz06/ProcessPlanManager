@@ -104,7 +104,8 @@ namespace CEKA_APP
                         ("Ödeme Şartları", () => btnOdemeSartlari_Click(null, null), false),
                         ("Ödeme Şartları Liste", () => btnOdemeSarlariListe_Click(null, null), false),
                         ("Teminat Mektupları", () => btnTeminatMektuplari_Click(null, null), false),
-                        ("Sevkiyat", () => btnSevkiyat_Click(null, null), false)
+                        ("Sevkiyat", () => btnSevkiyat_Click(null, null), false),
+                        ("Takip Takvimi", () => btnTakipTakvimi_Click(null, null), false)
                     }
                 },
                 {
@@ -321,7 +322,6 @@ namespace CEKA_APP
             lblDuyuru.Text = sonDuyuru != null ? $"🗨️ {sonDuyuru.duyuru}" : "Henüz bir duyuru yok.";
             ctlBaslik1.Baslik = "Ana Sayfa";
 
-            // İlk yüklemede menüyü güncelle
             SetupDynamicMenu();
         }
 
@@ -660,6 +660,12 @@ namespace CEKA_APP
         {
             var sevkiyat = new ctlSevkiyat();
             UserControlEkle(sevkiyat);
+        }
+
+        private void btnTakipTakvimi_Click(object sender, EventArgs e)
+        {
+            var takipTakvim = new ctlTakipTakvimi();
+            UserControlEkle(takipTakvim);
         }
     }
 }

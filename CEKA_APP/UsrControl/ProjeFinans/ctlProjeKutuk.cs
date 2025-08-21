@@ -843,7 +843,6 @@ namespace CEKA_APP.UsrControl
                 hataMesajlari.Add("Ödeme şekli (Tekil veya Çoğul) seçilmelidir.");
             }
 
-            // Para birimi ComboBox kontrolü
             if (cmbParaBirimi.SelectedItem == null)
             {
                 hataMesajlari.Add("Para birimi seçilmelidir.");
@@ -857,7 +856,6 @@ namespace CEKA_APP.UsrControl
 
             string projeNo = txtProjeNo.Text.Trim();
 
-            // Ana projenin veritabanında varlığını kontrol et
             var anaProjeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
             if (anaProjeBilgi == null)
             {
@@ -865,7 +863,6 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            // Alt projelerin veritabanında varlığını kontrol et
             if (chkAltProjeVar.Checked)
             {
                 var eksikAltProjeler = new List<string>();
@@ -918,7 +915,7 @@ namespace CEKA_APP.UsrControl
                 nakliyeVarMi = chkNakliyeVar.Checked,
                 altProjeBilgileri = altProjeler ?? new List<string>(),
                 faturalamaSekli = chkTekil.Checked ? "Tekil" : "Cogul",
-                paraBirimi = paraBirimi // ComboBox'tan alınan standart değeri kullanıyoruz
+                paraBirimi = paraBirimi 
             };
 
             bool isProjeKayitli = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo) != null;

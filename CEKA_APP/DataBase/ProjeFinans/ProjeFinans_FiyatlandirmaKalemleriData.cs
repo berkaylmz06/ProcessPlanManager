@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CEKA_APP.Entitys.ProjeFinans;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -9,19 +10,19 @@ namespace CEKA_APP.DataBase.ProjeFinans
 {
     public class ProjeFinans_FiyatlandirmaKalemleriData
     {
-        public List<(int Id, string Adi, DateTime Tarih)> GetFiyatlandirmaKalemleri()
+        public List<(int Id, string Adi, string Birimi, DateTime Tarih)> GetFiyatlandirmaKalemleri()
         {
-            var fiyatlandirmaKalemleri = new List<(int Id, string Adi, DateTime Tarih)>();
+            var fiyatlandirmaKalemleri = new List<(int Id, string Adi, string Birimi, DateTime Tarih)>();
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
-                string query = "SELECT fiyatlandirmaKalemId, kalemAdi, olusturmaTarihi FROM ProjeFinans_FiyatlandirmaKalemleri";
+                string query = "SELECT fiyatlandirmaKalemId, kalemAdi, kalemBirimi, olusturmaTarihi FROM ProjeFinans_FiyatlandirmaKalemleri";
                 using (var cmd = new SqlCommand(query, connection))
                 using (var reader = cmd.ExecuteReader())
                 {
                     while (reader.Read())
                     {
-                        fiyatlandirmaKalemleri.Add((reader.GetInt32(0), reader.GetString(1), reader.GetDateTime(2)));
+                        fiyatlandirmaKalemleri.Add((reader.GetInt32(0), reader.GetString(1), reader.GetString(2), reader.GetDateTime(3)));
                     }
                 }
                 connection.Close();
@@ -29,33 +30,45 @@ namespace CEKA_APP.DataBase.ProjeFinans
             return fiyatlandirmaKalemleri;
         }
 
-        public int FiyatlandirmaKalemleriEkle(string kalemAdi)
+        public int FiyatlandirmaKalemleriEkle(string kalemAdi, string kalemBirimi)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
-                string query = "INSERT INTO ProjeFinans_FiyatlandirmaKalemleri (kalemAdi, olusturmaTarihi) VALUES (@kalemAdi, @olusturmaTarihi)";
+                string query = "INSERT INTO ProjeFinans_FiyatlandirmaKalemleri (kalemAdi, kalemBirimi, olusturmaTarihi) VALUES (@kalemAdi, @kalemBirimi, @olusturmaTarihi)";
                 using (var cmd = new SqlCommand(query, connection))
                 {
                     cmd.Parameters.AddWithValue("@kalemAdi", kalemAdi);
+                    cmd.Parameters.AddWithValue("@kalemBirimi", kalemBirimi);
                     cmd.Parameters.AddWithValue("@olusturmaTarihi", DateTime.Now);
                     return Convert.ToInt32(cmd.ExecuteScalar());
                 }
             }
         }
-        public int GetFiyatlandirmaKalemIdByAdi(string kalemAdi)
+        public FiyatlandirmaKalem GetFiyatlandirmaKalemByAdi(string kalemAdi)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
-                string query = "SELECT fiyatlandirmaKalemId FROM ProjeFinans_FiyatlandirmaKalemleri WHERE kalemAdi = @kalemAdi";
+                string query = "SELECT fiyatlandirmaKalemId, kalemAdi, kalemBirimi FROM ProjeFinans_FiyatlandirmaKalemleri WHERE kalemAdi = @kalemAdi";
                 using (var cmd = new SqlCommand(query, connection))
                 {
                     cmd.Parameters.AddWithValue("@kalemAdi", kalemAdi);
-                    object result = cmd.ExecuteScalar();
-                    return result != null ? Convert.ToInt32(result) : 0;
+                    using (var reader = cmd.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+                            return new FiyatlandirmaKalem
+                            {
+                                FiyatlandirmaKalemId = reader.GetInt32(reader.GetOrdinal("fiyatlandirmaKalemId")),
+                                KalemAdi = reader.GetString(reader.GetOrdinal("kalemAdi")),
+                                KalemBirimi = reader.GetString(reader.GetOrdinal("kalemBirimi"))
+                            };
+                        }
+                    }
                 }
             }
+            return null;
         }
     }
 }

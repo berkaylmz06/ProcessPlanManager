@@ -1565,6 +1565,7 @@ namespace CEKA_APP.UsrControl
             }
 
             XmlWriterSettings ayarlar = new XmlWriterSettings { Indent = true };
+            Regex ekRegex = new Regex(@"-EK\d*(?=\s|$)", RegexOptions.IgnoreCase);
 
             try
             {
@@ -1615,17 +1616,19 @@ namespace CEKA_APP.UsrControl
                         .GroupBy(row => new
                         {
                             SayfaId = row.Cells[1].Value.ToString().Trim(),
-                            KalipVerisi = row.Cells[0].Value?.ToString()?.Trim()
+                            BasePoz = ekRegex.Replace(row.Cells[0].Value?.ToString()?.Trim() ?? "", "")
                         })
                         .Select(g => new
                         {
                             g.Key.SayfaId,
-                            g.Key.KalipVerisi,
-                            Poz = ExtractPoz(g.Key.KalipVerisi),
+                            g.Key.BasePoz,
+                            Poz = ExtractPoz(g.Key.BasePoz),
                             ParcaRows = g.ToList(),
                             ToplamAdet = g.Sum(row => double.TryParse(row.Cells[2].Value?.ToString()?.Trim(), out double adet) ? adet : 0),
                             ToplamEkOran = g.Sum(row => double.TryParse(row.Cells[4].Value?.ToString()?.Trim(), out double oran) ? oran : 0),
-                            EkAdi = g.FirstOrDefault(row => row.Cells[0].Value?.ToString().Contains("EK") == true)?.Cells[0].Value?.ToString().Split('-').LastOrDefault(p => p.Contains("EK")) ?? "-"
+                            EkAdi = string.Join(",", g.Where(row => row.Cells[0].Value?.ToString().Contains("EK") == true)
+                                                     .Select(row => row.Cells[0].Value?.ToString().Split('-').LastOrDefault(p => p.Contains("EK")))
+                                                     .Distinct())
                         })
                         .ToList();
 
@@ -1650,7 +1653,7 @@ namespace CEKA_APP.UsrControl
                         {
                             writer.WriteStartElement("Parca");
 
-                            string kalipVerisi = parcaGroup.KalipVerisi;
+                            string kalipVerisi = parcaGroup.BasePoz;
                             string[] parcalar = kalipVerisi.Split('-');
                             string kalip = kalipVerisi, poz = parcaGroup.Poz, proje = "";
 
@@ -1682,7 +1685,7 @@ namespace CEKA_APP.UsrControl
                             writer.WriteElementString("Poz", poz);
                             writer.WriteElementString("Proje", proje);
 
-                            string ekAdi = parcaGroup.EkAdi;
+                            string ekAdi = string.IsNullOrEmpty(parcaGroup.EkAdi) ? "-" : parcaGroup.EkAdi;
                             string ekOran = parcaGroup.ToplamEkOran > 0 ? parcaGroup.ToplamEkOran.ToString("F6", CultureInfo.InvariantCulture) : "-";
                             string adetToWrite = parcaGroup.ToplamEkOran > 0 ? "0" : parcaGroup.ToplamAdet.ToString(CultureInfo.InvariantCulture);
 
@@ -2536,33 +2539,14 @@ namespace CEKA_APP.UsrControl
                     dataGridView2.Columns.Add("Oran", "Toplam Ağırlık Oranı");
                 }
 
-                Dictionary<string, List<(string PageId, double Katsayi)>> pageIdMap = new Dictionary<string, List<(string, double)>>();
-                foreach (DataGridViewRow d3Row in dataGridView3.Rows)
-                {
-                    if (!d3Row.IsNewRow && d3Row.Cells.Count > 2 && d3Row.Cells[0].Value != null)
-                    {
-                        string pageId = d3Row.Cells[0].Value.ToString().Trim();
-                        string[] parts = pageId.Split('-');
-                        if (parts.Length >= 2)
-                        {
-                            string basePageId = $"{parts[0]}-{parts[1]}";
-                            string katsayiStr = d3Row.Cells[2].Value?.ToString()?.Trim() ?? "1";
-                            double katsayi = 1;
-                            if (!double.TryParse(katsayiStr, NumberStyles.Any, CultureInfo.InvariantCulture, out katsayi))
-                            {
-                                logLines.Add($"Uyarı: SayfaID {pageId} için geçersiz katsayı, 1 olarak alındı.");
-                            }
-                            if (!pageIdMap.ContainsKey(basePageId))
-                            {
-                                pageIdMap[basePageId] = new List<(string, double)>();
-                            }
-                            pageIdMap[basePageId].Add((pageId, katsayi));
-                        }
-                    }
-                }
+                var pozGroups = new Dictionary<string, List<(string Poz, string SayfaID, int Adet, double Agirlik, DataGridViewRow Row, string D3PageId)>>();
 
-                var pozGroups = new Dictionary<string, List<(string Poz, string SayfaID, int Adet, double Agirlik, DataGridViewRow Row)>>();
-                var oranByRow = new Dictionary<DataGridViewRow, double>();
+                var pageIdMap = dataGridView3.Rows
+                    .Cast<DataGridViewRow>()
+                    .Where(row => !row.IsNewRow && row.Cells[0].Value != null)
+                    .Select(row => row.Cells[0].Value.ToString().Trim())
+                    .GroupBy(pageId => pageId.Split('-').Take(2).Aggregate((a, b) => $"{a}-{b}"))
+                    .ToDictionary(g => g.Key, g => g.Select(id => id).ToList());
 
                 foreach (DataGridViewRow row in dataGridView2.Rows)
                 {
@@ -2582,49 +2566,19 @@ namespace CEKA_APP.UsrControl
                         continue;
                     }
 
-                    string basePoz = ekRegex.Replace(poz, "");
-
-                    double toplamOran = 0;
-
-                    if (pageIdMap.ContainsKey(sayfaID))
-                    {
-                        foreach (var (pageId, katsayi) in pageIdMap[sayfaID])
-                        {
-                            int guncelAdet = (int)(adet * katsayi);
-                            if (!pozGroups.ContainsKey(basePoz))
-                            {
-                                pozGroups[basePoz] = new List<(string, string, int, double, DataGridViewRow)>();
-                            }
-                            pozGroups[basePoz].Add((poz, pageId, guncelAdet, agirlik, row));
-                        }
-                    }
-                    else
-                    {
-                        int guncelAdet = adet;
-                        if (!pozGroups.ContainsKey(basePoz))
-                        {
-                            pozGroups[basePoz] = new List<(string, string, int, double, DataGridViewRow)>();
-                        }
-                        pozGroups[basePoz].Add((poz, sayfaID, guncelAdet, agirlik, row));
-                    }
-
-                    if (ekRegex.IsMatch(poz) && pageIdMap.ContainsKey(sayfaID))
-                    {
-                        double toplamAgirlik = pozGroups[basePoz]
-                            .Where(item => ekRegex.IsMatch(item.Poz))
-                            .Sum(item => item.Agirlik * item.Adet);
-
-                        foreach (var (pageId, katsayi) in pageIdMap[sayfaID])
-                        {
-                            int guncelAdet = (int)(adet * katsayi);
-                            double oran = toplamAgirlik > 0 ? (agirlik * guncelAdet) / toplamAgirlik : 0;
-                            toplamOran += oran;
-                        }
-                    }
+                    var d3PageIds = pageIdMap.ContainsKey(sayfaID) ? pageIdMap[sayfaID] : new List<string> { sayfaID };
 
                     if (ekRegex.IsMatch(poz))
                     {
-                        oranByRow[row] = toplamOran;
+                        string basePoz = ekRegex.Replace(poz, "");
+
+                        foreach (var d3PageId in d3PageIds)
+                        {
+                            if (!pozGroups.ContainsKey(basePoz))
+                                pozGroups[basePoz] = new List<(string, string, int, double, DataGridViewRow, string)>();
+
+                            pozGroups[basePoz].Add((poz, sayfaID, adet, agirlik, row, d3PageId));
+                        }
                     }
                 }
 
@@ -2635,24 +2589,17 @@ namespace CEKA_APP.UsrControl
                     string basePoz = group.Key;
                     var items = group.Value;
 
-                    if (items.Any(item => ekRegex.IsMatch(item.Poz)))
+                    double toplamAgirlik = items.Sum(item => item.Agirlik * item.Adet);
+
+                    logLines.Add($"\nPoz: {basePoz}, Toplam Ağırlık: {toplamAgirlik}");
+
+                    foreach (var item in items)
                     {
-                        double toplamAgirlik = items.Where(item => ekRegex.IsMatch(item.Poz))
-                                                    .Sum(item => item.Agirlik * item.Adet);
+                        double oran = toplamAgirlik != 0 ? (item.Agirlik * item.Adet) / toplamAgirlik : 0;
+                        logLines.Add($"  - Poz: {item.Poz}, Sayfa ID: {item.D3PageId}, Adet: {item.Adet}, Ağırlık: {item.Agirlik}, Parçanın Toplam Ağırlığa Oranı: {oran:F6}");
 
-                        logLines.Add($"\nPoz: {basePoz}, Toplam Ağırlık: {toplamAgirlik}");
-
-                        foreach (var item in items.Where(i => ekRegex.IsMatch(i.Poz)))
-                        {
-                            double oran = toplamAgirlik > 0 ? (item.Agirlik * item.Adet) / toplamAgirlik : 0;
-                            logLines.Add($"  - Poz: {item.Poz}, Sayfa ID: {item.SayfaID}, Adet: {item.Adet}, Ağırlık: {item.Agirlik}, Parçanın Toplam Ağırlığa Oranı: {oran:F6}");
-                        }
+                        item.Row.Cells["Oran"].Value = $"{oran:F6}";
                     }
-                }
-
-                foreach (var entry in oranByRow)
-                {
-                    entry.Key.Cells["Oran"].Value = $"{entry.Value:F6}";
                 }
 
                 string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "CEKA_APP");
@@ -2664,6 +2611,7 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
         private void button4_Click_1(object sender, EventArgs e)
         {
             string islenmisVeri = IslenmisVeriADM();

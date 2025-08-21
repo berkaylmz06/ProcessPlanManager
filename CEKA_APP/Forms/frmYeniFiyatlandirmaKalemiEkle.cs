@@ -8,6 +8,8 @@ namespace CEKA_APP
     public partial class frmYeniFiyatlandirmaKalemiEkle : Form
     {
         public string KalemAdi { get; private set; }
+        public string KalemBirimi { get; private set; }
+
         private ProjeFinans_FiyatlandirmaKalemleriData kalemData = new ProjeFinans_FiyatlandirmaKalemleriData();
 
         private const int VerticalMargin = 12;
@@ -24,13 +26,14 @@ namespace CEKA_APP
             this.Icon = Properties.Resources.cekalogokirmizi;
 
             txtYeniKalem.TextChanged += txtYeniKalem_TextChanged;
+            cmbBirim.SelectedIndexChanged += txtYeniKalem_TextChanged; 
         }
 
         private void LoadKalemler()
         {
             var kalemler = kalemData.GetFiyatlandirmaKalemleri();
             listKalemler.Items.Clear();
-            foreach (var (Id, Adi, Tarih) in kalemler)
+            foreach (var (Id, Adi, Birimi, Tarih) in kalemler)
             {
                 listKalemler.Items.Add(Adi);
             }
@@ -41,15 +44,26 @@ namespace CEKA_APP
         {
             if (listKalemler.SelectedIndex >= 0)
             {
-                KalemAdi = listKalemler.SelectedItem.ToString();
-                this.DialogResult = DialogResult.OK;
+                string secilenKalemAdi = listKalemler.SelectedItem.ToString();
+                ProjeFinans_FiyatlandirmaKalemleriData kalemData = new ProjeFinans_FiyatlandirmaKalemleriData();
+                var kalemDetay = kalemData.GetFiyatlandirmaKalemByAdi(secilenKalemAdi);
+
+                if (kalemDetay != null)
+                {
+                    KalemAdi = kalemDetay.KalemAdi;
+                    KalemBirimi = kalemDetay.KalemBirimi;
+                    this.DialogResult = DialogResult.OK;
+                }
+                else
+                {
+                    MessageBox.Show("Seçilen kalem veritabanında bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
             else
             {
                 MessageBox.Show("Lütfen bir kalem seçin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-
         private void btnEkle_Click(object sender, EventArgs e)
         {
             if (btnEkle.Text == "Yeni Ekle")
@@ -66,10 +80,11 @@ namespace CEKA_APP
             }
             else if (btnEkle.Text == "Onayla")
             {
-                if (!string.IsNullOrEmpty(txtYeniKalem.Text))
+                if (!string.IsNullOrEmpty(txtYeniKalem.Text) && cmbBirim.SelectedItem != null)
                 {
                     KalemAdi = txtYeniKalem.Text;
-                    kalemData.FiyatlandirmaKalemleriEkle(KalemAdi);
+                    KalemBirimi = cmbBirim.SelectedItem.ToString(); 
+                    kalemData.FiyatlandirmaKalemleriEkle(KalemAdi, KalemBirimi);
                     LoadKalemler();
 
                     GeriDon();
@@ -78,14 +93,14 @@ namespace CEKA_APP
                 }
                 else
                 {
-                    MessageBox.Show("Lütfen yeni kalem adını girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    MessageBox.Show("Lütfen yeni kalem adını ve birimini seçin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
         }
 
         private void txtYeniKalem_TextChanged(object sender, EventArgs e)
         {
-            if (string.IsNullOrEmpty(txtYeniKalem.Text))
+            if (string.IsNullOrEmpty(txtYeniKalem.Text) || cmbBirim.SelectedItem == null)
             {
                 btnEkle.Text = "İptal";
                 btnEkle.BackColor = Color.Gray;
@@ -93,7 +108,7 @@ namespace CEKA_APP
             else
             {
                 btnEkle.Text = "Onayla";
-                btnEkle.BackColor = Color.FromArgb(46, 204, 113); // Onay için yeşil
+                btnEkle.BackColor = Color.FromArgb(46, 204, 113); 
             }
         }
 
@@ -102,6 +117,7 @@ namespace CEKA_APP
             panelYeniKalem.Visible = false;
             btnSec.Visible = true;
             txtYeniKalem.Clear();
+            cmbBirim.SelectedIndex = -1; 
             btnEkle.Text = "Yeni Ekle";
             btnEkle.BackColor = Color.Gray;
 

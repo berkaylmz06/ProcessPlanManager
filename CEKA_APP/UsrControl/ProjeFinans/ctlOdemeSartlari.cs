@@ -230,7 +230,7 @@ namespace CEKA_APP.UsrControl
                     };
                     var rtbAciklama = new RichTextBox
                     {
-                        Text = odemeBilgi.aciklama,
+                        Text = odemeBilgi.odemeAciklama,
                         Dock = DockStyle.Fill,
                         Margin = new Padding(2),
                         AutoSize = false,
@@ -358,7 +358,7 @@ namespace CEKA_APP.UsrControl
                                 tutar: odemeBilgi.tutar.ToString("F2", CultureInfo.InvariantCulture),
                                 tahminiTarih: odemeBilgi.tahminiTarih?.ToString("yyyy-MM-dd") ?? "",
                                 gerceklesenTarih: odemeBilgi.gerceklesenTarih?.ToString("yyyy-MM-dd") ?? "",
-                                aciklama: odemeBilgi.aciklama,
+                                aciklama: odemeBilgi.odemeAciklama,
                                 teminatMektubu: odemeBilgi.teminatMektubu,
                                 teminatDurumu: "Pasif",
                                 durum: odemeBilgi.durum,
@@ -478,7 +478,7 @@ namespace CEKA_APP.UsrControl
                                         tutar: odemeBilgi.tutar.ToString("F2", CultureInfo.InvariantCulture),
                                         tahminiTarih: odemeBilgi.tahminiTarih?.ToString("yyyy-MM-dd") ?? "",
                                         gerceklesenTarih: odemeBilgi.gerceklesenTarih?.ToString("yyyy-MM-dd") ?? "",
-                                        aciklama: odemeBilgi.aciklama,
+                                        aciklama: odemeBilgi.odemeAciklama,
                                         teminatMektubu: false,
                                         teminatDurumu: "Pasif",
                                         durum: odemeBilgi.durum,
@@ -917,7 +917,7 @@ namespace CEKA_APP.UsrControl
                             kalanTutar = tutar,
                             tahminiTarih = null,
                             gerceklesenTarih = null,
-                            aciklama = "",
+                            odemeAciklama = "",
                             teminatMektubu = false,
                             teminatDurumu = "Pasif",
                             durum = "Bekliyor"
@@ -1405,7 +1405,7 @@ namespace CEKA_APP.UsrControl
                                     tutar: odemeBilgi.tutar.ToString("F2", CultureInfo.InvariantCulture),
                                     tahminiTarih: odemeBilgi.tahminiTarih?.ToString("yyyy-MM-dd") ?? "",
                                     gerceklesenTarih: odemeBilgi.gerceklesenTarih?.ToString("yyyy-MM-dd") ?? "",
-                                    aciklama: odemeBilgi.aciklama,
+                                    aciklama: odemeBilgi.odemeAciklama,
                                     teminatMektubu: odemeBilgi.teminatMektubu,
                                     teminatDurumu: odemeBilgi.teminatDurumu,
                                     durum: "Ödendi",
@@ -1453,7 +1453,7 @@ namespace CEKA_APP.UsrControl
                                         tutar: odemeBilgi.tutar.ToString("F2", CultureInfo.InvariantCulture),
                                         tahminiTarih: odemeBilgi.tahminiTarih?.ToString("yyyy-MM-dd") ?? "",
                                         gerceklesenTarih: odemeBilgi.gerceklesenTarih?.ToString("yyyy-MM-dd") ?? "",
-                                        aciklama: odemeBilgi.aciklama,
+                                        aciklama: odemeBilgi.odemeAciklama,
                                         teminatMektubu: odemeBilgi.teminatMektubu,
                                         teminatDurumu: odemeBilgi.teminatDurumu,
                                         durum: "Ödendi",

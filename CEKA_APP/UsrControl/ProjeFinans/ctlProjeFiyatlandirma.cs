@@ -3,8 +3,11 @@ using CEKA_APP.DataBase.ProjeFinans;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
+using System.Text;
 using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace CEKA_APP.UsrControl
 {
@@ -15,7 +18,8 @@ namespace CEKA_APP.UsrControl
         public event Action<string> OnFiyatlandirmaKaydedildi;
         private ComboBox cmbProjeNo;
         private List<string> altProjeler;
-
+        private List<(string projeNo, string kalemAdi)> _pendingDeletions = new List<(string projeNo, string kalemAdi)>();
+        private bool _isUpdating = false;
         public ctlProjeFiyatlandirma()
         {
             InitializeComponent();
@@ -34,7 +38,7 @@ namespace CEKA_APP.UsrControl
             {
                 if (cmbProjeNo.SelectedItem != null)
                 {
-                    LoadIscilikler(cmbProjeNo.SelectedItem.ToString());
+                    LoadKalemler(cmbProjeNo.SelectedItem.ToString());
                 }
             };
             panelUst.Controls.Add(cmbProjeNo);
@@ -56,27 +60,29 @@ namespace CEKA_APP.UsrControl
             tableLayoutPanel1.AutoScroll = true;
             tableLayoutPanel1.MinimumSize = new Size(tableLayoutPanel1.Width, 200);
 
-            tableLayoutPanel1.ColumnCount = 8;
+            tableLayoutPanel1.ColumnCount = 10;
             tableLayoutPanel1.ColumnStyles.Clear();
-            for (int i = 0; i < 8; i++)
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30f)); 
+            for (int i = 1; i < 10; i++)
             {
-                tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 12.5f));
+                tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 9));
             }
 
             InitializeTableStructure();
+            InitializeTxtDovizKuruEvents();
 
             tableLayoutPanel2.Dock = DockStyle.Bottom;
             tableLayoutPanel2.AutoSize = true;
             tableLayoutPanel2.AutoSizeMode = AutoSizeMode.GrowAndShrink;
             tableLayoutPanel2.GrowStyle = TableLayoutPanelGrowStyle.AddRows;
-            tableLayoutPanel2.ColumnCount = 8;
+            tableLayoutPanel2.ColumnCount = 10;
             tableLayoutPanel2.ColumnStyles.Clear();
-            for (int i = 0; i < 8; i++)
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30f));
+            for (int i = 1; i < 10; i++)
             {
-                tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 12.5f));
+                tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 9));
             }
         }
-
         private void InitializeTableStructure()
         {
             tableLayoutPanel1.SuspendLayout();
@@ -87,7 +93,6 @@ namespace CEKA_APP.UsrControl
                 tableLayoutPanel1.RowCount = 0;
 
                 AddHeaderRow();
-
                 AddSpacerRow();
             }
             finally
@@ -133,67 +138,155 @@ namespace CEKA_APP.UsrControl
 
             if (autoSearch)
             {
-                LoadIscilikler(projeNo);
+                LoadKalemler(projeNo);
             }
         }
+        private decimal GetKur(string paraBirimi, int fiyatlandirmaKalemId = 0, string projeNo = "")
+        {
+            if (paraBirimi == "TL")
+            {
+                lblEskiKur.Text = "";
+                return 1m;
+            }
 
-        private void LoadIscilikler(string projeNo)
+            if (fiyatlandirmaKalemId > 0 && !string.IsNullOrEmpty(projeNo))
+            {
+                var fiyatlandirmaVerileri = fiyatlandirmaData.GetFiyatlandirmaByProje(projeNo);
+                var mevcutFiyatlandirma = fiyatlandirmaVerileri?
+                    .FirstOrDefault(f => f.fiyatlandirmaKalemId == fiyatlandirmaKalemId && f.teklifKuru.HasValue)
+                    ?? fiyatlandirmaVerileri?
+                    .LastOrDefault(f => f.teklifKuru.HasValue);
+
+            }
+
+            string kurText = txtDovizKuru.Text?.Trim().Replace(",", ".") ?? "0";
+            if (decimal.TryParse(kurText, NumberStyles.Any, CultureInfo.InvariantCulture, out decimal kurFromText))
+            {
+                kurFromText = Math.Round(kurFromText, 4);
+                if (kurFromText < 0.1m || kurFromText > 1000m)
+                {
+                    kurFromText = 1m;
+                }
+                return kurFromText;
+            }
+
+            lblEskiKur.Text = "";
+            return 1m;
+        }
+        private void LoadKalemler(string projeNo)
         {
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             try
             {
                 tableLayoutPanel1.Controls.Clear();
-                tableLayoutPanel1.ColumnCount = 8;
+                tableLayoutPanel1.ColumnCount = 10;
                 tableLayoutPanel1.RowCount = 1;
                 tableLayoutPanel1.RowStyles.Clear();
-
                 tableLayoutPanel1.ColumnStyles.Clear();
-                for (int i = 0; i < 8; i++)
+                tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30f));
+                for (int i = 1; i < 10; i++)
                 {
-                    tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 12.5f));
+                    tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 9));
                 }
 
                 AddHeaderRow();
                 AddSpacerRow();
                 UpdateTotalsRow();
 
+                string paraBirimi = ProjeFinans_ProjeKutukData.GetProjeParaBirimi(projeNo);
                 var fiyatlandirmaVerileri = fiyatlandirmaData.GetFiyatlandirmaByProje(projeNo);
-                if (fiyatlandirmaVerileri.Any())
+
+
+                foreach (var veri in fiyatlandirmaVerileri)
                 {
-                    foreach (var veri in fiyatlandirmaVerileri)
+                    if (string.IsNullOrEmpty(veri.kalemAdi))
                     {
-                        if (string.IsNullOrEmpty(veri.kalemAdi)) continue;
-                        AddYeniKalemSatiri(veri.kalemAdi);
-                        int row = tableLayoutPanel1.RowCount - 1;
+                        continue;
+                    }
 
-                        var txtTeklifAdet = GetTextBoxAt(row, 1);
-                        var txtTeklifBirimFiyat = GetTextBoxAt(row, 2);
-                        var txtTeklifToplam = GetTextBoxAt(row, 3);
-                        var txtGerceklesenAdet = GetTextBoxAt(row, 4);
-                        var txtGerceklesenBirimFiyat = GetTextBoxAt(row, 5);
-                        var txtGerceklesenMaliyet = GetTextBoxAt(row, 6);
-                        var lblSonDurum = GetLabelAt(row, 7);
+                    string kalemBirimi = veri.kalemBirimi;
+                    AddYeniKalemSatiri(veri.kalemAdi, veri.kalemBirimi);
+                    int row = tableLayoutPanel1.RowCount - 1;
 
-                        if (txtTeklifAdet != null) txtTeklifAdet.Text = veri.teklifBirimMiktar.ToString("N2");
-                        if (txtTeklifBirimFiyat != null) txtTeklifBirimFiyat.Text = veri.teklifBirimFiyat.ToString("N2");
-                        if (txtGerceklesenAdet != null) txtGerceklesenAdet.Text = veri.gerceklesenBirimMiktar.ToString("N2");
-                        if (txtGerceklesenBirimFiyat != null) txtGerceklesenBirimFiyat.Text = veri.gerceklesenBirimFiyat.ToString("N2");
+                    var panelTeklifAdet = tableLayoutPanel1.GetControlFromPosition(2, row) as Panel;
+                    var txtTeklifBirimFiyat = GetTextBoxAt(row, 3);
+                    var txtTeklifToplam = GetTextBoxAt(row, 4);
+                    var txtTeklifToplamTL = GetTextBoxAt(row, 5);
+                    var panelGerceklesenAdet = tableLayoutPanel1.GetControlFromPosition(6, row) as Panel;
+                    var txtGerceklesenBirimFiyat = GetTextBoxAt(row, 7);
+                    var txtGerceklesenMaliyet = GetTextBoxAt(row, 8);
+                    var lblSonDurum = GetLabelAt(row, 9);
 
-                        decimal teklifToplam = veri.teklifBirimMiktar * veri.teklifBirimFiyat;
-                        decimal gerceklesenMaliyet = veri.gerceklesenBirimMiktar * veri.gerceklesenBirimFiyat;
+                    var txtTeklifAdet = panelTeklifAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtTeklifAdet");
+                    var txtTeklifBirim = panelTeklifAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtTeklifBirim");
+                    var txtGerceklesenAdet = panelGerceklesenAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtGerceklesenAdet");
+                    var txtGerceklesenBirim = panelGerceklesenAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtGerceklesenBirim");
 
-                        if (txtTeklifToplam != null) txtTeklifToplam.Text = teklifToplam.ToString("N2");
-                        if (txtGerceklesenMaliyet != null) txtGerceklesenMaliyet.Text = gerceklesenMaliyet.ToString("N2");
-                        if (lblSonDurum != null)
+                    if (txtTeklifAdet != null) txtTeklifAdet.Text = veri.teklifBirimMiktar.ToString("N2", new CultureInfo("tr-TR"));
+                    if (txtTeklifBirim != null) txtTeklifBirim.Text = kalemBirimi;
+                    if (txtTeklifBirimFiyat != null) txtTeklifBirimFiyat.Text = veri.teklifBirimFiyat.ToString("N2", new CultureInfo("tr-TR"));
+                    if (txtGerceklesenAdet != null) txtGerceklesenAdet.Text = veri.gerceklesenBirimMiktar.ToString("N2", new CultureInfo("tr-TR"));
+                    if (txtGerceklesenBirim != null) txtGerceklesenBirim.Text = kalemBirimi;
+                    if (txtGerceklesenBirimFiyat != null) txtGerceklesenBirimFiyat.Text = veri.gerceklesenBirimFiyat.ToString("N2", new CultureInfo("tr-TR"));
+
+                    decimal kur = GetKur(paraBirimi, veri.fiyatlandirmaKalemId, projeNo);
+                    decimal teklifToplam;
+                    try
+                    {
+                        checked
                         {
-                            lblSonDurum.Text = (teklifToplam - gerceklesenMaliyet).ToString("N2");
-                            lblSonDurum.ForeColor = (teklifToplam - gerceklesenMaliyet) < 0 ? Color.Red : Color.Green;
+                            teklifToplam = veri.teklifBirimMiktar * veri.teklifBirimFiyat;
                         }
+                    }
+                    catch (OverflowException)
+                    {
+                        teklifToplam = 0m;
+                    }
+
+                    decimal teklifToplamTL;
+                    try
+                    {
+                        checked
+                        {
+                            teklifToplamTL = teklifToplam * kur;
+                        }
+                    }
+                    catch (OverflowException)
+                    {
+                        teklifToplamTL = 0m;
+                    }
+
+                    decimal gerceklesenMaliyet;
+                    try
+                    {
+                        checked
+                        {
+                            gerceklesenMaliyet = veri.gerceklesenBirimMiktar * veri.gerceklesenBirimFiyat;
+                        }
+                    }
+                    catch (OverflowException)
+                    {
+                        gerceklesenMaliyet = 0m;
+                    }
+
+                    decimal fark = teklifToplamTL - gerceklesenMaliyet;
+
+                    if (txtTeklifToplam != null) txtTeklifToplam.Text = $"{teklifToplam.ToString("N2", new CultureInfo("tr-TR"))} {paraBirimi}";
+                    if (txtTeklifToplamTL != null) txtTeklifToplamTL.Text = $"{teklifToplamTL.ToString("N2", new CultureInfo("tr-TR"))} TL";
+                    if (txtGerceklesenMaliyet != null) txtGerceklesenMaliyet.Text = $"{gerceklesenMaliyet.ToString("N2", new CultureInfo("tr-TR"))} TL";
+                    if (lblSonDurum != null)
+                    {
+                        lblSonDurum.Text = $"{fark.ToString("N2", new CultureInfo("tr-TR"))} TL";
+                        lblSonDurum.ForeColor = fark < 0 ? Color.Red : Color.Green;
                     }
                     AddSpacerRow();
                     UpdateTotalsRow();
                 }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Veriler yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -201,18 +294,19 @@ namespace CEKA_APP.UsrControl
                 tableLayoutPanel2.ResumeLayout(true);
             }
         }
-
         private void AddHeaderRow()
         {
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
 
             string[] headers = {
+        "Sil",
         "Üretim ve Montaj Kalemleri",
-        "Teklif Adet/Ağırlık",
+        "Teklif Birim",
         "Teklif Birim Fiyat",
         "Teklif Toplam",
-        "Gerçekleşen Adet/Ağırlık",
+        "Teklif Toplam (TL)",
+        "Gerçekleşen Birim",
         "Gerçekleşen Birim Fiyat",
         "Gerçekleşen Maliyet",
         "Son Durum"
@@ -233,9 +327,9 @@ namespace CEKA_APP.UsrControl
                     BackColor = Color.LightGray
                 };
                 tableLayoutPanel1.Controls.Add(lbl, i, 0);
+                tableLayoutPanel1.SetColumnSpan(lbl, 1); 
             }
         }
-
         private void AddSpacerRow()
         {
             tableLayoutPanel1.SuspendLayout();
@@ -288,7 +382,7 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-        private void AddYeniKalemSatiri(string kalemAdi)
+        private void AddYeniKalemSatiri(string kalemAdi, string kalemBirimi)
         {
             tableLayoutPanel1.SuspendLayout();
             try
@@ -322,6 +416,21 @@ namespace CEKA_APP.UsrControl
                 tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
                 int newRowIndex = tableLayoutPanel1.RowCount - 1;
 
+                string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeNo.Text.Trim();
+                string paraBirimi = ProjeFinans_ProjeKutukData.GetProjeParaBirimi(projeNo);
+
+                var pictureBoxSil = new PictureBox
+                {
+                    Image = Properties.Resources.copKutusu,
+                    SizeMode = PictureBoxSizeMode.Zoom,
+                    Size = new Size(26, 26),
+                    Dock = DockStyle.Fill,
+                    Margin = new Padding(2),
+                    Cursor = Cursors.Hand
+                };
+                pictureBoxSil.Click += (s, e) => SilSatir(newRowIndex);
+                tableLayoutPanel1.Controls.Add(pictureBoxSil, 0, newRowIndex);
+
                 var lblKalemAdi = new Label
                 {
                     Text = kalemAdi,
@@ -332,11 +441,11 @@ namespace CEKA_APP.UsrControl
                     Height = 30,
                     Font = new Font("Segoe UI", 10)
                 };
-                tableLayoutPanel1.Controls.Add(lblKalemAdi, 0, newRowIndex);
+                tableLayoutPanel1.Controls.Add(lblKalemAdi, 1, newRowIndex);
 
-                for (int i = 1; i < 8; i++)
+                for (int i = 2; i < 10; i++)
                 {
-                    if (i == 7)
+                    if (i == 9)
                     {
                         var lblSonDurum = new Label
                         {
@@ -352,43 +461,170 @@ namespace CEKA_APP.UsrControl
                         continue;
                     }
 
-                    var txt = new TextBox
+                    if (i == 2 || i == 6)
                     {
-                        Dock = DockStyle.Fill,
-                        TextAlign = HorizontalAlignment.Center,
-                        Margin = new Padding(2),
-                        AutoSize = false,
-                        Height = 30,
-                        Font = new Font("Segoe UI", 10),
-                        BorderStyle = BorderStyle.FixedSingle
-                    };
-
-                    if (i == 1 || i == 2 || i == 4 || i == 5)
-                    {
-                        txt.TextChanged += HesaplaVeGuncelle;
-                        txt.KeyPress += (s, e) =>
+                        var panel = new Panel
                         {
-                            char decimalSeparator = System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator[0];
+                            Dock = DockStyle.Fill,
+                            Margin = new Padding(2),
+                            Padding = new Padding(0),
+                            AutoSize = false,
+                            Height = 26
+                        };
 
-                            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != decimalSeparator)
+                        var txtValue = new TextBox
+                        {
+                            Name = i == 2 ? "txtTeklifAdet" : "txtGerceklesenAdet",
+                            Dock = DockStyle.Left,
+                            TextAlign = HorizontalAlignment.Center,
+                            Margin = new Padding(0),
+                            AutoSize = false,
+                            Width = 120,
+                            Height = 26,
+                            Font = new Font("Segoe UI", 10),
+                            BorderStyle = BorderStyle.FixedSingle,
+                            Text = "0,00",
+                            MaxLength = 20 
+                        };
+
+                        var txtUnit = new TextBox
+                        {
+                            Name = i == 2 ? "txtTeklifBirim" : "txtGerceklesenBirim",
+                            Dock = DockStyle.Fill,
+                            TextAlign = HorizontalAlignment.Center,
+                            Margin = new Padding(0),
+                            AutoSize = false,
+                            Width = 40,
+                            Height = 26,
+                            Font = new Font("Segoe UI", 10),
+                            BorderStyle = BorderStyle.FixedSingle,
+                            Text = kalemBirimi,
+                            Enabled = false,
+                            BackColor = Color.LightGray
+                        };
+
+                        panel.Controls.Add(txtUnit);
+                        panel.Controls.Add(txtValue);
+
+                        txtValue.TextChanged += HesaplaVeGuncelle;
+                        txtValue.Enter += (s, e) =>
+                        {
+                            var textBox = s as TextBox;
+                            textBox.Select(0, textBox.Text.Length);
+                        };
+                        txtValue.Leave += (s, e) =>
+                        {
+                            var textBox = s as TextBox;
+                            if (textBox != null)
+                            {
+                                string text = textBox.Text.Trim();
+                                if (decimal.TryParse(text, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal value))
+                                {
+                                    value = Math.Round(value, 2);
+                                    textBox.Text = value.ToString("N2", new CultureInfo("tr-TR"));
+                                }
+                                else
+                                {
+                                    textBox.Text = "0,00";
+                                }
+                            }
+                        };
+                        txtValue.KeyPress += (s, e) =>
+                        {
+                            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != ',')
                             {
                                 e.Handled = true;
                             }
 
-                            if (e.KeyChar == decimalSeparator && (s as TextBox).Text.Contains(decimalSeparator.ToString()))
+                            var textBox = s as TextBox;
+                            string text = textBox.Text;
+                            if (e.KeyChar == ',' && text.Contains(","))
+                            {
+                                e.Handled = true;
+                            }
+
+                            string currentText = text.Replace(",", "");
+                            if (currentText.Length >= 15 && !char.IsControl(e.KeyChar))
                             {
                                 e.Handled = true;
                             }
                         };
-                    }
 
-                    if (i == 3 || i == 6)
+                        tableLayoutPanel1.Controls.Add(panel, i, newRowIndex);
+                    }
+                    else
                     {
-                        txt.Enabled = false;
-                        txt.BackColor = Color.LightGray;
-                    }
+                        var txt = new TextBox
+                        {
+                            Dock = DockStyle.Fill,
+                            TextAlign = HorizontalAlignment.Center,
+                            Margin = new Padding(2),
+                            AutoSize = false,
+                            Height = 26,
+                            Font = new Font("Segoe UI", 10),
+                            BorderStyle = BorderStyle.FixedSingle,
+                            Enabled = true,
+                            Visible = true,
+                            MinimumSize = new Size(50, 26),
+                            Text = "0,00",
+                            MaxLength = 20
+                        };
 
-                    tableLayoutPanel1.Controls.Add(txt, i, newRowIndex);
+                        if (i == 3 || i == 7)
+                        {
+                            txt.TextChanged += HesaplaVeGuncelle;
+                            txt.Enter += (s, e) =>
+                            {
+                                var textBox = s as TextBox;
+                                textBox.Select(0, textBox.Text.Length);
+                            };
+                            txt.Leave += (s, e) =>
+                            {
+                                var textBox = s as TextBox;
+                                if (textBox != null)
+                                {
+                                    string text = textBox.Text.Trim();
+                                    if (decimal.TryParse(text, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal value))
+                                    {
+                                        value = Math.Round(value, 2);
+                                        textBox.Text = value.ToString("N2", new CultureInfo("tr-TR"));
+                                    }
+                                    else
+                                    {
+                                        textBox.Text = "0,00";
+                                    }
+                                }
+                            };
+                            txt.KeyPress += (s, e) =>
+                            {
+                                if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != ',')
+                                {
+                                    e.Handled = true;
+                                }
+
+                                var textBox = s as TextBox;
+                                string text = textBox.Text;
+                                if (e.KeyChar == ',' && text.Contains(","))
+                                {
+                                    e.Handled = true;
+                                }
+
+                                string currentText = text.Replace(",", "");
+                                if (currentText.Length >= 15 && !char.IsControl(e.KeyChar))
+                                {
+                                    e.Handled = true;
+                                }
+                            };
+                        }
+
+                        if (i == 4 || i == 5 || i == 8)
+                        {
+                            txt.Enabled = false;
+                            txt.BackColor = Color.LightGray;
+                        }
+
+                        tableLayoutPanel1.Controls.Add(txt, i, newRowIndex);
+                    }
                 }
             }
             finally
@@ -396,59 +632,241 @@ namespace CEKA_APP.UsrControl
                 tableLayoutPanel1.ResumeLayout(true);
             }
         }
-
-        private void HesaplaVeGuncelle(object sender, EventArgs e)
+        private void SilSatir(int rowIndex)
         {
-            if (sender is TextBox txtChanged)
+            if (rowIndex <= 0 || rowIndex >= tableLayoutPanel1.RowCount - 1)
             {
-                var pos = tableLayoutPanel1.GetPositionFromControl(txtChanged);
-                int row = pos.Row;
+                return;
+            }
 
-                if (row < 1 || tableLayoutPanel1.GetControlFromPosition(0, row) is Label lbl && lbl.Text == "") return;
+            var lblKalemAdi = tableLayoutPanel1.GetControlFromPosition(1, rowIndex) as Label;
+            string kalemAdi = lblKalemAdi?.Text ?? "Bilinmeyen Kalem";
+            string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeNo.Text.Trim();
 
-                tableLayoutPanel1.SuspendLayout();
-                tableLayoutPanel2.SuspendLayout();
-                try
+            var result = MessageBox.Show(
+                $"Kalem '{kalemAdi}' silinecek. Devam etmek istiyor musunuz?",
+                "Silme Onayı",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
+            tableLayoutPanel1.SuspendLayout();
+            try
+            {
+                _pendingDeletions.Add((projeNo, kalemAdi));
+                MessageBox.Show("Satır başarıyla silinmek üzere işaretlendi. Kaydet butonuna tıklayarak veritabanından silmeyi onaylayın.", "Silme Onayı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                for (int col = 0; col < tableLayoutPanel1.ColumnCount; col++)
                 {
-                    var txtTeklifAdet = GetTextBoxAt(row, 1);
-                    var txtTeklifBirimFiyat = GetTextBoxAt(row, 2);
-                    var txtTeklifToplam = GetTextBoxAt(row, 3);
-                    var txtGerceklesenAdet = GetTextBoxAt(row, 4);
-                    var txtGerceklesenBirimFiyat = GetTextBoxAt(row, 5);
-                    var txtGerceklesenMaliyet = GetTextBoxAt(row, 6);
-                    var lblSonDurum = GetLabelAt(row, 7);
-
-                    decimal teklifAdet = decimal.TryParse(txtTeklifAdet?.Text, out decimal ta) ? ta : 0;
-                    decimal teklifBirimFiyat = decimal.TryParse(txtTeklifBirimFiyat?.Text, out decimal tbf) ? tbf : 0;
-                    decimal gerceklesenAdet = decimal.TryParse(txtGerceklesenAdet?.Text, out decimal ga) ? ga : 0;
-                    decimal gerceklesenBirimFiyat = decimal.TryParse(txtGerceklesenBirimFiyat?.Text, out decimal gbf) ? gbf : 0;
-
-                    decimal teklifToplam = teklifAdet * teklifBirimFiyat;
-                    decimal gerceklesenMaliyet = gerceklesenAdet * gerceklesenBirimFiyat;
-                    decimal fark = teklifToplam - gerceklesenMaliyet;
-
-                    if (txtTeklifToplam != null)
-                        txtTeklifToplam.Text = teklifToplam.ToString("N2");
-
-                    if (txtGerceklesenMaliyet != null)
-                        txtGerceklesenMaliyet.Text = gerceklesenMaliyet.ToString("N2");
-
-                    if (lblSonDurum != null)
+                    var control = tableLayoutPanel1.GetControlFromPosition(col, rowIndex);
+                    if (control != null)
                     {
-                        lblSonDurum.Text = fark.ToString("N2");
-                        lblSonDurum.ForeColor = fark < 0 ? Color.Red : Color.Green;
+                        tableLayoutPanel1.Controls.Remove(control);
                     }
+                }
+                tableLayoutPanel1.RowStyles.RemoveAt(rowIndex);
+                tableLayoutPanel1.RowCount--;
 
-                    UpdateTotalsRow();
-                }
-                finally
+                for (int row = rowIndex; row < tableLayoutPanel1.RowCount; row++)
                 {
-                    tableLayoutPanel1.ResumeLayout(true);
-                    tableLayoutPanel2.ResumeLayout(true);
+                    for (int col = 0; col < tableLayoutPanel1.ColumnCount; col++)
+                    {
+                        var control = tableLayoutPanel1.GetControlFromPosition(col, row + 1);
+                        if (control != null)
+                        {
+                            tableLayoutPanel1.SetRow(control, row);
+                        }
+                    }
                 }
+
+                if (tableLayoutPanel1.RowCount == 1)
+                {
+                    tableLayoutPanel1.RowCount++;
+                    tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 10));
+                    for (int col = 0; col < tableLayoutPanel1.ColumnCount; col++)
+                    {
+                        var emptyLabel = new Label
+                        {
+                            Text = "",
+                            Dock = DockStyle.Fill,
+                            Margin = new Padding(0),
+                            AutoSize = false,
+                            Height = 10,
+                            Font = new Font("Segoe UI", 8)
+                        };
+                        tableLayoutPanel1.Controls.Add(emptyLabel, col, tableLayoutPanel1.RowCount - 1);
+                    }
+                }
+
+                HesaplaVeGuncelle(null, null);
+            }
+            finally
+            {
+                tableLayoutPanel1.ResumeLayout(true);
             }
         }
+        private int GetRowFromControl(Control control)
+        {
+            if (control == null) return -1;
 
+            var pos = tableLayoutPanel1.GetPositionFromControl(control);
+            if (pos.Row >= 0) return pos.Row;
+
+            // Üst kontrolü kontrol et
+            return GetRowFromControl(control.Parent);
+        }
+        private void HesaplaVeGuncelle(object sender, EventArgs e)
+        {
+            if (_isUpdating) return;
+
+            int row = -1;
+
+            if (sender is TextBox txtChanged)
+            {
+                row = GetRowFromControl(txtChanged);
+            }
+
+            if (row < 1 || tableLayoutPanel1.GetControlFromPosition(1, row) is Label lbl && lbl.Text == "")
+            {
+                UpdateTotalsRow();
+                return;
+            }
+
+            string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeNo.Text.Trim();
+            string paraBirimi = ProjeFinans_ProjeKutukData.GetProjeParaBirimi(projeNo);
+
+            string kalemAdi = GetLabelAt(row, 1)?.Text;
+            int fiyatlandirmaKalemId = 0;
+            decimal kur = 0;
+
+            if (!string.IsNullOrEmpty(kalemAdi))
+            {
+                var kalemDetay = iscilikData.GetFiyatlandirmaKalemByAdi(kalemAdi);
+                if (kalemDetay != null)
+                {
+                    fiyatlandirmaKalemId = kalemDetay.FiyatlandirmaKalemId;
+                    kur = GetKur(paraBirimi, fiyatlandirmaKalemId, projeNo);
+                }
+                else
+                {
+                    UpdateTotalsRow();
+                    return;
+                }
+            }
+
+            _isUpdating = true;
+            tableLayoutPanel1.SuspendLayout();
+            tableLayoutPanel2.SuspendLayout();
+            try
+            {
+                var panelTeklifAdet = tableLayoutPanel1.GetControlFromPosition(2, row) as Panel;
+                var panelGerceklesenAdet = tableLayoutPanel1.GetControlFromPosition(6, row) as Panel;
+                var txtTeklifBirimFiyat = GetTextBoxAt(row, 3);
+                var txtTeklifToplam = GetTextBoxAt(row, 4);
+                var txtTeklifToplamTL = GetTextBoxAt(row, 5);
+                var txtGerceklesenBirimFiyat = GetTextBoxAt(row, 7);
+                var txtGerceklesenMaliyet = GetTextBoxAt(row, 8);
+                var lblSonDurum = GetLabelAt(row, 9);
+
+                var txtTeklifAdet = panelTeklifAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtTeklifAdet");
+                var txtGerceklesenAdet = panelGerceklesenAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtGerceklesenAdet");
+
+                if (txtTeklifAdet == null || txtGerceklesenAdet == null || txtTeklifBirimFiyat == null || txtGerceklesenBirimFiyat == null)
+                {
+                    return;
+                }
+
+                string teklifAdetText = txtTeklifAdet.Text?.Trim() ?? "0";
+                string teklifBirimFiyatText = txtTeklifBirimFiyat.Text?.Trim() ?? "0";
+                string gerceklesenAdetText = txtGerceklesenAdet.Text?.Trim() ?? "0";
+                string gerceklesenBirimFiyatText = txtGerceklesenBirimFiyat.Text?.Trim() ?? "0";
+
+                decimal teklifAdet = decimal.TryParse(teklifAdetText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal ta) ? ta : 0m;
+                decimal teklifBirimFiyat = decimal.TryParse(teklifBirimFiyatText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal tbf) ? tbf : 0m;
+                decimal gerceklesenAdet = decimal.TryParse(gerceklesenAdetText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal ga) ? ga : 0m;
+                decimal gerceklesenBirimFiyat = decimal.TryParse(gerceklesenBirimFiyatText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal gbf) ? gbf : 0m;
+
+                teklifAdet = Math.Round(teklifAdet, 2);
+                teklifBirimFiyat = Math.Round(teklifBirimFiyat, 2);
+                gerceklesenAdet = Math.Round(gerceklesenAdet, 2);
+                gerceklesenBirimFiyat = Math.Round(gerceklesenBirimFiyat, 2);
+
+
+                decimal teklifToplam;
+                try
+                {
+                    checked
+                    {
+                        teklifToplam = teklifAdet * teklifBirimFiyat;
+                    }
+                }
+                catch (OverflowException)
+                {
+                    MessageBox.Show("Girilen değerler çok büyük, lütfen daha küçük değerler kullanın.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    teklifToplam = 0m;
+                    txtTeklifAdet.Text = "0,00";
+                    txtTeklifBirimFiyat.Text = "0,00";
+                }
+
+                decimal teklifToplamTL;
+                try
+                {
+                    checked
+                    {
+                        teklifToplamTL = teklifToplam * kur;
+                    }
+                }
+                catch (OverflowException)
+                {
+                    MessageBox.Show("Girilen değerler çok büyük, lütfen daha küçük değerler kullanın.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    teklifToplamTL = 0m;
+                    txtTeklifAdet.Text = "0,00";
+                    txtTeklifBirimFiyat.Text = "0,00";
+                }
+
+                decimal gerceklesenMaliyet;
+                try
+                {
+                    checked
+                    {
+                        gerceklesenMaliyet = gerceklesenAdet * gerceklesenBirimFiyat;
+                    }
+                }
+                catch (OverflowException)
+                {
+                    MessageBox.Show("Girilen değerler çok büyük, lütfen daha küçük değerler kullanın.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    gerceklesenMaliyet = 0m;
+                    txtGerceklesenAdet.Text = "0,00";
+                    txtGerceklesenBirimFiyat.Text = "0,00";
+                }
+
+                decimal fark = teklifToplamTL - gerceklesenMaliyet;
+
+                if (txtTeklifToplam != null)
+                    txtTeklifToplam.Text = $"{teklifToplam.ToString("N2", new CultureInfo("tr-TR"))} {paraBirimi}";
+                if (txtTeklifToplamTL != null)
+                    txtTeklifToplamTL.Text = $"{teklifToplamTL.ToString("N2", new CultureInfo("tr-TR"))} TL";
+                if (txtGerceklesenMaliyet != null)
+                    txtGerceklesenMaliyet.Text = $"{gerceklesenMaliyet.ToString("N2", new CultureInfo("tr-TR"))} TL";
+                if (lblSonDurum != null)
+                {
+                    lblSonDurum.Text = $"{fark.ToString("N2", new CultureInfo("tr-TR"))} TL";
+                    lblSonDurum.ForeColor = fark < 0 ? Color.Red : Color.Green;
+                }
+
+                UpdateTotalsRow();
+            }
+            finally
+            {
+                _isUpdating = false;
+                tableLayoutPanel1.ResumeLayout(true);
+                tableLayoutPanel2.ResumeLayout(true);
+            }
+        }
         private void UpdateTotalsRow()
         {
             tableLayoutPanel1.SuspendLayout();
@@ -462,6 +880,14 @@ namespace CEKA_APP.UsrControl
                 int totalRowIndex = 0;
                 tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
 
+                string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeNo.Text.Trim();
+                string paraBirimi = ProjeFinans_ProjeKutukData.GetProjeParaBirimi(projeNo);
+                decimal kur = GetKur(paraBirimi);
+
+                var fiyatlandirmaVerileri = fiyatlandirmaData.GetFiyatlandirmaByProje(projeNo);
+                var mevcutFiyatlandirma = fiyatlandirmaVerileri?.LastOrDefault(f => f.teklifKuru.HasValue);
+                decimal? kaydedilenKur = mevcutFiyatlandirma?.teklifKuru;
+
                 var lblToplam = new Label
                 {
                     Text = "Toplam",
@@ -473,21 +899,27 @@ namespace CEKA_APP.UsrControl
                     Height = 30,
                     BackColor = Color.LightYellow
                 };
-                tableLayoutPanel2.Controls.Add(lblToplam, 0, totalRowIndex);
+                tableLayoutPanel2.Controls.Add(lblToplam, 1, totalRowIndex);
 
-                decimal toplamTeklif = 0, toplamGerceklesen = 0, toplamSonDurum = 0;
+                decimal toplamTeklif = 0, toplamTeklifTL = 0, toplamGerceklesen = 0, toplamSonDurum = 0;
 
                 for (int row = 1; row < tableLayoutPanel1.RowCount; row++)
                 {
-                    if (tableLayoutPanel1.GetControlFromPosition(0, row) is Label lbl && lbl.Text == "") continue;
-                    toplamTeklif += decimal.TryParse(GetTextBoxAt(row, 3)?.Text, out decimal tt) ? tt : 0;
-                    toplamGerceklesen += decimal.TryParse(GetTextBoxAt(row, 6)?.Text, out decimal gm) ? gm : 0;
-                    toplamSonDurum += decimal.TryParse(GetLabelAt(row, 7)?.Text, out decimal sd) ? sd : 0;
+                    if (tableLayoutPanel1.GetControlFromPosition(1, row) is Label lbl && lbl.Text == "") continue;
+
+                    decimal teklifToplam = decimal.TryParse(GetTextBoxAt(row, 4)?.Text.Replace(paraBirimi, "").Trim(), NumberStyles.Any, new CultureInfo("tr-TR"), out decimal tt) ? tt : 0m;
+                    decimal teklifToplamTL = decimal.TryParse(GetTextBoxAt(row, 5)?.Text.Replace(" TL", "").Trim(), NumberStyles.Any, new CultureInfo("tr-TR"), out decimal ttl) ? ttl : 0m;
+                    decimal gerceklesenMaliyet = decimal.TryParse(GetTextBoxAt(row, 8)?.Text.Replace(" TL", "").Trim(), NumberStyles.Any, new CultureInfo("tr-TR"), out decimal gm) ? gm : 0m;
+
+                    toplamTeklif += teklifToplam;
+                    toplamTeklifTL += teklifToplamTL;
+                    toplamGerceklesen += gerceklesenMaliyet;
+                    toplamSonDurum += teklifToplamTL - gerceklesenMaliyet;
                 }
 
                 var lblToplamTeklifHesap = new Label
                 {
-                    Text = toplamTeklif.ToString("N2"),
+                    Text = $"{toplamTeklif.ToString("N2", new CultureInfo("tr-TR"))} {paraBirimi}",
                     Font = new Font("Segoe UI", 10, FontStyle.Bold),
                     TextAlign = ContentAlignment.MiddleCenter,
                     Dock = DockStyle.Fill,
@@ -496,11 +928,24 @@ namespace CEKA_APP.UsrControl
                     Height = 30,
                     BackColor = Color.LightYellow
                 };
-                tableLayoutPanel2.Controls.Add(lblToplamTeklifHesap, 3, totalRowIndex);
+                tableLayoutPanel2.Controls.Add(lblToplamTeklifHesap, 4, totalRowIndex);
+
+                var lblToplamTeklifTLHesap = new Label
+                {
+                    Text = $"{toplamTeklifTL.ToString("N2", new CultureInfo("tr-TR"))} TL",
+                    Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                    TextAlign = ContentAlignment.MiddleCenter,
+                    Dock = DockStyle.Fill,
+                    Margin = new Padding(0),
+                    AutoSize = false,
+                    Height = 30,
+                    BackColor = Color.LightYellow
+                };
+                tableLayoutPanel2.Controls.Add(lblToplamTeklifTLHesap, 5, totalRowIndex);
 
                 var lblToplamGerceklesenHesap = new Label
                 {
-                    Text = toplamGerceklesen.ToString("N2"),
+                    Text = $"{toplamGerceklesen.ToString("N2", new CultureInfo("tr-TR"))} TL",
                     Font = new Font("Segoe UI", 10, FontStyle.Bold),
                     TextAlign = ContentAlignment.MiddleCenter,
                     Dock = DockStyle.Fill,
@@ -509,11 +954,11 @@ namespace CEKA_APP.UsrControl
                     Height = 30,
                     BackColor = Color.LightYellow
                 };
-                tableLayoutPanel2.Controls.Add(lblToplamGerceklesenHesap, 6, totalRowIndex);
+                tableLayoutPanel2.Controls.Add(lblToplamGerceklesenHesap, 8, totalRowIndex);
 
                 var lblToplamSonDurumHesap = new Label
                 {
-                    Text = toplamSonDurum.ToString("N2"),
+                    Text = $"{toplamSonDurum.ToString("N2", new CultureInfo("tr-TR"))} TL",
                     Font = new Font("Segoe UI", 10, FontStyle.Bold),
                     TextAlign = ContentAlignment.MiddleCenter,
                     Dock = DockStyle.Fill,
@@ -523,11 +968,11 @@ namespace CEKA_APP.UsrControl
                     ForeColor = toplamSonDurum < 0 ? Color.Red : Color.Green,
                     BackColor = Color.LightYellow
                 };
-                tableLayoutPanel2.Controls.Add(lblToplamSonDurumHesap, 7, totalRowIndex);
+                tableLayoutPanel2.Controls.Add(lblToplamSonDurumHesap, 9, totalRowIndex);
 
-                for (int col = 1; col < tableLayoutPanel2.ColumnCount; col++)
+                for (int col = 0; col < tableLayoutPanel2.ColumnCount; col++)
                 {
-                    if (col == 3 || col == 6 || col == 7) continue;
+                    if (col == 1 || col == 4 || col == 5 || col == 8 || col == 9) continue;
                     var emptyLabel = new Label
                     {
                         Text = "",
@@ -547,7 +992,6 @@ namespace CEKA_APP.UsrControl
                 tableLayoutPanel2.ResumeLayout(true);
             }
         }
-
         private TextBox GetTextBoxAt(int row, int col)
         {
             var ctl = tableLayoutPanel1.GetControlFromPosition(col, row);
@@ -587,41 +1031,117 @@ namespace CEKA_APP.UsrControl
             tableLayoutPanel1.SuspendLayout();
             try
             {
+                bool isAnyUpdateOrSave = false;
+
+                foreach (var deletion in _pendingDeletions)
+                {
+                    var kalemDetay = iscilikData.GetFiyatlandirmaKalemByAdi(deletion.kalemAdi);
+                    if (kalemDetay != null)
+                    {
+                        if (fiyatlandirmaData.FiyatlandirmaSilById(deletion.projeNo, kalemDetay.FiyatlandirmaKalemId))
+                        {
+                            isAnyUpdateOrSave = true;
+                        }
+                    }
+                }
+                _pendingDeletions.Clear();
+
                 var mevcutFiyatlandirmalar = fiyatlandirmaData.GetFiyatlandirmaByProje(projeNo)
-                    .ToDictionary(f => f.fiyatlandirmaKalemId, f => f);
+                    .ToDictionary(f => f.kalemAdi, f => f, StringComparer.OrdinalIgnoreCase);
+
+                string paraBirimi = ProjeFinans_ProjeKutukData.GetProjeParaBirimi(projeNo);
+                decimal kurToUse;
+
+                string eskiKurText = lblEskiKur.Text.Replace($"Kaydedilen Kur ({paraBirimi}): ", "").Replace(" TL", "").Trim();
+                if (!string.IsNullOrEmpty(eskiKurText) && decimal.TryParse(eskiKurText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal eskiKur))
+                {
+                    kurToUse = Math.Round(eskiKur, 4);
+                }
+                else
+                {
+                    string dovizKuruText = txtDovizKuru.Text?.Trim() ?? "0";
+                    if (!decimal.TryParse(dovizKuruText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal dovizKuru) || dovizKuru <= 0)
+                    {
+                        MessageBox.Show("Geçerli bir döviz kuru giriniz veya kaydedilen kur mevcut değilse kayıt yapılamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+                    kurToUse = Math.Round(dovizKuru, 4);
+                }
+
+                if (kurToUse < 0.1m || kurToUse > 1000m)
+                {
+                    MessageBox.Show($"Kur değeri ({kurToUse:N4}) geçerli bir aralıkta değil (0.1 - 1000).", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
 
                 for (int row = 1; row < tableLayoutPanel1.RowCount; row++)
                 {
-                    var lblKalemAdi = GetLabelAt(row, 0);
-                    if (lblKalemAdi == null || string.IsNullOrEmpty(lblKalemAdi.Text)) continue;
+                    var lblKalemAdi = GetLabelAt(row, 1);
+                    if (lblKalemAdi == null || string.IsNullOrEmpty(lblKalemAdi.Text))
+                    {
+                        continue;
+                    }
 
-                    var txtTeklifAdet = GetTextBoxAt(row, 1);
-                    var txtTeklifBirimFiyat = GetTextBoxAt(row, 2);
-                    var txtGerceklesenAdet = GetTextBoxAt(row, 4);
-                    var txtGerceklesenBirimFiyat = GetTextBoxAt(row, 5);
-
-                    decimal teklifAdet = decimal.TryParse(txtTeklifAdet?.Text, out decimal ta) ? ta : 0;
-                    decimal teklifBirimFiyat = decimal.TryParse(txtTeklifBirimFiyat?.Text, out decimal tbf) ? tbf : 0;
-                    decimal gerceklesenAdet = decimal.TryParse(txtGerceklesenAdet?.Text, out decimal ga) ? ga : 0;
-                    decimal gerceklesenBirimFiyat = decimal.TryParse(txtGerceklesenBirimFiyat?.Text, out decimal gbf) ? gbf : 0;
-
-                    int fiyatlandirmaKalemId = iscilikData.GetFiyatlandirmaKalemIdByAdi(lblKalemAdi.Text);
-                    if (fiyatlandirmaKalemId == 0)
+                    var kalemDetay = iscilikData.GetFiyatlandirmaKalemByAdi(lblKalemAdi.Text);
+                    if (kalemDetay == null)
                     {
                         MessageBox.Show($"Kalem '{lblKalemAdi.Text}' için ID bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         continue;
                     }
 
-                    if (mevcutFiyatlandirmalar.TryGetValue(fiyatlandirmaKalemId, out var mevcutFiyatlandirma))
+                    int fiyatlandirmaKalemId = kalemDetay.FiyatlandirmaKalemId;
+                    var panelTeklifAdet = tableLayoutPanel1.GetControlFromPosition(2, row) as Panel;
+                    var txtTeklifBirimFiyat = GetTextBoxAt(row, 3);
+                    var panelGerceklesenAdet = tableLayoutPanel1.GetControlFromPosition(6, row) as Panel;
+                    var txtGerceklesenBirimFiyat = GetTextBoxAt(row, 7);
+
+                    var txtTeklifAdet = panelTeklifAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtTeklifAdet");
+                    var txtGerceklesenAdet = panelGerceklesenAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtGerceklesenAdet");
+
+                    if (txtTeklifAdet == null || txtGerceklesenAdet == null || txtTeklifBirimFiyat == null || txtGerceklesenBirimFiyat == null)
                     {
-                        fiyatlandirmaData.FiyatlandirmaGuncelle(
-                            projeNo,
-                            fiyatlandirmaKalemId,
-                            teklifAdet,
-                            teklifBirimFiyat,
-                            gerceklesenAdet,
-                            gerceklesenBirimFiyat
-                        );
+                        continue;
+                    }
+
+                    string teklifAdetText = txtTeklifAdet.Text?.Trim() ?? "0";
+                    string teklifBirimFiyatText = txtTeklifBirimFiyat.Text?.Trim() ?? "0";
+                    string gerceklesenAdetText = txtGerceklesenAdet.Text?.Trim() ?? "0";
+                    string gerceklesenBirimFiyatText = txtGerceklesenBirimFiyat.Text?.Trim() ?? "0";
+
+                    decimal teklifAdet = decimal.TryParse(teklifAdetText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal ta) ? ta : 0m;
+                    decimal teklifBirimFiyat = decimal.TryParse(teklifBirimFiyatText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal tbf) ? tbf : 0m;
+                    decimal gerceklesenAdet = decimal.TryParse(gerceklesenAdetText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal ga) ? ga : 0m;
+                    decimal gerceklesenBirimFiyat = decimal.TryParse(gerceklesenBirimFiyatText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal gbf) ? gbf : 0m;
+
+                    teklifAdet = Math.Round(teklifAdet, 2);
+                    teklifBirimFiyat = Math.Round(teklifBirimFiyat, 2);
+                    gerceklesenAdet = Math.Round(gerceklesenAdet, 2);
+                    gerceklesenBirimFiyat = Math.Round(gerceklesenBirimFiyat, 2);
+
+
+                    if (mevcutFiyatlandirmalar.TryGetValue(lblKalemAdi.Text, out var mevcutFiyatlandirma))
+                    {
+                        bool hasChanges = Math.Abs(mevcutFiyatlandirma.teklifBirimMiktar - teklifAdet) > 0.01m ||
+                                          Math.Abs(mevcutFiyatlandirma.teklifBirimFiyat - teklifBirimFiyat) > 0.01m ||
+                                          Math.Abs(mevcutFiyatlandirma.gerceklesenBirimMiktar - gerceklesenAdet) > 0.01m ||
+                                          Math.Abs(mevcutFiyatlandirma.gerceklesenBirimFiyat - gerceklesenBirimFiyat) > 0.01m ||
+                                          Math.Abs(mevcutFiyatlandirma.teklifKuru.GetValueOrDefault() - kurToUse) > 0.0001m;
+
+                        if (hasChanges)
+                        {
+                            fiyatlandirmaData.FiyatlandirmaGuncelle(
+                                projeNo,
+                                fiyatlandirmaKalemId,
+                                teklifAdet,
+                                teklifBirimFiyat,
+                                gerceklesenAdet,
+                                gerceklesenBirimFiyat,
+                                paraBirimi,
+                                kurToUse
+                            );
+                            isAnyUpdateOrSave = true;
+                        }
                     }
                     else
                     {
@@ -631,21 +1151,40 @@ namespace CEKA_APP.UsrControl
                             teklifAdet,
                             teklifBirimFiyat,
                             gerceklesenAdet,
-                            gerceklesenBirimFiyat
+                            gerceklesenBirimFiyat,
+                            paraBirimi,
+                            kurToUse
                         );
+                        isAnyUpdateOrSave = true;
                     }
+
+                    txtTeklifAdet.Text = teklifAdet.ToString("N2", new CultureInfo("tr-TR"));
+                    txtTeklifBirimFiyat.Text = teklifBirimFiyat.ToString("N2", new CultureInfo("tr-TR"));
+                    txtGerceklesenAdet.Text = gerceklesenAdet.ToString("N2", new CultureInfo("tr-TR"));
+                    txtGerceklesenBirimFiyat.Text = gerceklesenBirimFiyat.ToString("N2", new CultureInfo("tr-TR"));
                 }
 
-                var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
-                OnFiyatlandirmaKaydedildi?.Invoke(projeNo);
-                MessageBox.Show("Fiyatlandırma kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                if (isAnyUpdateOrSave)
+                {
+                    var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
+                    OnFiyatlandirmaKaydedildi?.Invoke(projeNo);
+                    lblEskiKur.Text = $"Kaydedilen Kur ({paraBirimi}): {kurToUse.ToString("N4", new CultureInfo("tr-TR"))}";
+                    MessageBox.Show("Fiyatlandırma başarıyla kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+                else
+                {
+                    MessageBox.Show("Kaydedilecek veya güncellenecek bir veri bulunamadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Fiyatlandırma kaydedilirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
                 tableLayoutPanel1.ResumeLayout(true);
             }
         }
-
         public void btnProjeAra_Click(object sender, EventArgs e)
         {
             string arananProjeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeNo.Text.Trim();
@@ -677,55 +1216,75 @@ namespace CEKA_APP.UsrControl
             tableLayoutPanel2.SuspendLayout();
             try
             {
+                _pendingDeletions.Clear();
+
                 tableLayoutPanel1.Controls.Clear();
                 tableLayoutPanel1.RowCount = 0;
                 tableLayoutPanel1.RowStyles.Clear();
                 tableLayoutPanel1.ColumnStyles.Clear();
-                for (int i = 0; i < 8; i++)
+                tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30f));
+                for (int i = 1; i < 10; i++)
                 {
-                    tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 12.5f));
+                    tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 9));
                 }
 
                 tableLayoutPanel1.RowCount = 1;
                 AddHeaderRow();
 
+                string paraBirimi = ProjeFinans_ProjeKutukData.GetProjeParaBirimi(arananProjeNo);
                 var fiyatlandirmaVerileri = fiyatlandirmaData.GetFiyatlandirmaByProje(arananProjeNo);
                 if (fiyatlandirmaVerileri.Any())
                 {
                     foreach (var veri in fiyatlandirmaVerileri)
                     {
                         if (string.IsNullOrEmpty(veri.kalemAdi)) continue;
-                        AddYeniKalemSatiri(veri.kalemAdi);
+                        string kalemBirimi = veri.kalemBirimi;
+                        AddYeniKalemSatiri(veri.kalemAdi, veri.kalemBirimi);
                         int row = tableLayoutPanel1.RowCount - 1;
 
-                        var txtTeklifAdet = GetTextBoxAt(row, 1);
-                        var txtTeklifBirimFiyat = GetTextBoxAt(row, 2);
-                        var txtTeklifToplam = GetTextBoxAt(row, 3);
-                        var txtGerceklesenAdet = GetTextBoxAt(row, 4);
-                        var txtGerceklesenBirimFiyat = GetTextBoxAt(row, 5);
-                        var txtGerceklesenMaliyet = GetTextBoxAt(row, 6);
-                        var lblSonDurum = GetLabelAt(row, 7);
+                        var panelTeklifAdet = tableLayoutPanel1.GetControlFromPosition(2, row) as Panel;
+                        var txtTeklifBirimFiyat = GetTextBoxAt(row, 3);
+                        var txtTeklifToplam = GetTextBoxAt(row, 4);
+                        var txtTeklifToplamTL = GetTextBoxAt(row, 5);
+                        var panelGerceklesenAdet = tableLayoutPanel1.GetControlFromPosition(6, row) as Panel;
+                        var txtGerceklesenBirimFiyat = GetTextBoxAt(row, 7);
+                        var txtGerceklesenMaliyet = GetTextBoxAt(row, 8);
+                        var lblSonDurum = GetLabelAt(row, 9);
 
-                        if (txtTeklifAdet != null) txtTeklifAdet.Text = veri.teklifBirimMiktar.ToString("N2");
+                        var txtTeklifAdet = panelTeklifAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtTeklifAdet");
+                        var txtTeklifBirim = panelTeklifAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtTeklifBirim");
+                        var txtGerceklesenAdet = panelGerceklesenAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtGerceklesenAdet");
+                        var txtGerceklesenBirim = panelGerceklesenAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtGerceklesenBirim");
+
+                        if (txtTeklifAdet != null) txtTeklifAdet.Text = $"{veri.teklifBirimMiktar:N2}";
+                        if (txtTeklifBirim != null) txtTeklifBirim.Text = kalemBirimi;
                         if (txtTeklifBirimFiyat != null) txtTeklifBirimFiyat.Text = veri.teklifBirimFiyat.ToString("N2");
-                        if (txtGerceklesenAdet != null) txtGerceklesenAdet.Text = veri.gerceklesenBirimMiktar.ToString("N2");
+                        if (txtGerceklesenAdet != null) txtGerceklesenAdet.Text = $"{veri.gerceklesenBirimMiktar:N2}";
+                        if (txtGerceklesenBirim != null) txtGerceklesenBirim.Text = kalemBirimi;
                         if (txtGerceklesenBirimFiyat != null) txtGerceklesenBirimFiyat.Text = veri.gerceklesenBirimFiyat.ToString("N2");
 
+                        decimal kur = GetKur(paraBirimi, veri.fiyatlandirmaKalemId, arananProjeNo);
                         decimal teklifToplam = veri.teklifBirimMiktar * veri.teklifBirimFiyat;
+                        decimal teklifToplamTL = teklifToplam * kur;
                         decimal gerceklesenMaliyet = veri.gerceklesenBirimMiktar * veri.gerceklesenBirimFiyat;
+                        decimal fark = teklifToplamTL - gerceklesenMaliyet;
 
-                        if (txtTeklifToplam != null) txtTeklifToplam.Text = teklifToplam.ToString("N2");
-                        if (txtGerceklesenMaliyet != null) txtGerceklesenMaliyet.Text = gerceklesenMaliyet.ToString("N2");
+                        if (txtTeklifToplam != null) txtTeklifToplam.Text = $"{teklifToplam:N2} {paraBirimi}";
+                        if (txtTeklifToplamTL != null) txtTeklifToplamTL.Text = $"{teklifToplamTL:N2} TL";
+                        if (txtGerceklesenMaliyet != null) txtGerceklesenMaliyet.Text = $"{gerceklesenMaliyet:N2} TL";
                         if (lblSonDurum != null)
                         {
-                            lblSonDurum.Text = (teklifToplam - gerceklesenMaliyet).ToString("N2");
-                            lblSonDurum.ForeColor = (teklifToplam - gerceklesenMaliyet) < 0 ? Color.Red : Color.Green;
+                            lblSonDurum.Text = $"{fark:N2} TL";
+                            lblSonDurum.ForeColor = fark < 0 ? Color.Red : Color.Green;
                         }
                     }
                 }
 
                 AddSpacerRow();
+                KurlariGetir();
                 UpdateTotalsRow();
+                lblKurBaslik.Visible = true;
+                lblKurBilgi.Visible = true;
             }
             finally
             {
@@ -735,18 +1294,21 @@ namespace CEKA_APP.UsrControl
 
             UpdateKalemEkleButtonState();
         }
-
         private void btnYeniKalemEkle_Click(object sender, EventArgs e)
         {
             var frm = new frmYeniFiyatlandirmaKalemiEkle();
             if (frm.ShowDialog() == DialogResult.OK)
             {
-                AddYeniKalemSatiri(frm.KalemAdi);
+                if (string.IsNullOrWhiteSpace(frm.KalemAdi))
+                {
+                    MessageBox.Show("Kalem adı boş olamaz!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+                AddYeniKalemSatiri(frm.KalemAdi, frm.KalemBirimi);
                 AddSpacerRow();
                 UpdateTotalsRow();
             }
         }
-
         private void UpdateKalemEkleButtonState()
         {
             string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeNo.Text.Trim();
@@ -819,7 +1381,7 @@ namespace CEKA_APP.UsrControl
             if (fiyatlandirmaData.FiyatlandirmaSil(projeNo))
             {
                 MessageBox.Show("Fiyatlandırma kayıtları başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                InitializeTableStructure(); 
+                InitializeTableStructure();
                 UpdateTotalsRow();
                 UpdateKalemEkleButtonState();
                 OnFiyatlandirmaKaydedildi?.Invoke(projeNo);
@@ -837,6 +1399,304 @@ namespace CEKA_APP.UsrControl
                 e.SuppressKeyPress = true;
                 this.btnProjeAra.PerformClick();
             }
+        }
+        private void KurlariGetir()
+        {
+            try
+            {
+                string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeNo.Text?.Trim();
+                if (string.IsNullOrEmpty(projeNo))
+                {
+                    txtDovizKuru.Text = "";
+                    lblKurBilgi.Text = "Proje numarası girilmemiş.";
+                    lblEskiKur.Text = "";
+                    txtDovizKuru.Visible = true;
+                    return;
+                }
+
+                string paraBirimi = ProjeFinans_ProjeKutukData.GetProjeParaBirimi(projeNo);
+                if (string.IsNullOrEmpty(paraBirimi))
+                {
+                    txtDovizKuru.Text = "";
+                    lblKurBilgi.Text = "Proje için para birimi bilgisi bulunamadı.";
+                    lblEskiKur.Text = "";
+                    txtDovizKuru.Visible = true;
+                    return;
+                }
+
+                if (paraBirimi == "TL")
+                {
+                    txtDovizKuru.Text = "";
+                    lblKurBilgi.Text = "";
+                    lblEskiKur.Text = "";
+                    txtDovizKuru.Visible = false;
+                    return;
+                }
+
+                string tcmbUrl = "https://www.tcmb.gov.tr/kurlar/today.xml";
+                XDocument xmlDoc = XDocument.Load(tcmbUrl);
+
+                string kurText = "";
+                if (paraBirimi == "USD")
+                {
+                    var usdKur = xmlDoc.Descendants("Currency")
+                                       .FirstOrDefault(c => c.Attribute("Kod")?.Value == "USD");
+                    kurText = usdKur?.Element("BanknoteSelling")?.Value;
+                    lblKurBilgi.Text = "ABD Doları (USD) Satış Kuru";
+                }
+                else if (paraBirimi == "EUR")
+                {
+                    var eurKur = xmlDoc.Descendants("Currency")
+                                       .FirstOrDefault(c => c.Attribute("Kod")?.Value == "EUR");
+                    kurText = eurKur?.Element("BanknoteSelling")?.Value;
+                    lblKurBilgi.Text = "Euro (EUR) Satış Kuru";
+                }
+
+                if (!string.IsNullOrEmpty(kurText) && decimal.TryParse(kurText.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal kur))
+                {
+                    kur = Math.Round(kur, 4);
+                    txtDovizKuru.Text = kur.ToString("N4", new CultureInfo("tr-TR")); 
+                }
+                else
+                {
+                    txtDovizKuru.Text = "";
+                    lblKurBilgi.Text = "Kur bilgisi alınamadı.";
+                }
+                txtDovizKuru.Visible = true;
+
+                var fiyatlandirmaVerileri = fiyatlandirmaData.GetFiyatlandirmaByProje(projeNo);
+                decimal? kaydedilenKur = fiyatlandirmaVerileri?
+                    .Where(f => f.teklifKuru.HasValue)
+                    .OrderByDescending(f => f.fiyatlandirmaKalemId)
+                    .Select(f => f.teklifKuru)
+                    .FirstOrDefault();
+
+                if (kaydedilenKur.HasValue)
+                {
+                    lblEskiKur.Text = $"Kaydedilen Kur ({paraBirimi}): {kaydedilenKur.Value.ToString("N4", new CultureInfo("tr-TR"))}";
+                }
+                else
+                {
+                    lblEskiKur.Text = "Kayıtlı kur bulunamadı.";
+                }
+            }
+            catch (Exception ex)
+            {
+                txtDovizKuru.Text = "";
+                lblKurBilgi.Text = $"Hata oluştu: {ex.Message}";
+                lblEskiKur.Text = "";
+                txtDovizKuru.Visible = true;
+            }
+        }
+        private void btnKurGuncelle_Click(object sender, EventArgs e)
+        {
+            string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeNo.Text.Trim();
+            if (string.IsNullOrEmpty(projeNo))
+            {
+                MessageBox.Show("Proje numarası giriniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string paraBirimi = ProjeFinans_ProjeKutukData.GetProjeParaBirimi(projeNo);
+            if (string.IsNullOrEmpty(paraBirimi))
+            {
+                MessageBox.Show("Proje için para birimi bilgisi bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string dovizKuruText = txtDovizKuru.Text?.Trim() ?? "0";
+            if (!decimal.TryParse(dovizKuruText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal kur) || kur <= 0)
+            {
+                MessageBox.Show("Geçerli bir döviz kuru giriniz (ör. 47,7028).", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            kur = Math.Round(kur, 4); 
+
+            var fiyatlandirmaVerileri = fiyatlandirmaData.GetFiyatlandirmaByProje(projeNo);
+            var mevcutFiyatlandirma = fiyatlandirmaVerileri?.LastOrDefault(f => f.teklifKuru.HasValue);
+            decimal? mevcutKur = mevcutFiyatlandirma?.teklifKuru;
+
+            if (mevcutKur.HasValue && Math.Abs(mevcutKur.Value - kur) > 0.0001m)
+            {
+                var result = MessageBox.Show(
+                    $"Fiyatlandırma kuru {mevcutKur.Value.ToString("N4", new CultureInfo("tr-TR"))} {paraBirimi}'den {kur.ToString("N4", new CultureInfo("tr-TR"))} {paraBirimi}'ye değiştirilecektir. Onaylıyor musunuz?",
+                    "Kur Değiştirme Onayı",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Question
+                );
+                if (result != DialogResult.Yes)
+                {
+                    return;
+                }
+
+                foreach (var veri in fiyatlandirmaVerileri)
+                {
+                    if (veri.teklifKuru.HasValue)
+                    {
+                        fiyatlandirmaData.FiyatlandirmaGuncelle(
+                            projeNo,
+                            veri.fiyatlandirmaKalemId,
+                            veri.teklifBirimMiktar,
+                            veri.teklifBirimFiyat,
+                            veri.gerceklesenBirimMiktar,
+                            veri.gerceklesenBirimFiyat,
+                            paraBirimi,
+                            kur
+                        );
+                    }
+                }
+                lblEskiKur.Text = $"Kaydedilen Kur ({paraBirimi}): {kur.ToString("N4", new CultureInfo("tr-TR"))}";
+            }
+            else
+            {
+                lblEskiKur.Text = $"Kaydedilen Kur ({paraBirimi}): {kur.ToString("N4", new CultureInfo("tr-TR"))}";
+            }
+
+            tableLayoutPanel1.SuspendLayout();
+            tableLayoutPanel2.SuspendLayout();
+            try
+            {
+                for (int row = 1; row < tableLayoutPanel1.RowCount; row++)
+                {
+                    var lblKalemAdi = GetLabelAt(row, 1);
+                    if (lblKalemAdi == null || string.IsNullOrEmpty(lblKalemAdi.Text)) continue;
+
+                    var panelTeklifAdet = tableLayoutPanel1.GetControlFromPosition(2, row) as Panel;
+                    var panelGerceklesenAdet = tableLayoutPanel1.GetControlFromPosition(6, row) as Panel;
+                    var txtTeklifBirimFiyat = GetTextBoxAt(row, 3);
+                    var txtTeklifToplam = GetTextBoxAt(row, 4);
+                    var txtTeklifToplamTL = GetTextBoxAt(row, 5);
+                    var txtGerceklesenBirimFiyat = GetTextBoxAt(row, 7);
+                    var txtGerceklesenMaliyet = GetTextBoxAt(row, 8);
+                    var lblSonDurum = GetLabelAt(row, 9);
+
+                    var txtTeklifAdet = panelTeklifAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtTeklifAdet");
+                    var txtGerceklesenAdet = panelGerceklesenAdet?.Controls.OfType<TextBox>().FirstOrDefault(t => t.Name == "txtGerceklesenAdet");
+
+                    decimal teklifAdet = decimal.TryParse(txtTeklifAdet?.Text?.Trim(), NumberStyles.Any, new CultureInfo("tr-TR"), out decimal ta) ? ta : 0m;
+                    decimal teklifBirimFiyat = decimal.TryParse(txtTeklifBirimFiyat?.Text?.Trim(), NumberStyles.Any, new CultureInfo("tr-TR"), out decimal tbf) ? tbf : 0m;
+                    decimal gerceklesenAdet = decimal.TryParse(txtGerceklesenAdet?.Text?.Trim(), NumberStyles.Any, new CultureInfo("tr-TR"), out decimal ga) ? ga : 0m;
+                    decimal gerceklesenBirimFiyat = decimal.TryParse(txtGerceklesenBirimFiyat?.Text?.Trim(), NumberStyles.Any, new CultureInfo("tr-TR"), out decimal gbf) ? gbf : 0m;
+
+                    teklifAdet = Math.Round(teklifAdet, 2);
+                    teklifBirimFiyat = Math.Round(teklifBirimFiyat, 2);
+                    gerceklesenAdet = Math.Round(gerceklesenAdet, 2);
+                    gerceklesenBirimFiyat = Math.Round(gerceklesenBirimFiyat, 2);
+
+                    decimal teklifToplam;
+                    try
+                    {
+                        checked
+                        {
+                            teklifToplam = teklifAdet * teklifBirimFiyat;
+                        }
+                    }
+                    catch (OverflowException)
+                    {
+                        MessageBox.Show("Girilen değerler çok büyük, lütfen daha küçük değerler kullanın.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        teklifToplam = 0m;
+                        txtTeklifAdet.Text = "0,00";
+                        txtTeklifBirimFiyat.Text = "0,00";
+                    }
+
+                    decimal teklifToplamTL;
+                    try
+                    {
+                        checked
+                        {
+                            teklifToplamTL = teklifToplam * kur;
+                        }
+                    }
+                    catch (OverflowException)
+                    {
+                        MessageBox.Show("Girilen değerler çok büyük, lütfen daha küçük değerler kullanın.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        teklifToplamTL = 0m;
+                        txtTeklifAdet.Text = "0,00";
+                        txtTeklifBirimFiyat.Text = "0,00";
+                    }
+
+                    decimal gerceklesenMaliyet;
+                    try
+                    {
+                        checked
+                        {
+                            gerceklesenMaliyet = gerceklesenAdet * gerceklesenBirimFiyat;
+                        }
+                    }
+                    catch (OverflowException)
+                    {
+                        MessageBox.Show("Girilen değerler çok büyük, lütfen daha küçük değerler kullanın.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        gerceklesenMaliyet = 0m;
+                        txtGerceklesenAdet.Text = "0,00";
+                        txtGerceklesenBirimFiyat.Text = "0,00";
+                    }
+
+                    decimal fark = teklifToplamTL - gerceklesenMaliyet;
+
+                    if (txtTeklifToplam != null)
+                        txtTeklifToplam.Text = $"{teklifToplam.ToString("N2", new CultureInfo("tr-TR"))} {paraBirimi}";
+                    if (txtTeklifToplamTL != null)
+                        txtTeklifToplamTL.Text = $"{teklifToplamTL.ToString("N2", new CultureInfo("tr-TR"))} TL";
+                    if (txtGerceklesenMaliyet != null)
+                        txtGerceklesenMaliyet.Text = $"{gerceklesenMaliyet.ToString("N2", new CultureInfo("tr-TR"))} TL";
+                    if (lblSonDurum != null)
+                    {
+                        lblSonDurum.Text = $"{fark.ToString("N2", new CultureInfo("tr-TR"))} TL";
+                        lblSonDurum.ForeColor = fark < 0 ? Color.Red : Color.Green;
+                    }
+                }
+
+                UpdateTotalsRow();
+                lblKurBaslik.Visible = false;
+                lblKurBilgi.Visible = false;
+                MessageBox.Show("Kur başarıyla güncellendi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            finally
+            {
+                tableLayoutPanel1.ResumeLayout(true);
+                tableLayoutPanel2.ResumeLayout(true);
+            }
+        }
+        private void InitializeTxtDovizKuruEvents()
+        {
+            txtDovizKuru.KeyPress += (s, e) =>
+            {
+                if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar) && e.KeyChar != ',')
+                {
+                    e.Handled = true;
+                }
+
+                var textBox = s as TextBox;
+                string text = textBox.Text;
+                if (e.KeyChar == ',' && text.Contains(","))
+                {
+                    e.Handled = true;
+                }
+
+                string currentText = text.Replace(",", "");
+                if (currentText.Length >= 15 && !char.IsControl(e.KeyChar))
+                {
+                    e.Handled = true;
+                }
+            };
+
+            txtDovizKuru.Leave += (s, e) =>
+            {
+                var textBox = s as TextBox;
+                if (textBox != null)
+                {
+                    string text = textBox.Text.Trim();
+                    if (decimal.TryParse(text, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal value))
+                    {
+                        value = Math.Round(value, 4);
+                        textBox.Text = value.ToString("N4", new CultureInfo("tr-TR"));
+                    }
+                    else
+                    {
+                        textBox.Text = "0,0000";
+                    }
+                }
+            };
         }
     }
 }

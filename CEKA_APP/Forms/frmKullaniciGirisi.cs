@@ -35,7 +35,28 @@ namespace CEKA_APP
             txtSifre.UseSystemPasswordChar = true;
             this.AcceptButton = btnGiris;
             KullaniciBilgileriniYukle();
-            //GuncellemeKontrol();
+            if (IsPublished())
+            {
+                try
+                {
+                    GuncellemeKontrol();
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("Güncelleme kontrolü başarısız: " + ex.Message);
+                }
+            }
+        }
+        private bool IsPublished()
+        {
+            try
+            {
+                return ApplicationDeployment.IsNetworkDeployed;
+            }
+            catch
+            {
+                return false;
+            }
         }
         public void GuncellemeKontrol()
         {

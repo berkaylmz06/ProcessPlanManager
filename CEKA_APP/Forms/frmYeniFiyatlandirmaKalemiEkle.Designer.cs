@@ -35,12 +35,14 @@
             this.lblYeniKalemBilgi = new System.Windows.Forms.Label();
             this.lblYeniKalemAdi = new System.Windows.Forms.Label();
             this.panelYeniKalem = new System.Windows.Forms.Panel();
+            this.lblBirim = new System.Windows.Forms.Label();
+            this.cmbBirim = new System.Windows.Forms.ComboBox();
             this.panelYeniKalem.SuspendLayout();
             this.SuspendLayout();
             // 
             // listKalemler
             // 
-            this.listKalemler.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.listKalemler.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listKalemler.FormattingEnabled = true;
             this.listKalemler.ItemHeight = 16;
@@ -67,7 +69,6 @@
             // 
             // btnEkle
             // 
-            this.btnEkle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this.btnEkle.BackColor = System.Drawing.Color.Gray;
             this.btnEkle.FlatAppearance.BorderSize = 0;
             this.btnEkle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -83,12 +84,12 @@
             // 
             // txtYeniKalem
             // 
-            this.txtYeniKalem.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtYeniKalem.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtYeniKalem.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.txtYeniKalem.Location = new System.Drawing.Point(123, 44);
             this.txtYeniKalem.Name = "txtYeniKalem";
-            this.txtYeniKalem.Size = new System.Drawing.Size(222, 22);
+            this.txtYeniKalem.Size = new System.Drawing.Size(222, 26);
             this.txtYeniKalem.TabIndex = 3;
             // 
             // lblYeniKalemBilgi
@@ -98,9 +99,9 @@
             this.lblYeniKalemBilgi.ForeColor = System.Drawing.Color.DimGray;
             this.lblYeniKalemBilgi.Location = new System.Drawing.Point(135, 12);
             this.lblYeniKalemBilgi.Name = "lblYeniKalemBilgi";
-            this.lblYeniKalemBilgi.Size = new System.Drawing.Size(126, 16);
+            this.lblYeniKalemBilgi.Size = new System.Drawing.Size(248, 20);
             this.lblYeniKalemBilgi.TabIndex = 4;
-            this.lblYeniKalemBilgi.Text = "Yeni kalem adını girin";
+            this.lblYeniKalemBilgi.Text = "Yeni kalem adını ve birimini girin";
             // 
             // lblYeniKalemAdi
             // 
@@ -108,27 +109,55 @@
             this.lblYeniKalemAdi.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.lblYeniKalemAdi.Location = new System.Drawing.Point(13, 47);
             this.lblYeniKalemAdi.Name = "lblYeniKalemAdi";
-            this.lblYeniKalemAdi.Size = new System.Drawing.Size(74, 16);
+            this.lblYeniKalemAdi.Size = new System.Drawing.Size(90, 20);
             this.lblYeniKalemAdi.TabIndex = 7;
             this.lblYeniKalemAdi.Text = "Kalem Adı:";
             // 
             // panelYeniKalem
             // 
+            this.panelYeniKalem.Controls.Add(this.lblBirim);
+            this.panelYeniKalem.Controls.Add(this.cmbBirim);
             this.panelYeniKalem.Controls.Add(this.lblYeniKalemBilgi);
             this.panelYeniKalem.Controls.Add(this.lblYeniKalemAdi);
             this.panelYeniKalem.Controls.Add(this.txtYeniKalem);
             this.panelYeniKalem.Location = new System.Drawing.Point(10, 285);
             this.panelYeniKalem.Name = "panelYeniKalem";
-            this.panelYeniKalem.Size = new System.Drawing.Size(360, 80);
+            this.panelYeniKalem.Size = new System.Drawing.Size(360, 128);
             this.panelYeniKalem.TabIndex = 8;
             this.panelYeniKalem.Visible = false;
+            // 
+            // lblBirim
+            // 
+            this.lblBirim.AutoSize = true;
+            this.lblBirim.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblBirim.Location = new System.Drawing.Point(13, 79);
+            this.lblBirim.Name = "lblBirim";
+            this.lblBirim.Size = new System.Drawing.Size(58, 20);
+            this.lblBirim.TabIndex = 9;
+            this.lblBirim.Text = "Birimi:";
+            // 
+            // cmbBirim
+            // 
+            this.cmbBirim.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.cmbBirim.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbBirim.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.cmbBirim.FormattingEnabled = true;
+            this.cmbBirim.Items.AddRange(new object[] {
+            "ad·s",
+            "kg",
+            "ad"});
+            this.cmbBirim.Location = new System.Drawing.Point(123, 76);
+            this.cmbBirim.Name = "cmbBirim";
+            this.cmbBirim.Size = new System.Drawing.Size(222, 28);
+            this.cmbBirim.TabIndex = 8;
             // 
             // frmYeniFiyatlandirmaKalemiEkle
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.WhiteSmoke;
-            this.ClientSize = new System.Drawing.Size(385, 300); // Formun başlangıç boyutu artırıldı
+            this.ClientSize = new System.Drawing.Size(385, 446);
             this.Controls.Add(this.panelYeniKalem);
             this.Controls.Add(this.btnEkle);
             this.Controls.Add(this.btnSec);
@@ -143,7 +172,7 @@
             this.panelYeniKalem.ResumeLayout(false);
             this.panelYeniKalem.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
+
         }
 
         #endregion
@@ -155,5 +184,7 @@
         private System.Windows.Forms.Label lblYeniKalemBilgi;
         private System.Windows.Forms.Label lblYeniKalemAdi;
         private System.Windows.Forms.Panel panelYeniKalem;
+        private System.Windows.Forms.Label lblBirim;
+        private System.Windows.Forms.ComboBox cmbBirim;
     }
 }

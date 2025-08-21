@@ -87,6 +87,7 @@
             this.btnKarsilastirmaTablolari = new System.Windows.Forms.Button();
             this.btnProjeKutuk = new System.Windows.Forms.Button();
             this.panelAraYuz = new System.Windows.Forms.Panel();
+            this.btnSevkiyat = new System.Windows.Forms.Button();
             this.btnOdemeSarlariListe = new System.Windows.Forms.Button();
             this.btnMusteriler = new System.Windows.Forms.Button();
             this.btnTeminatMektuplari = new System.Windows.Forms.Button();
@@ -101,7 +102,7 @@
             this.lblDuyuru = new System.Windows.Forms.Label();
             this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.btnSevkiyat = new System.Windows.Forms.Button();
+            this.btnTakipTakvimi = new System.Windows.Forms.Button();
             this.panelNavigasyon.SuspendLayout();
             this.p2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGeri)).BeginInit();
@@ -755,6 +756,7 @@
             // 
             this.panelAraYuz.AutoScroll = true;
             this.panelAraYuz.BackColor = System.Drawing.SystemColors.HotTrack;
+            this.panelAraYuz.Controls.Add(this.btnTakipTakvimi);
             this.panelAraYuz.Controls.Add(this.btnSevkiyat);
             this.panelAraYuz.Controls.Add(this.btnOdemeSarlariListe);
             this.panelAraYuz.Controls.Add(this.btnMusteriler);
@@ -781,6 +783,17 @@
             this.panelAraYuz.Name = "panelAraYuz";
             this.panelAraYuz.Size = new System.Drawing.Size(215, 1192);
             this.panelAraYuz.TabIndex = 212;
+            // 
+            // btnSevkiyat
+            // 
+            this.btnSevkiyat.Location = new System.Drawing.Point(15, 856);
+            this.btnSevkiyat.Margin = new System.Windows.Forms.Padding(2);
+            this.btnSevkiyat.Name = "btnSevkiyat";
+            this.btnSevkiyat.Size = new System.Drawing.Size(160, 30);
+            this.btnSevkiyat.TabIndex = 132;
+            this.btnSevkiyat.Text = "Sevkiyat";
+            this.btnSevkiyat.UseVisualStyleBackColor = true;
+            this.btnSevkiyat.Click += new System.EventHandler(this.btnSevkiyat_Click);
             // 
             // btnOdemeSarlariListe
             // 
@@ -926,16 +939,16 @@
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
             // 
-            // btnSevkiyat
+            // btnTakipTakvimi
             // 
-            this.btnSevkiyat.Location = new System.Drawing.Point(15, 856);
-            this.btnSevkiyat.Margin = new System.Windows.Forms.Padding(2);
-            this.btnSevkiyat.Name = "btnSevkiyat";
-            this.btnSevkiyat.Size = new System.Drawing.Size(160, 30);
-            this.btnSevkiyat.TabIndex = 132;
-            this.btnSevkiyat.Text = "Sevkiyat";
-            this.btnSevkiyat.UseVisualStyleBackColor = true;
-            this.btnSevkiyat.Click += new System.EventHandler(this.btnSevkiyat_Click);
+            this.btnTakipTakvimi.Location = new System.Drawing.Point(15, 907);
+            this.btnTakipTakvimi.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTakipTakvimi.Name = "btnTakipTakvimi";
+            this.btnTakipTakvimi.Size = new System.Drawing.Size(160, 30);
+            this.btnTakipTakvimi.TabIndex = 133;
+            this.btnTakipTakvimi.Text = "Takip Takvimi";
+            this.btnTakipTakvimi.UseVisualStyleBackColor = true;
+            this.btnTakipTakvimi.Click += new System.EventHandler(this.btnTakipTakvimi_Click);
             // 
             // frmAnaSayfa
             // 
@@ -1061,5 +1074,6 @@
         private System.Windows.Forms.Button btnMusteriler;
         private System.Windows.Forms.Button btnOdemeSarlariListe;
         private System.Windows.Forms.Button btnSevkiyat;
+        private System.Windows.Forms.Button btnTakipTakvimi;
     }
 }
