@@ -86,7 +86,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             ConfigureDataGridColumns();
 
             dataGridOdemeSartlari.ScrollBars = ScrollBars.Both;
-            dataGridOdemeSartlari.Refresh(); // CellFormatting olayını tetiklemek için
+            dataGridOdemeSartlari.Refresh(); 
 
             if (sonucTablo.Rows.Count == 0)
             {
@@ -96,16 +96,13 @@ namespace CEKA_APP.UsrControl.ProjeFinans
 
         private void ConfigureDataGridColumns()
         {
-            // Sütunlar oluşturulmadan önce metottan çıkın.
             if (dataGridOdemeSartlari.Columns.Count == 0)
             {
                 return;
             }
 
-            // Otomatik boyutlandırmayı devre dışı bırakıyoruz.
             dataGridOdemeSartlari.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
 
-            // Sütunların istenen sırasını tanımlayan bir liste oluşturuyoruz.
             var columnOrder = new List<string>
     {
         "projeNo",
@@ -124,11 +121,10 @@ namespace CEKA_APP.UsrControl.ProjeFinans
         "durum",
         "kalanTutar",
         "odemeTarihi",
-        "faturaNo",      // Fatura No'yu 15. sıraya yerleştiriyoruz
-        "odemeSapmasi"   // Ödeme Sapması'nı Fatura No'dan sonra, 16. sıraya yerleştiriyoruz
+        "faturaNo",      
+        "odemeSapmasi"  
     };
 
-            // Her sütun için döngü yaparak DisplayIndex ve diğer ayarları yapıyoruz.
             for (int i = 0; i < columnOrder.Count; i++)
             {
                 string columnName = columnOrder[i];
@@ -136,7 +132,6 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 {
                     dataGridOdemeSartlari.Columns[columnName].DisplayIndex = i;
 
-                    // Sütun adına göre başlık ve genişlik gibi diğer ayarları yapın.
                     switch (columnName)
                     {
                         case "projeNo":
@@ -168,7 +163,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                             dataGridOdemeSartlari.Columns[columnName].Width = 120;
                             break;
                         case "paraBirimi":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "paraBirimi";
+                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Para Birimi";
                             dataGridOdemeSartlari.Columns[columnName].Width = 120;
                             break;
                         case "tahminiTarih":
@@ -218,7 +213,6 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 }
             }
 
-            // Gizli sütunları belirleyin
             if (dataGridOdemeSartlari.Columns.Contains("odemeId"))
                 dataGridOdemeSartlari.Columns["odemeId"].Visible = false;
             if (dataGridOdemeSartlari.Columns.Contains("kilometreTasiId"))

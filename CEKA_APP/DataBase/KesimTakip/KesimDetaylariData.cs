@@ -89,77 +89,6 @@ namespace CEKA_APP.DataBase
             }
         }
 
-        //public static void SaveKesimDetaylariData(string kalite, string malzeme, string malzemeKod, string proje, int kesilecekAdet, int toplamAdet)
-        //{
-        //    try
-        //    {
-        //        using (var conn = DataBaseHelper.GetConnection())
-        //        {
-        //            conn.Open();
-
-        //            string checkQuery = @"SELECT COUNT(*) FROM KesimDetaylari 
-        //                         WHERE kalite = @kalite AND malzeme = @malzeme 
-        //                         AND malzemeKod = @malzemeKod AND proje = @proje";
-
-        //            using (var checkCmd = new SqlCommand(checkQuery, conn))
-        //            {
-        //                checkCmd.Parameters.AddWithValue("@kalite", kalite);
-        //                checkCmd.Parameters.AddWithValue("@malzeme", malzeme);
-        //                checkCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
-        //                checkCmd.Parameters.AddWithValue("@proje", proje);
-
-        //                int count = (int)checkCmd.ExecuteScalar();
-
-        //                if (count == 0)
-        //                {
-        //                    string insertQuery = @"INSERT INTO KesimDetaylari 
-        //                                  (kalite, malzeme, malzemeKod, proje, kesilecekAdet, toplamAdet) 
-        //                                  VALUES 
-        //                                  (@kalite, @malzeme, @malzemeKod, @proje, @kesilecekAdet, @toplamAdet)";
-
-        //                    using (var insertCmd = new SqlCommand(insertQuery, conn))
-        //                    {
-        //                        insertCmd.Parameters.AddWithValue("@kalite", kalite);
-        //                        insertCmd.Parameters.AddWithValue("@malzeme", malzeme);
-        //                        insertCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
-        //                        insertCmd.Parameters.AddWithValue("@proje", proje);
-        //                        insertCmd.Parameters.AddWithValue("@kesilecekAdet", kesilecekAdet);
-        //                        insertCmd.Parameters.AddWithValue("@toplamAdet", toplamAdet);
-
-        //                        insertCmd.ExecuteNonQuery();
-        //                        Console.WriteLine($"Yeni kayıt eklendi: kalite={kalite}, malzeme={malzeme}, malzemeKod={malzemeKod}, proje={proje}, kesilecekAdet={kesilecekAdet}, toplamAdet={toplamAdet}");
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    string updateQuery = @"UPDATE KesimDetaylari 
-        //                                  SET kesilecekAdet = kesilecekAdet + @kesilecekAdet, 
-        //                                      toplamAdet = toplamAdet + @toplamAdet
-        //                                  WHERE kalite = @kalite AND malzeme = @malzeme 
-        //                                  AND malzemeKod = @malzemeKod AND proje = @proje";
-
-        //                    using (var updateCmd = new SqlCommand(updateQuery, conn))
-        //                    {
-        //                        updateCmd.Parameters.AddWithValue("@kalite", kalite);
-        //                        updateCmd.Parameters.AddWithValue("@malzeme", malzeme);
-        //                        updateCmd.Parameters.AddWithValue("@malzemeKod", malzemeKod);
-        //                        updateCmd.Parameters.AddWithValue("@proje", proje);
-        //                        updateCmd.Parameters.AddWithValue("@kesilecekAdet", kesilecekAdet);
-        //                        updateCmd.Parameters.AddWithValue("@toplamAdet", toplamAdet);
-
-        //                        int rowsAffected = updateCmd.ExecuteNonQuery();
-        //                        Console.WriteLine($"Kayıt güncellendi: kalite={kalite}, malzeme={malzeme}, malzemeKod={malzemeKod}, proje={proje}, kesilecekAdet+={kesilecekAdet}, toplamAdet+={toplamAdet}, etkilenen satır={rowsAffected}");
-        //                    }
-        //                }
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        MessageBox.Show("Hata: " + ex.Message);
-        //        Console.WriteLine($"Hata oluştu: {ex.Message}");
-        //    }
-        //}
         public static DataRow GetKesimDetaylariData(string kalite, string malzeme, string malzemeKod, string proje)
         {
             DataTable dt = GetKesimDetaylari();
@@ -292,30 +221,40 @@ namespace CEKA_APP.DataBase
                 }
             }
         }
-
         public static List<KesimDetaylari> GetKesimDetaylariBilgileri()
         {
             List<KesimDetaylari> detaylar = new List<KesimDetaylari>();
 
             string query = @"
-            SELECT
-                kd.kalite,
-                kd.malzeme,
-                kd.malzemeKod,
-                kd.proje AS projeAdi,
-                kd.kesilmisAdet,
-                ISNULL(SUM(m.adet), 0) AS toplamAdet,
-                CAST(kd.ekBilgi AS BIT) AS ekBilgi -- ekBilgi'yi BIT olarak alıyoruz
-            FROM KesimDetaylari kd
-            LEFT JOIN Malzemeler m ON LTRIM(RTRIM(kd.malzemeKod)) = LTRIM(RTRIM(m.malzemeKod))
-            GROUP BY
-                kd.kalite,
-                kd.malzeme,
-                kd.malzemeKod,
-                kd.proje,
-                kd.kesilmisAdet,
-                kd.ekBilgi
-        ";
+    SELECT
+        kd.kalite,
+        kd.malzeme,
+        kd.malzemeKod,
+        kd.proje AS projeAdi,
+        SUM(kd.kesilmisAdet) AS toplamKesilmisAdet,
+        ISNULL(SUM(kd.toplamAdet), 0) AS toplamAdet,
+        CAST(kd.ekBilgi AS BIT) AS ekBilgi,
+        donusturulmusMalzemeler.grupAdi
+    FROM
+        KesimDetaylari AS kd
+    INNER JOIN
+        (
+            SELECT DISTINCT
+                REPLACE(m.malzemeKod, SUBSTRING(m.malzemeKod, 1, 6), g.grupAdi) AS yeniMalzemeKod,
+                g.grupAdi
+            FROM
+                Malzemeler AS m
+            INNER JOIN
+                Gruplar AS g ON m.grupId = g.grupId
+        ) AS donusturulmusMalzemeler ON kd.malzemeKod = donusturulmusMalzemeler.yeniMalzemeKod
+    GROUP BY
+        kd.kalite,
+        kd.malzeme,
+        kd.malzemeKod,
+        kd.proje,
+        kd.ekBilgi,
+        donusturulmusMalzemeler.grupAdi;
+    ";
 
             using (SqlConnection conn = DataBaseHelper.GetConnection())
             {
@@ -329,12 +268,13 @@ namespace CEKA_APP.DataBase
                         {
                             string kalite = reader["kalite"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
                             string malzeme = reader["malzeme"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
-                            string malzemeKod = reader["malzemeKod"]?.ToString()?.Trim() ?? "";
+                            string malzemeKod = reader["malzemeKod"]?.ToString()?.Trim().ToLowerInvariant() ?? "";
                             string projeAdi = reader["projeAdi"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
-                            int kesilmisAdet = reader["kesilmisAdet"] != DBNull.Value ? Convert.ToInt32(reader["kesilmisAdet"]) : 0;
+                            int toplamKesilmisAdet = reader["toplamKesilmisAdet"] != DBNull.Value ? Convert.ToInt32(reader["toplamKesilmisAdet"]) : 0;
                             int toplamAdet = reader["toplamAdet"] != DBNull.Value ? Convert.ToInt32(reader["toplamAdet"]) : 0;
-                            // ekBilgi'yi bool olarak okuyoruz
                             bool ekBilgi = reader["ekBilgi"] != DBNull.Value && Convert.ToBoolean(reader["ekBilgi"]);
+                            string grupAdi = reader["grupAdi"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmeyen_grup";
+
 
                             string[] parts = malzemeKod.Split('-');
                             if (parts.Length >= 3)
@@ -348,14 +288,14 @@ namespace CEKA_APP.DataBase
                             }
                             malzemeKod = malzemeKod.ToLowerInvariant();
 
-                            string key = $"{kalite}_{malzeme}_{malzemeKod}_{projeAdi}";
+                            string key = $"{kalite}_{malzeme}_{malzemeKod}_{projeAdi}_{grupAdi}";
 
                             detaylar.Add(new KesimDetaylari
                             {
                                 Key = key,
-                                kesilmisAdet = kesilmisAdet,
+                                kesilmisAdet = toplamKesilmisAdet,
                                 toplamAdet = toplamAdet,
-                                ekBilgi = ekBilgi // ekBilgi artık bool
+                                ekBilgi = ekBilgi
                             });
                         }
                     }
@@ -368,78 +308,99 @@ namespace CEKA_APP.DataBase
 
             return detaylar;
         }
+        //    public static List<KesimDetaylari> GetKesimDetaylariBilgileri()
+        //    {
+        //        List<KesimDetaylari> detaylar = new List<KesimDetaylari>();
 
-        //        public static List<KesimDetaylari> GetKesimDetaylariBilgileri()
-        //        {
-        //            List<KesimDetaylari> detaylar = new List<KesimDetaylari>();
-
-        //            string query = @"
-        //    SELECT 
+        //        string query = @"
+        //    SELECT
         //        kd.kalite,
         //        kd.malzeme,
         //        kd.malzemeKod,
         //        kd.proje AS projeAdi,
         //        kd.kesilmisAdet,
-        //        ISNULL(SUM(m.adet), 0) AS toplamAdet
-        //    FROM KesimDetaylari kd
-        //    LEFT JOIN Malzemeler m ON LTRIM(RTRIM(kd.malzemeKod)) = LTRIM(RTRIM(m.malzemeKod))
-        //    GROUP BY 
+        //        ISNULL(SUM(kd.toplamAdet), 0) AS toplamAdet,
+        //        CAST(kd.ekBilgi AS BIT) AS ekBilgi,
+        //        donusturulmusMalzemeler.grupAdi
+        //    FROM
+        //        KesimDetaylari AS kd
+        //    INNER JOIN
+        //        (
+        //            SELECT
+        //                m.malzemeId,
+        //                REPLACE(m.malzemeKod, SUBSTRING(m.malzemeKod, 1, 6), g.grupAdi) AS yeniMalzemeKod,
+        //                m.grupId,
+        //                g.grupAdi
+        //            FROM
+        //                Malzemeler AS m
+        //            INNER JOIN
+        //                Gruplar AS g ON m.grupId = g.grupId
+        //        ) AS donusturulmusMalzemeler ON kd.malzemeKod = donusturulmusMalzemeler.yeniMalzemeKod
+        //    GROUP BY
         //        kd.kalite,
         //        kd.malzeme,
         //        kd.malzemeKod,
         //        kd.proje,
-        //        kd.kesilmisAdet
+        //        kd.kesilmisAdet,
+        //        kd.ekBilgi,
+        //        donusturulmusMalzemeler.grupAdi
         //";
 
-
-        //            using (SqlConnection conn = DataBaseHelper.GetConnection())
+        //        using (SqlConnection conn = DataBaseHelper.GetConnection())
+        //        {
+        //            SqlCommand cmd = new SqlCommand(query, conn);
+        //            try
         //            {
-        //                SqlCommand cmd = new SqlCommand(query, conn);
-        //                try
+        //                conn.Open();
+        //                using (SqlDataReader reader = cmd.ExecuteReader())
         //                {
-        //                    conn.Open();
-        //                    using (SqlDataReader reader = cmd.ExecuteReader())
+        //                    while (reader.Read())
         //                    {
-        //                        while (reader.Read())
+        //                        string kalite = reader["kalite"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
+        //                        string malzeme = reader["malzeme"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
+        //                        string malzemeKod = reader["malzemeKod"]?.ToString()?.Trim().ToLowerInvariant() ?? "";
+        //                        string projeAdi = reader["projeAdi"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
+        //                        int kesilmisAdet = reader["kesilmisAdet"] != DBNull.Value ? Convert.ToInt32(reader["kesilmisAdet"]) : 0;
+        //                        int toplamAdet = reader["toplamAdet"] != DBNull.Value ? Convert.ToInt32(reader["toplamAdet"]) : 0;
+        //                        bool ekBilgi = reader["ekBilgi"] != DBNull.Value && Convert.ToBoolean(reader["ekBilgi"]);
+        //                        string grupAdi = reader["grupAdi"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmeyen_grup";
+
+        //                        // Hata ayıklama için log
+        //                        Console.WriteLine($"Satır: MalzemeKod={malzemeKod}, ProjeAdi={projeAdi}, GrupAdi={grupAdi}, ToplamAdet={toplamAdet}, KesilmisAdet={kesilmisAdet}, EkBilgi={ekBilgi}");
+
+        //                        string[] parts = malzemeKod.Split('-');
+        //                        if (parts.Length >= 3)
         //                        {
-        //                            string kalite = reader["kalite"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
-        //                            string malzeme = reader["malzeme"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
-        //                            string malzemeKod = reader["malzemeKod"]?.ToString()?.Trim() ?? "";
-        //                            string projeAdi = reader["projeAdi"]?.ToString()?.Trim().ToLowerInvariant() ?? "bilinmiyor";
-        //                            int kesilmisAdet = reader["kesilmisAdet"] != DBNull.Value ? Convert.ToInt32(reader["kesilmisAdet"]) : 0;
-        //                            int toplamAdet = reader["toplamAdet"] != DBNull.Value ? Convert.ToInt32(reader["toplamAdet"]) : 0;
-
-        //                            string[] parts = malzemeKod.Split('-');
-        //                            if (parts.Length >= 3)
+        //                            string kalipKodu = $"{parts[0]}-{parts[1]}";
+        //                            if (!AutoCadAktarimData.GetirStandartGruplar(kalipKodu))
         //                            {
-        //                                string kalipKodu = $"{parts[0]}-{parts[1]}";
-        //                                if (!AutoCadAktarimData.GetirStandartGruplar(kalipKodu))
-        //                                {
-        //                                    parts[1] = "00";
-        //                                    malzemeKod = string.Join("-", parts);
-        //                                }
+        //                                parts[1] = "00";
+        //                                malzemeKod = string.Join("-", parts);
         //                            }
-        //                            malzemeKod = malzemeKod.ToLowerInvariant();
-
-        //                            string key = $"{kalite}_{malzeme}_{malzemeKod}_{projeAdi}";
-
-        //                            detaylar.Add(new KesimDetaylari
-        //                            {
-        //                                Key = key,
-        //                                kesilmisAdet = kesilmisAdet,
-        //                                toplamAdet = toplamAdet
-        //                            });
         //                        }
+        //                        malzemeKod = malzemeKod.ToLowerInvariant();
+
+        //                        string key = $"{kalite}_{malzeme}_{malzemeKod}_{projeAdi}_{grupAdi}";
+
+        //                        detaylar.Add(new KesimDetaylari
+        //                        {
+        //                            Key = key,
+        //                            kesilmisAdet = kesilmisAdet,
+        //                            toplamAdet = toplamAdet,
+        //                            ekBilgi = ekBilgi
+        //                        });
         //                    }
         //                }
-        //                catch (Exception ex)
-        //                {
-        //                    MessageBox.Show($"Hata: {ex.Message}", "Veri Hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //                }
         //            }
-
-        //            return detaylar;
+        //            catch (Exception ex)
+        //            {
+        //                MessageBox.Show($"Hata: {ex.Message}", "Veri Hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //                Console.WriteLine($"SQL Hatası: {ex.Message}");
+        //            }
         //        }
+
+        //        return detaylar;
+        //    }
 
 
         public static bool SilKesimDetaylari(string kalite, string malzeme, string malzemeKod, string proje, int silinecekAdet = 0, bool tamSilme = false)
@@ -619,7 +580,6 @@ namespace CEKA_APP.DataBase
                             else
                             {
                                 reader.Close();
-                                // Kayıt bulunamadıysa ve tam silme isteniyorsa, silme yapmadan false döndür
                                 if (tamSilme)
                                 {
                                     MessageBox.Show($"Belirtilen kritere göre kayıt bulunamadı: kalite={kalite}, malzeme={malzeme}, malzemeKod={malzemeKod}, proje={proje}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -637,5 +597,59 @@ namespace CEKA_APP.DataBase
                 return false;
             }
         }
+        public static (int toplamAdet, int kesilmisAdet, int kesilecekAdet, List<string> eslesenPozlar) GetAdetlerVeEslesenPozlar(
+               string kalite, string malzeme, string proje, string malzemeKodIlkKisim, string malzemeKodUcuncuKisim)
+        {
+            try
+            {
+                using (var conn = DataBaseHelper.GetConnection())
+                {
+                    conn.Open();
+                    string query = @"
+                        SELECT malzemeKod, toplamAdet, kesilmisAdet, kesilecekAdet
+                        FROM KesimDetaylari
+                        WHERE kalite = @kalite
+                        AND malzeme = @malzeme
+                        AND proje = @proje
+                        AND malzemeKod LIKE @malzemeKodIlkKisim + '-[0-9][0-9]-' + @malzemeKodUcuncuKisim
+                        AND ekBilgi = 1"; 
+
+                    using (var cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@kalite", kalite);
+                        cmd.Parameters.AddWithValue("@malzeme", malzeme);
+                        cmd.Parameters.AddWithValue("@proje", proje);
+                        cmd.Parameters.AddWithValue("@malzemeKodIlkKisim", malzemeKodIlkKisim);
+                        cmd.Parameters.AddWithValue("@malzemeKodUcuncuKisim", malzemeKodUcuncuKisim);
+
+                        int toplamAdet = 0;
+                        int kesilmisAdet = 0;
+                        int kesilecekAdetSum = 0;
+                        List<string> eslesenPozlar = new List<string>();
+
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                toplamAdet += reader["toplamAdet"] != DBNull.Value ? Convert.ToInt32(reader["toplamAdet"]) : 0;
+                                kesilmisAdet += reader["kesilmisAdet"] != DBNull.Value ? Convert.ToInt32(reader["kesilmisAdet"]) : 0;
+                                kesilecekAdetSum += reader["kesilecekAdet"] != DBNull.Value ? Convert.ToInt32(reader["kesilecekAdet"]) : 0;
+                                string malzemeKod = reader["malzemeKod"]?.ToString() ?? "";
+                                eslesenPozlar.Add($"{kalite}-{malzeme}-{malzemeKod}-{proje}");
+                            }
+                        }
+
+                        return (toplamAdet, kesilmisAdet, kesilecekAdetSum, eslesenPozlar);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Hata: {ex.Message}", "Veri Sorgulama Hatası", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine($"GetAdetlerVeEslesenPozlar Hata: {ex.Message}");
+                return (0, 0, 0, new List<string>());
+            }
+        }
+
     }
 }

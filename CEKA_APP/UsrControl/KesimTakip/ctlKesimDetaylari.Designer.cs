@@ -58,6 +58,7 @@
             this.panelKart1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.lblKesilecekPoz = new System.Windows.Forms.Label();
+            this.lblBilgi = new System.Windows.Forms.Label();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.tableLayoutPanel1.SuspendLayout();
             this.panelDisContainer.SuspendLayout();
@@ -86,7 +87,7 @@
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 942F));
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1677, 942);
             this.tableLayoutPanel1.TabIndex = 139;
             // 
@@ -241,6 +242,7 @@
             // 
             // panelKartContainer
             // 
+            this.panelKartContainer.Controls.Add(this.lblBilgi);
             this.panelKartContainer.Controls.Add(this.panelKart4);
             this.panelKartContainer.Controls.Add(this.panelKart3);
             this.panelKartContainer.Controls.Add(this.panelKart2);
@@ -380,6 +382,15 @@
             this.lblKesilecekPoz.TabIndex = 0;
             this.lblKesilecekPoz.Text = "....";
             // 
+            // lblBilgi
+            // 
+            this.lblBilgi.AutoSize = true;
+            this.lblBilgi.ForeColor = System.Drawing.SystemColors.Control;
+            this.lblBilgi.Location = new System.Drawing.Point(15, 172);
+            this.lblBilgi.Name = "lblBilgi";
+            this.lblBilgi.Size = new System.Drawing.Size(0, 16);
+            this.lblBilgi.TabIndex = 5;
+            // 
             // ctlBaslik1
             // 
             this.ctlBaslik1.Baslik = "Başlık";
@@ -410,6 +421,7 @@
             this.panelChart.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.chartKesim)).EndInit();
             this.panelKartContainer.ResumeLayout(false);
+            this.panelKartContainer.PerformLayout();
             this.panelKart4.ResumeLayout(false);
             this.panelKart4.PerformLayout();
             this.panelKart3.ResumeLayout(false);
@@ -452,5 +464,6 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Label lblKesilecekPoz;
         private ctlBaslik ctlBaslik1;
+        private System.Windows.Forms.Label lblBilgi;
     }
 }

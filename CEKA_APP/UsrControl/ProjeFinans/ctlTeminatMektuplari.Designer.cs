@@ -53,7 +53,6 @@
             this.dataGridTeminatMektuplari.Size = new System.Drawing.Size(1665, 962);
             this.dataGridTeminatMektuplari.TabIndex = 6;
             this.dataGridTeminatMektuplari.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.dataGridTeminatMektuplari_CellMouseDown);
-            this.dataGridTeminatMektuplari.DataBindingComplete += new System.Windows.Forms.DataGridViewBindingCompleteEventHandler(this.dataGridTeminatMektuplari_DataBindingComplete);
             // 
             // cmsTeminatMektubuIslemleri
             // 

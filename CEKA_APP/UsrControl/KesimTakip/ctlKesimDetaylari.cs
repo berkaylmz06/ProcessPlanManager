@@ -178,53 +178,100 @@ namespace CEKA_APP.UsrControl
 
                 var seri = new Series(secilen.poz);
 
-                int index1 = seri.Points.AddXY("Kesilecek Adet", secilen.kesilecekAdet);
-                seri.Points[index1].Color = Color.FromArgb(0, 95, 107);
-
-                int index2 = seri.Points.AddXY("Kesilmiş Adet", secilen.kesilmisAdet);
-                seri.Points[index2].Color = Color.FromArgb(191, 128, 255);
-
-                int index3 = seri.Points.AddXY("Toplam Adet", secilen.toplamAdet);
-                seri.Points[index3].Color = Color.FromArgb(255, 83, 97);
-
-                chartKesim.Series.Add(seri);
-
-                lblKesilecekPoz.Text = secilen.kesilecekAdet.ToString();
-                panelKart1.BackColor = Color.FromArgb(0, 95, 107);
-                lblKesilmisPoz.Text = secilen.kesilmisAdet.ToString();
-                panelKart2.BackColor = Color.FromArgb(191, 128, 255);
-                lblToplamPoz.Text = secilen.toplamAdet.ToString();
-                panelKart3.BackColor = Color.FromArgb(255, 83, 97);
-
                 string[] pozParcalari = secilen.poz.Split('-');
                 if (pozParcalari.Length == 6)
                 {
-                    string kalite = pozParcalari[0];
+                    string kalite = pozParcalari[0]; 
                     string malzeme = pozParcalari[1];
+                    string malzemeKodIlkKisim = pozParcalari[2]; 
+                    string malzemeKodIkinciKisim = pozParcalari[3]; 
+                    string malzemeKodUcuncuKisim = pozParcalari[4]; 
+                    string proje = pozParcalari[5]; 
+
+                    int toplamAdet, kesilmisAdet, kesilecekAdet;
+                    List<string> eslesenPozlar = new List<string>();
+
+                    if (secilen.ekBilgi)
+                    {
+                        var (toplam, kesilmis, kesilecek, pozlar) = KesimDetaylariData.GetAdetlerVeEslesenPozlar(
+                            kalite,
+                            malzeme,
+                            proje,
+                            malzemeKodIlkKisim,
+                            malzemeKodUcuncuKisim
+                        );
+                        toplamAdet = toplam;
+                        kesilmisAdet = kesilmis;
+                        kesilecekAdet = kesilecek;
+                        eslesenPozlar = pozlar;
+
+                        if (eslesenPozlar.Count > 1)
+                        {
+                            eslesenPozlar.Remove(secilen.poz); 
+                            if (eslesenPozlar.Any())
+                            {
+                                lblBilgi.Text = $"Bu poz, {string.Join(", ", eslesenPozlar)} pozlarıyla örtüştüğünden, kesilecek poz, kesilen poz ve toplam poz bilgileri ortak değerlendirilmektedir.";
+                            }
+                            else
+                            {
+                                lblBilgi.Text = " ";
+                            }
+                        }
+                        else
+                        {
+                            lblBilgi.Text = " ";
+                        }
+                    }
+                    else
+                    {
+                        toplamAdet = secilen.toplamAdet;
+                        kesilmisAdet = secilen.kesilmisAdet;
+                        kesilecekAdet = secilen.kesilecekAdet;
+                        lblBilgi.Text = " ";
+                    }
+
+                    lblToplamPoz.Text = toplamAdet.ToString();
+                    lblKesilmisPoz.Text = kesilmisAdet.ToString();
+                    lblKesilecekPoz.Text = kesilecekAdet.ToString();
+
+                    int index1 = seri.Points.AddXY("Kesilecek Adet", kesilecekAdet);
+                    seri.Points[index1].Color = Color.FromArgb(0, 95, 107);
+                    int index2 = seri.Points.AddXY("Kesilmiş Adet", kesilmisAdet);
+                    seri.Points[index2].Color = Color.FromArgb(191, 128, 255);
+                    int index3 = seri.Points.AddXY("Toplam Adet", toplamAdet);
+                    seri.Points[index3].Color = Color.FromArgb(255, 83, 97);
+
+                    chartKesim.Series.Add(seri);
+
                     string orijinalMalzemeKod = $"{pozParcalari[2]}-{pozParcalari[3]}-{pozParcalari[4]}";
                     string malzemeKod = NormalizeMalzemeKod(orijinalMalzemeKod);
-                    string proje = pozParcalari[5];
-
-                    var (uygunMu, toplamAdet) = AutoCadAktarimData.KontrolAdet(
+                    var (uygunMu, toplamAdetIFS) = AutoCadAktarimData.KontrolAdet(
                         kalite,
                         malzeme,
                         malzemeKod,
                         proje,
-                        secilen.kesilmisAdet
+                        kesilmisAdet
                     );
-                    lblToplamPozIfsKarsiligi.Text = toplamAdet.ToString();
-                    int index4 = seri.Points.AddXY("IFS Toplam Poz", toplamAdet);
+                    lblToplamPozIfsKarsiligi.Text = toplamAdetIFS.ToString();
+                    int index4 = seri.Points.AddXY("IFS Toplam Poz", toplamAdetIFS);
                     seri.Points[index4].Color = Color.FromArgb(15, 48, 56);
                     panelKart4.BackColor = uygunMu ? Color.FromArgb(15, 48, 56) : Color.Red;
                 }
                 else
                 {
+                    lblToplamPoz.Text = "Hatalı poz";
+                    lblKesilmisPoz.Text = "Hatalı poz";
+                    lblKesilecekPoz.Text = "Hatalı poz";
                     lblToplamPozIfsKarsiligi.Text = "Hatalı poz";
+                    lblBilgi.Text = "Hatalı poz formatı.";
                     panelKart4.BackColor = Color.Red;
                 }
+
+                panelKart1.BackColor = Color.FromArgb(0, 95, 107);
+                panelKart2.BackColor = Color.FromArgb(191, 128, 255);
+                panelKart3.BackColor = Color.FromArgb(255, 83, 97);
             }
         }
-
         private string NormalizeMalzemeKod(string malzemeKod)
         {
             if (string.IsNullOrWhiteSpace(malzemeKod)) return malzemeKod;

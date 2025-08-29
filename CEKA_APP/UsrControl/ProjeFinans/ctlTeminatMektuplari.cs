@@ -26,7 +26,7 @@ namespace CEKA_APP.UsrControl
 
             if (this.dataGridTeminatMektuplari.ContextMenuStrip != null)
             {
-                this.cmsTeminatMektubuIslemleri = (System.Windows.Forms.ContextMenuStrip)this.dataGridTeminatMektuplari.ContextMenuStrip;
+                this.cmsTeminatMektubuIslemleri = dataGridTeminatMektuplari.ContextMenuStrip;
 
                 foreach (ToolStripItem item in cmsTeminatMektubuIslemleri.Items)
                 {
@@ -69,13 +69,15 @@ namespace CEKA_APP.UsrControl
         {
             dataGridTeminatMektuplari.Columns.Clear();
 
+            dataGridTeminatMektuplari.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
             {
                 DataPropertyName = "mektupNo",
                 Name = "mektupNo",
                 HeaderText = "Mektup No",
                 DisplayIndex = 0,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
@@ -84,7 +86,7 @@ namespace CEKA_APP.UsrControl
                 Name = "musteriNo",
                 HeaderText = "Müşteri No",
                 DisplayIndex = 1,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
@@ -93,7 +95,7 @@ namespace CEKA_APP.UsrControl
                 Name = "musteriAdi",
                 HeaderText = "Müşteri Adı",
                 DisplayIndex = 2,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
@@ -102,7 +104,7 @@ namespace CEKA_APP.UsrControl
                 Name = "kilometreTasiAdi",
                 HeaderText = "Kilometre Taşı Adı",
                 DisplayIndex = 3,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
@@ -111,7 +113,7 @@ namespace CEKA_APP.UsrControl
                 Name = "paraBirimi",
                 HeaderText = "Para Birimi",
                 DisplayIndex = 4,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
@@ -120,7 +122,7 @@ namespace CEKA_APP.UsrControl
                 Name = "banka",
                 HeaderText = "Banka",
                 DisplayIndex = 5,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
@@ -129,7 +131,7 @@ namespace CEKA_APP.UsrControl
                 Name = "mektupTuru",
                 HeaderText = "Mektup Türü",
                 DisplayIndex = 6,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
@@ -138,7 +140,7 @@ namespace CEKA_APP.UsrControl
                 Name = "tutar",
                 HeaderText = "Tutar",
                 DisplayIndex = 7,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
@@ -147,7 +149,7 @@ namespace CEKA_APP.UsrControl
                 Name = "vadeTarihi",
                 HeaderText = "Vade Tarihi",
                 DisplayIndex = 8,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
                 DefaultCellStyle = new DataGridViewCellStyle { Format = "dd.MM.yyyy HH:mm" }
             });
 
@@ -157,7 +159,7 @@ namespace CEKA_APP.UsrControl
                 Name = "iadeTarihi",
                 HeaderText = "İade Tarihi",
                 DisplayIndex = 9,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells,
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells,
                 DefaultCellStyle = new DataGridViewCellStyle { Format = "dd.MM.yyyy HH:mm" }
             });
 
@@ -167,7 +169,7 @@ namespace CEKA_APP.UsrControl
                 Name = "komisyonTutari",
                 HeaderText = "Komisyon Tutarı",
                 DisplayIndex = 10,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
@@ -176,7 +178,7 @@ namespace CEKA_APP.UsrControl
                 Name = "komisyonOrani",
                 HeaderText = "Komisyon Oranı",
                 DisplayIndex = 11,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
@@ -185,7 +187,7 @@ namespace CEKA_APP.UsrControl
                 Name = "komisyonVadesi",
                 HeaderText = "Komisyon Vadesi",
                 DisplayIndex = 12,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
@@ -194,7 +196,7 @@ namespace CEKA_APP.UsrControl
                 Name = "projeNo",
                 HeaderText = "Proje No",
                 DisplayIndex = 13,
-                AutoSizeMode = DataGridViewAutoSizeColumnMode.DisplayedCells
+                AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells
             });
 
             dataGridTeminatMektuplari.Columns.Add(new DataGridViewTextBoxColumn
@@ -354,15 +356,6 @@ namespace CEKA_APP.UsrControl
             catch (Exception ex)
             {
                 MessageBox.Show($"Arama sonuçları yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void dataGridTeminatMektuplari_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
-        {
-            if (dataGridTeminatMektuplari.Rows.Count > 0)
-            {
-                dataGridTeminatMektuplari.ClearSelection();
-                dataGridTeminatMektuplari.CurrentCell = null;
             }
         }
     }

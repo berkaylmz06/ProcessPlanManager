@@ -40,6 +40,7 @@
             this.btnKaydet = new System.Windows.Forms.Button();
             this.panelLeft = new System.Windows.Forms.Panel();
             this.groupBoxOdemeTutari = new System.Windows.Forms.GroupBox();
+            this.dtOdemeTarihi = new System.Windows.Forms.DateTimePicker();
             this.lblOdemeTarihi = new System.Windows.Forms.Label();
             this.lblOdemeTutari = new System.Windows.Forms.Label();
             this.lblÖdemeAciklama = new System.Windows.Forms.Label();
@@ -53,8 +54,8 @@
             this.lblToplamBedelBilgi = new System.Windows.Forms.Label();
             this.panelFill = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.dtOdemeTarihi = new System.Windows.Forms.DateTimePicker();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
+            this.btnKopyala = new System.Windows.Forms.Button();
             this.panelAlt.SuspendLayout();
             this.panelRight.SuspendLayout();
             this.panelLeft.SuspendLayout();
@@ -216,6 +217,15 @@
             this.groupBoxOdemeTutari.TabStop = false;
             this.groupBoxOdemeTutari.Text = "Ödeme Tutarı";
             // 
+            // dtOdemeTarihi
+            // 
+            this.dtOdemeTarihi.Checked = false;
+            this.dtOdemeTarihi.Location = new System.Drawing.Point(123, 94);
+            this.dtOdemeTarihi.Name = "dtOdemeTarihi";
+            this.dtOdemeTarihi.ShowCheckBox = true;
+            this.dtOdemeTarihi.Size = new System.Drawing.Size(258, 27);
+            this.dtOdemeTarihi.TabIndex = 11;
+            // 
             // lblOdemeTarihi
             // 
             this.lblOdemeTarihi.AutoSize = true;
@@ -311,6 +321,7 @@
             // panelUst
             // 
             this.panelUst.BackColor = System.Drawing.Color.White;
+            this.panelUst.Controls.Add(this.btnKopyala);
             this.panelUst.Controls.Add(this.btnSil);
             this.panelUst.Controls.Add(this.lblToplamBedelBilgi);
             this.panelUst.Controls.Add(this.txtToplamBedel);
@@ -379,15 +390,6 @@
             this.tableLayoutPanel1.Size = new System.Drawing.Size(1674, 551);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
-            // dtOdemeTarihi
-            // 
-            this.dtOdemeTarihi.Checked = false;
-            this.dtOdemeTarihi.Location = new System.Drawing.Point(123, 94);
-            this.dtOdemeTarihi.Name = "dtOdemeTarihi";
-            this.dtOdemeTarihi.ShowCheckBox = true;
-            this.dtOdemeTarihi.Size = new System.Drawing.Size(258, 27);
-            this.dtOdemeTarihi.TabIndex = 11;
-            // 
             // ctlBaslik1
             // 
             this.ctlBaslik1.Baslik = "Başlık";
@@ -396,6 +398,21 @@
             this.ctlBaslik1.Name = "ctlBaslik1";
             this.ctlBaslik1.Size = new System.Drawing.Size(1674, 50);
             this.ctlBaslik1.TabIndex = 5;
+            // 
+            // btnKopyala
+            // 
+            this.btnKopyala.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnKopyala.FlatAppearance.BorderSize = 0;
+            this.btnKopyala.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnKopyala.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnKopyala.ForeColor = System.Drawing.Color.White;
+            this.btnKopyala.Location = new System.Drawing.Point(570, 27);
+            this.btnKopyala.Name = "btnKopyala";
+            this.btnKopyala.Size = new System.Drawing.Size(149, 31);
+            this.btnKopyala.TabIndex = 7;
+            this.btnKopyala.Text = "Kopyala";
+            this.btnKopyala.UseVisualStyleBackColor = false;
+            this.btnKopyala.Click += new System.EventHandler(this.btnKopyala_Click);
             // 
             // ctlOdemeSartlari
             // 
@@ -451,5 +468,6 @@
         private System.Windows.Forms.Button btnSil;
         private System.Windows.Forms.Label lblOdemeTarihi;
         private System.Windows.Forms.DateTimePicker dtOdemeTarihi;
+        private System.Windows.Forms.Button btnKopyala;
     }
 }

@@ -47,7 +47,6 @@ namespace CEKA_APP.DataBase
                 using (var conn = DataBaseHelper.GetConnection())
                 {
                     conn.Open();
-                    // Önce KesimListesi tablosundan ilgili kesimId'ye ait tüm verileri sil
                     string deleteKesimListesiQuery = "DELETE FROM KesimListesi WHERE kesimId = @kesimId";
                     using (var cmdKesimListesi = new SqlCommand(deleteKesimListesiQuery, conn))
                     {
@@ -55,7 +54,6 @@ namespace CEKA_APP.DataBase
                         cmdKesimListesi.ExecuteNonQuery();
                     }
 
-                    // Ardından KesimListesiPaket tablosundan ilgili kesimId'ye ait veriyi sil
                     string deletePaketQuery = "DELETE FROM KesimListesiPaket WHERE kesimId = @kesimId";
                     using (var cmdPaket = new SqlCommand(deletePaketQuery, conn))
                     {
@@ -199,73 +197,64 @@ namespace CEKA_APP.DataBase
                     foreach (var kutu in filtreKutulari)
                     {
                         string hamDeger = kutu.Value.Text.Trim();
-                        if (!string.IsNullOrEmpty(hamDeger))
+                        if (string.IsNullOrEmpty(hamDeger))
                         {
-                            string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
-                                .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(kutu.Key) ||
-                                                    NormalizeColumnName(c.Name) == NormalizeColumnName(kutu.Key))?.Name;
+                            continue;
+                        }
 
-                            if (string.IsNullOrEmpty(columnName))
+                        string dataGridHeader = kutu.Key.Replace("_Baslangic", "").Replace("_Bitis", "");
+                        string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
+                                .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(dataGridHeader))?.Name;
+
+                        if (string.IsNullOrEmpty(columnName))
+                        {
+                            MessageBox.Show($"Sütun bulunamadı: {kutu.Key}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            continue;
+                        }
+
+                        string sqlColumnName = (columnName.Contains(" ") || columnName.Contains(".")) ? $"[{columnName}]" : columnName;
+
+                        if (kutu.Key.EndsWith("_Baslangic"))
+                        {
+                            if (DateTime.TryParse(hamDeger, out DateTime baslangicTarihi))
                             {
-                                MessageBox.Show($"Sütun bulunamadı: {kutu.Key}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                continue;
+                                string paramName = $"@p{paramIndex++}";
+                                conditions.Add($"{sqlColumnName} >= {paramName}");
+                                parameters.Add(new SqlParameter(paramName, SqlDbType.DateTime) { Value = baslangicTarihi.Date });
                             }
-
+                        }
+                        else if (kutu.Key.EndsWith("_Bitis"))
+                        {
+                            if (DateTime.TryParse(hamDeger, out DateTime bitisTarihi))
+                            {
+                                string paramName = $"@p{paramIndex++}";
+                                conditions.Add($"{sqlColumnName} < {paramName}");
+                                parameters.Add(new SqlParameter(paramName, SqlDbType.DateTime) { Value = bitisTarihi.Date.AddDays(1) });
+                            }
+                        }
+                        else
+                        {
                             string paramName = $"@p{paramIndex++}";
                             string condition = string.Empty;
 
                             switch (columnName)
                             {
                                 case "olusturan":
-                                    condition = $"LOWER(olusturan) LIKE {paramName}";
-                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger.ToLower() });
-                                    break;
                                 case "kesimId":
-                                    condition = $"LOWER(kesimId) LIKE {paramName}";
-                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger.ToLower() });
+                                    condition = $"LOWER({sqlColumnName}) LIKE {paramName}";
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = "%" + hamDeger.ToLower() + "%" });
                                     break;
                                 case "kesilecekPlanSayisi":
-                                    if (int.TryParse(hamDeger, out int kesilecekPlanSayisi))
-                                    {
-                                        condition = $"kesilecekPlanSayisi = {paramName}";
-                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Int) { Value = kesilecekPlanSayisi });
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine($"Geçersiz kesilecek plan sayısı değeri: {hamDeger}");
-                                    }
-                                    break;
                                 case "kesilmisPlanSayisi":
-                                    if (int.TryParse(hamDeger, out int kesilmisPlanSayisi))
-                                    {
-                                        condition = $"kesilmisPlanSayisi = {paramName}";
-                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Int) { Value = kesilmisPlanSayisi });
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine($"Geçersiz kesilmiş plan sayısı değeri: {hamDeger}");
-                                    }
-                                    break;
                                 case "toplamPlanTekrari":
-                                    if (int.TryParse(hamDeger, out int toplamPlanTekrari))
+                                    if (int.TryParse(hamDeger, out int deger))
                                     {
-                                        condition = $"toplamPlanTekrari = {paramName}";
-                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Int) { Value = toplamPlanTekrari });
+                                        condition = $"{sqlColumnName} = {paramName}";
+                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Int) { Value = deger });
                                     }
                                     else
                                     {
-                                        Console.WriteLine($"Geçersiz toplam plan tekrarı değeri: {hamDeger}");
-                                    }
-                                    break;
-                                case "eklemeTarihi":
-                                    if (DateTime.TryParse(hamDeger, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime eklemeTarihi))
-                                    {
-                                        condition = $"CAST(eklemeTarihi AS DATE) = {paramName}";
-                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Date) { Value = eklemeTarihi.Date });
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine($"Geçersiz ekleme tarihi değeri: {hamDeger}");
+                                        Console.WriteLine($"Geçersiz sayısal değer: {hamDeger}");
                                     }
                                     break;
                                 default:
@@ -288,7 +277,6 @@ namespace CEKA_APP.DataBase
                     using (var cmd = new SqlCommand(baseQuery, connection))
                     {
                         cmd.Parameters.AddRange(parameters.ToArray());
-
                         using (var adapter = new SqlDataAdapter(cmd))
                         {
                             DataTable dt = new DataTable();
@@ -305,7 +293,6 @@ namespace CEKA_APP.DataBase
                 return null;
             }
         }
-
         public static bool KesimIdVarMi(string kesimId)
         {
             try

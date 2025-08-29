@@ -156,21 +156,46 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     foreach (var kutu in filtreKutulari)
                     {
                         string hamDeger = kutu.Value.Text.Trim();
-                        if (!string.IsNullOrEmpty(hamDeger))
+                        if (string.IsNullOrEmpty(hamDeger))
                         {
-                            string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
-                                .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(kutu.Key) ||
-                                                    NormalizeColumnName(c.Name) == NormalizeColumnName(kutu.Key))?.Name;
+                            continue;
+                        }
 
-                            if (string.IsNullOrEmpty(columnName))
+                        string dataGridHeader = kutu.Key.Replace("_Baslangic", "").Replace("_Bitis", "");
+                        string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
+                                .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(dataGridHeader))?.Name;
+
+                        if (string.IsNullOrEmpty(columnName))
+                        {
+                            MessageBox.Show($"Sütun bulunamadı: {kutu.Key}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            continue;
+                        }
+
+                        string paramName = $"@p{paramIndex++}";
+                        string condition = string.Empty;
+
+                        if (kutu.Key.EndsWith("_Baslangic") || kutu.Key.EndsWith("_Bitis"))
+                        {
+                            if (DateTime.TryParse(hamDeger, out DateTime tarihDegeri))
                             {
-                                MessageBox.Show($"Sütun bulunamadı: {kutu.Key}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                continue;
+                                if (kutu.Key.EndsWith("_Baslangic"))
+                                {
+                                    conditions.Add($"t.{columnName} >= {paramName}");
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.DateTime) { Value = tarihDegeri.Date });
+                                }
+                                else if (kutu.Key.EndsWith("_Bitis"))
+                                {
+                                    conditions.Add($"t.{columnName} < {paramName}");
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.DateTime) { Value = tarihDegeri.Date.AddDays(1) });
+                                }
                             }
-
-                            string paramName = $"@p{paramIndex++}";
-                            string condition = string.Empty;
-
+                            else
+                            {
+                                Console.WriteLine($"Geçersiz tarih değeri: {hamDeger}");
+                            }
+                        }
+                        else
+                        {
                             switch (columnName)
                             {
                                 case "mektupNo":
@@ -181,7 +206,8 @@ namespace CEKA_APP.DataBase.ProjeFinans
                                 case "banka":
                                 case "mektupTuru":
                                 case "projeNo":
-                                    condition = $"LOWER({(columnName == "kilometreTasiAdi" ? "k" : "t")}.{columnName}) LIKE {paramName}";
+                                    string prefix = (columnName == "kilometreTasiAdi") ? "k" : "t";
+                                    condition = $"LOWER({prefix}.{columnName}) LIKE {paramName}";
                                     parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = $"%{hamDeger.ToLower()}%" });
                                     break;
                                 case "tutar":
@@ -208,17 +234,8 @@ namespace CEKA_APP.DataBase.ProjeFinans
                                         Console.WriteLine($"Geçersiz {columnName} değeri: {hamDeger}");
                                     }
                                     break;
-                                case "vadeTarihi":
-                                case "iadeTarihi":
-                                    if (DateTime.TryParse(hamDeger, System.Globalization.CultureInfo.CreateSpecificCulture("tr-TR"), System.Globalization.DateTimeStyles.None, out DateTime tarih))
-                                    {
-                                        condition = $"CAST(t.{columnName} AS DATE) = {paramName}";
-                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Date) { Value = tarih.Date });
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine($"Geçersiz {columnName} değeri: {hamDeger}");
-                                    }
+                                default:
+                                    Console.WriteLine($"Bilinmeyen sütun: {columnName}");
                                     break;
                             }
 
@@ -236,9 +253,6 @@ namespace CEKA_APP.DataBase.ProjeFinans
 
                     baseQuery += " ORDER BY t.mektupNo";
 
-                    Console.WriteLine($"Oluşturulan SQL Sorgusu: {baseQuery}");
-                    Console.WriteLine($"Parametreler: {string.Join(", ", parameters.Select(p => $"{p.ParameterName}: {p.Value}"))}");
-
                     using (var cmd = new SqlCommand(baseQuery, connection))
                     {
                         cmd.Parameters.AddRange(parameters.ToArray());
@@ -247,7 +261,6 @@ namespace CEKA_APP.DataBase.ProjeFinans
                         {
                             DataTable dt = new DataTable();
                             adapter.Fill(dt);
-                            Console.WriteLine($"Filtrelenen satır sayısı: {dt.Rows.Count}");
                             return dt;
                         }
                     }
@@ -260,7 +273,6 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 return null;
             }
         }
-
         public bool MektupNoVarMi(string mektupNo)
         {
             using (var connection = DataBaseHelper.GetConnection())

@@ -1,17 +1,9 @@
-﻿// ctlProjeOgeleri.Designer.cs dosyası
-namespace CEKA_APP.UsrControl
+﻿namespace CEKA_APP.UsrControl
 {
     partial class ctlProjeOgeleri
     {
-        /// <summary>
-        /// Required designer variable.
-        /// </summary>
         private System.ComponentModel.IContainer components = null;
 
-        /// <summary>
-        /// Clean up any resources being used.
-        /// </summary>
-        /// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
         protected override void Dispose(bool disposing)
         {
             if (disposing && (components != null))
@@ -23,10 +15,6 @@ namespace CEKA_APP.UsrControl
 
         #region Component Designer generated code
 
-        /// <summary>
-        /// Required method for Designer support - do not modify
-        /// the contents of this method with the code editor.
-        /// </summary>
         private void InitializeComponent()
         {
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
@@ -40,8 +28,9 @@ namespace CEKA_APP.UsrControl
             this.label1 = new System.Windows.Forms.Label();
             this.panelSpacer2 = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
-            this.panelBilgi = new System.Windows.Forms.Panel();
+            this.splitContainer1 = new System.Windows.Forms.SplitContainer();
             this.dataGridOgeDetay = new System.Windows.Forms.DataGridView();
+            this.panelBilgi = new System.Windows.Forms.Panel();
             this.panelButtons = new System.Windows.Forms.Panel();
             this.panel4 = new System.Windows.Forms.Panel();
             this.btnKaydet = new System.Windows.Forms.Button();
@@ -54,6 +43,10 @@ namespace CEKA_APP.UsrControl
             this.panelList.SuspendLayout();
             this.panelSearch.SuspendLayout();
             this.panel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).BeginInit();
+            this.splitContainer1.Panel1.SuspendLayout();
+            this.splitContainer1.Panel2.SuspendLayout();
+            this.splitContainer1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridOgeDetay)).BeginInit();
             this.panelButtons.SuspendLayout();
             this.panel4.SuspendLayout();
@@ -181,8 +174,7 @@ namespace CEKA_APP.UsrControl
             // 
             // panel2
             // 
-            this.panel2.Controls.Add(this.panelBilgi);
-            this.panel2.Controls.Add(this.dataGridOgeDetay);
+            this.panel2.Controls.Add(this.splitContainer1);
             this.panel2.Controls.Add(this.panelButtons);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(708, 4);
@@ -192,27 +184,45 @@ namespace CEKA_APP.UsrControl
             this.panel2.Size = new System.Drawing.Size(1636, 1198);
             this.panel2.TabIndex = 1;
             // 
-            // panelBilgi
+            // splitContainer1
             // 
-            this.panelBilgi.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.panelBilgi.Location = new System.Drawing.Point(0, 1019);
-            this.panelBilgi.Margin = new System.Windows.Forms.Padding(4);
-            this.panelBilgi.Name = "panelBilgi";
-            this.panelBilgi.Size = new System.Drawing.Size(1636, 179);
-            this.panelBilgi.TabIndex = 140;
+            this.splitContainer1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.splitContainer1.Location = new System.Drawing.Point(0, 81);
+            this.splitContainer1.Margin = new System.Windows.Forms.Padding(4);
+            this.splitContainer1.Name = "splitContainer1";
+            this.splitContainer1.Orientation = System.Windows.Forms.Orientation.Horizontal;
+            // 
+            // splitContainer1.Panel1
+            // 
+            this.splitContainer1.Panel1.Controls.Add(this.dataGridOgeDetay);
+            // 
+            // splitContainer1.Panel2
+            // 
+            this.splitContainer1.Panel2.Controls.Add(this.panelBilgi);
+            this.splitContainer1.Size = new System.Drawing.Size(1636, 1117);
+            this.splitContainer1.SplitterDistance = 632;
+            this.splitContainer1.TabIndex = 141;
             // 
             // dataGridOgeDetay
             // 
             this.dataGridOgeDetay.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridOgeDetay.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.dataGridOgeDetay.Location = new System.Drawing.Point(0, 81);
+            this.dataGridOgeDetay.Location = new System.Drawing.Point(0, 0);
             this.dataGridOgeDetay.Margin = new System.Windows.Forms.Padding(4);
-            this.dataGridOgeDetay.MinimumSize = new System.Drawing.Size(800, 300);
             this.dataGridOgeDetay.Name = "dataGridOgeDetay";
             this.dataGridOgeDetay.RowHeadersWidth = 51;
             this.dataGridOgeDetay.RowTemplate.Height = 24;
-            this.dataGridOgeDetay.Size = new System.Drawing.Size(1636, 1117);
+            this.dataGridOgeDetay.Size = new System.Drawing.Size(1636, 632);
             this.dataGridOgeDetay.TabIndex = 139;
+            // 
+            // panelBilgi
+            // 
+            this.panelBilgi.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panelBilgi.Location = new System.Drawing.Point(0, 0);
+            this.panelBilgi.Margin = new System.Windows.Forms.Padding(4);
+            this.panelBilgi.Name = "panelBilgi";
+            this.panelBilgi.Size = new System.Drawing.Size(1636, 481);
+            this.panelBilgi.TabIndex = 140;
             // 
             // panelButtons
             // 
@@ -310,6 +320,10 @@ namespace CEKA_APP.UsrControl
             this.panelSearch.ResumeLayout(false);
             this.panelSearch.PerformLayout();
             this.panel2.ResumeLayout(false);
+            this.splitContainer1.Panel1.ResumeLayout(false);
+            this.splitContainer1.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.splitContainer1)).EndInit();
+            this.splitContainer1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridOgeDetay)).EndInit();
             this.panelButtons.ResumeLayout(false);
             this.panel4.ResumeLayout(false);
@@ -319,6 +333,7 @@ namespace CEKA_APP.UsrControl
         }
 
         #endregion
+
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Panel panelList;
@@ -330,8 +345,9 @@ namespace CEKA_APP.UsrControl
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.Panel panelSpacer2;
         private System.Windows.Forms.Panel panel2;
-        private System.Windows.Forms.Panel panelBilgi;
+        private System.Windows.Forms.SplitContainer splitContainer1;
         private System.Windows.Forms.DataGridView dataGridOgeDetay;
+        private System.Windows.Forms.Panel panelBilgi;
         private System.Windows.Forms.Panel panelButtons;
         private System.Windows.Forms.Button btnKaydet;
         private System.Windows.Forms.Button btnYeni;

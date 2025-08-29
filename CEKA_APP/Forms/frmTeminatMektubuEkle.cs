@@ -156,7 +156,7 @@ namespace CEKA_APP.Forms
                         _currentMektup.paraBirimi = "TRY";
                         UpdateCheckBoxes("TRY");
                     }
-                    _currentMektup.projeNo = _projeNo; // projeNo'yu atıyoruz
+                    _currentMektup.projeNo = _projeNo;
                 }
                 else
                 {
@@ -164,7 +164,7 @@ namespace CEKA_APP.Forms
                     txtMusteriNo.Text = "";
                     txtMusteriAdi.Text = "";
                     _currentMektup.paraBirimi = "TRY";
-                    _currentMektup.projeNo = "-"; // Null ise varsayılan olarak "-"
+                    _currentMektup.projeNo = "-"; 
                     UpdateCheckBoxes("TRY");
                 }
             }
@@ -172,7 +172,7 @@ namespace CEKA_APP.Forms
             {
                 txtMusteriAdi.Text = "";
                 _currentMektup.paraBirimi = "TRY";
-                _currentMektup.projeNo = "-"; // Null ise varsayılan olarak "-"
+                _currentMektup.projeNo = "-"; 
                 UpdateCheckBoxes("TRY");
             }
         }
@@ -237,7 +237,6 @@ namespace CEKA_APP.Forms
                 komisyonVadesi = parsedKomisyonVadesi;
             }
 
-            // projeNo için null kontrolü ve varsayılan değer "-"
             string projeNo = string.IsNullOrEmpty(_projeNo) ? "-" : _projeNo;
 
             ProjeFinans_TeminatMektuplariData mektupData = new ProjeFinans_TeminatMektuplariData();
@@ -258,7 +257,7 @@ namespace CEKA_APP.Forms
                     _currentMektup.komisyonTutari = komisyonTutari;
                     _currentMektup.komisyonOrani = komisyonOrani;
                     _currentMektup.komisyonVadesi = komisyonVadesi;
-                    _currentMektup.projeNo = projeNo; // Null ise "-"
+                    _currentMektup.projeNo = projeNo; 
                     _currentMektup.kilometreTasiId = _kilometreTasiId;
 
                     mektupData.MektupGuncelle(_originalMektupNoForUpdate, _currentMektup);
@@ -286,7 +285,7 @@ namespace CEKA_APP.Forms
                         _currentMektup.komisyonTutari = komisyonTutari;
                         _currentMektup.komisyonOrani = komisyonOrani;
                         _currentMektup.komisyonVadesi = komisyonVadesi;
-                        _currentMektup.projeNo = projeNo; // Null ise "-"
+                        _currentMektup.projeNo = projeNo;
                         _currentMektup.kilometreTasiId = _kilometreTasiId;
 
                         mektupData.TeminatMektubuKaydet(_currentMektup);
@@ -338,7 +337,7 @@ namespace CEKA_APP.Forms
                 {
                     dtVadeTarihi.Enabled = false;
                 }
-                _currentMektup.projeNo = string.IsNullOrEmpty(_projeNo) ? "-" : _projeNo; // Null ise "-"
+                _currentMektup.projeNo = string.IsNullOrEmpty(_projeNo) ? "-" : _projeNo;
             }
         }
 
@@ -457,5 +456,32 @@ namespace CEKA_APP.Forms
                 chkEuro.Checked = false;
             }
         }
+        private void dtVadeTarihi_ValueChanged(object sender, EventArgs e)
+        {
+            UpdateIadeTarihi();
+        }
+        private void cmbKomisyonVadesi_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            UpdateIadeTarihi();
+        }
+        private void UpdateIadeTarihi()
+        {
+            if (cmbKomisyonVadesi.SelectedItem == null)
+            {
+                return;
+            }
+
+            string selectedValue = cmbKomisyonVadesi.SelectedItem.ToString();
+            if (int.TryParse(selectedValue.Split(' ')[0], out int aySayisi))
+            {
+                DateTime vadeTarihi = dtVadeTarihi.Value;
+
+                DateTime iadeTarihi = vadeTarihi.AddMonths(aySayisi);
+
+                dtIadeTarihi.Value = iadeTarihi;
+            }
+        }
+
+        
     }
 }

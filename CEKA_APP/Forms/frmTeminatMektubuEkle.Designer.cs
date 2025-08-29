@@ -68,7 +68,7 @@
             this.lblMektupNo.AutoSize = true;
             this.lblMektupNo.Location = new System.Drawing.Point(67, 48);
             this.lblMektupNo.Name = "lblMektupNo";
-            this.lblMektupNo.Size = new System.Drawing.Size(94, 20);
+            this.lblMektupNo.Size = new System.Drawing.Size(75, 16);
             this.lblMektupNo.TabIndex = 1;
             this.lblMektupNo.Text = "Mektup No:";
             // 
@@ -170,9 +170,11 @@
             this.dtVadeTarihi.Name = "dtVadeTarihi";
             this.dtVadeTarihi.Size = new System.Drawing.Size(279, 22);
             this.dtVadeTarihi.TabIndex = 10;
+            this.dtVadeTarihi.ValueChanged += new System.EventHandler(this.dtVadeTarihi_ValueChanged);
             // 
             // dtIadeTarihi
             // 
+            this.dtIadeTarihi.Enabled = false;
             this.dtIadeTarihi.Location = new System.Drawing.Point(191, 652);
             this.dtIadeTarihi.Name = "dtIadeTarihi";
             this.dtIadeTarihi.Size = new System.Drawing.Size(279, 22);
@@ -276,11 +278,22 @@
             this.cmbKomisyonVadesi.FormattingEnabled = true;
             this.cmbKomisyonVadesi.Items.AddRange(new object[] {
             "1 Aylık",
-            "3 Aylık"});
+            "2 Aylık",
+            "3 Aylık",
+            "4 Aylık",
+            "5 Aylık",
+            "6 Aylık",
+            "7 Aylık",
+            "8 Aylık",
+            "9 Aylık",
+            "10 Aylık",
+            "11 Aylık",
+            "12 Aylık"});
             this.cmbKomisyonVadesi.Location = new System.Drawing.Point(188, 477);
             this.cmbKomisyonVadesi.Name = "cmbKomisyonVadesi";
             this.cmbKomisyonVadesi.Size = new System.Drawing.Size(279, 24);
             this.cmbKomisyonVadesi.TabIndex = 11;
+            this.cmbKomisyonVadesi.SelectedIndexChanged += new System.EventHandler(this.cmbKomisyonVadesi_SelectedIndexChanged);
             // 
             // cmbBankalar
             // 

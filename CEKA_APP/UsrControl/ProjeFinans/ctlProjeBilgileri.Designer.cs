@@ -36,7 +36,7 @@
             this.panelProjeler.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panelProjeler.Location = new System.Drawing.Point(0, 0);
             this.panelProjeler.Name = "panelProjeler";
-            this.panelProjeler.Size = new System.Drawing.Size(2033, 1311);
+            this.panelProjeler.Size = new System.Drawing.Size(1626, 1049);
             this.panelProjeler.TabIndex = 0;
             // 
             // ctlProjeBilgileri

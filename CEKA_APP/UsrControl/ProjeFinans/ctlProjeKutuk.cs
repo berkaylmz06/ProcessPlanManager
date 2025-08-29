@@ -361,7 +361,6 @@ namespace CEKA_APP.UsrControl
                 }
             }
         }
-
         private void CheckBoxKontrol(CheckBox aktif, CheckBox pasif, FlowLayoutPanel flp, string prefix, bool goster = true)
         {
             if (aktif.Checked)
@@ -603,9 +602,9 @@ namespace CEKA_APP.UsrControl
             {
                 txtMusteriNo.Text = proje.musteriNo ?? "";
                 txtMusteriAdi.Text = proje.musteriAdi ?? "";
-                txtTeklifNo.Text = proje.teklifNo ?? "";
                 txtIsFirsatiNo.Text = proje.isFirsatiNo ?? "";
                 txtProjeNo.Text = proje.projeNo ?? "";
+                txtProjeNo.Enabled = false; 
                 chkAltProjeVar.Checked = proje.altProjeVarMi;
                 chkAltProjeYok.Checked = !proje.altProjeVarMi;
                 chkProjeIliskisiVar.Checked = proje.digerProjeIliskisiVarMi != "0";
@@ -631,7 +630,7 @@ namespace CEKA_APP.UsrControl
                 }
                 else
                 {
-                    cmbParaBirimi.SelectedIndex = -1; 
+                    cmbParaBirimi.SelectedIndex = -1;
                 }
 
                 flpAltProjeTextBoxes.Controls.Clear();
@@ -698,9 +697,9 @@ namespace CEKA_APP.UsrControl
             else
             {
                 MessageBox.Show("Proje bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtProjeNo.Enabled = true;
             }
         }
-
         private void AddTextBoxWithButton(FlowLayoutPanel flp, string prefix, int index, bool withButton = false, string text = null)
         {
             int horizontalMargin = (flp.ClientSize.Width - contentWidth) / 2;
@@ -787,11 +786,6 @@ namespace CEKA_APP.UsrControl
             if (string.IsNullOrWhiteSpace(txtMusteriAdi.Text))
                 hataMesajlari.Add("Müşteri Adı boş olamaz.");
 
-            if (string.IsNullOrWhiteSpace(txtTeklifNo.Text))
-                hataMesajlari.Add("Teklif No boş olamaz.");
-            else if (!int.TryParse(txtTeklifNo.Text.Trim(), out var teklifNo) || teklifNo <= 0)
-                hataMesajlari.Add("Teklif No pozitif bir tam sayı olmalıdır.");
-
             if (string.IsNullOrWhiteSpace(txtIsFirsatiNo.Text))
                 hataMesajlari.Add("İş Fırsatı No boş olamaz.");
             else if (!int.TryParse(txtIsFirsatiNo.Text.Trim(), out var isFirsatiNo) || isFirsatiNo <= 0)
@@ -813,17 +807,14 @@ namespace CEKA_APP.UsrControl
                     .SelectMany(p => p.Controls.OfType<TextBox>())
                     .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                     .Select(txt => txt.Text.Trim()).ToList()
-                : null;
+                : new List<string>();
 
-            if (chkAltProjeVar.Checked && (altProjeler == null || !altProjeler.Any()))
+            if (chkAltProjeVar.Checked && !altProjeler.Any())
             {
                 lblAltProjeHata.Text = "Alt proje var işaretlediniz fakat alt proje bilgisi girmediniz.";
+                lblAltProjeHata.ForeColor = Color.Red;
                 lblAltProjeHata.Visible = true;
                 hataMesajlari.Add("Alt proje var işaretlendiniz fakat alt proje bilgisi girmediniz.");
-            }
-            else
-            {
-                lblAltProjeHata.Visible = false;
             }
 
             if (chkProjeIliskisiVar.Checked)
@@ -900,7 +891,6 @@ namespace CEKA_APP.UsrControl
             {
                 musteriNo = txtMusteriNo.Text.Trim(),
                 musteriAdi = txtMusteriAdi.Text.Trim(),
-                teklifNo = txtTeklifNo.Text.Trim(),
                 isFirsatiNo = txtIsFirsatiNo.Text.Trim(),
                 projeNo = projeNo,
                 altProjeVarMi = chkAltProjeVar.Checked,
@@ -910,27 +900,92 @@ namespace CEKA_APP.UsrControl
                         .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}")
                         .Select(txt => txt.Text.Trim()))
                     : "0",
-                siparisSozlesmeTarihi = dtpSiparisSozlesmeTarihi.Value,
+                siparisSozlesmeTarihi = dtpSiparisSozlesmeTarihi.Value.Date, 
                 toplamBedel = bedel,
                 nakliyeVarMi = chkNakliyeVar.Checked,
-                altProjeBilgileri = altProjeler ?? new List<string>(),
+                altProjeBilgileri = altProjeler,
                 faturalamaSekli = chkTekil.Checked ? "Tekil" : "Cogul",
-                paraBirimi = paraBirimi 
+                paraBirimi = paraBirimi
             };
 
             bool isProjeKayitli = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo) != null;
+            var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
+            var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
+            var bildirimMesajlari = new List<string>();
 
             if (isProjeKayitli)
             {
+                var mevcutKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
+                if (mevcutKutuk == null)
+                {
+                    MessageBox.Show($"Proje '{projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                bool degisiklikVar = false;
+                if (mevcutKutuk.musteriNo != kutuk.musteriNo)
+                {
+                    degisiklikVar = true;
+                }
+                if (mevcutKutuk.musteriAdi != kutuk.musteriAdi)
+                {
+                    degisiklikVar = true;
+                }
+                if (mevcutKutuk.isFirsatiNo != kutuk.isFirsatiNo)
+                {
+                    degisiklikVar = true;
+                }
+                if (mevcutKutuk.altProjeVarMi != kutuk.altProjeVarMi)
+                {
+                    degisiklikVar = true;
+                }
+                if (mevcutKutuk.digerProjeIliskisiVarMi != kutuk.digerProjeIliskisiVarMi)
+                {
+                    degisiklikVar = true;
+                }
+                if (mevcutKutuk.siparisSozlesmeTarihi.Date != kutuk.siparisSozlesmeTarihi.Date)
+                {
+                    degisiklikVar = true;
+                }
+                if (mevcutKutuk.paraBirimi != kutuk.paraBirimi)
+                {
+                    degisiklikVar = true;
+                }
+                if (mevcutKutuk.toplamBedel != kutuk.toplamBedel)
+                {
+                    degisiklikVar = true;
+                }
+                if (mevcutKutuk.faturalamaSekli != kutuk.faturalamaSekli)
+                {
+                    degisiklikVar = true;
+                }
+                if (mevcutKutuk.nakliyeVarMi != kutuk.nakliyeVarMi)
+                {
+                    degisiklikVar = true;
+                }
+                var mevcutAltProjeler = (mevcutKutuk.altProjeBilgileri ?? new List<string>()).OrderBy(x => x).ToList();
+                var yeniAltProjeler = (kutuk.altProjeBilgileri ?? new List<string>()).OrderBy(x => x).ToList();
+                if (!mevcutAltProjeler.SequenceEqual(yeniAltProjeler))
+                {
+                    degisiklikVar = true;
+                }
+
+                if (!degisiklikVar)
+                {
+                    bildirimMesajlari.Add("Herhangi bir değişiklik yapılmadı.");
+                    MessageBox.Show(string.Join("\n", bildirimMesajlari), "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
                 if (ProjeFinans_ProjeKutukData.ProjeKutukGuncelle(kutuk))
                 {
-                    var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
-                    var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
                     UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler, altProjeler);
+                    bildirimMesajlari.Add($"Proje '{projeNo}' başarıyla güncellendi.");
                 }
                 else
                 {
                     MessageBox.Show("Proje güncellenirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
             }
             else
@@ -949,18 +1004,21 @@ namespace CEKA_APP.UsrControl
                         }
                     }
 
-                    MessageBox.Show("Kayıt başarıyla eklendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler, altProjeler);
+                    bildirimMesajlari.Add("Kayıt başarıyla eklendi.");
                     projeBilgileriKaydedildi = false;
                     UpdateContextMenu();
-
-                    var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
-                    var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
-                    UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler, altProjeler);
                 }
                 else
                 {
                     MessageBox.Show("Kayıt eklenirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
                 }
+            }
+
+            if (bildirimMesajlari.Any())
+            {
+                MessageBox.Show(string.Join("\n", bildirimMesajlari), "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
         }
         private void txtMusteriNo_Leave(object sender, EventArgs e)
@@ -1022,7 +1080,6 @@ namespace CEKA_APP.UsrControl
 
                     txtMusteriNo.Text = "";
                     txtMusteriAdi.Text = "";
-                    txtTeklifNo.Text = "";
                     txtIsFirsatiNo.Text = "";
                     txtProjeNo.Text = "";
                     txtToplamBedel.Text = "";
@@ -1079,6 +1136,59 @@ namespace CEKA_APP.UsrControl
                 e.SuppressKeyPress = true;
                 this.btnAra.PerformClick();
             }
+        }
+
+        private void btnTemizle_Click(object sender, EventArgs e)
+        {
+            txtMusteriNo.Text = "";
+            txtMusteriAdi.Text = "";
+            txtIsFirsatiNo.Text = "";
+            txtProjeNo.Text = "";
+            txtToplamBedel.Text = "";
+            txtProjeAra.Text = "";
+            txtProjeNo.Enabled = true;
+            chkAltProjeVar.Checked = false;
+            chkAltProjeYok.Checked = false;
+            chkProjeIliskisiVar.Checked = false;
+            chkProjeIliskisiYok.Checked = false;
+            chkNakliyeVar.Checked = false;
+            chkNakliyeYok.Checked = false;
+            chkTekil.Checked = false;
+            chkCogul.Checked = false;
+            cmbParaBirimi.SelectedIndex = -1;
+            lblAltProjeHata.Text = "";
+            lblAltProjeHata.Visible = false;
+            flpAltProjeTextBoxes.Controls.Clear();
+            flpAltProjeTextBoxes.Controls.Add(new Label
+            {
+                Text = "Alt Projeler",
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                AutoSize = true,
+                Margin = new Padding((flpAltProjeTextBoxes.ClientSize.Width - 80) / 2, 0, 0, 5),
+                ForeColor = Color.FromArgb(44, 62, 80)
+            });
+            AddEkleButton(flpAltProjeTextBoxes, "AltProje");
+            flpAltProjeTextBoxes.Visible = false;
+
+            flpIliskiTextBoxes.Controls.Clear();
+            flpIliskiTextBoxes.Controls.Add(new Label
+            {
+                Text = "İlişkili Projeler",
+                Font = new Font("Segoe UI", 10, FontStyle.Bold),
+                AutoSize = true,
+                Margin = new Padding((flpIliskiTextBoxes.ClientSize.Width - 100) / 2, 0, 0, 5),
+                ForeColor = Color.FromArgb(44, 62, 80)
+            });
+            AddEkleButton(flpIliskiTextBoxes, "Iliski");
+            flpIliskiTextBoxes.Visible = false;
+
+            UpdateContextMenu();
+
+            UpdatePanelLayout();
+            UpdateFlowLayoutPanelHeight(flpAltProjeTextBoxes);
+            UpdateFlowLayoutPanelHeight(flpIliskiTextBoxes);
+            UpdateAllPanelWidths(flpAltProjeTextBoxes);
+            UpdateAllPanelWidths(flpIliskiTextBoxes);
         }
     }
 }

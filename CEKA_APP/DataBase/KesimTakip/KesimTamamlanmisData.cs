@@ -105,18 +105,41 @@ namespace CEKA_APP.DataBase
                     foreach (var kutu in filtreKutulari)
                     {
                         string hamDeger = kutu.Value.Text.Trim();
-                        if (!string.IsNullOrEmpty(hamDeger))
+                        if (string.IsNullOrEmpty(hamDeger))
                         {
-                            string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
-                                .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(kutu.Key) ||
-                                                    NormalizeColumnName(c.Name) == NormalizeColumnName(kutu.Key))?.Name;
+                            continue;
+                        }
 
-                            if (string.IsNullOrEmpty(columnName))
+                        string dataGridHeader = kutu.Key.Replace("_Baslangic", "").Replace("_Bitis", "");
+                        string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
+                                .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(dataGridHeader))?.Name;
+
+                        if (string.IsNullOrEmpty(columnName))
+                        {
+                            MessageBox.Show($"Sütun bulunamadı: {kutu.Key}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            continue;
+                        }
+
+                        if (kutu.Key.EndsWith("_Baslangic"))
+                        {
+                            if (DateTime.TryParse(hamDeger, out DateTime baslangicTarihi))
                             {
-                                MessageBox.Show($"Sütun bulunamadı: {kutu.Key}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                continue;
+                                string paramName = $"@p{paramIndex++}";
+                                conditions.Add($"{columnName} >= {paramName}");
+                                parameters.Add(new SqlParameter(paramName, SqlDbType.DateTime) { Value = baslangicTarihi.Date });
                             }
-
+                        }
+                        else if (kutu.Key.EndsWith("_Bitis"))
+                        {
+                            if (DateTime.TryParse(hamDeger, out DateTime bitisTarihi))
+                            {
+                                string paramName = $"@p{paramIndex++}";
+                                conditions.Add($"{columnName} < {paramName}");
+                                parameters.Add(new SqlParameter(paramName, SqlDbType.DateTime) { Value = bitisTarihi.Date.AddDays(1) });
+                            }
+                        }
+                        else
+                        {
                             string paramName = $"@p{paramIndex++}";
                             string condition = string.Empty;
 
@@ -124,11 +147,11 @@ namespace CEKA_APP.DataBase
                             {
                                 case "kesimYapan":
                                     condition = $"LOWER(kesimYapan) LIKE {paramName}";
-                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger.ToLower() });
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = "%" + hamDeger.ToLower() + "%" });
                                     break;
                                 case "kesimId":
                                     condition = $"LOWER(kesimId) LIKE {paramName}";
-                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger.ToLower() });
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = "%" + hamDeger.ToLower() + "%" });
                                     break;
                                 case "kesilmisPlanSayisi":
                                     if (int.TryParse(hamDeger, out int kesilmisPlanSayisi))
@@ -143,21 +166,10 @@ namespace CEKA_APP.DataBase
                                     break;
                                 case "kesilenLot":
                                     condition = $"LOWER(kesilenLot) LIKE {paramName}";
-                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger.ToLower() });
-                                    break;
-                                case "kesimTarihi":
-                                    if (DateTime.TryParse(hamDeger, System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out DateTime kesimTarihi))
-                                    {
-                                        condition = $"CAST(kesimTarihi AS DATE) = {paramName}";
-                                        parameters.Add(new SqlParameter(paramName, SqlDbType.Date) { Value = kesimTarihi.Date });
-                                    }
-                                    else
-                                    {
-                                        Console.WriteLine($"Geçersiz kesim tarihi değeri: {hamDeger}");
-                                    }
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = "%" + hamDeger.ToLower() + "%" });
                                     break;
                                 case "kesimSaati":
-                                    if (TimeSpan.TryParse(hamDeger, System.Globalization.CultureInfo.InvariantCulture, out TimeSpan kesimSaati))
+                                    if (TimeSpan.TryParse(hamDeger, out TimeSpan kesimSaati))
                                     {
                                         condition = $"kesimSaati = {paramName}";
                                         parameters.Add(new SqlParameter(paramName, SqlDbType.Time) { Value = kesimSaati });
@@ -204,7 +216,6 @@ namespace CEKA_APP.DataBase
                 return null;
             }
         }
-
         private string NormalizeColumnName(string columnName)
         {
             if (string.IsNullOrEmpty(columnName)) return columnName;

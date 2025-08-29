@@ -43,11 +43,9 @@ namespace CEKA_APP.UsrControl
         {
             if (string.IsNullOrEmpty(projeNo) || string.IsNullOrEmpty(grupAdi) || !yuklemeId.HasValue)
             {
-                Console.WriteLine("HighlightTreeViewNode: Gerekli parametreler eksik.");
                 return;
             }
 
-            Console.WriteLine($"HighlightTreeViewNode: ProjeNo={projeNo}, GrupAdi={grupAdi}, YuklemeId={yuklemeId}");
 
             if (previousHighlightedNode != null)
             {
@@ -85,11 +83,6 @@ namespace CEKA_APP.UsrControl
                 targetNode.ForeColor = Color.Black;
                 targetNode.EnsureVisible();
                 previousHighlightedNode = targetNode;
-                Console.WriteLine($"TreeView'da düğüm işaretlendi: {targetNode.Text}, YuklemeId: {yuklemeId}");
-            }
-            else
-            {
-                Console.WriteLine("TreeView'da eşleşen düğüm bulunamadı.");
             }
         }
         private void DataGridOlaylariniAyarla()
@@ -103,7 +96,6 @@ namespace CEKA_APP.UsrControl
                 {
                     isDirty = true;
                     UpdateSaveButtonState();
-                    Console.WriteLine($"CellValueChanged sütun {dataGridOgeDetay.Columns[e.ColumnIndex].DataPropertyName} için {e.RowIndex} satırında tetiklendi, isDirty true olarak ayarlandı.");
                 }
             };
 
@@ -118,7 +110,6 @@ namespace CEKA_APP.UsrControl
                             previousHighlightedNode.BackColor = Color.Empty;
                             previousHighlightedNode.ForeColor = Color.Empty;
                             previousHighlightedNode = null;
-                            Console.WriteLine("DataGridView'da satır seçimi kaldırıldı, TreeView işaretlemesi temizlendi.");
                         }
                         return;
                     }
@@ -144,13 +135,12 @@ namespace CEKA_APP.UsrControl
                             previousHighlightedNode.BackColor = Color.Empty;
                             previousHighlightedNode.ForeColor = Color.Empty;
                             previousHighlightedNode = null;
-                            Console.WriteLine("Proje seviyesi dışı veya eksik bilgi, TreeView işaretlemesi temizlendi.");
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"TreeView düğüm işaretleme hatası: {ex.Message}, StackTrace: {ex.StackTrace}");
+                   MessageBox.Show($"TreeView düğüm işaretleme hatası: {ex.Message}, StackTrace: {ex.StackTrace}");
                 }
             };
         }
@@ -261,8 +251,6 @@ namespace CEKA_APP.UsrControl
                 bool isGrupLevel = treeView1.SelectedNode?.Parent != null && treeView1.SelectedNode.Parent.Parent != null && treeView1.SelectedNode.Parent.Parent.Parent == null;
                 bool isMalzemeLevel = treeView1.SelectedNode?.Parent != null && treeView1.SelectedNode.Parent.Parent != null && treeView1.SelectedNode.Parent.Parent.Parent != null;
 
-                Console.WriteLine($"CellValidating: Seviye: {(isProjectLevel ? "Proje" : isUstGrupLevel ? "Üst Grup" : isGrupLevel ? "Grup" : "Malzeme")}, Sütun: {columnName}, Giriş: {input}, Satır: {currentRowIndex}");
-
                 if (columnName == "adet" || columnName == "takimCarpani")
                 {
                     if (!string.IsNullOrEmpty(input) && (!int.TryParse(input, out int value) || value <= 0))
@@ -292,7 +280,6 @@ namespace CEKA_APP.UsrControl
 
                     string projeNo = treeView1.SelectedNode.Parent.Parent.Parent.Text;
                     string currentGrupAdi = treeView1.SelectedNode.Parent.Text;
-                    Console.WriteLine($"MalzemeKod Doğrulama: ProjeNo: {projeNo}, GrupAdi: {currentGrupAdi}, MalzemeKod: {input}");
 
                     var malzemeler = AutoCadAktarimData.MalzemeleriGetir(projeNo, currentGrupAdi);
                     if (malzemeler.AsEnumerable().Any(r => r.Field<string>("malzemeKod")?.Trim() == input &&
@@ -490,11 +477,6 @@ namespace CEKA_APP.UsrControl
         private void TreeViewYukle(string projeNo)
         {
             var kayitlar = AutoCadAktarimData.GetAutoCadKayitlari(projeNo);
-            Console.WriteLine($"TreeViewYukle: {kayitlar.Count} kayıt bulundu for projeNo: {projeNo}");
-            foreach (var kayit in kayitlar)
-            {
-                Console.WriteLine($"Kayıt -> Proje: {kayit.Proje}, Grup: {kayit.Grup}, YuklemeId: {kayit.YuklemeId}");
-            }
 
             treeView1.Nodes.Clear();
             var projeDugumleri = new Dictionary<string, TreeNode>();
@@ -508,7 +490,6 @@ namespace CEKA_APP.UsrControl
                     var projeDugumu = new TreeNode(kayit.Proje);
                     treeView1.Nodes.Add(projeDugumu);
                     projeDugumleri[kayit.Proje] = projeDugumu;
-                    Console.WriteLine($"Proje düğümü eklendi: {kayit.Proje}");
                 }
 
                 if (!string.IsNullOrEmpty(kayit.Grup))
@@ -523,7 +504,6 @@ namespace CEKA_APP.UsrControl
                         ustGrupDugumu.Tag = new Tuple<string, Guid?>(ustGrupKey, kayit.YuklemeId);
                         projeDugumleri[kayit.Proje].Nodes.Add(ustGrupDugumu);
                         ustGrupDugumleri[ustGrupAnahtari] = ustGrupDugumu;
-                        Console.WriteLine($"Üst Grup düğümü eklendi: {ustGrupKey}, YuklemeId: {yuklemeIdStr}");
                     }
 
                     if (kayit.Grup.Contains("-"))
@@ -535,14 +515,12 @@ namespace CEKA_APP.UsrControl
                             grupDugumu.Tag = kayit.YuklemeId;
                             ustGrupDugumleri[ustGrupAnahtari].Nodes.Add(grupDugumu);
                             grupDugumleri[grupAnahtari] = grupDugumu;
-                            Console.WriteLine($"Grup düğümü eklendi: {kayit.Grup}, YuklemeId: {yuklemeIdStr}");
                         }
 
                         if (!string.IsNullOrEmpty(kayit.MalzemeKod))
                         {
                             var malzemeDugumu = new TreeNode(kayit.MalzemeKod);
                             grupDugumleri[grupAnahtari].Nodes.Add(malzemeDugumu);
-                            Console.WriteLine($"Malzeme düğümü eklendi: {kayit.MalzemeKod}");
                         }
                     }
                 }
@@ -567,7 +545,6 @@ namespace CEKA_APP.UsrControl
             }
 
             treeView1.Refresh();
-            Console.WriteLine($"TreeViewYukle tamamlandı. Toplam proje düğümleri: {treeView1.Nodes.Count}, Üst Grup düğümleri: {ustGrupDugumleri.Count}");
         }
 
         private bool ValidateTableData(TreeNode selectedNode)
@@ -579,7 +556,6 @@ namespace CEKA_APP.UsrControl
             bool isGrupLevel = selectedNode?.Parent != null && selectedNode.Parent.Parent != null && selectedNode.Parent.Parent.Parent == null;
             bool isMalzemeLevel = selectedNode?.Parent != null && selectedNode.Parent.Parent != null && selectedNode.Parent.Parent.Parent != null;
 
-            Console.WriteLine($"ValidateTableData: Seviye: {(isProjectLevel ? "Proje" : isUstGrupLevel ? "Üst Grup" : isGrupLevel ? "Grup" : "Malzeme")}, Sütunlar: {string.Join(", ", tempTablo.Columns.Cast<DataColumn>().Select(c => c.ColumnName))}");
 
             foreach (DataRow row in tempTablo.Rows.Cast<DataRow>().Where(r => r.RowState != DataRowState.Deleted))
             {
@@ -782,8 +758,6 @@ namespace CEKA_APP.UsrControl
                 bool isGrupLevel = e.Node.Parent != null && e.Node.Parent.Parent != null && e.Node.Parent.Parent.Parent == null;
                 bool isMalzemeLevel = e.Node.Parent != null && e.Node.Parent.Parent != null && e.Node.Parent.Parent.Parent != null;
 
-                Console.WriteLine($"treeView1_AfterSelect: Seviye: {(isProjectLevel ? "Proje" : isUstGrupLevel ? "Üst Grup" : isGrupLevel ? "Grup" : "Malzeme")}");
-
                 if (isProjectLevel)
                 {
                     string projeNo = e.Node.Text;
@@ -866,7 +840,6 @@ namespace CEKA_APP.UsrControl
 
                 if (tempTablo != null)
                 {
-                    Console.WriteLine($"treeView1_AfterSelect: Sütunlar: {string.Join(", ", tempTablo.Columns.Cast<DataColumn>().Select(c => c.ColumnName))}");
                     tempTablo.AcceptChanges();
                     silinenSatirlar.Clear();
                     isDirty = false;
@@ -878,7 +851,6 @@ namespace CEKA_APP.UsrControl
                     dataGridOgeDetay.AutoGenerateColumns = false;
                     Application.DoEvents();
                     var sutunlar = dataGridOgeDetay.Columns.Cast<DataGridViewColumn>().Select(c => c.DataPropertyName).ToList();
-                    Console.WriteLine($"DataGridView Sütunları: {string.Join(", ", sutunlar)}");
 
                     ColorRows();
                     UpdateSaveButtonState();
@@ -946,10 +918,11 @@ namespace CEKA_APP.UsrControl
                     {
                         string projeAdi = row.Cells[projeAdiIndex].Value?.ToString()?.Trim().ToLowerInvariant() ?? "";
                         string grupAdi = row.Cells[grupAdiIndex].Value?.ToString()?.Trim().ToLowerInvariant() ?? "";
-                        string malzemeKod = row.Cells[malzemeKodIndex].Value?.ToString()?.Trim() ?? "";
+                        string malzemeKod = row.Cells[malzemeKodIndex].Value?.ToString()?.Trim().ToLowerInvariant() ?? "";
                         string adet = row.Cells[adetIndex].Value?.ToString()?.Trim();
                         string malzemeAd = row.Cells[malzemeAdIndex].Value?.ToString()?.Trim().ToLowerInvariant() ?? "";
                         string kalite = row.Cells[kaliteIndex].Value?.ToString()?.Trim().ToLowerInvariant() ?? "";
+
 
                         if (string.IsNullOrEmpty(projeAdi) || string.IsNullOrEmpty(grupAdi) ||
                             string.IsNullOrEmpty(malzemeKod) || string.IsNullOrEmpty(adet) ||
@@ -971,13 +944,19 @@ namespace CEKA_APP.UsrControl
                         }
                         malzemeKod = malzemeKod.ToLowerInvariant();
 
-                        string key = $"{kalite}_{malzemeAd}_{malzemeKod}_{projeAdi}";
+                        string key = $"{kalite}_{malzemeAd}_{malzemeKod}_{projeAdi}_{grupAdi}";
 
                         var kesimDetayi = kesimDetaylari.FirstOrDefault(k => k.Key == key);
 
                         if (kesimDetayi != null)
                         {
-                            if (kesimDetayi.ekBilgi) // Bool değerini doğrudan kontrol ediyoruz
+                            if (kesimDetayi.toplamAdet == 0)
+                            {
+                                row.DefaultCellStyle.BackColor = Color.Empty;
+                                continue;
+                            }
+
+                            if (kesimDetayi.ekBilgi)
                             {
                                 row.DefaultCellStyle.BackColor = Color.Blue;
                             }
@@ -1235,14 +1214,12 @@ namespace CEKA_APP.UsrControl
                             AutoCadAktarimData.UstGrupEkleGuncelle(projeNo, grupAdi, yuklemeId, takimCarpani, null);
                             newlyAddedUstGrup = grupAdi; 
                             newlyAddedYuklemeId = yuklemeId; 
-                            Console.WriteLine($"Yeni Üst Grup kaydedildi: {grupAdi}, YuklemeId: {yuklemeId}");
                         }
                         else if (row.RowState == DataRowState.Modified)
                         {
                             string eskiGrupAdi = row["grupAdi", DataRowVersion.Original]?.ToString()?.Trim();
                             AutoCadAktarimData.UstGrupEkleGuncelle(projeNo, grupAdi, yuklemeId, takimCarpani, eskiGrupAdi);
                             AutoCadAktarimData.UpdateTakimCarpaniVeAltGruplar(projeNo, grupAdi, yuklemeId, takimCarpani);
-                            Console.WriteLine($"Üst Grup güncellendi: {grupAdi}, YuklemeId: {yuklemeId}");
                         }
                     }
 
@@ -1251,7 +1228,6 @@ namespace CEKA_APP.UsrControl
                         if (!string.IsNullOrEmpty(silinen.GrupAdi) && silinen.YuklemeId.HasValue)
                         {
                             AutoCadAktarimData.UstGrupSil(projeNo, silinen.GrupAdi, silinen.YuklemeId.Value);
-                            Console.WriteLine($"Üst Grup silindi: {silinen.GrupAdi}, YuklemeId: {silinen.YuklemeId}");
                         }
                     }
                 }
@@ -1270,14 +1246,12 @@ namespace CEKA_APP.UsrControl
                         {
                             AutoCadAktarimData.GrupEkleGuncelle(projeNo, grupAdi, null, rowYuklemeId);
                             AutoCadAktarimData.UpdateTakimCarpani(projeNo, grupAdi, takimCarpani);
-                            Console.WriteLine($"Yeni Grup kaydedildi: {grupAdi}, YuklemeId: {rowYuklemeId}");
                         }
                         else if (row.RowState == DataRowState.Modified)
                         {
                             string eskiGrupAdi = row["grupAdi", DataRowVersion.Original]?.ToString()?.Trim();
                             AutoCadAktarimData.GrupEkleGuncelle(projeNo, grupAdi, eskiGrupAdi, rowYuklemeId);
                             AutoCadAktarimData.UpdateTakimCarpani(projeNo, grupAdi, takimCarpani);
-                            Console.WriteLine($"Grup güncellendi: {grupAdi}, YuklemeId: {rowYuklemeId}");
                         }
                     }
 
@@ -1286,7 +1260,6 @@ namespace CEKA_APP.UsrControl
                         if (!string.IsNullOrEmpty(silinen.GrupAdi))
                         {
                             AutoCadAktarimData.GrupSil(projeNo, silinen.GrupAdi);
-                            Console.WriteLine($"Grup silindi: {silinen.GrupAdi}");
                         }
                     }
                 }
@@ -1306,13 +1279,11 @@ namespace CEKA_APP.UsrControl
                         if (row.RowState == DataRowState.Added)
                         {
                             AutoCadAktarimData.MalzemeEkleGuncelle(projeNo, grupAdi, malzemeKod, adet, malzemeAd, kalite, yuklemeId);
-                            Console.WriteLine($"Yeni Malzeme kaydedildi: {malzemeKod}, YuklemeId: {yuklemeId}");
                         }
                         else if (row.RowState == DataRowState.Modified)
                         {
                             string eskiMalzemeKod = row["malzemeKod", DataRowVersion.Original]?.ToString()?.Trim();
                             AutoCadAktarimData.MalzemeEkleGuncelle(projeNo, grupAdi, malzemeKod, adet, malzemeAd, kalite, yuklemeId, eskiMalzemeKod);
-                            Console.WriteLine($"Malzeme güncellendi: {malzemeKod}, YuklemeId: {yuklemeId}");
                         }
                     }
 
@@ -1321,7 +1292,6 @@ namespace CEKA_APP.UsrControl
                         if (!string.IsNullOrEmpty(silinen.MalzemeKod))
                         {
                             AutoCadAktarimData.MalzemeSil(projeNo, grupAdi, silinen.MalzemeKod);
-                            Console.WriteLine($"Malzeme silindi: {silinen.MalzemeKod}");
                         }
                     }
                 }
@@ -1500,11 +1470,9 @@ namespace CEKA_APP.UsrControl
                     if (tagInfo?.Item2 != null)
                     {
                         newRow["yuklemeId"] = tagInfo.Item2;
-                        Console.WriteLine($"Malzeme seviyesinde yeni satır: yuklemeId={tagInfo.Item2} üst gruptan alındı.");
                     }
                     else
                     {
-                        Console.WriteLine("Uyarı: Üst grup yuklemeId null, yeni Guid atanıyor.");
                         newRow["yuklemeId"] = Guid.NewGuid();
                     }
                 }

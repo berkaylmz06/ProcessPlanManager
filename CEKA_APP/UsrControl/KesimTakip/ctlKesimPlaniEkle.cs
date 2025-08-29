@@ -2571,13 +2571,25 @@ namespace CEKA_APP.UsrControl
                     if (ekRegex.IsMatch(poz))
                     {
                         string basePoz = ekRegex.Replace(poz, "");
+                        string[] parts = basePoz.Split('-');
+                        string key;
+                        if (parts.Length >= 5)
+                        {
+                            string kalip_prefix = parts[0];
+                            string poz_part = parts[2];
+                            string proje = parts[4];
+                            key = $"{kalip_prefix},{poz_part},{proje}";
+                        }
+                        else
+                        {
+                            key = basePoz;
+                        }
+                        if (!pozGroups.ContainsKey(key))
+                            pozGroups[key] = new List<(string, string, int, double, DataGridViewRow, string)>();
 
                         foreach (var d3PageId in d3PageIds)
                         {
-                            if (!pozGroups.ContainsKey(basePoz))
-                                pozGroups[basePoz] = new List<(string, string, int, double, DataGridViewRow, string)>();
-
-                            pozGroups[basePoz].Add((poz, sayfaID, adet, agirlik, row, d3PageId));
+                            pozGroups[key].Add((poz, sayfaID, adet, agirlik, row, d3PageId));
                         }
                     }
                 }
@@ -2586,18 +2598,17 @@ namespace CEKA_APP.UsrControl
 
                 foreach (var group in pozGroups)
                 {
-                    string basePoz = group.Key;
+                    string key = group.Key;
                     var items = group.Value;
 
                     double toplamAgirlik = items.Sum(item => item.Agirlik * item.Adet);
 
-                    logLines.Add($"\nPoz: {basePoz}, Toplam Ağırlık: {toplamAgirlik}");
+                    logLines.Add($"\nPoz: {key}, Toplam Ağırlık: {toplamAgirlik.ToString().Replace('.', ',')}");
 
                     foreach (var item in items)
                     {
                         double oran = toplamAgirlik != 0 ? (item.Agirlik * item.Adet) / toplamAgirlik : 0;
-                        logLines.Add($"  - Poz: {item.Poz}, Sayfa ID: {item.D3PageId}, Adet: {item.Adet}, Ağırlık: {item.Agirlik}, Parçanın Toplam Ağırlığa Oranı: {oran:F6}");
-
+                        logLines.Add($"  - Poz: {item.Poz}, Sayfa ID: {item.D3PageId}, Adet: {item.Adet}, Ağırlık: {item.Agirlik.ToString().Replace('.', ',')}, Parçanın Toplam Ağırlığa Oranı: {oran.ToString("F6").Replace('.', ',')}");
                         item.Row.Cells["Oran"].Value = $"{oran:F6}";
                     }
                 }
@@ -2611,6 +2622,95 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+        //private void HesaplaEkAgirlikYuzdeleri()
+        //{
+        //    try
+        //    {
+        //        var logLines = new List<string> {
+        //    "=== EkAdetAgirlikYuzdeLog.txt ===",
+        //    $"İşlem Tarihi: {DateTime.Now}",
+        //    "\nDataGridView2 Veri Analizi:"
+        //};
+
+        //        Regex ekRegex = new Regex(@"-EK\d*(?=\s|$)", RegexOptions.IgnoreCase);
+
+        //        if (!dataGridView2.Columns.Contains("Oran"))
+        //        {
+        //            dataGridView2.Columns.Add("Oran", "Toplam Ağırlık Oranı");
+        //        }
+
+        //        var pozGroups = new Dictionary<string, List<(string Poz, string SayfaID, int Adet, double Agirlik, DataGridViewRow Row, string D3PageId)>>();
+
+        //        var pageIdMap = dataGridView3.Rows
+        //            .Cast<DataGridViewRow>()
+        //            .Where(row => !row.IsNewRow && row.Cells[0].Value != null)
+        //            .Select(row => row.Cells[0].Value.ToString().Trim())
+        //            .GroupBy(pageId => pageId.Split('-').Take(2).Aggregate((a, b) => $"{a}-{b}"))
+        //            .ToDictionary(g => g.Key, g => g.Select(id => id).ToList());
+
+        //        foreach (DataGridViewRow row in dataGridView2.Rows)
+        //        {
+        //            if (row.IsNewRow) continue;
+
+        //            string poz = row.Cells[0].Value?.ToString() ?? "";
+        //            string sayfaID = row.Cells[1].Value?.ToString() ?? "";
+        //            string adetStr = row.Cells[2].Value?.ToString() ?? "0";
+        //            string agirlikStr = row.Cells[3].Value?.ToString() ?? "0";
+
+        //            agirlikStr = agirlikStr.Replace(",", ".");
+
+        //            if (!int.TryParse(adetStr, out int adet) ||
+        //                !double.TryParse(agirlikStr, NumberStyles.Any, CultureInfo.InvariantCulture, out double agirlik))
+        //            {
+        //                logLines.Add($"Hata: Geçersiz adet veya ağırlık değeri - Poz: {poz}");
+        //                continue;
+        //            }
+
+        //            var d3PageIds = pageIdMap.ContainsKey(sayfaID) ? pageIdMap[sayfaID] : new List<string> { sayfaID };
+
+        //            if (ekRegex.IsMatch(poz))
+        //            {
+        //                string basePoz = ekRegex.Replace(poz, "");
+
+        //                foreach (var d3PageId in d3PageIds)
+        //                {
+        //                    if (!pozGroups.ContainsKey(basePoz))
+        //                        pozGroups[basePoz] = new List<(string, string, int, double, DataGridViewRow, string)>();
+
+        //                    pozGroups[basePoz].Add((poz, sayfaID, adet, agirlik, row, d3PageId));
+        //                }
+        //            }
+        //        }
+
+        //        logLines.Add("\nEK İbaresi İçeren Pozlar ve Yüzde Hesaplamaları:");
+
+        //        foreach (var group in pozGroups)
+        //        {
+        //            string basePoz = group.Key;
+        //            var items = group.Value;
+
+        //            double toplamAgirlik = items.Sum(item => item.Agirlik * item.Adet);
+
+        //            logLines.Add($"\nPoz: {basePoz}, Toplam Ağırlık: {toplamAgirlik}");
+
+        //            foreach (var item in items)
+        //            {
+        //                double oran = toplamAgirlik != 0 ? (item.Agirlik * item.Adet) / toplamAgirlik : 0;
+        //                logLines.Add($"  - Poz: {item.Poz}, Sayfa ID: {item.D3PageId}, Adet: {item.Adet}, Ağırlık: {item.Agirlik}, Parçanın Toplam Ağırlığa Oranı: {oran:F6}");
+
+        //                item.Row.Cells["Oran"].Value = $"{oran:F6}";
+        //            }
+        //        }
+
+        //        string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "CEKA_APP");
+        //        string logPath = Path.Combine(appPath, "EkAdetAgirlikYuzdeLog.txt");
+        //        File.WriteAllLines(logPath, logLines);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //    }
+        //}
 
         private void button4_Click_1(object sender, EventArgs e)
         {

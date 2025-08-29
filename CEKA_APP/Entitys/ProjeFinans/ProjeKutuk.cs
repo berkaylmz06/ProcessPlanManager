@@ -12,7 +12,6 @@ namespace CEKA_APP.Entitys
         public int projeKutukId { get; set; }
         public string musteriNo { get; set; }
         public string musteriAdi { get; set; }
-        public string teklifNo { get; set; }
         public string isFirsatiNo { get; set; }
         public string projeNo { get; set; }
         public bool altProjeVarMi { get; set; }

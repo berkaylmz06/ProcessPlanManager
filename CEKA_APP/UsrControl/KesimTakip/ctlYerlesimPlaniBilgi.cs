@@ -72,7 +72,6 @@ namespace CEKA_APP.UsrControl
                 dataGridDetay.Columns.Add(silButonu);
             }
         }
-
         private void dataGridKesimListesi_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && dataGridKesimListesi.Columns[e.ColumnIndex].Name == "Sil")
@@ -86,7 +85,6 @@ namespace CEKA_APP.UsrControl
                         hataMesajlari.Clear();
                         bool tumDetaylarGuncellendi = true;
 
-                        // Önce tüm detayları kontrol et, hata varsa silme işlemini yapma
                         foreach (DataGridViewRow row in dataGridDetay.Rows)
                         {
                             string kalite = row.Cells["kalite"].Value?.ToString();
@@ -135,8 +133,7 @@ namespace CEKA_APP.UsrControl
                                 {
                                     if (!KesimDetaylariData.GuncelleKesimDetaylari(ifsKalite, ifsMalzeme, kalipNo, kesilecekPozlarForValidation, proje, silinecekAdet, false))
                                     {
-                                        hataMesajlari.Add($"Kesim detayı ({kalite}, {malzeme}, {kalipNo}, {kesilecekPozlarForValidation}, {proje}) adet düşürme işlemi başarısız. Silinecek adet: {silinecekAdet}");
-                                        tumDetaylarGuncellendi = false;
+                                        tumDetaylarGuncellendi = false; 
                                         break;
                                     }
                                 }
@@ -149,7 +146,6 @@ namespace CEKA_APP.UsrControl
                             }
                         }
 
-                        // Hata yoksa silme işlemini gerçekleştir
                         if (tumDetaylarGuncellendi && hataMesajlari.Count == 0)
                         {
                             bool paketSilindi = KesimListesiPaketData.KesimListesiPaketSil(kesimId);
@@ -166,10 +162,10 @@ namespace CEKA_APP.UsrControl
                             else
                             {
                                 hataMesajlari.Add("Paket silme işlemi başarısız oldu.");
-                                MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             }
                         }
-                        else
+
+                        if (hataMesajlari.Count > 0)
                         {
                             MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
@@ -177,6 +173,110 @@ namespace CEKA_APP.UsrControl
                 }
             }
         }
+        //private void dataGridKesimListesi_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        //{
+        //    if (e.RowIndex >= 0 && dataGridKesimListesi.Columns[e.ColumnIndex].Name == "Sil")
+        //    {
+        //        var kesimId = dataGridKesimListesi.Rows[e.RowIndex].Cells["kesimId"].Value?.ToString();
+        //        if (kesimId != null)
+        //        {
+        //            DialogResult result = MessageBox.Show($"Kesim ID: {kesimId} olan veri ve ilgili tüm kesim listesi verilerinin adetleri düşürülecek. Onaylıyor musunuz?", "Silme Onayı", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+        //            if (result == DialogResult.Yes)
+        //            {
+        //                hataMesajlari.Clear();
+        //                bool tumDetaylarGuncellendi = true;
+
+        //                // Önce tüm detayları kontrol et, hata varsa silme işlemini yapma
+        //                foreach (DataGridViewRow row in dataGridDetay.Rows)
+        //                {
+        //                    string kalite = row.Cells["kalite"].Value?.ToString();
+        //                    string malzeme = row.Cells["malzeme"].Value?.ToString();
+        //                    string kalipNo = row.Cells["kalipNo"].Value?.ToString();
+        //                    string kesilecekPozlar = row.Cells["kesilecekPozlar"].Value?.ToString();
+        //                    string proje = row.Cells["projeNo"].Value?.ToString();
+        //                    int silinecekAdet = 1;
+
+        //                    if (kalite != null && malzeme != null && kalipNo != null && kesilecekPozlar != null && proje != null)
+        //                    {
+        //                        if (row.Cells["kpAdetSayilari"].Value != null && int.TryParse(row.Cells["kpAdetSayilari"].Value.ToString(), out int adet))
+        //                        {
+        //                            silinecekAdet = adet > 0 ? adet : 1;
+        //                        }
+        //                        else
+        //                        {
+        //                            hataMesajlari.Add($"Satır için kpAdetSayilari değeri geçersiz veya null: {row.Cells["kpAdetSayilari"].Value}");
+        //                            tumDetaylarGuncellendi = false;
+        //                            break;
+        //                        }
+
+        //                        string ifsKalite = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKalite(kalite);
+        //                        if (string.IsNullOrEmpty(ifsKalite))
+        //                        {
+        //                            hataMesajlari.Add($"Kalite '{kalite}' için eşleşme bulunamadı, orijinal değer '{kalite}' kullanılacak.");
+        //                            ifsKalite = kalite;
+        //                        }
+
+        //                        string hataMesaji;
+        //                        string ifsMalzeme = KarsilastirmaTablosuData.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
+        //                        if (string.IsNullOrEmpty(ifsMalzeme))
+        //                        {
+        //                            hataMesajlari.Add(hataMesaji);
+        //                            tumDetaylarGuncellendi = false;
+        //                            break;
+        //                        }
+
+        //                        string kesilecekPozlarForValidation = kesilecekPozlar;
+        //                        if (kesilecekPozlar.Contains("-"))
+        //                        {
+        //                            kesilecekPozlarForValidation = kesilecekPozlar.Substring(0, kesilecekPozlar.IndexOf("-"));
+        //                        }
+
+        //                        if (ifsKalite != null && ifsMalzeme != null)
+        //                        {
+        //                            if (!KesimDetaylariData.GuncelleKesimDetaylari(ifsKalite, ifsMalzeme, kalipNo, kesilecekPozlarForValidation, proje, silinecekAdet, false))
+        //                            {
+        //                                hataMesajlari.Add($"Kesim detayı ({kalite}, {malzeme}, {kalipNo}, {kesilecekPozlarForValidation}, {proje}) adet düşürme işlemi başarısız. Silinecek adet: {silinecekAdet}");
+        //                                tumDetaylarGuncellendi = false;
+        //                                break;
+        //                            }
+        //                        }
+        //                    }
+        //                    else
+        //                    {
+        //                        hataMesajlari.Add("Eksik veri: Kalite, malzeme, kalıp no, kesilecek pozlar veya proje null.");
+        //                        tumDetaylarGuncellendi = false;
+        //                        break;
+        //                    }
+        //                }
+
+        //                // Hata yoksa silme işlemini gerçekleştir
+        //                if (tumDetaylarGuncellendi && hataMesajlari.Count == 0)
+        //                {
+        //                    bool paketSilindi = KesimListesiPaketData.KesimListesiPaketSil(kesimId);
+        //                    if (paketSilindi)
+        //                    {
+        //                        MessageBox.Show($"Kesim ID: {kesimId} olan veri ve ilgili tüm kesim detaylarının adetleri başarıyla düşürüldü.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        //                        VerileriYukle();
+        //                        dataGridDetay.DataSource = null;
+        //                        dataGridDetay.Columns.Clear();
+
+        //                        var userController = new LogEkle(_kullaniciAdi.lblSistemKullaniciMetinAl());
+        //                        userController.LogYap("YerlesimPlaniSilindi", "Yerleşim Planı Bilgi", $"Kullanıcı {kesimId} numaralı yerleşim planını ve içeriğini tamamen sildi.");
+        //                    }
+        //                    else
+        //                    {
+        //                        hataMesajlari.Add("Paket silme işlemi başarısız oldu.");
+        //                        MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //                    }
+        //                }
+        //                else
+        //                {
+        //                    MessageBox.Show(string.Join(Environment.NewLine, hataMesajlari), "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        //                }
+        //            }
+        //        }
+        //    }
+        //}
 
         private void dataGridDetay_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {

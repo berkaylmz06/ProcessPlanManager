@@ -552,47 +552,82 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 {
                     connection.Open();
                     string baseQuery = @"
-            SELECT
-                o.projeNo,
-                p.musteriAdi,
-                pro.aciklama AS projeAciklama,
-                k.kilometreTasiAdi AS kilometreTasiAdi,
-                o.siralama,
-                o.oran,
-                o.tutar,
-                p.paraBirimi,
-                o.tahminiTarih,
-                o.gerceklesenTarih,
-                o.aciklama AS odemeAciklama,
-                o.teminatMektubu,
-                o.teminatDurumu,
-                o.durum,
-                o.kalanTutar,
-                o.odemeTarihi,
-                o.faturaNo,
-                CASE 
-                    WHEN o.gerceklesenTarih IS NOT NULL AND o.odemeTarihi IS NOT NULL 
-                    THEN DATEDIFF(DAY, o.gerceklesenTarih, o.odemeTarihi)
-                    ELSE NULL 
-                END AS OdemeSapmasi
-            FROM ProjeFinans_OdemeSartlari o
-            JOIN ProjeFinans_KilometreTaslari k ON o.kilometreTasiId = k.kilometreTasiId
-            JOIN ProjeFinans_ProjeKutuk p ON p.projeNo = o.projeNo
-            JOIN ProjeFinans_Projeler pro ON pro.projeNo = p.projeNo
-            WHERE 1=1";
+                SELECT
+                    o.odemeId,
+                    o.projeNo,
+                    p.musteriAdi,
+                    pro.aciklama AS projeAciklama,
+                    k.kilometreTasiAdi AS kilometreTasiAdi,
+                    o.siralama,
+                    o.oran,
+                    o.tutar,
+                    p.paraBirimi,
+                    o.tahminiTarih,
+                    o.gerceklesenTarih,
+                    o.aciklama AS odemeAciklama,
+                    o.teminatMektubu,
+                    o.teminatDurumu,
+                    o.durum,
+                    o.kalanTutar,
+                    o.odemeTarihi,
+                    o.faturaNo,
+                    CASE 
+                        WHEN o.gerceklesenTarih IS NOT NULL AND o.odemeTarihi IS NOT NULL 
+                        THEN DATEDIFF(DAY, o.gerceklesenTarih, o.odemeTarihi)
+                        ELSE NULL 
+                    END AS OdemeSapmasi
+                FROM ProjeFinans_OdemeSartlari o
+                JOIN ProjeFinans_KilometreTaslari k ON o.kilometreTasiId = k.kilometreTasiId
+                JOIN ProjeFinans_ProjeKutuk p ON p.projeNo = o.projeNo
+                JOIN ProjeFinans_Projeler pro ON pro.projeNo = p.projeNo
+                WHERE 1=1";
 
                     var conditions = new List<string>();
                     var parameters = new List<SqlParameter>();
                     int paramIndex = 0;
 
+                    // Tarih filtrelerini tutmak için bir Dictionary
+                    var dateFilters = new Dictionary<string, (string start, string end)>();
+
                     foreach (var kutu in filtreKutulari)
                     {
                         string hamDeger = kutu.Value.Text.Trim();
-                        if (!string.IsNullOrEmpty(hamDeger))
+                        if (string.IsNullOrEmpty(hamDeger))
                         {
+                            continue;
+                        }
+
+                        // Tarih başlangıç/bitiş filtrelerini topla
+                        if (kutu.Key.EndsWith("_Baslangic"))
+                        {
+                            string baseName = kutu.Key.Replace("_Baslangic", "");
+                            if (!dateFilters.ContainsKey(baseName))
+                            {
+                                dateFilters[baseName] = (start: hamDeger, end: null);
+                            }
+                            else
+                            {
+                                dateFilters[baseName] = (start: hamDeger, end: dateFilters[baseName].end);
+                            }
+                        }
+                        else if (kutu.Key.EndsWith("_Bitis"))
+                        {
+                            string baseName = kutu.Key.Replace("_Bitis", "");
+                            if (!dateFilters.ContainsKey(baseName))
+                            {
+                                dateFilters[baseName] = (start: null, end: hamDeger);
+                            }
+                            else
+                            {
+                                dateFilters[baseName] = (start: dateFilters[baseName].start, end: hamDeger);
+                            }
+                        }
+                        else
+                        {
+                            // Diğer filtreler için mevcut mantık
                             string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
                                 .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(kutu.Key) ||
-                                                     NormalizeColumnName(c.Name) == NormalizeColumnName(kutu.Key))?.Name;
+                                                    NormalizeColumnName(c.Name) == NormalizeColumnName(kutu.Key))?.Name;
 
                             if (string.IsNullOrEmpty(columnName))
                             {
@@ -653,22 +688,6 @@ namespace CEKA_APP.DataBase.ProjeFinans
                                     parameters.Add(new SqlParameter($"@p{paramIndex}", SqlDbType.NVarChar) { Value = $"%{hamDeger}%" });
                                     paramIndex++;
                                     break;
-                                case "tahminiTarih":
-                                    if (DateTime.TryParse(hamDeger, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime tahminiTarih))
-                                    {
-                                        condition = $"CAST(o.tahminiTarih AS DATE) = @p{paramIndex}";
-                                        parameters.Add(new SqlParameter($"@p{paramIndex}", SqlDbType.Date) { Value = tahminiTarih.Date });
-                                        paramIndex++;
-                                    }
-                                    break;
-                                case "gerceklesenTarih":
-                                    if (DateTime.TryParse(hamDeger, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime gerceklesenTarih))
-                                    {
-                                        condition = $"CAST(o.gerceklesenTarih AS DATE) = @p{paramIndex}";
-                                        parameters.Add(new SqlParameter($"@p{paramIndex}", SqlDbType.Date) { Value = gerceklesenTarih.Date });
-                                        paramIndex++;
-                                    }
-                                    break;
                                 case "odemeAciklama":
                                     condition = $"o.aciklama LIKE @p{paramIndex}";
                                     parameters.Add(new SqlParameter($"@p{paramIndex}", SqlDbType.NVarChar) { Value = $"%{hamDeger}%" });
@@ -705,20 +724,12 @@ namespace CEKA_APP.DataBase.ProjeFinans
                                         paramIndex++;
                                     }
                                     break;
-                                case "odemeTarihi":
-                                    if (DateTime.TryParse(hamDeger, CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime odemeTarihi))
-                                    {
-                                        condition = $"CAST(o.odemeTarihi AS DATE) = @p{paramIndex}";
-                                        parameters.Add(new SqlParameter($"@p{paramIndex}", SqlDbType.Date) { Value = odemeTarihi.Date });
-                                        paramIndex++;
-                                    }
-                                    break;
                                 case "faturaNo":
                                     condition = $"o.faturaNo LIKE @p{paramIndex}";
                                     parameters.Add(new SqlParameter($"@p{paramIndex}", SqlDbType.NVarChar) { Value = $"%{hamDeger}%" });
                                     paramIndex++;
                                     break;
-                                case "odemeSapmasi":
+                                case "OdemeSapmasi": // Yeni eklenen, hesaplanmış sütun için
                                     if (hamDeger.Equals("-", StringComparison.OrdinalIgnoreCase))
                                     {
                                         condition = "(o.gerceklesenTarih IS NULL OR o.odemeTarihi IS NULL)";
@@ -755,6 +766,52 @@ namespace CEKA_APP.DataBase.ProjeFinans
                             if (!string.IsNullOrEmpty(condition))
                             {
                                 conditions.Add(condition);
+                            }
+                        }
+                    }
+
+                    // Tarih filtrelerini sorguya ekle
+                    foreach (var filter in dateFilters)
+                    {
+                        string columnHeader = filter.Key;
+                        string dbColumnName = string.Empty;
+
+                        if (columnHeader.Contains("Tahmini Tarih")) dbColumnName = "o.tahminiTarih";
+                        else if (columnHeader.Contains("Gerçekleşen Tarih")) dbColumnName = "o.gerceklesenTarih";
+                        else if (columnHeader.Contains("Ödeme Tarihi")) dbColumnName = "o.odemeTarihi";
+
+                        if (!string.IsNullOrEmpty(dbColumnName))
+                        {
+                            string startDate = filter.Value.start;
+                            string endDate = filter.Value.end;
+
+                            if (!string.IsNullOrEmpty(startDate) && !string.IsNullOrEmpty(endDate))
+                            {
+                                if (DateTime.TryParse(startDate, out DateTime dStart) && DateTime.TryParse(endDate, out DateTime dEnd))
+                                {
+                                    conditions.Add($"CAST({dbColumnName} AS DATE) BETWEEN @p{paramIndex} AND @p{paramIndex + 1}");
+                                    parameters.Add(new SqlParameter($"@p{paramIndex}", SqlDbType.Date) { Value = dStart.Date });
+                                    parameters.Add(new SqlParameter($"@p{paramIndex + 1}", SqlDbType.Date) { Value = dEnd.Date });
+                                    paramIndex += 2;
+                                }
+                            }
+                            else if (!string.IsNullOrEmpty(startDate))
+                            {
+                                if (DateTime.TryParse(startDate, out DateTime dStart))
+                                {
+                                    conditions.Add($"CAST({dbColumnName} AS DATE) >= @p{paramIndex}");
+                                    parameters.Add(new SqlParameter($"@p{paramIndex}", SqlDbType.Date) { Value = dStart.Date });
+                                    paramIndex++;
+                                }
+                            }
+                            else if (!string.IsNullOrEmpty(endDate))
+                            {
+                                if (DateTime.TryParse(endDate, out DateTime dEnd))
+                                {
+                                    conditions.Add($"CAST({dbColumnName} AS DATE) <= @p{paramIndex}");
+                                    parameters.Add(new SqlParameter($"@p{paramIndex}", SqlDbType.Date) { Value = dEnd.Date });
+                                    paramIndex++;
+                                }
                             }
                         }
                     }
@@ -802,7 +859,6 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 return new DataTable();
             }
         }
-
         private string NormalizeColumnName(string columnName)
         {
             if (string.IsNullOrEmpty(columnName)) return columnName;

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -15,23 +16,46 @@ namespace CEKA_APP.DataBase
     {
         public static bool ProjeKutukEkle(ProjeKutuk kutuk)
         {
+            string projeNo = kutuk.projeNo.Trim();
+            string kok = projeNo.Split('.')[0].Trim();
+
+            if (!Regex.IsMatch(kok, @"^\d{5}$"))
+            {
+                MessageBox.Show("Geçersiz kök numarası.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return false;
+            }
+
             using (var connection = DataBaseHelper.GetConnection())
             {
                 try
                 {
                     connection.Open();
 
+                    string checkSql = @"
+                SELECT COUNT(*) 
+                FROM ProjeFinans_ProjeKutuk 
+                WHERE LEFT(TRIM(projeNo), 5) = @kok";
+                    using (SqlCommand checkCommand = new SqlCommand(checkSql, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@kok", kok);
+                        int count = (int)checkCommand.ExecuteScalar();
+                        if (count > 0)
+                        {
+                            MessageBox.Show("Bu kök numaraya sahip bir proje zaten kayıtlı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return false;
+                        }
+                    }
+
                     string sql = @"
-                        INSERT INTO ProjeFinans_ProjeKutuk 
-                        (musteriNo, musteriAdi, teklifNo, isFirsatiNo, projeNo, altProjeVarMi, digerProjeIliskisiVarMi, siparisSozlesmeTarihi, paraBirimi, toplamBedel, faturalamaSekli, nakliyeVarMi)
-                        VALUES 
-                        (@musteriNo, @musteriAdi, @teklifNo, @isFirsatiNo, @projeNo, @altProjeVarMi, @digerProjeIliskisiVarMi, @siparisSozlesmeTarihi, @paraBirimi, @toplamBedel, @faturalamaSekli, @nakliyeVarMi)";
+                INSERT INTO ProjeFinans_ProjeKutuk 
+                (musteriNo, musteriAdi, isFirsatiNo, projeNo, altProjeVarMi, digerProjeIliskisiVarMi, siparisSozlesmeTarihi, paraBirimi, toplamBedel, faturalamaSekli, nakliyeVarMi)
+                VALUES 
+                (@musteriNo, @musteriAdi, @isFirsatiNo, @projeNo, @altProjeVarMi, @digerProjeIliskisiVarMi, @siparisSozlesmeTarihi, @paraBirimi, @toplamBedel, @faturalamaSekli, @nakliyeVarMi)";
 
                     using (SqlCommand command = new SqlCommand(sql, connection))
                     {
                         command.Parameters.AddWithValue("@musteriNo", kutuk.musteriNo ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@musteriAdi", kutuk.musteriAdi ?? (object)DBNull.Value);
-                        command.Parameters.AddWithValue("@teklifNo", kutuk.teklifNo ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@isFirsatiNo", kutuk.isFirsatiNo ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@projeNo", kutuk.projeNo ?? (object)DBNull.Value);
                         command.Parameters.AddWithValue("@altProjeVarMi", kutuk.altProjeVarMi);
@@ -53,7 +77,6 @@ namespace CEKA_APP.DataBase
                 }
             }
         }
-
         public static bool ProjeFiyatlandirmaEkle(string projeNo, decimal fiyat)
         {
             using (var conn = DataBaseHelper.GetConnection())
@@ -260,7 +283,7 @@ namespace CEKA_APP.DataBase
                     connection.Open();
                     string sql = @"
                         SELECT 
-                            projeKutukId, musteriNo, musteriAdi, teklifNo, isFirsatiNo, projeNo,
+                            projeKutukId, musteriNo, musteriAdi, isFirsatiNo, projeNo,
                             altProjeVarMi, digerProjeIliskisiVarMi, siparisSozlesmeTarihi, paraBirimi, toplamBedel, faturalamaSekli, nakliyeVarMi
                         FROM ProjeFinans_ProjeKutuk
                         WHERE TRIM(projeNo) = @projeNo";
@@ -276,16 +299,15 @@ namespace CEKA_APP.DataBase
                                     projeKutukId = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
                                     musteriNo = reader.IsDBNull(1) ? null : reader.GetString(1),
                                     musteriAdi = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                    teklifNo = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                    isFirsatiNo = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                    projeNo = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                    altProjeVarMi = reader.IsDBNull(6) ? false : reader.GetBoolean(6),
-                                    digerProjeIliskisiVarMi = reader.IsDBNull(7) ? "0" : reader.GetString(7),
-                                    siparisSozlesmeTarihi = reader.IsDBNull(8) ? DateTime.Now : reader.GetDateTime(8),
-                                    paraBirimi = reader.IsDBNull(9) ? null : reader.GetString(9),
-                                    toplamBedel = reader.IsDBNull(10) ? 0 : reader.GetDecimal(10),
-                                    faturalamaSekli = reader.IsDBNull(11) ? null : reader.GetString(11),
-                                    nakliyeVarMi = reader.IsDBNull(12) ? false : reader.GetBoolean(12),
+                                    isFirsatiNo = reader.IsDBNull(3) ? null : reader.GetString(3),
+                                    projeNo = reader.IsDBNull(4) ? null : reader.GetString(4),
+                                    altProjeVarMi = reader.IsDBNull(5) ? false : reader.GetBoolean(5),
+                                    digerProjeIliskisiVarMi = reader.IsDBNull(6) ? "0" : reader.GetString(6),
+                                    siparisSozlesmeTarihi = reader.IsDBNull(7) ? DateTime.Now : reader.GetDateTime(7),
+                                    paraBirimi = reader.IsDBNull(8) ? null : reader.GetString(8),
+                                    toplamBedel = reader.IsDBNull(9) ? 0 : reader.GetDecimal(9),
+                                    faturalamaSekli = reader.IsDBNull(10) ? null : reader.GetString(10),
+                                    nakliyeVarMi = reader.IsDBNull(11) ? false : reader.GetBoolean(11),
                                     altProjeBilgileri = new List<string>()
                                 };
 
@@ -476,14 +498,12 @@ namespace CEKA_APP.DataBase
                     ProjeKutuk mevcutKutuk = ProjeKutukAra(yeniKutuk.projeNo);
                     if (mevcutKutuk == null)
                     {
-                        MessageBox.Show($"Proje '{yeniKutuk.projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return false;
                     }
 
                     bool degisiklikVar =
                         mevcutKutuk.musteriNo != yeniKutuk.musteriNo ||
                         mevcutKutuk.musteriAdi != yeniKutuk.musteriAdi ||
-                        mevcutKutuk.teklifNo != yeniKutuk.teklifNo ||
                         mevcutKutuk.isFirsatiNo != yeniKutuk.isFirsatiNo ||
                         mevcutKutuk.altProjeVarMi != yeniKutuk.altProjeVarMi ||
                         mevcutKutuk.digerProjeIliskisiVarMi != yeniKutuk.digerProjeIliskisiVarMi ||
@@ -496,8 +516,26 @@ namespace CEKA_APP.DataBase
 
                     if (!degisiklikVar)
                     {
-                        MessageBox.Show("Herhangi bir değişiklik yapılmadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         return false;
+                    }
+
+                    string yeniProjeNo = yeniKutuk.projeNo.Trim();
+                    string kok = yeniProjeNo.Split('.')[0].Trim();
+
+                    string checkSql = @"
+                SELECT COUNT(*) 
+                FROM ProjeFinans_ProjeKutuk 
+                WHERE LEFT(TRIM(projeNo), 5) = @kok AND TRIM(projeNo) <> @projeNo";
+                    using (SqlCommand checkCommand = new SqlCommand(checkSql, connection))
+                    {
+                        checkCommand.Parameters.AddWithValue("@kok", kok);
+                        checkCommand.Parameters.AddWithValue("@projeNo", yeniProjeNo);
+                        int count = (int)checkCommand.ExecuteScalar();
+                        if (count > 0)
+                        {
+                            MessageBox.Show("Bu kök numaraya sahip başka bir proje zaten kayıtlı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return false;
+                        }
                     }
 
                     using (var transaction = connection.BeginTransaction())
@@ -505,25 +543,23 @@ namespace CEKA_APP.DataBase
                         try
                         {
                             string sql = @"
-                                UPDATE ProjeFinans_ProjeKutuk 
-                                SET musteriNo = @musteriNo, 
-                                    musteriAdi = @musteriAdi, 
-                                    teklifNo = @teklifNo, 
-                                    isFirsatiNo = @isFirsatiNo, 
-                                    altProjeVarMi = @altProjeVarMi, 
-                                    digerProjeIliskisiVarMi = @digerProjeIliskisiVarMi, 
-                                    siparisSozlesmeTarihi = @siparisSozlesmeTarihi, 
-                                    paraBirimi = @paraBirimi, 
-                                    toplamBedel = @toplamBedel, 
-                                    faturalamaSekli = @faturalamaSekli, 
-                                    nakliyeVarMi = @nakliyeVarMi
-                                WHERE projeNo = @projeNo";
+                        UPDATE ProjeFinans_ProjeKutuk 
+                        SET musteriNo = @musteriNo, 
+                            musteriAdi = @musteriAdi, 
+                            isFirsatiNo = @isFirsatiNo, 
+                            altProjeVarMi = @altProjeVarMi, 
+                            digerProjeIliskisiVarMi = @digerProjeIliskisiVarMi, 
+                            siparisSozlesmeTarihi = @siparisSozlesmeTarihi, 
+                            paraBirimi = @paraBirimi, 
+                            toplamBedel = @toplamBedel, 
+                            faturalamaSekli = @faturalamaSekli, 
+                            nakliyeVarMi = @nakliyeVarMi
+                        WHERE projeNo = @projeNo";
 
                             using (SqlCommand command = new SqlCommand(sql, connection, transaction))
                             {
                                 command.Parameters.AddWithValue("@musteriNo", yeniKutuk.musteriNo ?? (object)DBNull.Value);
                                 command.Parameters.AddWithValue("@musteriAdi", yeniKutuk.musteriAdi ?? (object)DBNull.Value);
-                                command.Parameters.AddWithValue("@teklifNo", yeniKutuk.teklifNo ?? (object)DBNull.Value);
                                 command.Parameters.AddWithValue("@isFirsatiNo", yeniKutuk.isFirsatiNo ?? (object)DBNull.Value);
                                 command.Parameters.AddWithValue("@projeNo", yeniKutuk.projeNo ?? (object)DBNull.Value);
                                 command.Parameters.AddWithValue("@altProjeVarMi", yeniKutuk.altProjeVarMi);
@@ -539,8 +575,8 @@ namespace CEKA_APP.DataBase
                             if (yeniKutuk.altProjeVarMi)
                             {
                                 string altProjeSilSql = @"
-                                    DELETE FROM ProjeFinans_ProjeIliski 
-                                    WHERE ustProjeNo = @projeNo";
+                            DELETE FROM ProjeFinans_ProjeIliski 
+                            WHERE ustProjeNo = @projeNo";
                                 using (SqlCommand command = new SqlCommand(altProjeSilSql, connection, transaction))
                                 {
                                     command.Parameters.AddWithValue("@projeNo", yeniKutuk.projeNo.Trim());
@@ -550,10 +586,10 @@ namespace CEKA_APP.DataBase
                                 foreach (var altProje in yeniKutuk.altProjeBilgileri)
                                 {
                                     string altProjeEkleSql = @"
-                                        INSERT INTO ProjeFinans_ProjeIliski 
-                                        (ustProjeNo, altProjeNo)
-                                        VALUES 
-                                        (@ustProjeNo, @altProjeNo)";
+                                INSERT INTO ProjeFinans_ProjeIliski 
+                                (ustProjeNo, altProjeNo)
+                                VALUES 
+                                (@ustProjeNo, @altProjeNo)";
                                     using (SqlCommand command = new SqlCommand(altProjeEkleSql, connection, transaction))
                                     {
                                         command.Parameters.AddWithValue("@ustProjeNo", yeniKutuk.projeNo ?? (object)DBNull.Value);
@@ -564,20 +600,19 @@ namespace CEKA_APP.DataBase
                             }
 
                             transaction.Commit();
-                            MessageBox.Show($"Proje '{yeniKutuk.projeNo}' başarıyla güncellendi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             return true;
                         }
                         catch (Exception ex)
                         {
                             transaction.Rollback();
-                            MessageBox.Show($"Proje güncellenirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            System.Diagnostics.Debug.WriteLine($"Proje güncellenirken hata: {ex.Message}");
                             return false;
                         }
                     }
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show($"Bağlantı hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    System.Diagnostics.Debug.WriteLine($"Bağlantı hatası: {ex.Message}");
                     return false;
                 }
             }

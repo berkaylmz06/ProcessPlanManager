@@ -190,23 +190,28 @@ namespace CEKA_APP.DataBase.ProjeFinans
                     foreach (var kutu in filtreKutulari)
                     {
                         string hamDeger = kutu.Value.Text.Trim();
-                        if (!string.IsNullOrEmpty(hamDeger))
+                        if (string.IsNullOrEmpty(hamDeger))
                         {
-                            string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
-                                .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(kutu.Key) ||
-                                                    NormalizeColumnName(c.Name) == NormalizeColumnName(kutu.Key))?.Name;
-
-                            if (string.IsNullOrEmpty(columnName))
-                            {
-                                MessageBox.Show($"Sütun bulunamadı: {kutu.Key}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                                continue;
-                            }
-
-                            string paramName = $"@p{paramIndex++}";
-                            string condition = $"LOWER({columnName}) LIKE {paramName}";
-                            conditions.Add(condition);
-                            parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = hamDeger.ToLower() });
+                            continue;
                         }
+
+                        string dataGridHeader = kutu.Key.Replace("_Baslangic", "").Replace("_Bitis", "");
+                        string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
+                                .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(dataGridHeader))?.Name;
+
+                        if (string.IsNullOrEmpty(columnName))
+                        {
+                            MessageBox.Show($"Sütun bulunamadı: {kutu.Key}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            continue;
+                        }
+
+                        string sqlColumnName = (columnName.Contains(" ") || columnName.Contains(".")) ? $"[{columnName}]" : columnName;
+
+                   
+                        string paramName = $"@p{paramIndex++}";
+                        string condition = $"LOWER({sqlColumnName}) LIKE {paramName}";
+                        conditions.Add(condition);
+                        parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = "%" + hamDeger.ToLower() + "%" });
                     }
 
                     if (conditions.Any())
