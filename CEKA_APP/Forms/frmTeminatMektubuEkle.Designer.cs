@@ -87,6 +87,7 @@
             this.txtMusteriNo.Name = "txtMusteriNo";
             this.txtMusteriNo.Size = new System.Drawing.Size(279, 22);
             this.txtMusteriNo.TabIndex = 2;
+            this.txtMusteriNo.Leave += new System.EventHandler(this.txtMusteriNo_Leave);
             // 
             // lblTutar
             // 
@@ -253,6 +254,7 @@
             // 
             // txtMusteriAdi
             // 
+            this.txtMusteriAdi.Enabled = false;
             this.txtMusteriAdi.Location = new System.Drawing.Point(191, 148);
             this.txtMusteriAdi.Name = "txtMusteriAdi";
             this.txtMusteriAdi.Size = new System.Drawing.Size(279, 22);

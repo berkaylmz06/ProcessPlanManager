@@ -4,7 +4,6 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Windows.Forms;
 using CEKA_APP.Entitys;
-using static iText.StyledXmlParser.Jsoup.Select.Evaluator;
 
 namespace CEKA_APP.DataBase
 {

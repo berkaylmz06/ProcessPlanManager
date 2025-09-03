@@ -1,13 +1,9 @@
-﻿using CEKA_APP.Abstracts;
-using CEKA_APP.Concretes;
-using CEKA_APP.DataBase;
+﻿using CEKA_APP.DataBase;
 using CEKA_APP.Entitys;
 using CEKA_APP.Helper;
-using iText.Forms.Form.Element;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Threading.Tasks;

@@ -1052,28 +1052,34 @@ namespace CEKA_APP.UsrControl
                 string paraBirimi = ProjeFinans_ProjeKutukData.GetProjeParaBirimi(projeNo);
                 decimal kurToUse;
 
-                string eskiKurText = lblEskiKur.Text.Replace($"Kaydedilen Kur ({paraBirimi}): ", "").Replace(" TL", "").Trim();
-                if (!string.IsNullOrEmpty(eskiKurText) && decimal.TryParse(eskiKurText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal eskiKur))
+                if (paraBirimi == "TL")
                 {
-                    kurToUse = Math.Round(eskiKur, 4);
+                    kurToUse = 1m; 
                 }
                 else
                 {
-                    string dovizKuruText = txtDovizKuru.Text?.Trim() ?? "0";
-                    if (!decimal.TryParse(dovizKuruText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal dovizKuru) || dovizKuru <= 0)
+                    string eskiKurText = lblEskiKur.Text.Replace($"Kaydedilen Kur ({paraBirimi}): ", "").Replace(" TL", "").Trim();
+                    if (!string.IsNullOrEmpty(eskiKurText) && decimal.TryParse(eskiKurText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal eskiKur))
                     {
-                        MessageBox.Show("Geçerli bir döviz kuru giriniz veya kaydedilen kur mevcut değilse kayıt yapılamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        kurToUse = Math.Round(eskiKur, 4);
+                    }
+                    else
+                    {
+                        string dovizKuruText = txtDovizKuru.Text?.Trim() ?? "0";
+                        if (!decimal.TryParse(dovizKuruText, NumberStyles.Any, new CultureInfo("tr-TR"), out decimal dovizKuru) || dovizKuru <= 0)
+                        {
+                            MessageBox.Show($"Geçerli bir döviz kuru giriniz (ör. 47,7028). {paraBirimi} için kur gereklidir.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                            return;
+                        }
+                        kurToUse = Math.Round(dovizKuru, 4);
+                    }
+
+                    if (kurToUse < 0.1m || kurToUse > 1000m)
+                    {
+                        MessageBox.Show($"Kur değeri ({kurToUse:N4}) geçerli bir aralıkta değil (0.1 - 1000).", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         return;
                     }
-                    kurToUse = Math.Round(dovizKuru, 4);
                 }
-
-                if (kurToUse < 0.1m || kurToUse > 1000m)
-                {
-                    MessageBox.Show($"Kur değeri ({kurToUse:N4}) geçerli bir aralıkta değil (0.1 - 1000).", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
 
                 for (int row = 1; row < tableLayoutPanel1.RowCount; row++)
                 {
@@ -1118,7 +1124,6 @@ namespace CEKA_APP.UsrControl
                     teklifBirimFiyat = Math.Round(teklifBirimFiyat, 2);
                     gerceklesenAdet = Math.Round(gerceklesenAdet, 2);
                     gerceklesenBirimFiyat = Math.Round(gerceklesenBirimFiyat, 2);
-
 
                     if (mevcutFiyatlandirmalar.TryGetValue(lblKalemAdi.Text, out var mevcutFiyatlandirma))
                     {
@@ -1168,7 +1173,14 @@ namespace CEKA_APP.UsrControl
                 {
                     var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
                     OnFiyatlandirmaKaydedildi?.Invoke(projeNo);
-                    lblEskiKur.Text = $"Kaydedilen Kur ({paraBirimi}): {kurToUse.ToString("N4", new CultureInfo("tr-TR"))}";
+                    if (paraBirimi != "TL")
+                    {
+                        lblEskiKur.Text = $"Kaydedilen Kur ({paraBirimi}): {kurToUse.ToString("N4", new CultureInfo("tr-TR"))}";
+                    }
+                    else
+                    {
+                        lblEskiKur.Text = "";
+                    }
                     MessageBox.Show("Fiyatlandırma başarıyla kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 }
                 else
@@ -1263,7 +1275,18 @@ namespace CEKA_APP.UsrControl
                         if (txtGerceklesenBirim != null) txtGerceklesenBirim.Text = kalemBirimi;
                         if (txtGerceklesenBirimFiyat != null) txtGerceklesenBirimFiyat.Text = veri.gerceklesenBirimFiyat.ToString("N2");
 
-                        decimal kur = GetKur(paraBirimi, veri.fiyatlandirmaKalemId, arananProjeNo);
+                        decimal kur;
+                        if (veri.teklifKuru.HasValue)
+                        {
+                            kur = veri.teklifKuru.Value;
+                            lblEskiKur.Text = $"Eski Kur ({paraBirimi}): {kur.ToString("N4")}";
+                        }
+                        else
+                        {
+                            decimal.TryParse(txtDovizKuru.Text.Trim().Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out kur);
+                            lblEskiKur.Text = ""; 
+                        }
+
                         decimal teklifToplam = veri.teklifBirimMiktar * veri.teklifBirimFiyat;
                         decimal teklifToplamTL = teklifToplam * kur;
                         decimal gerceklesenMaliyet = veri.gerceklesenBirimMiktar * veri.gerceklesenBirimFiyat;
@@ -1420,7 +1443,7 @@ namespace CEKA_APP.UsrControl
                     txtDovizKuru.Text = "";
                     lblKurBilgi.Text = "Proje için para birimi bilgisi bulunamadı.";
                     lblEskiKur.Text = "";
-                    txtDovizKuru.Visible = true;
+                    panelLeft.Visible = true;
                     return;
                 }
 
@@ -1429,33 +1452,56 @@ namespace CEKA_APP.UsrControl
                     txtDovizKuru.Text = "";
                     lblKurBilgi.Text = "";
                     lblEskiKur.Text = "";
-                    txtDovizKuru.Visible = false;
+                    panelLeft.Visible = false;
                     return;
                 }
 
-                string tcmbUrl = "https://www.tcmb.gov.tr/kurlar/today.xml";
-                XDocument xmlDoc = XDocument.Load(tcmbUrl);
+                DateTime previousDay = DateTime.Today.AddDays(-1);
+                if (previousDay.DayOfWeek == DayOfWeek.Saturday)
+                    previousDay = previousDay.AddDays(-1); 
+                else if (previousDay.DayOfWeek == DayOfWeek.Sunday)
+                    previousDay = previousDay.AddDays(-2); 
+
+                string yearMonth = previousDay.ToString("yyyyMM");
+                string dayMonthYear = previousDay.ToString("ddMMyyyy");
+                string tcmbUrl = $"https://www.tcmb.gov.tr/kurlar/{yearMonth}/{dayMonthYear}.xml";
+
+                XDocument xmlDoc;
+                try
+                {
+                    xmlDoc = XDocument.Load(tcmbUrl);
+                }
+                catch (System.Net.WebException)
+                {
+                    txtDovizKuru.Text = "";
+                    lblKurBilgi.Text = "Önceki günün kur bilgisi alınamadı.";
+                    lblEskiKur.Text = "";
+                    panelLeft.Visible = true;
+                    return;
+                }
 
                 string kurText = "";
                 if (paraBirimi == "USD")
                 {
                     var usdKur = xmlDoc.Descendants("Currency")
                                        .FirstOrDefault(c => c.Attribute("Kod")?.Value == "USD");
-                    kurText = usdKur?.Element("BanknoteSelling")?.Value;
-                    lblKurBilgi.Text = "ABD Doları (USD) Satış Kuru";
+                    kurText = usdKur?.Element("ForexBuying")?.Value;
+                    lblKurBilgi.Text = "ABD Doları (USD) Alış Kuru";
+                    panelLeft.Visible = true;
                 }
                 else if (paraBirimi == "EUR")
                 {
                     var eurKur = xmlDoc.Descendants("Currency")
                                        .FirstOrDefault(c => c.Attribute("Kod")?.Value == "EUR");
-                    kurText = eurKur?.Element("BanknoteSelling")?.Value;
-                    lblKurBilgi.Text = "Euro (EUR) Satış Kuru";
+                    kurText = eurKur?.Element("ForexBuying")?.Value;
+                    lblKurBilgi.Text = "Euro (EUR) Alış Kuru";
+                    panelLeft.Visible = true;
                 }
 
                 if (!string.IsNullOrEmpty(kurText) && decimal.TryParse(kurText.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out decimal kur))
                 {
                     kur = Math.Round(kur, 4);
-                    txtDovizKuru.Text = kur.ToString("N4", new CultureInfo("tr-TR")); 
+                    txtDovizKuru.Text = kur.ToString("N4", new CultureInfo("tr-TR"));
                 }
                 else
                 {
@@ -1485,7 +1531,7 @@ namespace CEKA_APP.UsrControl
                 txtDovizKuru.Text = "";
                 lblKurBilgi.Text = $"Hata oluştu: {ex.Message}";
                 lblEskiKur.Text = "";
-                txtDovizKuru.Visible = true;
+                panelLeft.Visible = true;
             }
         }
         private void btnKurGuncelle_Click(object sender, EventArgs e)

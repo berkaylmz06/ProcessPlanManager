@@ -113,12 +113,6 @@ namespace CEKA_APP.UsrControl
                 var mektupData = new ProjeFinans_TeminatMektuplariData();
                 var teminatMektuplari = mektupData.GetTeminatMektuplari().Where(m => m.projeNo == projeNo).ToList();
 
-                Console.WriteLine($"ProjeNo: {projeNo}, Teminat Mektubu Sayısı: {teminatMektuplari.Count}");
-                foreach (var mektup in teminatMektuplari)
-                {
-                    Console.WriteLine($"Teminat Mektubu: MektupNo={mektup.mektupNo}, KilometreTasiId={mektup.kilometreTasiId}");
-                }
-
                 List<OdemeSartlari> combinedOdemeBilgileri = new List<OdemeSartlari>();
                 combinedOdemeBilgileri.AddRange(odemeBilgileriFromDb);
                 combinedOdemeBilgileri.AddRange(_newlyAddedMilestones.Where(m => m.projeNo == projeNo && m.kilometreTasiId == 0));
@@ -289,7 +283,6 @@ namespace CEKA_APP.UsrControl
                     chkTeminatMektubuVar.Tag = txtTutar;
 
                     bool teminatVar = teminatMektuplari.Any(m => m.kilometreTasiId == odemeBilgi.kilometreTasiId && m.projeNo == projeNo);
-                    Console.WriteLine($"KilometreTasiId: {odemeBilgi.kilometreTasiId}, TeminatVar: {teminatVar}");
 
                     odemeBilgi.teminatMektubu = teminatVar;
                     string teminatDurumu = odemeBilgi.teminatDurumu ?? "Pasif";
@@ -552,16 +545,12 @@ namespace CEKA_APP.UsrControl
             }
 
             var projeNo = txtProjeAra.Text.Trim();
-            Console.WriteLine($"Girilen projeNo: '{projeNo}'");
 
             var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
-            Console.WriteLine($"projeBilgi: {(projeBilgi != null ? "Bulundu" : "Bulunamadı")}");
 
             var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
-            Console.WriteLine($"projeKutuk: {(projeKutuk != null ? "Bulundu" : "Bulunamadı")}");
 
             bool isAltProje = ProjeFinans_ProjeIliskiData.CheckAltProje(projeNo);
-            Console.WriteLine($"isAltProje: {isAltProje}");
 
             if (isAltProje)
             {
@@ -615,49 +604,37 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-        public void UpdateToplamBedelUI(string projeNo, decimal toplamBedel, List<string> eksikFiyatlandirmaProjeler)
+        private void UpdateToplamBedelUI(string projeNo, decimal toplamBedel, List<string> eksikFiyatlandirmaProjeler)
         {
             if (this.InvokeRequired)
             {
-                this.Invoke(new Action(() =>
-                {
-                    UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler);
-                }));
+                this.Invoke(new Action(() => UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler)));
+                return;
+            }
+
+            txtToplamBedel.Text = toplamBedel.ToString("F2", CultureInfo.CurrentCulture);
+            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
+
+            bool isAltProje = ProjeFinans_ProjeIliskiData.CheckAltProje(projeNo);
+
+            if (eksikFiyatlandirmaProjeler.Any())
+            {
+                txtToplamBedel.ForeColor = Color.Red;
+                lblToplamBedelBilgi.Text = isAltProje
+                   ? $"Alt projeler: {string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma bulunmamaktadır."
+                   : $"Proje: {string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma bulunmamaktadır.";
+                lblToplamBedelBilgi.ForeColor = Color.Red;
             }
             else
             {
-                var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
-                if (projeKutuk != null && projeKutuk.altProjeVarMi)
-                {
-                    if (eksikFiyatlandirmaProjeler.Any())
-                    {
-                        txtToplamBedel.Text = $"{toplamBedel:F2}";
-                        txtToplamBedel.ForeColor = Color.Red;
-                        lblToplamBedelBilgi.Text = $"Alt projeler: {string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma yok";
-                        lblToplamBedelBilgi.ForeColor = Color.Red;
-                    }
-                    else
-                    {
-                        txtToplamBedel.Text = toplamBedel.ToString("F2");
-                        txtToplamBedel.ForeColor = Color.Black;
-                    }
-                }
-                else
-                {
-                    if (eksikFiyatlandirmaProjeler.Any() && eksikFiyatlandirmaProjeler.Contains(projeNo))
-                    {
-                        txtToplamBedel.Text = $"{toplamBedel:F2} ({projeNo} için fiyatlandırma yok)";
-                        txtToplamBedel.ForeColor = Color.Red;
-                    }
-                    else
-                    {
-                        txtToplamBedel.Text = toplamBedel.ToString("F2");
-                        txtToplamBedel.ForeColor = Color.Black;
-                    }
-                }
+                txtToplamBedel.ForeColor = Color.Black;
+                lblToplamBedelBilgi.Text = string.Empty;
+                lblToplamBedelBilgi.ForeColor = Color.Black;
             }
-        }
 
+            txtToplamBedel.Refresh();
+            lblToplamBedelBilgi.Refresh();
+        }
         public void UpdateToplamBedelUI(decimal toplamBedel)
         {
             if (this.InvokeRequired)
@@ -873,6 +850,30 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
+            var projeNo = txtProjeAra.Text.Trim();
+            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
+            bool isAltProje = ProjeFinans_ProjeIliskiData.CheckAltProje(projeNo);
+
+            if (!isAltProje && projeKutuk != null && projeKutuk.altProjeVarMi)
+            {
+                var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
+                var altProjeler = projeKutuk.altProjeBilgileri?.ToList() ?? new List<string>();
+                var (_, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
+
+                if (eksikFiyatlandirmaProjeler.Any())
+                {
+                    MessageBox.Show($"Üst proje için kilometre taşı eklenemez. Şu alt projeler için fiyatlandırma eksik: {string.Join(", ", eksikFiyatlandirmaProjeler)}",
+                                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
+            if (!ParseToplamBedel(out decimal toplamBedel) || toplamBedel == 0)
+            {
+                MessageBox.Show("Projeye ait fiyatlandırma bulunmadığından ödeme bilgisi girilemez.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             List<string> alreadySelectedMilestones = new List<string>();
 
             for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
@@ -929,7 +930,6 @@ namespace CEKA_APP.UsrControl
                 }
             }
         }
-
         private void btnKaydet_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtProjeAra.Text))
@@ -1288,6 +1288,12 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
+            if (tableLayoutPanel1.RowCount <= 2)
+            {
+                MessageBox.Show("Hiç kilometre taşı eklenmemiş. Lütfen önce kilometre taşı ekleyin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(txtEksilenTutar.Text))
             {
                 MessageBox.Show("Lütfen çıkarılacak tutarı girin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1300,11 +1306,13 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show("Geçersiz tutar formatı. Lütfen sayısal bir değer girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
+
             if (string.IsNullOrWhiteSpace(rtxtAciklama.Text))
             {
                 MessageBox.Show("Lütfen ödeme için bir açıklama girin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             if (!dtOdemeTarihi.Checked)
             {
                 MessageBox.Show("Lütfen bir ödeme tarihi seçin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -1317,17 +1325,47 @@ namespace CEKA_APP.UsrControl
                 aciklama = "Otomatik ödeme düşümü";
             }
 
-            _odemeHareketleri.Clear();
-
             List<int> selectedRowIndexes = new List<int>();
+            decimal toplamKalanTutar = 0m;
+
             for (int row = 1; row < tableLayoutPanel1.RowCount - 1; row++)
             {
                 CheckBox chk = tableLayoutPanel1.GetControlFromPosition(0, row) as CheckBox;
-                if (chk != null && chk.Checked)
+                TextBox txtKalanTutar = GetTextBoxAt(row, 12);
+                if (txtKalanTutar != null && decimal.TryParse(txtKalanTutar.Text, NumberStyles.Any, culture, out decimal kalanTutar))
                 {
-                    selectedRowIndexes.Add(row);
+                    if (chk != null && chk.Checked)
+                    {
+                        selectedRowIndexes.Add(row);
+                        toplamKalanTutar += kalanTutar;
+                    }
+                    else if (selectedRowIndexes.Count == 0)
+                    {
+                        toplamKalanTutar += kalanTutar; 
+                    }
                 }
             }
+
+            if (selectedRowIndexes.Count > 0)
+            {
+                if (herSatirdanDusecekTutar > toplamKalanTutar)
+                {
+                    MessageBox.Show($"Girilen tutar ({herSatirdanDusecekTutar:N2}) seçili satırların toplam kalan tutarından ({toplamKalanTutar:N2}) büyük. İşlem iptal edildi.",
+                                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+            else
+            {
+                if (herSatirdanDusecekTutar > toplamKalanTutar)
+                {
+                    MessageBox.Show($"Girilen tutar ({herSatirdanDusecekTutar:N2}) tüm satırların toplam kalan tutarından ({toplamKalanTutar:N2}) büyük. İşlem iptal edildi.",
+                                    "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+
+            _odemeHareketleri.Clear();
 
             if (selectedRowIndexes.Count == 0)
             {
@@ -1459,13 +1497,15 @@ namespace CEKA_APP.UsrControl
                         }
                     }
                 }
-                MessageBox.Show("Tutar çıkarma işlemi tamamlandı. Kaydetmek için 'Kaydet' butonuna basın.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             finally
             {
                 tableLayoutPanel1.ResumeLayout(true);
             }
+
+            MessageBox.Show("Tutar çıkarma işlemi tamamlandı. Kaydetmek için 'Kaydet' butonuna basın.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
+
         private CheckBox GetCheckBoxAt(int row, int column)
         {
             foreach (Control control in tableLayoutPanel1.Controls)
@@ -1627,18 +1667,18 @@ namespace CEKA_APP.UsrControl
                     var newMilestone = new OdemeSartlari
                     {
                         projeNo = targetProjeNo,
-                        kilometreTasiId = 0, 
-                        siralama = milestone.siralama, 
+                        kilometreTasiId = 0,
+                        siralama = milestone.siralama,
                         kilometreTasiAdi = milestone.kilometreTasiAdi,
                         oran = milestone.oran,
-                        tutar = newTutar, 
-                        kalanTutar = newKalanTutar, 
+                        tutar = newTutar,
+                        kalanTutar = newKalanTutar,
                         tahminiTarih = null,
                         gerceklesenTarih = null,
                         odemeAciklama = "",
-                        durum = "Bekliyor", 
+                        durum = "Bekliyor",
                         teminatMektubu = false,
-                        teminatDurumu = "Pasif" 
+                        teminatDurumu = "Pasif"
                     };
                     _newlyAddedMilestones.Add(newMilestone);
                 }

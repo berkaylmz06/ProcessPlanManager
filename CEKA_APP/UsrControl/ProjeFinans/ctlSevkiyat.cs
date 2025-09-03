@@ -4,6 +4,7 @@ using CEKA_APP.Forms;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -601,6 +602,12 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 return;
             }
 
+            var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
+            List<string> altProjeler = null;
+            var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(arananProjeNo, altProjeler);
+
+            UpdateToplamBedelUI(arananProjeNo, toplamBedel, eksikFiyatlandirmaProjeler);
+
             LoadSevkiyatlar(arananProjeNo);
             UpdateButtonsState();
         }
@@ -619,7 +626,11 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 MessageBox.Show("Lütfen önce bir proje seçin veya girin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
+            if (!ParseToplamBedel(out decimal toplamBedel) || toplamBedel == 0)
+            {
+                MessageBox.Show("Projeye ait fiyatlandırma bulunmadığından sevkiyat bilgisi girilemez.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
             if (projeBilgi == null)
             {
@@ -715,6 +726,47 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 e.SuppressKeyPress = true;
                 this.btnAra.PerformClick();
             }
+        }
+        private void UpdateToplamBedelUI(string projeNo, decimal toplamBedel, List<string> eksikFiyatlandirmaProjeler)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(() => UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler)));
+                return;
+            }
+
+            txtToplamBedel.Text = toplamBedel.ToString("F2", CultureInfo.CurrentCulture);
+            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
+
+            bool isAltProje = ProjeFinans_ProjeIliskiData.CheckAltProje(projeNo);
+
+            if (eksikFiyatlandirmaProjeler.Any())
+            {
+                txtToplamBedel.ForeColor = Color.Red;
+                lblToplamBedelBilgi.Text = isAltProje
+                   ? $"Alt projeler: {string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma bulunmamaktadır."
+                   : $"Proje: {string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma bulunmamaktadır.";
+                lblToplamBedelBilgi.ForeColor = Color.Red;
+            }
+            else
+            {
+                txtToplamBedel.ForeColor = Color.Black;
+                lblToplamBedelBilgi.Text = string.Empty;
+                lblToplamBedelBilgi.ForeColor = Color.Black;
+            }
+
+            txtToplamBedel.Refresh();
+            lblToplamBedelBilgi.Refresh();
+        }
+        private bool ParseToplamBedel(out decimal toplamBedel)
+        {
+            toplamBedel = 0;
+            if (string.IsNullOrWhiteSpace(txtToplamBedel.Text))
+                return false;
+
+            string cleanText = txtToplamBedel.Text.Split('(')[0].Trim();
+
+            return decimal.TryParse(cleanText, NumberStyles.Any, new CultureInfo("tr-TR"), out toplamBedel);
         }
     }
 }

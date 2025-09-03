@@ -67,7 +67,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             {
                 List<OdemeSartlari> odemeSekilleri = odemeSekilleriData.GetOdemeBilgileri();
                 dataGridOdemeSartlari.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
-                dataGridOdemeSartlari.DataSource = odemeSekilleri;
+                dataGridOdemeSartlari.DataSource = odemeSekilleriData.FiltreleOdemeBilgileri(new Dictionary<string, TextBox>(), dataGridOdemeSartlari);
                 ConfigureDataGridColumns();
                 dataGridOdemeSartlari.ScrollBars = ScrollBars.Both;
             }
@@ -86,7 +86,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             ConfigureDataGridColumns();
 
             dataGridOdemeSartlari.ScrollBars = ScrollBars.Both;
-            dataGridOdemeSartlari.Refresh(); 
+            dataGridOdemeSartlari.Refresh();
 
             if (sonucTablo.Rows.Count == 0)
             {
@@ -104,26 +104,26 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             dataGridOdemeSartlari.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
 
             var columnOrder = new List<string>
-    {
-        "projeNo",
-        "musteriAdi",
-        "projeAciklama",
-        "kilometreTasiAdi",
-        "siralama",
-        "oran",
-        "tutar",
-        "paraBirimi",
-        "tahminiTarih",
-        "gerceklesenTarih",
-        "odemeAciklama",
-        "teminatMektubu",
-        "teminatDurumu",
-        "durum",
-        "kalanTutar",
-        "odemeTarihi",
-        "faturaNo",      
-        "odemeSapmasi"  
-    };
+            {
+                "projeNo",
+                "musteriAdi",
+                "projeAciklama",
+                "kilometreTasiAdi",
+                "siralama",
+                "oran",
+                "tutar",
+                "paraBirimi",
+                "tahminiTarih",
+                "gerceklesenTarih",
+                "odemeAciklama",
+                "teminatMektubu",
+                "teminatDurumu",
+                "durum",
+                "kalanTutar",
+                "odemeTarihi",
+                "faturaNo",
+                "odemeSapmasi"
+            };
 
             for (int i = 0; i < columnOrder.Count; i++)
             {
@@ -218,6 +218,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             if (dataGridOdemeSartlari.Columns.Contains("kilometreTasiId"))
                 dataGridOdemeSartlari.Columns["kilometreTasiId"].Visible = false;
         }
+
         private void tsmiAra_Click(object sender, EventArgs e)
         {
             using (var tempGrid = new DataGridView())
@@ -233,7 +234,8 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                             Visible = true,
                             Width = col.Width,
                             DisplayIndex = col.DisplayIndex,
-                            DefaultCellStyle = col.DefaultCellStyle != null ? new DataGridViewCellStyle(col.DefaultCellStyle) : null
+                            DefaultCellStyle = col.DefaultCellStyle != null ? new DataGridViewCellStyle(col.DefaultCellStyle) : null,
+                            DataPropertyName = col.DataPropertyName
                         };
                         tempGrid.Columns.Add(clonedColumn);
                     }
@@ -311,27 +313,20 @@ namespace CEKA_APP.UsrControl.ProjeFinans
         {
             if (dataGridOdemeSartlari.Columns[e.ColumnIndex].Name == "odemeSapmasi")
             {
-                var row = dataGridOdemeSartlari.Rows[e.RowIndex];
-                var gerceklesenTarih = row.Cells["gerceklesenTarih"].Value;
-                var odemeTarihi = row.Cells["odemeTarihi"].Value;
-
-                if (gerceklesenTarih != null && odemeTarihi != null && gerceklesenTarih != DBNull.Value && odemeTarihi != DBNull.Value)
+                var value = dataGridOdemeSartlari.Rows[e.RowIndex].Cells[e.ColumnIndex].Value;
+                if (value != null && value != DBNull.Value)
                 {
-                    try
+                    if (int.TryParse(value.ToString(), out int sapma))
                     {
-                        DateTime gerceklesen = Convert.ToDateTime(gerceklesenTarih);
-                        DateTime odeme = Convert.ToDateTime(odemeTarihi);
-                        int sapma = (odeme - gerceklesen).Days;
-
                         if (sapma > 0)
                         {
-                            e.Value = $"-{sapma}";
-                            e.CellStyle.ForeColor = System.Drawing.Color.Red;
+                            e.Value = $"+{sapma}";
+                            e.CellStyle.ForeColor = System.Drawing.Color.Green;
                         }
                         else if (sapma < 0)
                         {
-                            e.Value = $"+{Math.Abs(sapma)}";
-                            e.CellStyle.ForeColor = System.Drawing.Color.Green;
+                            e.Value = $"{sapma}";
+                            e.CellStyle.ForeColor = System.Drawing.Color.Red;
                         }
                         else
                         {
@@ -339,7 +334,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                             e.CellStyle.ForeColor = System.Drawing.Color.Black;
                         }
                     }
-                    catch
+                    else
                     {
                         e.Value = "-";
                         e.CellStyle.ForeColor = System.Drawing.Color.Black;

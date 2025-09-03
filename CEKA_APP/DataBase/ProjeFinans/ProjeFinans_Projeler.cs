@@ -34,7 +34,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 }
                 catch (Exception)
                 {
-                    return false; // Hata mesajını UI katmanına bırak
+                    return false;
                 }
             }
         }
@@ -85,7 +85,7 @@ namespace CEKA_APP.DataBase.ProjeFinans
                 catch (Exception)
                 {
                     degisiklikVar = false;
-                    return false; // Hata mesajını UI katmanına bırak
+                    return false; 
                 }
             }
         }

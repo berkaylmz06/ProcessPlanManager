@@ -50,12 +50,12 @@
             this.btnHesapla = new System.Windows.Forms.Button();
             this.btnKilometreTasiEkle = new System.Windows.Forms.Button();
             this.panelUst = new System.Windows.Forms.Panel();
+            this.btnKopyala = new System.Windows.Forms.Button();
             this.btnSil = new System.Windows.Forms.Button();
             this.lblToplamBedelBilgi = new System.Windows.Forms.Label();
             this.panelFill = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
-            this.btnKopyala = new System.Windows.Forms.Button();
             this.panelAlt.SuspendLayout();
             this.panelRight.SuspendLayout();
             this.panelLeft.SuspendLayout();
@@ -68,6 +68,7 @@
             // 
             this.txtToplamBedel.BackColor = System.Drawing.Color.White;
             this.txtToplamBedel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtToplamBedel.Enabled = false;
             this.txtToplamBedel.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.txtToplamBedel.Location = new System.Drawing.Point(1191, 27);
             this.txtToplamBedel.Name = "txtToplamBedel";
@@ -335,6 +336,21 @@
             this.panelUst.Size = new System.Drawing.Size(1674, 90);
             this.panelUst.TabIndex = 7;
             // 
+            // btnKopyala
+            // 
+            this.btnKopyala.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
+            this.btnKopyala.FlatAppearance.BorderSize = 0;
+            this.btnKopyala.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnKopyala.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
+            this.btnKopyala.ForeColor = System.Drawing.Color.White;
+            this.btnKopyala.Location = new System.Drawing.Point(570, 27);
+            this.btnKopyala.Name = "btnKopyala";
+            this.btnKopyala.Size = new System.Drawing.Size(149, 31);
+            this.btnKopyala.TabIndex = 7;
+            this.btnKopyala.Text = "Kopyala";
+            this.btnKopyala.UseVisualStyleBackColor = false;
+            this.btnKopyala.Click += new System.EventHandler(this.btnKopyala_Click);
+            // 
             // btnSil
             // 
             this.btnSil.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(231)))), ((int)(((byte)(76)))), ((int)(((byte)(60)))));
@@ -398,21 +414,6 @@
             this.ctlBaslik1.Name = "ctlBaslik1";
             this.ctlBaslik1.Size = new System.Drawing.Size(1674, 50);
             this.ctlBaslik1.TabIndex = 5;
-            // 
-            // btnKopyala
-            // 
-            this.btnKopyala.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
-            this.btnKopyala.FlatAppearance.BorderSize = 0;
-            this.btnKopyala.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnKopyala.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
-            this.btnKopyala.ForeColor = System.Drawing.Color.White;
-            this.btnKopyala.Location = new System.Drawing.Point(570, 27);
-            this.btnKopyala.Name = "btnKopyala";
-            this.btnKopyala.Size = new System.Drawing.Size(149, 31);
-            this.btnKopyala.TabIndex = 7;
-            this.btnKopyala.Text = "Kopyala";
-            this.btnKopyala.UseVisualStyleBackColor = false;
-            this.btnKopyala.Click += new System.EventHandler(this.btnKopyala_Click);
             // 
             // ctlOdemeSartlari
             // 

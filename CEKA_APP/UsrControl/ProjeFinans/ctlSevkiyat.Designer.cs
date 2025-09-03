@@ -41,6 +41,9 @@
             this.btnSevkiyatEkle = new System.Windows.Forms.Button();
             this.btnPaketEkle = new System.Windows.Forms.Button();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
+            this.lblToplamBedelBilgi = new System.Windows.Forms.Label();
+            this.txtToplamBedel = new System.Windows.Forms.TextBox();
+            this.lblToplamBedel = new System.Windows.Forms.Label();
             this.panelUst.SuspendLayout();
             this.panelAlt.SuspendLayout();
             this.panelRight.SuspendLayout();
@@ -57,7 +60,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 251F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 228F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 236F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 232F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 233F));
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 140);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -70,6 +73,9 @@
             // panelUst
             // 
             this.panelUst.BackColor = System.Drawing.Color.White;
+            this.panelUst.Controls.Add(this.lblToplamBedelBilgi);
+            this.panelUst.Controls.Add(this.txtToplamBedel);
+            this.panelUst.Controls.Add(this.lblToplamBedel);
             this.panelUst.Controls.Add(this.btnSil);
             this.panelUst.Controls.Add(this.txtProjeAra);
             this.panelUst.Controls.Add(this.btnAra);
@@ -216,6 +222,38 @@
             this.ctlBaslik1.Size = new System.Drawing.Size(1569, 50);
             this.ctlBaslik1.TabIndex = 0;
             // 
+            // lblToplamBedelBilgi
+            // 
+            this.lblToplamBedelBilgi.AutoSize = true;
+            this.lblToplamBedelBilgi.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.lblToplamBedelBilgi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.lblToplamBedelBilgi.Location = new System.Drawing.Point(1078, 61);
+            this.lblToplamBedelBilgi.Name = "lblToplamBedelBilgi";
+            this.lblToplamBedelBilgi.Size = new System.Drawing.Size(0, 20);
+            this.lblToplamBedelBilgi.TabIndex = 8;
+            // 
+            // txtToplamBedel
+            // 
+            this.txtToplamBedel.BackColor = System.Drawing.Color.White;
+            this.txtToplamBedel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtToplamBedel.Enabled = false;
+            this.txtToplamBedel.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtToplamBedel.Location = new System.Drawing.Point(1082, 28);
+            this.txtToplamBedel.Name = "txtToplamBedel";
+            this.txtToplamBedel.Size = new System.Drawing.Size(293, 30);
+            this.txtToplamBedel.TabIndex = 6;
+            // 
+            // lblToplamBedel
+            // 
+            this.lblToplamBedel.AutoSize = true;
+            this.lblToplamBedel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.lblToplamBedel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.lblToplamBedel.Location = new System.Drawing.Point(946, 31);
+            this.lblToplamBedel.Name = "lblToplamBedel";
+            this.lblToplamBedel.Size = new System.Drawing.Size(124, 23);
+            this.lblToplamBedel.TabIndex = 7;
+            this.lblToplamBedel.Text = "Toplam Bedel:";
+            // 
             // ctlSevkiyat
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -252,5 +290,8 @@
         private System.Windows.Forms.Button btnPaketEkle;
         private System.Windows.Forms.Button btnSevkiyatEkle;
         private System.Windows.Forms.Button btnSil;
+        private System.Windows.Forms.Label lblToplamBedelBilgi;
+        private System.Windows.Forms.TextBox txtToplamBedel;
+        private System.Windows.Forms.Label lblToplamBedel;
     }
 }

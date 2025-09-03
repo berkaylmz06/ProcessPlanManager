@@ -482,6 +482,28 @@ namespace CEKA_APP.Forms
             }
         }
 
-        
+        private void txtMusteriNo_Leave(object sender, EventArgs e)
+        {
+            string musteriNo = txtMusteriNo.Text.Trim();
+            if (!string.IsNullOrEmpty(musteriNo))
+            {
+                ProjeFinans_MusterilerData musteriData = new ProjeFinans_MusterilerData();
+                Musteriler musteri = musteriData.GetMusteriByMusteriNo(musteriNo);
+
+                if (musteri != null)
+                {
+                    txtMusteriAdi.Text = musteri.musteriAdi;
+                }
+                else
+                {
+                    txtMusteriAdi.Text = "";
+                    MessageBox.Show("Belirtilen müşteri numarası ile bir müşteri bulunamadı.", "Müşteri Bulunamadı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            else
+            {
+                txtMusteriAdi.Text = "";
+            }
+        }
     }
 }
