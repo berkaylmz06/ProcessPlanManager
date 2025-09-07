@@ -2,6 +2,9 @@
 using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Entitys.ProjeFinans;
 using CEKA_APP.Forms;
+using CEKA_APP.Interfaces;
+using CEKA_APP.Interfaces.ProjeFinans;
+using CEKA_APP.Services.ProjeFinans;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,12 +17,36 @@ namespace CEKA_APP.UsrControl
 {
     public partial class ctlOdemeSartlari : UserControl
     {
-        private List<(string projeNo, int kilometreTasiId)> _pendingDeletions = new List<(string projeNo, int kilometreTasiId)>();
+        private List<(int projeId, int kilometreTasiId)> _pendingDeletions = new List<(int projeId, int kilometreTasiId)>();
         private List<OdemeSartlari> _newlyAddedMilestones = new List<OdemeSartlari>();
         private List<OdemeHareketleri> _odemeHareketleri = new List<OdemeHareketleri>();
-        public ctlOdemeSartlari()
+        private int? projeId;
+
+        private readonly IOdemeSartlariService _odemeSartlariService;
+        private readonly IOdemeHareketleriService _odemeHareketleriService;
+        private readonly IKilometreTaslariService _kilometreTaslariService;
+        private readonly IFiyatlandirmaService _fiyatlandirmaService;
+        private readonly IMusterilerService _musterilerService;
+        private readonly IFinansProjelerService _finansProjelerService;
+        private readonly IProjeIliskiService _projeIliskiService;
+        private readonly IProjeKutukService _projeKutukService;
+        private readonly ITeminatMektuplariService _teminatMektuplariService;
+        public ctlOdemeSartlari(IOdemeSartlariService odemeSartlariService, IOdemeHareketleriService odemeHareketleriService, IKilometreTaslariService kilometreTaslariService, IFiyatlandirmaService fiyatlandirmaService, IMusterilerService musterilerService, IFinansProjelerService finansProjelerService, IProjeIliskiService projeIliskiService, IProjeKutukService projeKutukService, ITeminatMektuplariService teminatMektuplariService)
         {
             InitializeComponent();
+
+            _odemeSartlariService = odemeSartlariService ?? throw new ArgumentNullException(nameof(odemeSartlariService));
+            _odemeHareketleriService = odemeHareketleriService ?? throw new ArgumentNullException(nameof(odemeHareketleriService));
+            _kilometreTaslariService = kilometreTaslariService ?? throw new ArgumentNullException(nameof(kilometreTaslariService));
+            _fiyatlandirmaService = fiyatlandirmaService ?? throw new ArgumentNullException(nameof(fiyatlandirmaService));
+            _musterilerService = musterilerService ?? throw new ArgumentNullException(nameof(musterilerService));
+            _finansProjelerService = finansProjelerService ?? throw new ArgumentNullException(nameof(finansProjelerService));
+            _projeIliskiService = projeIliskiService ?? throw new ArgumentNullException(nameof(projeIliskiService));
+            _projeKutukService = projeKutukService ?? throw new ArgumentNullException(nameof(projeKutukService));
+            _teminatMektuplariService = teminatMektuplariService ?? throw new ArgumentNullException(nameof(teminatMektuplariService));
+
+
+
 
             this.DoubleBuffered = true;
             tableLayoutPanel1.Dock = DockStyle.Fill;
@@ -67,6 +94,7 @@ namespace CEKA_APP.UsrControl
         }
         private void LoadOdemeBilgileri(string projeNo)
         {
+            projeId = _finansProjelerService.GetProjeIdByNo(projeNo);
             tableLayoutPanel1.SuspendLayout();
             try
             {
@@ -75,7 +103,7 @@ namespace CEKA_APP.UsrControl
                 tableLayoutPanel1.RowCount = 0;
                 AddHeaderRow();
 
-                bool isUpperProject = !ProjeFinans_ProjeIliskiData.CheckAltProje(projeNo);
+                bool isUpperProject = !_projeIliskiService.CheckAltProje(projeId.Value);
                 if (!isUpperProject)
                 {
                     tableLayoutPanel1.ColumnStyles[8].Width = 0;
@@ -92,33 +120,54 @@ namespace CEKA_APP.UsrControl
                 lblTeminatBilgi.Text = string.Empty;
                 if (!isUpperProject)
                 {
-                    var ustProjeNo = ProjeFinans_ProjeIliskiData.GetUstProjeNo(projeNo);
-                    if (!string.IsNullOrEmpty(ustProjeNo))
+                    // Alt proje ise üst projeyi al
+                    var ustProjeId = _projeIliskiService.GetUstProjeId(projeId.Value);
+                    if (ustProjeId.HasValue)
                     {
-                        var ustProjeTeminatlari = new ProjeFinans_TeminatMektuplariData().GetTeminatMektuplari().Where(m => m.projeNo == ustProjeNo).ToList();
-                        if (ustProjeTeminatlari.Any())
+                        var ustProjeNo = _finansProjelerService.GetProjeNoById(ustProjeId.Value);
+                        if (!string.IsNullOrEmpty(ustProjeNo))
                         {
-                            var teminatMektubuVerilenKilometreTaslari = ustProjeTeminatlari.Select(tm => tm.kilometreTasiId).Distinct().ToList();
-                            var kilometreTasiData = new ProjeFinans_FiyatlandirmaKilometreTaslariData();
-                            var kilometreTasiAdlari = kilometreTasiData.GetKilometreTasiAdlariByIds(teminatMektubuVerilenKilometreTaslari);
+                            var ustProjeTeminatlari = _teminatMektuplariService
+                                .GetTeminatMektuplari()
+                                .Where(tm => tm.projeId == ustProjeId.Value)
+                                .ToList();
 
-                            lblTeminatBilgi.Text = $"Üst proje ({ustProjeNo}) için şu kilometre taşlarına teminat mektubu verilmiştir: {string.Join(", ", kilometreTasiAdlari)}";
-                            lblTeminatBilgi.ForeColor = Color.Blue;
+                            if (ustProjeTeminatlari.Any())
+                            {
+                                var teminatKilometreTaslari = ustProjeTeminatlari
+                                    .Select(tm => tm.kilometreTasiId)
+                                    .Distinct()
+                                    .ToList();
+
+                                if (teminatKilometreTaslari.Any())
+                                {
+                                    var kilometreTasiAdlari = _kilometreTaslariService.GetKilometreTasiAdlariByIds(teminatKilometreTaslari);
+
+                                    if (kilometreTasiAdlari.Any())
+                                    {
+                                        lblTeminatBilgi.Text = $"Üst proje ({ustProjeNo}) için şu kilometre taşlarına teminat mektubu verilmiştir: {string.Join(", ", kilometreTasiAdlari)}";
+                                        lblTeminatBilgi.ForeColor = Color.Blue;
+                                    }
+                                    else
+                                    {
+                                        lblTeminatBilgi.Text = string.Empty;
+                                    }
+                                }
+                            }
                         }
                     }
                 }
 
-                var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
-                var odemeBilgileriFromDb = odemeSekilleriData.GetOdemeBilgileriByProjeNo(projeNo);
-                var mektupData = new ProjeFinans_TeminatMektuplariData();
-                var teminatMektuplari = mektupData.GetTeminatMektuplari().Where(m => m.projeNo == projeNo).ToList();
+
+                var odemeBilgileriFromDb = _odemeSartlariService.GetOdemeBilgileriByProjeId(projeId.Value);
+                var teminatMektuplari = _teminatMektuplariService.GetTeminatMektuplari().Where(m => m.projeId == projeId.Value).ToList();
 
                 List<OdemeSartlari> combinedOdemeBilgileri = new List<OdemeSartlari>();
                 combinedOdemeBilgileri.AddRange(odemeBilgileriFromDb);
-                combinedOdemeBilgileri.AddRange(_newlyAddedMilestones.Where(m => m.projeNo == projeNo && m.kilometreTasiId == 0));
+                combinedOdemeBilgileri.AddRange(_newlyAddedMilestones.Where(m => m.projeId == projeId && m.kilometreTasiId == 0));
 
                 var filteredOdemeBilgileri = combinedOdemeBilgileri
-                    .Where(odemeBilgi => !_pendingDeletions.Any(pd => pd.projeNo == projeNo && pd.kilometreTasiId == odemeBilgi.kilometreTasiId))
+                    .Where(odemeBilgi => !_pendingDeletions.Any(pd => pd.projeId == projeId && pd.kilometreTasiId == odemeBilgi.kilometreTasiId))
                     .OrderBy(o => o.tahminiTarih.HasValue ? 0 : 1)
                     .ThenBy(o => o.tahminiTarih.HasValue ? o.tahminiTarih.Value : DateTime.MaxValue)
                     .ToList();
@@ -282,7 +331,7 @@ namespace CEKA_APP.UsrControl
 
                     chkTeminatMektubuVar.Tag = txtTutar;
 
-                    bool teminatVar = teminatMektuplari.Any(m => m.kilometreTasiId == odemeBilgi.kilometreTasiId && m.projeNo == projeNo);
+                    bool teminatVar = teminatMektuplari.Any(m => m.kilometreTasiId == odemeBilgi.kilometreTasiId && m.projeId == projeId);
 
                     odemeBilgi.teminatMektubu = teminatVar;
                     string teminatDurumu = odemeBilgi.teminatDurumu ?? "Pasif";
@@ -341,25 +390,9 @@ namespace CEKA_APP.UsrControl
                                 chkTempTeminatMektubuYok.Checked = false;
                             }
 
-                            odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
-                            odemeSekilleriData.SaveOrUpdateOdemeBilgi(
-                                projeNo: odemeBilgi.projeNo,
-                                kilometreTasiId: odemeBilgi.kilometreTasiId,
-                                siralama: rowIdx,
-                                oran: odemeBilgi.oran.ToString("F2", CultureInfo.InvariantCulture),
-                                tutar: odemeBilgi.tutar.ToString("F2", CultureInfo.InvariantCulture),
-                                tahminiTarih: odemeBilgi.tahminiTarih?.ToString("yyyy-MM-dd") ?? "",
-                                gerceklesenTarih: odemeBilgi.gerceklesenTarih?.ToString("yyyy-MM-dd") ?? "",
-                                aciklama: odemeBilgi.odemeAciklama,
-                                teminatMektubu: odemeBilgi.teminatMektubu,
-                                teminatDurumu: "Pasif",
-                                durum: odemeBilgi.durum,
-                                faturaNo: odemeSekilleriData.GetFaturaNo(odemeBilgi.projeNo, odemeBilgi.kilometreTasiId) ?? "",
-                                kalanTutar: odemeBilgi.kalanTutar.ToString("F2", CultureInfo.InvariantCulture)
-                            );
+                            _odemeSartlariService.SaveOrUpdateOdemeBilgi(odemeBilgi);
                         }
                     };
-
                     var lblDurum = new Label
                     {
                         Text = odemeBilgi.durum,
@@ -411,7 +444,7 @@ namespace CEKA_APP.UsrControl
                                 var tagValue = chkSelect.Tag as OdemeSartlari;
                                 if (tagValue != null)
                                 {
-                                    var frm = new frmTeminatMektubuEkle(null, txtProjeAra.Text.Trim(), tagValue.kilometreTasiId, txtTutar.Text);
+                                    var frm = new frmTeminatMektubuEkle(_musterilerService, null, _finansProjelerService, _projeKutukService, _teminatMektuplariService, projeId, tagValue.kilometreTasiId, txtTutar.Text);
                                     if (frm.ShowDialog() == DialogResult.OK)
                                     {
                                         if (lblTempTeminatDurum != null)
@@ -449,35 +482,52 @@ namespace CEKA_APP.UsrControl
                                 }
                             }
                         };
-                        chkTeminatMektubuYok.CheckedChanged += (s, e) =>
+                        chkTeminatMektubuVar.CheckedChanged += (s, e) =>
                         {
-                            if (chkTeminatMektubuYok.Checked)
+                            if (chkTeminatMektubuVar.Checked)
                             {
-                                chkTeminatMektubuVar.Checked = false;
+                                chkTeminatMektubuYok.Checked = false;
                                 var lblTempTeminatDurum = GetLabelAt(newRowIndex, 9);
-                                if (lblTempTeminatDurum != null)
+
+                                var tagValue = chkSelect.Tag as OdemeSartlari;
+                                if (tagValue != null)
                                 {
-                                    lblTempTeminatDurum.Text = "Pasif";
-                                    lblTempTeminatDurum.ForeColor = Color.Red;
-                                    btnMektupGeriAl.Enabled = false;
-                                    odemeBilgi.teminatMektubu = false;
-                                    odemeBilgi.teminatDurumu = "Pasif";
-                                    odemeSekilleriData.SaveOrUpdateOdemeBilgi(
-                                        projeNo: projeNo,
-                                        kilometreTasiId: odemeBilgi.kilometreTasiId,
-                                        siralama: newRowIndex,
-                                        oran: odemeBilgi.oran.ToString("F2", CultureInfo.InvariantCulture),
-                                        tutar: odemeBilgi.tutar.ToString("F2", CultureInfo.InvariantCulture),
-                                        tahminiTarih: odemeBilgi.tahminiTarih?.ToString("yyyy-MM-dd") ?? "",
-                                        gerceklesenTarih: odemeBilgi.gerceklesenTarih?.ToString("yyyy-MM-dd") ?? "",
-                                        aciklama: odemeBilgi.odemeAciklama,
-                                        teminatMektubu: false,
-                                        teminatDurumu: "Pasif",
-                                        durum: odemeBilgi.durum,
-                                        faturaNo: odemeSekilleriData.GetFaturaNo(projeNo, odemeBilgi.kilometreTasiId) ?? "",
-                                        kalanTutar: odemeBilgi.kalanTutar.ToString("F2", CultureInfo.InvariantCulture)
-                                    );
-                                    var mektup = teminatMektuplari.FirstOrDefault(m => m.kilometreTasiId == odemeBilgi.kilometreTasiId);
+                                    var frm = new frmTeminatMektubuEkle(_musterilerService, null, _finansProjelerService, _projeKutukService, _teminatMektuplariService, projeId, tagValue.kilometreTasiId, txtTutar.Text);
+                                    if (frm.ShowDialog() == DialogResult.OK)
+                                    {
+                                        if (lblTempTeminatDurum != null)
+                                        {
+                                            lblTempTeminatDurum.Text = "Aktif";
+                                            lblTempTeminatDurum.ForeColor = Color.Green;
+                                            btnMektupGeriAl.Enabled = true;
+                                            odemeBilgi.teminatMektubu = true;
+                                            odemeBilgi.teminatDurumu = "Aktif";
+                                            _odemeSartlariService.SaveOrUpdateOdemeBilgi(odemeBilgi);
+                                        }
+                                    }
+                                    else
+                                    {
+                                        chkTeminatMektubuVar.Checked = false;
+                                        chkTeminatMektubuYok.Checked = true;
+                                        if (lblTempTeminatDurum != null)
+                                        {
+                                            lblTempTeminatDurum.Text = "Pasif";
+                                            lblTempTeminatDurum.ForeColor = Color.Red;
+                                            btnMektupGeriAl.Enabled = false;
+                                        }
+                                    }
+                                }
+                                else
+                                {
+                                    MessageBox.Show("Kilometre taşı ID'si alınamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    chkTeminatMektubuVar.Checked = false;
+                                    chkTeminatMektubuYok.Checked = true;
+                                    if (lblTempTeminatDurum != null)
+                                    {
+                                        lblTempTeminatDurum.Text = "Pasif";
+                                        lblTempTeminatDurum.ForeColor = Color.Red;
+                                        btnMektupGeriAl.Enabled = false;
+                                    }
                                 }
                             }
                         };
@@ -512,12 +562,12 @@ namespace CEKA_APP.UsrControl
                 {
                     if (odemeBilgi != null && odemeBilgi.kilometreTasiId != 0)
                     {
-                        _pendingDeletions.Add((txtProjeAra.Text.Trim(), odemeBilgi.kilometreTasiId));
+                        _pendingDeletions.Add((odemeBilgi.projeId, odemeBilgi.kilometreTasiId));
                         MessageBox.Show("Satır başarıyla silinmek üzere işaretlendi. Kaydet butonuna tıklayarak veritabanından silmeyi onaylayın.", "Silme Onayı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else if (odemeBilgi != null && odemeBilgi.kilometreTasiId == 0)
                     {
-                        _newlyAddedMilestones.RemoveAll(m => m.projeNo == odemeBilgi.projeNo && m.kilometreTasiAdi == odemeBilgi.kilometreTasiAdi);
+                        _newlyAddedMilestones.RemoveAll(m => m.projeId == odemeBilgi.projeId && m.kilometreTasiAdi == odemeBilgi.kilometreTasiAdi);
                         MessageBox.Show("Yeni eklenen satır başarıyla kaldırıldı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
                     else
@@ -545,45 +595,57 @@ namespace CEKA_APP.UsrControl
             }
 
             var projeNo = txtProjeAra.Text.Trim();
+            projeId = _finansProjelerService.GetProjeIdByNo(projeNo);
+            if (!projeId.HasValue)
+            {
+                MessageBox.Show("Proje bulunamadı. Lütfen geçerli bir Proje No girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            var projeBilgi = _finansProjelerService.GetProjeBilgileri(projeId.Value);
 
-            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
+            var projeKutuk = _projeKutukService.ProjeKutukAra(projeId.Value);
 
-            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
-
-            bool isAltProje = ProjeFinans_ProjeIliskiData.CheckAltProje(projeNo);
+            bool isAltProje = _projeIliskiService.CheckAltProje(projeId.Value);
 
             if (isAltProje)
             {
-                var ustProjeNo = ProjeFinans_ProjeIliskiData.GetUstProjeNo(projeNo);
-                if (!string.IsNullOrEmpty(ustProjeNo))
+                var ustProjeId = _projeIliskiService.GetUstProjeId(projeId.Value);
+                if (ustProjeId.HasValue)
                 {
-                    var ustProjeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(ustProjeNo);
-                    bool ustTekil = ProjeFinans_ProjeKutukData.IsFaturalamaSekliTekil(ustProjeNo);
-
-                    if (ustProjeKutuk != null && ustTekil)
+                    if (ustProjeId.HasValue)
                     {
-                        MessageBox.Show("Proje Kütük Faturalama Şekli Tekil olduğundan bu projeye ödeme şekli giremezsiniz.",
-                                        "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        return;
+                        var ustProjeKutuk = _projeKutukService.ProjeKutukAra(ustProjeId.Value);
+                        bool ustTekil = _projeKutukService.IsFaturalamaSekliTekil(ustProjeId.Value);
+
+                        if (ustProjeKutuk != null && ustTekil)
+                        {
+                            MessageBox.Show(
+                                "Üst projenin Kütük Faturalama Şekli Tekil olduğundan bu projeye ödeme şekli giremezsiniz.",
+                                "Hata",
+                                MessageBoxButtons.OK,
+                                MessageBoxIcon.Warning
+                            );
+                            return;
+                        }
                     }
                 }
             }
 
+
             if (projeBilgi != null)
             {
-                var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
-                List<string> altProjeler = null;
+                List<int> altProjeler = null;
 
                 if (isAltProje)
                 {
-                    altProjeler = ProjeFinans_ProjeIliskiData.GetAltProjeler(projeNo);
+                    altProjeler = _projeIliskiService.GetAltProjeler(projeId.Value);
                 }
                 else if (projeKutuk != null && projeKutuk.altProjeVarMi)
                 {
-                    altProjeler = projeKutuk.altProjeBilgileri?.ToList() ?? new List<string>();
+                    altProjeler = projeKutuk.altProjeBilgileri?.Select(s => s).ToList() ?? new List<int>();
                 }
 
-                var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
+                var (toplamBedel, eksikFiyatlandirmaProjeler) = _fiyatlandirmaService.GetToplamBedel(projeId.Value, altProjeler);
 
                 lblToplamBedelBilgi.Text = "";
 
@@ -603,8 +665,7 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show("Proje bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
-
-        private void UpdateToplamBedelUI(string projeNo, decimal toplamBedel, List<string> eksikFiyatlandirmaProjeler)
+        private void UpdateToplamBedelUI(string projeNo, decimal toplamBedel, List<int> eksikFiyatlandirmaProjeler)
         {
             if (this.InvokeRequired)
             {
@@ -613,9 +674,10 @@ namespace CEKA_APP.UsrControl
             }
 
             txtToplamBedel.Text = toplamBedel.ToString("F2", CultureInfo.CurrentCulture);
-            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
 
-            bool isAltProje = ProjeFinans_ProjeIliskiData.CheckAltProje(projeNo);
+            var projeKutuk = _projeKutukService.ProjeKutukAra(projeId.Value);
+
+            bool isAltProje = _projeIliskiService.CheckAltProje(projeId.Value);
 
             if (eksikFiyatlandirmaProjeler.Any())
             {
@@ -851,14 +913,13 @@ namespace CEKA_APP.UsrControl
             }
 
             var projeNo = txtProjeAra.Text.Trim();
-            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
-            bool isAltProje = ProjeFinans_ProjeIliskiData.CheckAltProje(projeNo);
+            var projeKutuk = _projeKutukService.ProjeKutukAra(projeId.Value);
+            bool isAltProje = _projeIliskiService.CheckAltProje(projeId.Value);
 
             if (!isAltProje && projeKutuk != null && projeKutuk.altProjeVarMi)
             {
-                var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
-                var altProjeler = projeKutuk.altProjeBilgileri?.ToList() ?? new List<string>();
-                var (_, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(projeNo, altProjeler);
+                var altProjeler = projeKutuk.altProjeBilgileri?.ToList() ?? new List<int>();
+                var (_, eksikFiyatlandirmaProjeler) = _fiyatlandirmaService.GetToplamBedel(projeId.Value, altProjeler);
 
                 if (eksikFiyatlandirmaProjeler.Any())
                 {
@@ -885,7 +946,7 @@ namespace CEKA_APP.UsrControl
                 }
             }
 
-            using (var frm = new Forms.frmYeniKilometreTasi(alreadySelectedMilestones))
+            using (var frm = new Forms.frmYeniKilometreTasi(_kilometreTaslariService, alreadySelectedMilestones))
             {
                 if (frm.ShowDialog() == DialogResult.OK)
                 {
@@ -909,7 +970,7 @@ namespace CEKA_APP.UsrControl
 
                         OdemeSartlari newMilestone = new OdemeSartlari
                         {
-                            projeNo = txtProjeAra.Text.Trim(),
+                            projeId = projeId.Value,
                             kilometreTasiId = 0,
                             kilometreTasiAdi = frm.KilometreTasiAdi,
                             oran = yeniOran,
@@ -939,20 +1000,18 @@ namespace CEKA_APP.UsrControl
             }
 
             var projeNo = txtProjeAra.Text.Trim();
-            var proje = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
+            var proje = _finansProjelerService.GetProjeBilgileri(projeId.Value);
             if (proje == null)
             {
                 MessageBox.Show("Proje bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
-            var kilometreTasiData = new ProjeFinans_FiyatlandirmaKilometreTaslariData();
             try
             {
                 foreach (var itemToDelete in _pendingDeletions)
                 {
-                    odemeSekilleriData.DeleteOdemeBilgi(itemToDelete.projeNo, itemToDelete.kilometreTasiId);
+                    _odemeSartlariService.DeleteOdemeBilgi(itemToDelete.projeId, itemToDelete.kilometreTasiId);
                 }
                 _pendingDeletions.Clear();
 
@@ -983,7 +1042,7 @@ namespace CEKA_APP.UsrControl
                     }
 
                     string kilometreTasiAdi = lblKilometreTasiAdi.Text;
-                    int kilometreTasiId = kilometreTasiData.GetKilometreTasiId(kilometreTasiAdi);
+                    int kilometreTasiId = _kilometreTaslariService.GetKilometreTasiId(kilometreTasiAdi);
 
                     if (kilometreTasiId == 0)
                     {
@@ -1012,18 +1071,18 @@ namespace CEKA_APP.UsrControl
                         kalanTutar = parsedKalanTutar;
                     }
 
-                    string tahminiTarih = dtpTahminiTarih.Checked ? dtpTahminiTarih.Value.ToString("yyyy-MM-dd") : "";
-                    string gerceklesenTarih = dtpGerceklesenTarih.Checked ? dtpGerceklesenTarih.Value.ToString("yyyy-MM-dd") : "";
+                    string tahminiTarih = dtpTahminiTarih.Checked ? dtpTahminiTarih.Value.ToString("yyyy-MM-dd") : null;
+                    string gerceklesenTarih = dtpGerceklesenTarih.Checked ? dtpGerceklesenTarih.Value.ToString("yyyy-MM-dd") : null;
                     string aciklama = rtbAciklama.Text;
                     string durum = lblDurum.Text;
                     int siralama = row;
 
                     bool teminatMektubu = chkTeminatMektubuVar != null && chkTeminatMektubuVar.Checked;
                     string teminatDurumu = lblTeminatDurum?.Text ?? "Pasif";
-                    string faturaNo = odemeSekilleriData.GetFaturaNo(projeNo, kilometreTasiId) ?? "";
+                    string faturaNo = _odemeSartlariService.GetFaturaNo(projeId.Value, kilometreTasiId) ?? "";
 
                     string odemeTarihi = null;
-                    var existingOdemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kilometreTasiId);
+                    var existingOdemeBilgi = _odemeSartlariService.GetOdemeBilgi(projeNo, kilometreTasiId);
                     if (kalanTutar == 0 && durum == "Ödendi")
                     {
                         var relatedOdemeHareketi = _odemeHareketleri
@@ -1051,31 +1110,33 @@ namespace CEKA_APP.UsrControl
                         return;
                     }
 
-                    odemeSekilleriData.SaveOrUpdateOdemeBilgi(
-                        projeNo,
-                        kilometreTasiId,
-                        siralama,
-                        oran.ToString("F2", CultureInfo.InvariantCulture),
-                        tutar.ToString("F2", CultureInfo.InvariantCulture),
-                        tahminiTarih,
-                        gerceklesenTarih,
-                        aciklama,
-                        teminatMektubu,
-                        teminatDurumu,
-                        durum,
-                        faturaNo,
-                        kalanTutar?.ToString("F2", CultureInfo.InvariantCulture) ?? string.Empty,
-                        odemeTarihi
-                    );
+                    var odemeSartlari = new OdemeSartlari
+                    {
+                        projeId = projeId.Value,
+                        kilometreTasiId = kilometreTasiId,
+                        siralama = siralama,
+                        oran = oran,
+                        tutar = tutar,
+                        kalanTutar = kalanTutar ?? 0,
+                        tahminiTarih = dtpTahminiTarih.Checked ? dtpTahminiTarih.Value : (DateTime?)null,
+                        gerceklesenTarih = dtpGerceklesenTarih.Checked ? dtpGerceklesenTarih.Value : (DateTime?)null,
+                        odemeAciklama = aciklama,
+                        teminatMektubu = teminatMektubu,
+                        teminatDurumu = teminatDurumu,
+                        durum = durum,
+                        faturaNo = faturaNo,
+                        odemeTarihi = !string.IsNullOrEmpty(odemeTarihi) ? DateTime.ParseExact(odemeTarihi, "yyyy-MM-dd", CultureInfo.InvariantCulture) : (DateTime?)null,
+                    };
+                    // Call the service method with OdemeSartlari object
+                    _odemeSartlariService.SaveOrUpdateOdemeBilgi(odemeSartlari);
                 }
 
-                var odemeHareketleriData = new ProjeFinans_OdemeHareketleriData();
 
                 if (_odemeHareketleri.Any())
                 {
                     foreach (var odemeHareketi in _odemeHareketleri)
                     {
-                        odemeHareketleriData.SaveOdemeHareketi(odemeHareketi);
+                        _odemeHareketleriService.SaveOdemeHareketi(odemeHareketi);
                     }
                     _odemeHareketleri.Clear();
                 }
@@ -1176,8 +1237,7 @@ namespace CEKA_APP.UsrControl
                 }
 
                 int? odemeId = null;
-                var kilometreTasiData = new ProjeFinans_FiyatlandirmaKilometreTaslariData();
-                int kilometreTasiId = kilometreTasiData.GetKilometreTasiId(lblKmTasiAdi.Text);
+                int kilometreTasiId = _kilometreTaslariService.GetKilometreTasiId(lblKmTasiAdi.Text);
 
                 if (checkBox != null && checkBox.Tag is OdemeSartlari odemeBilgi)
                 {
@@ -1185,8 +1245,7 @@ namespace CEKA_APP.UsrControl
                 }
                 else
                 {
-                    var odemeData = new ProjeFinans_OdemeSartlariData();
-                    var odemeInfo = odemeData.GetOdemeBilgileriByProjeNo(proje)
+                    var odemeInfo = _odemeSartlariService.GetOdemeBilgileriByProjeId(projeId.Value)
                         .FirstOrDefault(o => o.kilometreTasiId == kilometreTasiId);
                     odemeId = odemeInfo?.odemeId;
                 }
@@ -1198,6 +1257,11 @@ namespace CEKA_APP.UsrControl
                 }
 
                 var frm = new frmFaturaOlustur(
+                    _odemeSartlariService,
+                    _musterilerService,
+                    _finansProjelerService,
+                    _projeIliskiService,
+                    _projeKutukService,
                     tutar: txtTutarFatura.Text,
                     aciklama: rtbAciklamaFatura.Text,
                     tarih: selectedTarih,
@@ -1221,8 +1285,7 @@ namespace CEKA_APP.UsrControl
                     Label lblKmTasiAdi = GetLabelAt(rowIndex, 2);
                     TextBox txtTutar = GetTextBoxAt(rowIndex, 4);
                     var checkBox = tableLayoutPanel1.GetControlFromPosition(0, rowIndex) as CheckBox;
-                    var kilometreTasiData = new ProjeFinans_FiyatlandirmaKilometreTaslariData();
-                    int kilometreTasiId = kilometreTasiData.GetKilometreTasiId(lblKmTasiAdi.Text);
+                    int kilometreTasiId = _kilometreTaslariService.GetKilometreTasiId(lblKmTasiAdi.Text);
 
                     int? odemeId = null;
                     if (checkBox != null && checkBox.Tag is OdemeSartlari odemeBilgi)
@@ -1231,8 +1294,7 @@ namespace CEKA_APP.UsrControl
                     }
                     else
                     {
-                        var odemeData = new ProjeFinans_OdemeSartlariData();
-                        var odemeInfo = odemeData.GetOdemeBilgileriByProjeNo(proje)
+                        var odemeInfo = _odemeSartlariService.GetOdemeBilgileriByProjeId(projeId.Value)
                             .FirstOrDefault(o => o.kilometreTasiId == kilometreTasiId);
                         odemeId = odemeInfo?.odemeId;
                     }
@@ -1268,6 +1330,11 @@ namespace CEKA_APP.UsrControl
                 }
 
                 var frm = new frmFaturaOlustur(
+                    _odemeSartlariService,
+                    _musterilerService,
+                    _finansProjelerService,
+                    _projeIliskiService,
+                    _projeKutukService,
                     tutar: combinedAmounts,
                     aciklama: combinedDescriptions,
                     tarih: "",
@@ -1341,7 +1408,7 @@ namespace CEKA_APP.UsrControl
                     }
                     else if (selectedRowIndexes.Count == 0)
                     {
-                        toplamKalanTutar += kalanTutar; 
+                        toplamKalanTutar += kalanTutar;
                     }
                 }
             }
@@ -1429,22 +1496,11 @@ namespace CEKA_APP.UsrControl
                                 lblDurum.Text = "Ödendi";
                                 lblDurum.ForeColor = Color.Green;
 
-                                var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
-                                odemeSekilleriData.SaveOrUpdateOdemeBilgi(
-                                    projeNo: odemeBilgi.projeNo,
-                                    kilometreTasiId: odemeBilgi.kilometreTasiId,
-                                    siralama: rowIndex,
-                                    oran: odemeBilgi.oran.ToString("F2", CultureInfo.InvariantCulture),
-                                    tutar: odemeBilgi.tutar.ToString("F2", CultureInfo.InvariantCulture),
-                                    tahminiTarih: odemeBilgi.tahminiTarih?.ToString("yyyy-MM-dd") ?? "",
-                                    gerceklesenTarih: odemeBilgi.gerceklesenTarih?.ToString("yyyy-MM-dd") ?? "",
-                                    aciklama: odemeBilgi.odemeAciklama,
-                                    teminatMektubu: odemeBilgi.teminatMektubu,
-                                    teminatDurumu: odemeBilgi.teminatDurumu,
-                                    durum: "Ödendi",
-                                    faturaNo: odemeSekilleriData.GetFaturaNo(odemeBilgi.projeNo, odemeBilgi.kilometreTasiId) ?? "",
-                                    kalanTutar: newKalanTutar.ToString("F2", CultureInfo.InvariantCulture)
-                                );
+                                odemeBilgi.durum = "Ödendi";
+                                odemeBilgi.kalanTutar = newKalanTutar;
+                                odemeBilgi.odemeTarihi = dtOdemeTarihi.Value;
+
+                                _odemeSartlariService.SaveOrUpdateOdemeBilgi(odemeBilgi);
                             }
                         }
                         else
@@ -1476,22 +1532,11 @@ namespace CEKA_APP.UsrControl
                                     lblDurum.Text = "Ödendi";
                                     lblDurum.ForeColor = Color.Green;
 
-                                    var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
-                                    odemeSekilleriData.SaveOrUpdateOdemeBilgi(
-                                        projeNo: odemeBilgi.projeNo,
-                                        kilometreTasiId: odemeBilgi.kilometreTasiId,
-                                        siralama: rowIndex,
-                                        oran: odemeBilgi.oran.ToString("F2", CultureInfo.InvariantCulture),
-                                        tutar: odemeBilgi.tutar.ToString("F2", CultureInfo.InvariantCulture),
-                                        tahminiTarih: odemeBilgi.tahminiTarih?.ToString("yyyy-MM-dd") ?? "",
-                                        gerceklesenTarih: odemeBilgi.gerceklesenTarih?.ToString("yyyy-MM-dd") ?? "",
-                                        aciklama: odemeBilgi.odemeAciklama,
-                                        teminatMektubu: odemeBilgi.teminatMektubu,
-                                        teminatDurumu: odemeBilgi.teminatDurumu,
-                                        durum: "Ödendi",
-                                        faturaNo: odemeSekilleriData.GetFaturaNo(odemeBilgi.projeNo, odemeBilgi.kilometreTasiId) ?? "",
-                                        kalanTutar: newKalanTutar.ToString("F2", CultureInfo.InvariantCulture)
-                                    );
+                                    odemeBilgi.durum = "Ödendi";
+                                    odemeBilgi.kalanTutar = newKalanTutar;
+                                    odemeBilgi.odemeTarihi = dtOdemeTarihi.Value;
+
+                                    _odemeSartlariService.SaveOrUpdateOdemeBilgi(odemeBilgi);
                                 }
                             }
                         }
@@ -1505,7 +1550,6 @@ namespace CEKA_APP.UsrControl
 
             MessageBox.Show("Tutar çıkarma işlemi tamamlandı. Kaydetmek için 'Kaydet' butonuna basın.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
-
         private CheckBox GetCheckBoxAt(int row, int column)
         {
             foreach (Control control in tableLayoutPanel1.Controls)
@@ -1580,7 +1624,7 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
+            var projeBilgi = _finansProjelerService.GetProjeBilgileri(projeId.Value);
             if (projeBilgi == null)
             {
                 MessageBox.Show($"Proje '{projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -1593,8 +1637,7 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
-            if (odemeSekilleriData.OdemeSartlariSil(projeNo))
+            if (_odemeSartlariService.OdemeSartlariSil(projeId.Value))
             {
                 MessageBox.Show("Ödeme şartları kayıtları başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 _pendingDeletions.Clear();
@@ -1633,6 +1676,7 @@ namespace CEKA_APP.UsrControl
 
             string targetProjeNo = txtProjeAra.Text.Trim();
             string sourceProjeNo = Microsoft.VisualBasic.Interaction.InputBox("Kopyalamak istediğiniz proje numarasını girin:", "Proje Kopyalama", "");
+            var sourceProjeId = _finansProjelerService.GetProjeIdByNo(sourceProjeNo);
 
             if (string.IsNullOrWhiteSpace(sourceProjeNo))
             {
@@ -1646,8 +1690,7 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
-            var sourceMilestones = odemeSekilleriData.GetOdemeBilgileriByProjeNo(sourceProjeNo);
+            var sourceMilestones = _odemeSartlariService.GetOdemeBilgileriByProjeId(sourceProjeId.Value);
 
             if (sourceMilestones == null || !sourceMilestones.Any())
             {
@@ -1655,7 +1698,7 @@ namespace CEKA_APP.UsrControl
                 return;
             }
 
-            if (odemeSekilleriData.OdemeSartlariSil(targetProjeNo))
+            if (_odemeSartlariService.OdemeSartlariSil(projeId.Value))
             {
                 _newlyAddedMilestones.Clear();
 
@@ -1666,7 +1709,7 @@ namespace CEKA_APP.UsrControl
 
                     var newMilestone = new OdemeSartlari
                     {
-                        projeNo = targetProjeNo,
+                        projeId = projeId.Value,
                         kilometreTasiId = 0,
                         siralama = milestone.siralama,
                         kilometreTasiAdi = milestone.kilometreTasiAdi,

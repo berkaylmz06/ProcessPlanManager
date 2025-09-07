@@ -2,6 +2,7 @@
 using CEKA_APP.Entitys.ProjeFinans;
 using CEKA_APP.Forms;
 using CEKA_APP.Helper;
+using CEKA_APP.Interfaces.ProjeFinans;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -17,9 +18,20 @@ namespace CEKA_APP.UsrControl
     public partial class ctlTeminatMektuplari : UserControl
     {
         private Dictionary<string, string> sonFiltreKriterleri = new Dictionary<string, string>();
-        public ctlTeminatMektuplari()
+
+        private readonly IMusterilerService _musterilerService;
+        private readonly IFinansProjelerService _finansProjelerService;
+        private readonly IProjeKutukService _projeKutukService;
+        private readonly ITeminatMektuplariService _teminatMektuplariService;
+        public ctlTeminatMektuplari(IMusterilerService musterilerService, IFinansProjelerService finansProjelerService, IProjeKutukService projeKutukService, ITeminatMektuplariService teminatMektuplariService)
         {
             InitializeComponent();
+
+            _musterilerService = musterilerService ?? throw new ArgumentNullException(nameof(musterilerService));
+            _finansProjelerService = finansProjelerService ?? throw new ArgumentNullException(nameof(finansProjelerService));
+            _projeKutukService = projeKutukService ?? throw new ArgumentNullException(nameof(projeKutukService));
+            _teminatMektuplariService = teminatMektuplariService ?? throw new ArgumentNullException(nameof(teminatMektuplariService));
+
 
             DataGridViewHelper.StilUygulaProjeFinans(dataGridTeminatMektuplari);
             dataGridTeminatMektuplari.AutoGenerateColumns = false;
@@ -52,11 +64,10 @@ namespace CEKA_APP.UsrControl
 
         private void LoadMektuplarToDataGridView()
         {
-            ProjeFinans_TeminatMektuplariData mektupData = new ProjeFinans_TeminatMektuplariData();
             try
             {
                 dataGridTeminatMektuplari.DataSource = null;
-                var mektuplar = mektupData.GetTeminatMektuplari();
+                var mektuplar = _teminatMektuplariService.GetTeminatMektuplari();
                 dataGridTeminatMektuplari.DataSource = mektuplar;
             }
             catch (Exception ex)
@@ -235,7 +246,7 @@ namespace CEKA_APP.UsrControl
 
         private void tsmiMektupEkle_Click(object sender, EventArgs e)
         {
-            using (frmTeminatMektubuEkle mektupForm = new frmTeminatMektubuEkle(null))
+            using (frmTeminatMektubuEkle mektupForm = new frmTeminatMektubuEkle(_musterilerService, null, _finansProjelerService, _projeKutukService, _teminatMektuplariService))
             {
                 if (mektupForm.ShowDialog() == DialogResult.OK)
                 {
@@ -252,7 +263,13 @@ namespace CEKA_APP.UsrControl
 
                 if (selectedMektup != null)
                 {
-                    using (frmTeminatMektubuEkle musteriForm = new frmTeminatMektubuEkle(selectedMektup))
+                    using (frmTeminatMektubuEkle musteriForm = new frmTeminatMektubuEkle(
+                        _musterilerService,
+                        selectedMektup,
+                        _finansProjelerService,
+                        _projeKutukService,
+                        _teminatMektuplariService,
+                        selectedMektup.projeId))
                     {
                         if (musteriForm.ShowDialog() == DialogResult.OK)
                         {
@@ -266,6 +283,7 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show("Lütfen güncellemek için bir mektup seçin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             }
         }
+
 
         private void tsmiMektupSil_Click(object sender, EventArgs e)
         {
@@ -284,10 +302,9 @@ namespace CEKA_APP.UsrControl
 
                     if (result == DialogResult.Yes)
                     {
-                        ProjeFinans_TeminatMektuplariData mektupData = new ProjeFinans_TeminatMektuplariData();
                         try
                         {
-                            mektupData.MektupSil(selectedMektup.mektupNo);
+                            _teminatMektuplariService.MektupSil(selectedMektup.mektupNo);
                             MessageBox.Show("Mektup başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                             LoadMektuplarToDataGridView();
                         }
@@ -327,7 +344,6 @@ namespace CEKA_APP.UsrControl
         {
             try
             {
-                ProjeFinans_TeminatMektuplariData mektupData = new ProjeFinans_TeminatMektuplariData();
                 sonFiltreKriterleri.Clear();
                 foreach (var kutu in filtreKutulari)
                 {
@@ -336,7 +352,7 @@ namespace CEKA_APP.UsrControl
                         sonFiltreKriterleri[kutu.Key] = kutu.Value.Text.Trim();
                     }
                 }
-                return mektupData.FiltreleTeminatMektuplari(filtreKutulari, dataGridTeminatMektuplari);
+                return _teminatMektuplariService.FiltreleTeminatMektuplari(filtreKutulari, dataGridTeminatMektuplari);
             }
             catch (Exception ex)
             {

@@ -26,7 +26,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>55</ApplicationRevision>
+    <ApplicationRevision>57</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -245,12 +245,36 @@
   <ItemGroup>
     <Compile Include="Abstracts\IFormArayuzu.cs" />
     <Compile Include="Abstracts\IKullaniciAdiOgren.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IFiyatlandirmaKalemleriRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IFiyatlandirmaRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IKilometreTaslariRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IMusterilerRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IOdemeHareketleriRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IOdemeSartlariRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IFinansProjelerRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IProjeKutukRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\ISevkiyatPaketleriRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\ISevkiyatRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IProjeIliskiRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\ITeminatMektuplariRepository.cs" />
     <Compile Include="Business\VeriOkuma.cs" />
     <Compile Include="Concretes\FormArayuzu.cs" />
     <Compile Include="Concretes\KullaniciAdiOgren.cs" />
+    <Compile Include="Concretes\ProjeFinans\FinansProjelerRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\FiyatlandirmaKalemleriRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\FiyatlandirmaRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\KilometreTaslariRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\MusterilerRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\OdemeHareketleriRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\OdemeSartlariRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\ProjeIliskiRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\ProjeKutukRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\SevkiyatPaketleriRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\SevkiyatRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\TeminatMektuplariRepository.cs" />
     <Compile Include="DataBase\ERP\AutoCadAktarimData.cs" />
     <Compile Include="DataBase\Genel\DataBaseHelper.cs" />
-    <Compile Include="DataBase\ProjeFinans\ProjeFinans_OdemeHareketleriData.cs" />
+    <Compile Include="DataBase\Genel\SayfaStatusData.cs" />
     <Compile Include="DataBase\Sistem\DuyurularData.cs" />
     <Compile Include="DataBase\KesimTakip\IdUreticiData.cs" />
     <Compile Include="DataBase\ERP\KarsilastirmaTablosuData.cs" />
@@ -260,19 +284,10 @@
     <Compile Include="DataBase\KesimTakip\KesimTamamlanmisHareket.cs" />
     <Compile Include="DataBase\Sistem\KullaniciHareketLogData.cs" />
     <Compile Include="DataBase\Sistem\KullanicilarData.cs" />
-    <Compile Include="DataBase\ProjeFinans\ProjeFinans_FiyatlandirmaKalemleriData.cs" />
-    <Compile Include="DataBase\ProjeFinans\ProjeFinans_FiyatlandirmaKilometreTaslariData.cs" />
-    <Compile Include="DataBase\ProjeFinans\ProjeFinans_MusterilerData.cs" />
-    <Compile Include="DataBase\ProjeFinans\ProjeFinans_OdemeSartlariData.cs" />
-    <Compile Include="DataBase\ProjeFinans\ProjeFinans_ProjeIliskiData.cs" />
-    <Compile Include="DataBase\ProjeFinans\ProjeFinans_FiyatlandirmaData.cs" />
-    <Compile Include="DataBase\ProjeFinans\ProjeFinans_ProjeKutukData.cs" />
-    <Compile Include="DataBase\ProjeFinans\ProjeFinans_Projeler.cs" />
-    <Compile Include="DataBase\ProjeFinans\ProjeFinans_SevkiyatData.cs" />
-    <Compile Include="DataBase\ProjeFinans\ProjeFinans_SevkiyatPaketleriData.cs" />
-    <Compile Include="DataBase\ProjeFinans\ProjeFinans_TeminatMektuplariData.cs" />
     <Compile Include="DataBase\Sistem\SorunBildirimleriData.cs" />
     <Compile Include="Entitys\ERP\AutoCadAktarimDetay.cs" />
+    <Compile Include="Entitys\Genel\SayfaStatus.cs" />
+    <Compile Include="Entitys\ProjeFinans\Fiyatlandirma.cs" />
     <Compile Include="Entitys\ProjeFinans\FiyatlandirmaKalem.cs" />
     <Compile Include="Entitys\ProjeFinans\OdemeHareketleri.cs" />
     <Compile Include="Entitys\Sistem\Duyurular.cs" />
@@ -377,20 +392,45 @@
     <Compile Include="Helper\ListBoxHelper.cs" />
     <Compile Include="Helper\LogHelper.cs" />
     <Compile Include="Helper\MenuStripGenelHelper.cs" />
-    <Compile Include="Helper\MetinKonumBulucuHelper.cs" />
     <Compile Include="Helper\PanelRoundHelper.cs" />
     <Compile Include="Helper\PlatformFontResolver.cs" />
     <Compile Include="Helper\RoundedPanelHelper.cs" />
     <Compile Include="Helper\LogEkle.cs" />
     <Compile Include="Helper\TreeNodeKoleksiyonuGenisletmeleri.cs" />
+    <Compile Include="Infrastructure\DependencyInjection\ServiceRegistration.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IFinansProjelerService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IFiyatlandirmaKalemleriService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IFiyatlandirmaService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IKilometreTaslariService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IMusterilerService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IOdemeHareketleriService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IOdemeSartlariService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IProjeIliskiService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IProjeKutukService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\ISevkiyatPaketleriService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\ISevkiyatService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\ITeminatMektuplariService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ProjeFinans\FinansProjelerService.cs" />
+    <Compile Include="Services\ProjeFinans\FiyatlandirmaKalemleriService.cs" />
+    <Compile Include="Services\ProjeFinans\FiyatlandirmaService.cs" />
+    <Compile Include="Services\ProjeFinans\KilometreTaslariService.cs" />
+    <Compile Include="Services\ProjeFinans\MusterilerService.cs" />
+    <Compile Include="Services\ProjeFinans\OdemeHareketleriService.cs" />
+    <Compile Include="Services\ProjeFinans\OdemeSartlariService.cs" />
+    <Compile Include="Services\ProjeFinans\ProjeIliskiService.cs" />
+    <Compile Include="Services\ProjeFinans\ProjeKutukService.cs" />
+    <Compile Include="Services\ProjeFinans\SevkiyatPaketleriService.cs" />
+    <Compile Include="Services\ProjeFinans\SevkiyatService.cs" />
+    <Compile Include="Services\ProjeFinans\TeminatMektuplariService.cs" />
     <Compile Include="UsrControl\ERP\ctlAutoCadAktarim.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="UsrControl\ERP\ctlAutoCadAktarim.Designer.cs">
       <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
     </Compile>
+    <Compile Include="UsrControl\IUserControlFactory.cs" />
     <Compile Include="UsrControl\KesimTakip\ctlKesimPlaniEkle.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -517,6 +557,7 @@
     <Compile Include="UsrControl\KesimTakip\ctlYerlesimPlaniBilgi.Designer.cs">
       <DependentUpon>ctlYerlesimPlaniBilgi.cs</DependentUpon>
     </Compile>
+    <Compile Include="UsrControl\UserControlFactory.cs" />
     <EmbeddedResource Include="Forms\frmAnaSayfa.resx">
       <DependentUpon>frmAnaSayfa.cs</DependentUpon>
     </EmbeddedResource>

@@ -1,6 +1,8 @@
 ﻿using CEKA_APP.DataBase;
 using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Entitys.ProjeFinans;
+using CEKA_APP.Interfaces.ProjeFinans;
+using CEKA_APP.Services.ProjeFinans;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -24,24 +26,45 @@ namespace CEKA_APP.Forms
         private string _projeNo;
         private int _kilometreTasiId;
         private string _tutar;
+        private int? _projeId;
 
-        public frmTeminatMektubuEkle(TeminatMektuplari teminatMektup, string projeNo = null, int kilometreTasiId = 0, string tutar = "0.00")
+        private readonly IMusterilerService _musterilerService;
+        private readonly IFinansProjelerService _finansProjelerService;
+        private readonly IProjeKutukService _projeKutukService;
+        private readonly ITeminatMektuplariService _teminatMektuplariService;
+        public frmTeminatMektubuEkle(
+      IMusterilerService musterilerService,
+      TeminatMektuplari teminatMektup,
+      IFinansProjelerService finansProjelerService,
+       IProjeKutukService projeKutukService,
+       ITeminatMektuplariService teminatMektuplariService,
+        int? projeId = null,
+      int kilometreTasiId = 0,
+      string tutar = "0.00")
         {
             InitializeComponent();
+
+            _musterilerService = musterilerService ?? throw new ArgumentNullException(nameof(musterilerService));
+            _finansProjelerService = finansProjelerService ?? throw new ArgumentNullException(nameof(finansProjelerService));
+            _projeKutukService = projeKutukService ?? throw new ArgumentNullException(nameof(projeKutukService));
+            _teminatMektuplariService = teminatMektuplariService ?? throw new ArgumentNullException(nameof(teminatMektuplariService));
+
             this.Icon = Properties.Resources.cekalogokirmizi;
-            _projeNo = projeNo;
+
             _kilometreTasiId = kilometreTasiId;
             _tutar = tutar;
-
-            ClearFormFields();
 
             if (teminatMektup != null)
             {
                 _currentMektup = teminatMektup;
                 _isUpdateMode = true;
                 _originalMektupNoForUpdate = teminatMektup.mektupNo;
+
+                _projeId = teminatMektup.projeId > 0 ? teminatMektup.projeId : projeId;
+
                 this.Text = "Teminat Mektubu Bilgilerini Güncelle";
                 btnKaydet.Text = "Güncelle";
+
                 LoadMektupDataToForm();
                 txtMektupNo.Enabled = false;
             }
@@ -49,17 +72,40 @@ namespace CEKA_APP.Forms
             {
                 _currentMektup = new TeminatMektuplari();
                 _isUpdateMode = false;
+
+                _projeId = projeId;
+
                 this.Text = "Yeni Teminat Mektubu Ekle";
                 btnKaydet.Text = "Kaydet";
-                LoadProjeKutukData();
-                _currentMektup.kilometreTasiId = _kilometreTasiId;
 
+                LoadProjeKutukData();
+
+                _currentMektup.kilometreTasiId = _kilometreTasiId;
+                _currentMektup.projeId = _projeId ?? 0;
                 txtTutar.Text = _tutar;
             }
 
             cmbMektupTuru.SelectedIndexChanged += CmbMektupTuru_SelectedIndexChanged;
         }
 
+        private void frmTeminatMektubuEkle_Load(object sender, EventArgs e)
+        {
+            
+            if (!_projeId.HasValue && !string.IsNullOrEmpty(_projeNo))
+            {
+                _projeId = _finansProjelerService.GetProjeIdByNo(_projeNo);
+            }
+
+            LoadBankalar();
+            ApplyCharacterLimits();
+            if (_isUpdateMode && _currentMektup != null)
+            {
+                if (_currentMektup.mektupTuru == "Kesin" || _currentMektup.mektupTuru == "Kati")
+                {
+                    dtVadeTarihi.Enabled = false;
+                }
+            }
+        }
         private void CmbMektupTuru_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (cmbMektupTuru.SelectedItem != null &&
@@ -96,8 +142,7 @@ namespace CEKA_APP.Forms
         {
             if (!string.IsNullOrEmpty(txtMusteriNo.Text.Trim()))
             {
-                var musteriData = new ProjeFinans_MusterilerData();
-                var musteri = musteriData.GetMusteriByMusteriNo(txtMusteriNo.Text.Trim());
+                var musteri = _musterilerService.GetMusteriByMusteriNo(txtMusteriNo.Text.Trim());
                 if (musteri != null)
                 {
                     txtMusteriAdi.Text = musteri.musteriAdi ?? "";
@@ -120,15 +165,15 @@ namespace CEKA_APP.Forms
             }
             else if (!string.IsNullOrEmpty(_projeNo))
             {
-                var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(_projeNo);
+                var projeId = _finansProjelerService.GetProjeIdByNo(_projeNo);
+                var projeKutuk = _projeKutukService.ProjeKutukAra(projeId.Value);
                 if (projeKutuk != null)
                 {
                     string musteriNo = projeKutuk.musteriNo ?? "";
                     txtMusteriNo.Text = musteriNo;
                     if (!string.IsNullOrEmpty(musteriNo))
                     {
-                        var musteriData = new ProjeFinans_MusterilerData();
-                        var musteri = musteriData.GetMusteriByMusteriNo(musteriNo);
+                        var musteri = _musterilerService.GetMusteriByMusteriNo(musteriNo);
                         if (musteri != null)
                         {
                             txtMusteriAdi.Text = musteri.musteriAdi ?? "";
@@ -156,7 +201,7 @@ namespace CEKA_APP.Forms
                         _currentMektup.paraBirimi = "TRY";
                         UpdateCheckBoxes("TRY");
                     }
-                    _currentMektup.projeNo = _projeNo;
+                    _currentMektup.projeId = _projeId.Value;
                 }
                 else
                 {
@@ -164,7 +209,8 @@ namespace CEKA_APP.Forms
                     txtMusteriNo.Text = "";
                     txtMusteriAdi.Text = "";
                     _currentMektup.paraBirimi = "TRY";
-                    _currentMektup.projeNo = "-"; 
+                    _projeId = null;
+                    _currentMektup.projeId = 0;
                     UpdateCheckBoxes("TRY");
                 }
             }
@@ -172,15 +218,16 @@ namespace CEKA_APP.Forms
             {
                 txtMusteriAdi.Text = "";
                 _currentMektup.paraBirimi = "TRY";
-                _currentMektup.projeNo = "-"; 
+                _projeId = null;
+                _currentMektup.projeId = 0;
                 UpdateCheckBoxes("TRY");
             }
         }
 
         private void UpdateCheckBoxes(string paraBirimi)
         {
-            chkTL.Checked = paraBirimi == "TRY";
-            chkDolar.Checked = paraBirimi == "USD";
+            chkTL.Checked = paraBirimi == "TRY" || paraBirimi == "TL";
+            chkDolar.Checked = paraBirimi == "USD" || paraBirimi == "DOLAR";
             chkEuro.Checked = paraBirimi == "EUR";
         }
 
@@ -232,19 +279,36 @@ namespace CEKA_APP.Forms
             }
 
             int komisyonVadesi = 0;
-            if (int.TryParse(cmbKomisyonVadesi.Text, out int parsedKomisyonVadesi))
+            string komisyonVadesiText = cmbKomisyonVadesi.Text.Trim(); 
+            if (!string.IsNullOrWhiteSpace(komisyonVadesiText))
             {
-                komisyonVadesi = parsedKomisyonVadesi;
+                string numericPart = System.Text.RegularExpressions.Regex.Match(komisyonVadesiText, @"\d+").Value;
+                if (int.TryParse(numericPart, out int parsedKomisyonVadesi))
+                {
+                    komisyonVadesi = parsedKomisyonVadesi;
+                }
+                else
+                {
+                    MessageBox.Show("Lütfen geçerli bir komisyon vadesi seçiniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
             }
-
-            string projeNo = string.IsNullOrEmpty(_projeNo) ? "-" : _projeNo;
-
-            ProjeFinans_TeminatMektuplariData mektupData = new ProjeFinans_TeminatMektuplariData();
+            else
+            {
+                MessageBox.Show("Lütfen komisyon vadesi seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
             try
             {
                 if (_isUpdateMode)
                 {
+                    if (!_projeId.HasValue)
+                    {
+                        MessageBox.Show("Proje ID bilgisi eksik. İşlem iptal edildi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                        return;
+                    }
+
                     _currentMektup.mektupNo = mektupNo;
                     _currentMektup.musteriNo = musteriNo;
                     _currentMektup.musteriAdi = musteriAdi;
@@ -257,17 +321,22 @@ namespace CEKA_APP.Forms
                     _currentMektup.komisyonTutari = komisyonTutari;
                     _currentMektup.komisyonOrani = komisyonOrani;
                     _currentMektup.komisyonVadesi = komisyonVadesi;
-                    _currentMektup.projeNo = projeNo; 
+                    _currentMektup.projeId = _projeId.Value;
                     _currentMektup.kilometreTasiId = _kilometreTasiId;
 
-                    mektupData.MektupGuncelle(_originalMektupNoForUpdate, _currentMektup);
+                    _teminatMektuplariService.MektupGuncelle(_originalMektupNoForUpdate, _currentMektup);
                     MessageBox.Show("Teminat Mektubu başarıyla güncellendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     this.DialogResult = DialogResult.OK;
                     this.Close();
                 }
                 else
                 {
-                    if (mektupData.MektupNoVarMi(mektupNo))
+                    if (!_projeId.HasValue)
+                        _currentMektup.projeId = 0;
+                    else
+                        _currentMektup.projeId = _projeId.Value;
+
+                    if (_teminatMektuplariService.MektupNoVarMi(mektupNo))
                     {
                         MessageBox.Show($"'{mektupNo}' mektup numarası zaten mevcut. Lütfen farklı bir numara girin.", "Mevcut Kayıt", MessageBoxButtons.OK, MessageBoxIcon.Information);
                     }
@@ -285,10 +354,9 @@ namespace CEKA_APP.Forms
                         _currentMektup.komisyonTutari = komisyonTutari;
                         _currentMektup.komisyonOrani = komisyonOrani;
                         _currentMektup.komisyonVadesi = komisyonVadesi;
-                        _currentMektup.projeNo = projeNo;
                         _currentMektup.kilometreTasiId = _kilometreTasiId;
 
-                        mektupData.TeminatMektubuKaydet(_currentMektup);
+                        _teminatMektuplariService.TeminatMektubuKaydet(_currentMektup);
                         MessageBox.Show("Teminat Mektubu başarıyla kaydedildi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         ClearFormFields();
                         this.DialogResult = DialogResult.OK;
@@ -324,20 +392,6 @@ namespace CEKA_APP.Forms
             catch
             {
                 txtKomisyonTutari.Text = "";
-            }
-        }
-
-        private void frmTeminatMektubuEkle_Load(object sender, EventArgs e)
-        {
-            LoadBankalar();
-            ApplyCharacterLimits();
-            if (_isUpdateMode && _currentMektup != null)
-            {
-                if (_currentMektup.mektupTuru == "Kesin" || _currentMektup.mektupTuru == "Kati")
-                {
-                    dtVadeTarihi.Enabled = false;
-                }
-                _currentMektup.projeNo = string.IsNullOrEmpty(_projeNo) ? "-" : _projeNo;
             }
         }
 
@@ -487,8 +541,7 @@ namespace CEKA_APP.Forms
             string musteriNo = txtMusteriNo.Text.Trim();
             if (!string.IsNullOrEmpty(musteriNo))
             {
-                ProjeFinans_MusterilerData musteriData = new ProjeFinans_MusterilerData();
-                Musteriler musteri = musteriData.GetMusteriByMusteriNo(musteriNo);
+                Musteriler musteri = _musterilerService.GetMusteriByMusteriNo(musteriNo);
 
                 if (musteri != null)
                 {

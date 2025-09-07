@@ -8,8 +8,8 @@ namespace CEKA_APP.Entitys.ProjeFinans
 {
     public class FiyatlandirmaKalem
     {
-        public int FiyatlandirmaKalemId { get; set; }
-        public string KalemAdi { get; set; }
-        public string KalemBirimi { get; set; }
+        public int fiyatlandirmaKalemId { get; set; }
+        public string kalemAdi { get; set; }
+        public string kalemBirimi { get; set; }
     }
 }

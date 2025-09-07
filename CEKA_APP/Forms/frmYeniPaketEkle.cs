@@ -1,4 +1,8 @@
-﻿using CEKA_APP.DataBase.ProjeFinans;
+﻿using CEKA_APP.Abstracts.ProjeFinans;
+using CEKA_APP.Concretes.ProjeFinans;
+using CEKA_APP.DataBase.ProjeFinans;
+using CEKA_APP.Interfaces.ProjeFinans;
+using CEKA_APP.Services.ProjeFinans;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -8,13 +12,16 @@ namespace CEKA_APP.Forms
     public partial class frmYeniPaketEkle : Form
     {
         public string PaketAdi { get; private set; }
-        private ProjeFinans_SevkiyatPaketleriData paketData = new ProjeFinans_SevkiyatPaketleriData();
 
         private const int VerticalMargin = 12;
 
-        public frmYeniPaketEkle()
+        private ISevkiyatPaketleriService _sevkiyatPaketleriService;
+        public frmYeniPaketEkle(ISevkiyatPaketleriService sevkiyatPaketleriService)
         {
             InitializeComponent();
+
+            _sevkiyatPaketleriService = sevkiyatPaketleriService ?? throw new ArgumentNullException(nameof(sevkiyatPaketleriService));
+
             LoadPaketler();
 
             panelYeniPaket.Visible = false;
@@ -28,7 +35,7 @@ namespace CEKA_APP.Forms
 
         private void LoadPaketler()
         {
-            var paketler = paketData.GetPaketler();
+            var paketler = _sevkiyatPaketleriService.GetPaketler();
             listPaketler.Items.Clear();
             foreach (var (Id, Adi, Tarih) in paketler)
             {
@@ -54,7 +61,6 @@ namespace CEKA_APP.Forms
         {
             if (btnEkle.Text == "Yeni Ekle")
             {
-                btnSec.Visible = false;
                 panelYeniPaket.Visible = true;
                 txtPaketAdi.Clear();
 
@@ -72,7 +78,7 @@ namespace CEKA_APP.Forms
                 if (!string.IsNullOrEmpty(txtPaketAdi.Text))
                 {
                     PaketAdi = txtPaketAdi.Text;
-                    paketData.PaketEkle(PaketAdi);
+                    _sevkiyatPaketleriService.PaketEkle(PaketAdi);
                     LoadPaketler();
 
                     GeriDon();
@@ -115,7 +121,6 @@ namespace CEKA_APP.Forms
         private void GeriDon()
         {
             panelYeniPaket.Visible = false;
-            btnSec.Visible = true;
             btnEkle.Text = "Yeni Ekle";
             btnEkle.BackColor = Color.Gray;
 

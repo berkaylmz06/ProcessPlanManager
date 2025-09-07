@@ -1,12 +1,16 @@
-﻿using System;
+﻿using CEKA_APP.Abstracts.ProjeFinans;
+using CEKA_APP.DataBase;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Linq; // Added for `string.Join`
 
-namespace CEKA_APP.DataBase.ProjeFinans
+namespace CEKA_APP.Concretes.ProjeFinans
 {
-    public class ProjeFinans_FiyatlandirmaKilometreTaslariData
+    public class KilometreTaslariRepository: IKilometreTaslariRepository
     {
         public List<(int Id, string Adi, DateTime Tarih)> GetFiyatlandirmaKilometreTasi()
         {
@@ -28,20 +32,28 @@ namespace CEKA_APP.DataBase.ProjeFinans
             return kilometreTaslari;
         }
 
-        public int FiyatlandirmaKilometreTasiEkle(string kilometreTasiAdi)
+        public int FiyatlandirmaKilometreTasiEkle(string kilometreTasiAdi, SqlTransaction transaction)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {
                 connection.Open();
-                string query = "INSERT INTO ProjeFinans_KilometreTaslari (kilometreTasiAdi, olusturmaTarihi) VALUES (@kilometreTasiAdi, @olusturmaTarihi)";
-                using (var cmd = new SqlCommand(query, connection))
+                string query = @"
+            INSERT INTO ProjeFinans_KilometreTaslari (kilometreTasiAdi, olusturmaTarihi) 
+            VALUES (@kilometreTasiAdi, @olusturmaTarihi);
+            SELECT CAST(SCOPE_IDENTITY() AS INT);
+        ";
+
+                using (var cmd = new SqlCommand(query, connection, transaction))
                 {
                     cmd.Parameters.AddWithValue("@kilometreTasiAdi", kilometreTasiAdi);
                     cmd.Parameters.AddWithValue("@olusturmaTarihi", DateTime.Now);
-                    return Convert.ToInt32(cmd.ExecuteScalar());
+
+                    return (int)cmd.ExecuteScalar();
                 }
             }
         }
+
+
 
         public int GetFiyatlandirmaKilometreTasiIdByAdi(string kilometreTasiAdi)
         {

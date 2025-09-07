@@ -8,8 +8,10 @@ namespace CEKA_APP.Entitys.ProjeFinans
 {
     public class Sevkiyat
     {
-        public string projeNo { get; set; }
+        public int projeId { get; set; }
         public int sevkiyatPaketId { get; set; }
+        public int paketId { get; set; }
+        public int aracSira { get; set; }
         public string paketAdi { get; set; }
         public string sevkId { get; set; }
         public string tasimaBilgileri { get; set; }
@@ -17,7 +19,8 @@ namespace CEKA_APP.Entitys.ProjeFinans
         public string irsaliyeNo { get; set; }
         public DateTime? aracSevkTarihi { get; set; }
         public decimal agirlik { get; set; }
-        public decimal faturaToplami { get; set; }
+        public decimal? faturaToplami { get; set; }
         public string faturaNo { get; set; }
+        public string status { get; set; }
     }
 }

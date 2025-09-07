@@ -1,16 +1,21 @@
 ﻿using CEKA_APP.Abstracts;
 using CEKA_APP.Concretes;
+using CEKA_APP.Concretes.ProjeFinans;
 using CEKA_APP.DataBase;
+using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Entitys;
 using CEKA_APP.Helper;
+using CEKA_APP.Services.ProjeFinans;
 using CEKA_APP.UsrControl;
+using CEKA_APP.UsrControl.Interfaces;
 using CEKA_APP.UsrControl.ProjeFinans;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.Linq;
 using System.Windows.Forms;
-using System.Globalization;
 
 namespace CEKA_APP
 {
@@ -37,9 +42,15 @@ namespace CEKA_APP
 
         private Dictionary<string, List<(string Text, Action ClickAction, bool Visible)>> buttonGroups;
 
-        public frmAnaSayfa(Kullanicilar kullanici)
+        private readonly IUserControlFactory _userControlFactory;
+        private readonly IServiceProvider _serviceProvider;
+
+        public frmAnaSayfa(Kullanicilar kullanici, IUserControlFactory userControlFactory, IServiceProvider serviceProvider)
         {
             InitializeComponent();
+
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+            _userControlFactory = userControlFactory ?? throw new ArgumentNullException(nameof(userControlFactory));
 
             aktifKullanici = kullanici ?? throw new ArgumentNullException(nameof(kullanici));
             FormArayuzuInterface = new FormArayuzu(this);
@@ -334,10 +345,18 @@ namespace CEKA_APP
         {
             if (MessageBox.Show("Oturumu kapatmak için onaylıyor musunuz?", "Bilgi", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
             {
-                frmKullaniciGirisi kullanicigiris = new frmKullaniciGirisi();
-                kullanicigiris.FormClosed += (s, args) => Application.Exit();
-                kullanicigiris.Show();
-                this.Hide();
+                using (var scope = _serviceProvider.CreateScope())
+                {
+                    var kullanicigiris = scope.ServiceProvider.GetService<frmKullaniciGirisi>();
+                    if (kullanicigiris == null)
+                    {
+                        // Eğer DI'da kayıtlı değilse veya constructor parametresi varsa
+                        kullanicigiris = ActivatorUtilities.CreateInstance<frmKullaniciGirisi>(scope.ServiceProvider);
+                    }
+                    kullanicigiris.FormClosed += (s, args) => Application.Exit();
+                    kullanicigiris.Show();
+                    this.Hide();
+                }
             }
         }
 
@@ -615,14 +634,14 @@ namespace CEKA_APP
 
         private void btnProjeKutuk_Click(object sender, EventArgs e)
         {
-            var projeKutuk = new ctlProjeKutuk();
-            UserControlEkle(projeKutuk);
+            var projeKutukControl = _userControlFactory.CreateProjeKutukControl();
+            UserControlEkle(projeKutukControl);
         }
 
         private void btnProjeFiyatlandirma_Click(object sender, EventArgs e)
         {
-            var projeFiyatlandirma = new ctlProjeFiyatlandirma();
-            UserControlEkle(projeFiyatlandirma);
+            var projeFiyatlandirmaControl = _userControlFactory.CreateProjeFiyatlandirmaControl();
+            UserControlEkle(projeFiyatlandirmaControl);
         }
 
         private void btnYerlesimPlaniBilgileri_Click(object sender, EventArgs e)
@@ -634,32 +653,32 @@ namespace CEKA_APP
 
         private void btnMusteriler_Click(object sender, EventArgs e)
         {
-            var musteriler = new ctlMusteriler();
-            UserControlEkle(musteriler);
+            var musterilerControl = _userControlFactory.CreateMusterilerControl();
+            UserControlEkle(musterilerControl);
         }
 
         private void btnOdemeSartlari_Click(object sender, EventArgs e)
         {
-            var projeFiyatlandirmaOdemeSartlari = new ctlOdemeSartlari();
-            UserControlEkle(projeFiyatlandirmaOdemeSartlari);
+            var odemeSartlariControl = _userControlFactory.CreateOdemeSartlariControl();
+            UserControlEkle(odemeSartlariControl);
         }
 
         private void btnTeminatMektuplari_Click(object sender, EventArgs e)
         {
-            var teminatMektuplari = new ctlTeminatMektuplari();
+            var teminatMektuplari = _userControlFactory.CreateTeminatMektuplariControl();
             UserControlEkle(teminatMektuplari);
         }
 
         private void btnOdemeSarlariListe_Click(object sender, EventArgs e)
         {
-            var odemeSartlariListe = new ctlOdemeSartlariListe();
-            UserControlEkle(odemeSartlariListe);
+            var odemeSartlariListeControl = _userControlFactory.CreateOdemeSartlariListeControl();
+            UserControlEkle(odemeSartlariListeControl);
         }
 
         private void btnSevkiyat_Click(object sender, EventArgs e)
         {
-            var sevkiyat = new ctlSevkiyat();
-            UserControlEkle(sevkiyat);
+            var sevkiyatControl = _userControlFactory.CreateSevkiyatControl();
+            UserControlEkle(sevkiyatControl);
         }
 
         private void btnTakipTakvimi_Click(object sender, EventArgs e)

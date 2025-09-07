@@ -1,6 +1,8 @@
 ﻿using CEKA_APP.DataBase;
 using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Helper;
+using CEKA_APP.Interfaces.ProjeFinans;
+using CEKA_APP.Services.ProjeFinans;
 using PdfSharp.Drawing;
 using PdfSharp.Drawing.Layout;
 using System;
@@ -31,8 +33,23 @@ namespace CEKA_APP.Forms
         private readonly string projeNo;
         private readonly List<int> kilometreTasiIds;
         private readonly List<int?> odemeIds;
-        public frmFaturaOlustur(string tutar, string aciklama, string tarih, string proje, List<int> kilometreTasiIds = null, List<int?> odemeIds = null)
+
+        private readonly IOdemeSartlariService _odemeSartlariService;
+        private readonly IMusterilerService _musterilerService;
+        private readonly IFinansProjelerService _finansProjelerService;
+        private readonly IProjeIliskiService _projeIliskiService;
+        private readonly IProjeKutukService _projeKutukService;
+
+        public frmFaturaOlustur(IOdemeSartlariService odemeSartlariService, IMusterilerService musterilerService, IFinansProjelerService finansProjelerService, IProjeIliskiService projeIliskiService, IProjeKutukService projeKutukService, string tutar, string aciklama, string tarih, string proje, List<int> kilometreTasiIds = null, List<int?> odemeIds = null)
         {
+            InitializeComponent();
+
+            _odemeSartlariService = odemeSartlariService ?? throw new ArgumentNullException(nameof(odemeSartlariService));
+            _musterilerService = musterilerService ?? throw new ArgumentNullException(nameof(musterilerService));
+            _finansProjelerService = finansProjelerService ?? throw new ArgumentNullException(nameof(finansProjelerService));
+            _projeIliskiService = projeIliskiService ?? throw new ArgumentNullException(nameof(projeIliskiService));
+            _projeKutukService = projeKutukService ?? throw new ArgumentNullException(nameof(projeKutukService));
+
             this.tutar = tutar ?? "0";
             this.aciklama = aciklama ?? "";
             this.tarih = tarih ?? "Belirtilmemiş";
@@ -40,23 +57,25 @@ namespace CEKA_APP.Forms
             this.projeNo = proje?.Trim();
             this.kilometreTasiIds = kilometreTasiIds ?? new List<int>();
             this.odemeIds = odemeIds ?? new List<int?>();
-            InitializeComponent();
 
             PdfSharp.Fonts.GlobalFontSettings.FontResolver = new PlatformFontResolver();
 
             ReadConfigFile();
         }
-        public frmFaturaOlustur(string tutar, string aciklama, string tarih, string proje, int kilometreTasiId = 0, int? odemeId = null)
-    : this(tutar, aciklama, tarih, proje, new List<int> { kilometreTasiId }, odemeId.HasValue ? new List<int?> { odemeId } : new List<int?>())
+        public frmFaturaOlustur(IOdemeSartlariService odemeSartlariService, IMusterilerService musterilerService, IFinansProjelerService finansProjelerService, IProjeIliskiService projeIliskiService, IProjeKutukService projeKutukService, string tutar, string aciklama, string tarih, string proje, int kilometreTasiId = 0, int? odemeId = null)
+      : this(odemeSartlariService, musterilerService, finansProjelerService, projeIliskiService, projeKutukService, tutar, aciklama, tarih, proje,
+             new List<int> { kilometreTasiId },
+             odemeId.HasValue ? new List<int?> { odemeId } : new List<int?>())
         {
         }
+
         private void frmFaturaOlustur_Load(object sender, EventArgs e)
         {
             txtTutar.Text = tutar;
             txtAciklama.Text = aciklama;
             txtTarih.Text = tarih;
             txtProjeNo.Text = proje;
-
+            var projeId = _finansProjelerService.GetProjeIdByNo(projeNo);
             this.Icon = Properties.Resources.cekalogokirmizi;
 
             var btnNotEkle = this.Controls.Find("btnNotEkle", true).FirstOrDefault() as Button;
@@ -72,12 +91,17 @@ namespace CEKA_APP.Forms
 
             if (!string.IsNullOrEmpty(projeNo))
             {
-                var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
+                int? effectiveProjeNo = projeId;
+                if (_projeIliskiService.CheckAltProje(projeId.Value))
+                {
+                    effectiveProjeNo = _projeIliskiService.GetUstProjeId(projeId.Value) ?? projeId;
+                }
+
+                var projeKutuk = _projeKutukService.ProjeKutukAra(projeId.Value);
 
                 if (projeKutuk != null && !string.IsNullOrEmpty(projeKutuk.musteriNo))
                 {
-                    var musteriData = new ProjeFinans_MusterilerData();
-                    var musteriBilgi = musteriData.GetMusteriByMusteriNo(projeKutuk.musteriNo);
+                    var musteriBilgi = _musterilerService.GetMusteriByMusteriNo(projeKutuk.musteriNo);
 
                     if (musteriBilgi != null)
                     {
@@ -99,16 +123,13 @@ namespace CEKA_APP.Forms
                     MessageBox.Show($"Proje numarasına {projeNo} göre müşteri numarası bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
-
-            var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
             var faturaNoSet = new HashSet<string>();
             bool hasNullFaturaNo = false;
-
             foreach (var kmId in kilometreTasiIds)
             {
                 if (kmId > 0)
                 {
-                    var odemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kmId);
+                    var odemeBilgi = _odemeSartlariService.GetOdemeBilgi(projeNo, kmId);
                     if (odemeBilgi != null)
                     {
                         if (string.IsNullOrEmpty(odemeBilgi.faturaNo))
@@ -1356,12 +1377,11 @@ namespace CEKA_APP.Forms
             try
             {
                 document.Save(filename);
-                var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
                 bool allUpdatesSuccessful = true;
 
                 foreach (var odemeId in odemeIds.Where(id => id.HasValue))
                 {
-                    bool updateSuccess = odemeSekilleriData.UpdateFaturaNo(odemeId.Value, textInvoiceNumber);
+                    bool updateSuccess = _odemeSartlariService.UpdateFaturaNo(odemeId.Value, textInvoiceNumber);
                     if (!updateSuccess)
                     {
                         allUpdatesSuccessful = false;
@@ -1397,14 +1417,13 @@ namespace CEKA_APP.Forms
         }
         private void btnGoruntule_Click(object sender, EventArgs e)
         {
-            var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
             var faturaNoSet = new HashSet<string>();
 
             foreach (var kmId in kilometreTasiIds)
             {
                 if (kmId > 0)
                 {
-                    var odemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kmId);
+                    var odemeBilgi = _odemeSartlariService.GetOdemeBilgi(projeNo, kmId);
                     if (odemeBilgi != null && !string.IsNullOrEmpty(odemeBilgi.faturaNo?.ToString()))
                     {
                         faturaNoSet.Add(odemeBilgi.faturaNo.ToString());
@@ -1445,14 +1464,13 @@ namespace CEKA_APP.Forms
 
         private void btnSil_Click(object sender, EventArgs e)
         {
-            var odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
             var faturaNoSet = new HashSet<string>();
 
             foreach (var kmId in kilometreTasiIds)
             {
                 if (kmId > 0)
                 {
-                    var odemeBilgi = odemeSekilleriData.GetOdemeBilgi(projeNo, kmId);
+                    var odemeBilgi = _odemeSartlariService.GetOdemeBilgi(projeNo, kmId);
                     if (odemeBilgi != null && !string.IsNullOrEmpty(odemeBilgi.faturaNo))
                     {
                         faturaNoSet.Add(odemeBilgi.faturaNo);
@@ -1477,7 +1495,7 @@ namespace CEKA_APP.Forms
                     bool allUpdatesSuccessful = true;
                     foreach (var odemeId in odemeIds.Where(id => id.HasValue))
                     {
-                        bool updateSuccess = odemeSekilleriData.UpdateFaturaNo(odemeId.Value, null);
+                        bool updateSuccess = _odemeSartlariService.UpdateFaturaNo(odemeId.Value, null);
                         if (!updateSuccess)
                         {
                             allUpdatesSuccessful = false;

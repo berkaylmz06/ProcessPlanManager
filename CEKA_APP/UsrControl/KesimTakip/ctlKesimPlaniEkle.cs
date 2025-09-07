@@ -125,7 +125,7 @@ namespace CEKA_APP.UsrControl
             if (open.ShowDialog() == DialogResult.OK)
             {
                 string filePath = open.FileName;
-                txtDosya.Text = Path.GetFileName(filePath); ;
+                txtDosya.Text = filePath;
                 if (File.Exists(filePath))
                 {
 
@@ -2749,6 +2749,17 @@ namespace CEKA_APP.UsrControl
 
         private void btnYazdir_Click(object sender, EventArgs e)
         {
+            DialogResult result = MessageBox.Show(
+                "Yazdırma işlemine başlamadan önce IFS'e yüklediğiniz XML'in hatasız olduğundan emin olun. İşleme devam etmek istiyor musunuz?",
+                "Yazdırma Onayı",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+            {
+                return;
+            }
+
             GlobalFontSettings.FontResolver = new CEKA_APP.Helper.PlatformFontResolver();
 
             if (string.IsNullOrEmpty(txtDosya.Text) || !File.Exists(txtDosya.Text))
@@ -2956,15 +2967,21 @@ namespace CEKA_APP.UsrControl
         {
             var locations = new List<(int PageNumber, double X, double Y)>();
 
-            using (var pdfDocument = new iText.Kernel.Pdf.PdfDocument(new iText.Kernel.Pdf.PdfReader(pdfPath)))
+            using (var document = UglyToad.PdfPig.PdfDocument.Open(pdfPath))
             {
-                for (int pageNum = 1; pageNum <= pdfDocument.GetNumberOfPages(); pageNum++)
+                for (int pageNum = 1; pageNum <= document.NumberOfPages; pageNum++)
                 {
-                    var page = pdfDocument.GetPage(pageNum);
-                    var strategy = new MetinKonumBulucu("CNC");
-                    var processor = new iText.Kernel.Pdf.Canvas.Parser.PdfCanvasProcessor(strategy);
-                    processor.ProcessPageContent(page);
-                    locations.AddRange(strategy.GetTextLocations().Select(loc => (pageNum, loc.X, loc.Y)));
+                    var page = document.GetPage(pageNum);
+                    var words = page.GetWords();
+
+                    foreach (var word in words)
+                    {
+                        if (word.Text.Contains("CNC"))
+                        {
+                            var location = word.BoundingBox.BottomLeft;
+                            locations.Add((pageNum, location.X, location.Y));
+                        }
+                    }
                 }
             }
 

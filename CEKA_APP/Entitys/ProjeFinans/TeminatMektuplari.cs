@@ -12,7 +12,7 @@ namespace CEKA_APP.Entitys.ProjeFinans
         public string musteriNo { get; set; }
         public string musteriAdi { get; set; }
         public string kilometreTasiAdi { get; set; } 
-        public string projeNo { get; set; }
+        public int projeId{ get; set; }
         public int kilometreTasiId { get; set; }
         public string paraBirimi { get; set; }
         public decimal tutar { get; set; }
@@ -23,5 +23,6 @@ namespace CEKA_APP.Entitys.ProjeFinans
         public decimal komisyonTutari { get; set; }
         public decimal komisyonOrani { get; set; }
         public int komisyonVadesi { get; set; }
+        public string projeNo { get; set; }
     }
 }

@@ -1,4 +1,7 @@
-﻿using CEKA_APP.DataBase.ProjeFinans;
+﻿using CEKA_APP.Abstracts.ProjeFinans;
+using CEKA_APP.DataBase.ProjeFinans;
+using CEKA_APP.Interfaces;
+using CEKA_APP.Interfaces.ProjeFinans;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -11,14 +14,16 @@ namespace CEKA_APP.Forms
     {
         public string KilometreTasiAdi { get; private set; }
         public string Oran { get; private set; }
-        private ProjeFinans_FiyatlandirmaKilometreTaslariData kilometreTasiData = new ProjeFinans_FiyatlandirmaKilometreTaslariData();
         private List<string> _alreadySelectedMilestones;
 
         private const int VerticalMargin = 12;
-
-        public frmYeniKilometreTasi(List<string> alreadySelectedMilestones = null)
+        private readonly IKilometreTaslariService _kilometreTaslariService;
+  
+        public frmYeniKilometreTasi(IKilometreTaslariService kilometreTaslariService, List<string> alreadySelectedMilestones = null)
         {
             InitializeComponent();
+
+            _kilometreTaslariService = kilometreTaslariService ?? throw new ArgumentNullException(nameof(kilometreTaslariService));
             this.Icon = Properties.Resources.cekalogokirmizi;
 
             _alreadySelectedMilestones = alreadySelectedMilestones ?? new List<string>();
@@ -36,7 +41,7 @@ namespace CEKA_APP.Forms
 
         private void LoadKilometreTasi()
         {
-            var allKilometreTaslari = kilometreTasiData.GetFiyatlandirmaKilometreTasi();
+            var allKilometreTaslari = _kilometreTaslariService.GetFiyatlandirmaKilometreTasi();
             listKilometreTaslari.Items.Clear();
 
             foreach (var (Id, Adi, Tarih) in allKilometreTaslari)
@@ -90,7 +95,7 @@ namespace CEKA_APP.Forms
                 {
                     string yeniKilometreTasiAdi = txtKilometreTasi.Text.Trim();
 
-                    var mevcutVeritabaniKilometreTaslari = kilometreTasiData.GetFiyatlandirmaKilometreTasi();
+                    var mevcutVeritabaniKilometreTaslari = _kilometreTaslariService.GetFiyatlandirmaKilometreTasi();
                     if (mevcutVeritabaniKilometreTaslari.Any(kt => kt.Adi.Equals(yeniKilometreTasiAdi, StringComparison.OrdinalIgnoreCase)))
                     {
                         MessageBox.Show("Bu kilometre taşı veritabanında zaten mevcut. Lütfen farklı bir ad girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -98,7 +103,7 @@ namespace CEKA_APP.Forms
                     }
 
                     KilometreTasiAdi = yeniKilometreTasiAdi;
-                    kilometreTasiData.FiyatlandirmaKilometreTasiEkle(KilometreTasiAdi);
+                    _kilometreTaslariService.FiyatlandirmaKilometreTasiEkle(KilometreTasiAdi);
                     LoadKilometreTasi();
 
                     GeriDon();

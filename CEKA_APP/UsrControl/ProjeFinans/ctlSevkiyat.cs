@@ -1,6 +1,10 @@
 ﻿using CEKA_APP.DataBase;
 using CEKA_APP.DataBase.ProjeFinans;
+using CEKA_APP.Entitys.ProjeFinans;
 using CEKA_APP.Forms;
+using CEKA_APP.Interfaces;
+using CEKA_APP.Interfaces.ProjeFinans;
+using CEKA_APP.Services.ProjeFinans;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -12,18 +16,31 @@ namespace CEKA_APP.UsrControl.ProjeFinans
 {
     public partial class ctlSevkiyat : UserControl
     {
-        private ProjeFinans_SevkiyatData sevkiyatData = new ProjeFinans_SevkiyatData();
-        private ProjeFinans_SevkiyatPaketleriData sevkiyatPaketleriData = new ProjeFinans_SevkiyatPaketleriData();
-
+        private List<(int projeId, string sevkiyatId, int aracSira)> _pendingDeletions = new List<(int, string, int)>();
+        private int? projeId = null;
         public event Action<string> OnSevkiyatKaydedildi;
 
         private ComboBox cmbProjeNo;
-        private List<string> altProjeler;
-        private int sevkiyatAracSayisi = 0; 
+        private List<int> altProjeler;
+        private int sevkiyatAracSayisi = 0;
 
-        public ctlSevkiyat()
+        private readonly ISevkiyatService _sevkiyatService;
+        private readonly IFiyatlandirmaService _fiyatlandirmaService;
+        private readonly ISevkiyatPaketleriService _sevkiyatPaketleriService;
+        private readonly IFinansProjelerService _finansProjelerService;
+        private readonly IProjeIliskiService _projeIliskiService;
+        private readonly IProjeKutukService _projeKutukService;
+        public ctlSevkiyat(ISevkiyatService sevkiyatService, IFiyatlandirmaService fiyatlandirmaService, ISevkiyatPaketleriService sevkiyatPaketleriService, IFinansProjelerService finansProjelerService, IProjeIliskiService projeIliskiService, IProjeKutukService projeKutukService)
         {
             InitializeComponent();
+
+            _sevkiyatService = sevkiyatService ?? throw new ArgumentNullException(nameof(sevkiyatService));
+            _fiyatlandirmaService = fiyatlandirmaService ?? throw new ArgumentNullException(nameof(fiyatlandirmaService));
+            _sevkiyatPaketleriService = sevkiyatPaketleriService ?? throw new ArgumentNullException(nameof(sevkiyatPaketleriService));
+            _finansProjelerService = finansProjelerService ?? throw new ArgumentNullException(nameof(finansProjelerService));
+            _projeIliskiService = projeIliskiService ?? throw new ArgumentNullException(nameof(projeIliskiService));
+            _projeKutukService = projeKutukService ?? throw new ArgumentNullException(nameof(projeKutukService));
+
 
             this.DoubleBuffered = true;
 
@@ -39,6 +56,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             {
                 if (cmbProjeNo.SelectedItem != null)
                 {
+                    projeId = _finansProjelerService.GetProjeIdByNo(cmbProjeNo.SelectedItem.ToString());
                     LoadSevkiyatlar(cmbProjeNo.SelectedItem.ToString());
                 }
             };
@@ -47,8 +65,10 @@ namespace CEKA_APP.UsrControl.ProjeFinans
 
             btnPaketEkle.Enabled = false;
             btnSevkiyatEkle.Enabled = false;
+            _sevkiyatPaketleriService = sevkiyatPaketleriService;
+            _finansProjelerService = finansProjelerService;
+            _projeIliskiService = projeIliskiService;
         }
-
         private void ctlSevkiyat_Load(object sender, EventArgs e)
         {
             ctlBaslik1.Baslik = "Sevkiyat";
@@ -78,7 +98,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 tableLayoutPanel1.Controls.Clear();
                 tableLayoutPanel1.RowStyles.Clear();
                 tableLayoutPanel1.RowCount = 0;
-                sevkiyatAracSayisi = 0; 
+                sevkiyatAracSayisi = 0;
 
                 AddHeaderRow();
                 AddSpacerRow();
@@ -89,60 +109,26 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             }
         }
 
-        public void LoadProjeSevkiyat(string projeNo, bool autoSearch = false, List<string> altProjeler = null)
-        {
-            this.altProjeler = altProjeler;
-
-            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
-            if (projeBilgi == null)
-            {
-                MessageBox.Show($"Proje '{projeNo}' ProjeFinans_Projeler tablosunda bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
-            if (projeKutuk != null && projeKutuk.altProjeVarMi && altProjeler == null)
-            {
-                MessageBox.Show($"Proje '{projeNo}' alt projelere sahip. Lütfen bir alt proje seçin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            txtProjeAra.Text = projeNo;
-
-            if (altProjeler != null && altProjeler.Any())
-            {
-                txtProjeAra.Visible = false;
-                cmbProjeNo.Visible = true;
-                cmbProjeNo.Items.Clear();
-                cmbProjeNo.Items.AddRange(altProjeler.ToArray());
-                cmbProjeNo.SelectedIndex = altProjeler.Contains(projeNo) ? altProjeler.IndexOf(projeNo) : 0;
-                cmbProjeNo.BringToFront();
-            }
-            else
-            {
-                txtProjeAra.Visible = true;
-                cmbProjeNo.Visible = false;
-            }
-
-            if (autoSearch)
-            {
-                LoadSevkiyatlar(projeNo);
-            }
-            UpdateButtonsState();
-        }
-
         private void LoadSevkiyatlar(string projeNo)
         {
+            projeId = _finansProjelerService.GetProjeIdByNo(projeNo);
+            if (!projeId.HasValue)
+            {
+                MessageBox.Show($"Proje '{projeNo}' için projeId bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             tableLayoutPanel1.SuspendLayout();
             try
             {
                 tableLayoutPanel1.Controls.Clear();
-                tableLayoutPanel1.ColumnCount = 10;
+                tableLayoutPanel1.ColumnCount = 11;
                 tableLayoutPanel1.RowCount = 1;
                 tableLayoutPanel1.RowStyles.Clear();
 
                 tableLayoutPanel1.ColumnStyles.Clear();
-                for (int i = 0; i < 10; i++)
+                tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30f));
+                for (int i = 1; i < 11; i++)
                 {
                     tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100f / 10));
                 }
@@ -150,29 +136,40 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 AddHeaderRow();
                 AddSpacerRow();
 
-                var sevkiyatVerileri = sevkiyatData.GetSevkiyatByProje(projeNo);
-
+                var sevkiyatVerileri = _sevkiyatService.GetSevkiyatByProje(projeId.Value);
                 sevkiyatAracSayisi = sevkiyatVerileri.Any() ? sevkiyatVerileri.Max(s => s.aracSira) : 0;
 
                 if (sevkiyatVerileri.Any())
                 {
-                    foreach (var veri in sevkiyatVerileri)
+                    var filteredSevkiyatVerileri = sevkiyatVerileri
+                        .Where(s => !_pendingDeletions.Any(pd => pd.projeId == projeId.Value && pd.sevkiyatId == s.sevkId && pd.aracSira == s.aracSira))
+                        .OrderBy(s => s.aracSira)
+                        .ToList();
+
+                    foreach (var veri in filteredSevkiyatVerileri)
                     {
-                        AddSevkiyatSatiri(veri.aracSira, veri.aracSevkTarihi.ToString("dd.MM.yyyy HH:mm"), veri.sevkId, veri.paketAdi);
+                        string sevkTarihi = veri.aracSevkTarihi.HasValue
+         ? veri.aracSevkTarihi.Value.ToString("dd.MM.yyyy HH:mm")
+         : string.Empty;
+
+                        AddSevkiyatSatiri(veri.aracSira, sevkTarihi, veri.sevkId, veri.paketAdi);
                         int row = tableLayoutPanel1.RowCount - 1;
 
-                        var txtTasimaBilgileri = GetTextBoxAt(row, 4);
-                        var txtSatisSipNo = GetTextBoxAt(row, 5);
-                        var txtIrsaliyeNo = GetTextBoxAt(row, 6);
-                        var txtAgirlik = GetTextBoxAt(row, 7);
-                        var txtFaturaToplami = GetTextBoxAt(row, 8);
-                        var txtFaturaNo = GetTextBoxAt(row, 9);
+                        var txtTasimaBilgileri = GetTextBoxAt(row, 5);
+                        var txtSatisSipNo = GetTextBoxAt(row, 6);
+                        var txtIrsaliyeNo = GetTextBoxAt(row, 7);
+                        var txtAgirlik = GetTextBoxAt(row, 8);
+                        var txtFaturaToplami = GetTextBoxAt(row, 9);
+                        var txtFaturaNo = GetTextBoxAt(row, 10);
 
                         if (txtTasimaBilgileri != null) txtTasimaBilgileri.Text = veri.tasimaBilgileri;
-                        if (txtSatisSipNo != null) txtSatisSipNo.Text = veri.satisSipNo;
+                        if (txtSatisSipNo != null) txtSatisSipNo.Text = veri.satisSiparisNo;
                         if (txtIrsaliyeNo != null) txtIrsaliyeNo.Text = veri.irsaliyeNo;
                         if (txtAgirlik != null) txtAgirlik.Text = veri.agirlik.ToString("N2");
-                        if (txtFaturaToplami != null) txtFaturaToplami.Text = veri.faturaToplami.ToString("N2");
+                        if (txtFaturaToplami != null)
+                        {
+                            txtFaturaToplami.Text = veri.faturaToplami.HasValue ? veri.faturaToplami.Value.ToString("N2") : string.Empty;
+                        }
                         if (txtFaturaNo != null) txtFaturaNo.Text = veri.faturaNo;
                     }
                     AddSpacerRow();
@@ -183,24 +180,32 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 tableLayoutPanel1.ResumeLayout(true);
             }
         }
-
         private void AddHeaderRow()
         {
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 23));
 
             string[] headers = {
-                "Araç No",         
-                "Araç Sevk Tarihi", 
-                "Sevk Id",   
-                "Paket", 
-                "Taşıma Bilgileri",
-                "Satış Sipariş No",
-                "İrsaliye No",
-                "Ağırlık",
-                "Fatura Toplamı",
-                "Fatura No"
-            };
+        "",
+        "Araç No",
+        "Araç Sevk Tarihi",
+        "Sevk Id",
+        "Paket",
+        "Taşıma Bilgileri",
+        "Satış Sipariş No",
+        "İrsaliye No",
+        "Ağırlık",
+        "Fatura Toplamı",
+        "Fatura No"
+    };
+
+            tableLayoutPanel1.ColumnCount = headers.Length;
+            tableLayoutPanel1.ColumnStyles.Clear();
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 30f));
+            for (int i = 1; i < headers.Length; i++)
+            {
+                tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, (100f / (headers.Length - 1))));
+            }
 
             for (int i = 0; i < headers.Length; i++)
             {
@@ -219,7 +224,6 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 tableLayoutPanel1.Controls.Add(lbl, i, 0);
             }
         }
-
         private void AddSpacerRow()
         {
             tableLayoutPanel1.SuspendLayout();
@@ -306,6 +310,19 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
                 int newRowIndex = tableLayoutPanel1.RowCount - 1;
 
+                var pbDelete = new PictureBox
+                {
+                    Image = Properties.Resources.copKutusu,
+                    SizeMode = PictureBoxSizeMode.Zoom,
+                    Dock = DockStyle.Fill,
+                    Margin = new Padding(2),
+                    Size = new Size(26, 26),
+                    Cursor = Cursors.Hand
+                };
+                pbDelete.Click += PbDelete_Click;
+                pbDelete.Tag = (sevkIdValue, aracNo);
+                tableLayoutPanel1.Controls.Add(pbDelete, 0, newRowIndex);
+
                 var lblAracNo = new Label
                 {
                     Text = (aracNo > 0) ? $"{aracNo}. Araç" : "",
@@ -318,8 +335,8 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                     BorderStyle = BorderStyle.FixedSingle,
                     BackColor = Color.LightCyan
                 };
-                tableLayoutPanel1.Controls.Add(lblAracNo, 0, newRowIndex);
-                lblAracNo.Tag = aracNo; 
+                tableLayoutPanel1.Controls.Add(lblAracNo, 1, newRowIndex);
+                lblAracNo.Tag = aracNo;
 
                 var txtAracSevkTarihi = new TextBox
                 {
@@ -332,7 +349,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                     Font = new Font("Segoe UI", 10),
                     BorderStyle = BorderStyle.FixedSingle
                 };
-                tableLayoutPanel1.Controls.Add(txtAracSevkTarihi, 1, newRowIndex);
+                tableLayoutPanel1.Controls.Add(txtAracSevkTarihi, 2, newRowIndex);
 
                 var txtSevkId = new TextBox
                 {
@@ -345,7 +362,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                     Font = new Font("Segoe UI", 10),
                     BorderStyle = BorderStyle.FixedSingle
                 };
-                tableLayoutPanel1.Controls.Add(txtSevkId, 2, newRowIndex);
+                tableLayoutPanel1.Controls.Add(txtSevkId, 3, newRowIndex);
 
                 var txtPaketAdi = new TextBox
                 {
@@ -359,9 +376,9 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                     BorderStyle = BorderStyle.FixedSingle
                 };
                 txtPaketAdi.Leave += txtPaketAdi_Leave;
-                tableLayoutPanel1.Controls.Add(txtPaketAdi, 3, newRowIndex);
+                tableLayoutPanel1.Controls.Add(txtPaketAdi, 4, newRowIndex);
 
-                for (int i = 4; i < 10; i++)
+                for (int i = 5; i < 11; i++)
                 {
                     var txt = new TextBox
                     {
@@ -374,7 +391,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                         BorderStyle = BorderStyle.FixedSingle
                     };
 
-                    if (i == 7 || i == 8)
+                    if (i == 8 || i == 9)
                     {
                         txt.KeyPress += (s, e) =>
                         {
@@ -397,7 +414,52 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 tableLayoutPanel1.ResumeLayout(true);
             }
         }
+        private void PbDelete_Click(object sender, EventArgs e)
+        {
+            var pictureBox = sender as PictureBox;
+            if (pictureBox != null)
+            {
+                int rowIndex = tableLayoutPanel1.GetRow(pictureBox);
+                if (rowIndex <= 0 || rowIndex >= tableLayoutPanel1.RowCount - 1)
+                {
+                    return;
+                }
 
+                var tag = pictureBox.Tag as (string sevkId, int aracSira)?;
+                if (tag == null)
+                {
+                    MessageBox.Show("Silme işlemi başarısız: Satır bilgisi alınamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeAra.Text.Trim();
+                if (!projeId.HasValue)
+                {
+                    MessageBox.Show("Proje ID bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                tableLayoutPanel1.SuspendLayout();
+                try
+                {
+                    if (!string.IsNullOrEmpty(tag.Value.sevkId))
+                    {
+                        _pendingDeletions.Add((projeId.Value, tag.Value.sevkId, tag.Value.aracSira));
+                        MessageBox.Show("Satır başarıyla silinmek üzere işaretlendi. Kaydet butonuna tıklayarak veritabanından silmeyi onaylayın.", "Silme Onayı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+                    else
+                    {
+                        MessageBox.Show("Yeni eklenen satır başarıyla kaldırıldı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+
+                    LoadSevkiyatlar(projeNo);
+                }
+                finally
+                {
+                    tableLayoutPanel1.ResumeLayout(true);
+                }
+            }
+        }
         private void txtPaketAdi_Leave(object sender, EventArgs e)
         {
             TextBox txtPaketAdi = sender as TextBox;
@@ -405,7 +467,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             {
                 string enteredPaketAdi = txtPaketAdi.Text.Trim();
 
-                int paketId = sevkiyatPaketleriData.GetPaketIdByAdi(enteredPaketAdi);
+                int paketId = _sevkiyatPaketleriService.GetPaketIdByAdi(enteredPaketAdi);
                 if (paketId == 0)
                 {
                     MessageBox.Show($"'{enteredPaketAdi}' adında bir paket bulunamadı. Lütfen önce paketi tanımlayın veya doğru bir paket adı girin.", "Paket Bulunamadı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -432,8 +494,8 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                             {
                                 MessageBox.Show("Bu araca aynı paket daha önce yüklenmiştir.", "Tekrar Eden Paket", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                                 txtPaketAdi.Text = "";
-                                txtPaketAdi.Focus(); 
-                                return; 
+                                txtPaketAdi.Focus();
+                                return;
                             }
                         }
                     }
@@ -462,7 +524,13 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 return;
             }
 
-            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
+            if (!projeId.HasValue)
+            {
+                MessageBox.Show($"Proje '{projeNo}' için projeId bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var projeBilgi = _finansProjelerService.GetProjeBilgileri(projeId.Value);
             if (projeBilgi == null)
             {
                 MessageBox.Show($"Aranan proje '{projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -470,112 +538,181 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 return;
             }
 
-            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
+            var projeKutuk = _projeKutukService.ProjeKutukAra(projeId.Value);
             if (projeKutuk != null && projeKutuk.altProjeVarMi)
             {
                 MessageBox.Show($"Proje '{projeNo}' alt projelere sahip. Ana proje için sevkiyat yapılamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            tableLayoutPanel1.SuspendLayout();
+            if (!ParseToplamBedel(out decimal toplamBedel))
+            {
+                MessageBox.Show("Toplam bedel geçerli bir sayı değil.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            decimal toplamFatura = 0;
+            for (int row = 1; row < tableLayoutPanel1.RowCount; row++)
+            {
+                var txtFaturaToplami = GetTextBoxAt(row, 9);
+                if (txtFaturaToplami != null && decimal.TryParse(txtFaturaToplami.Text, NumberStyles.Any, CultureInfo.CurrentCulture, out decimal fatura))
+                {
+                    toplamFatura += fatura;
+                }
+            }
+
+            if (toplamFatura > toplamBedel)
+            {
+                MessageBox.Show("Fatura toplamları toplam bedeli aşıyor.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             try
             {
-                var mevcutSevkiyatlar = sevkiyatData.GetSevkiyatByProje(projeNo)
-                    .ToDictionary(s => s.sevkId, s => s);
-
-                for (int row = 1; row < tableLayoutPanel1.RowCount; row++)
+                using (var connection = DataBaseHelper.GetConnection())
                 {
-                    var lblAracNo = GetLabelAt(row, 0); 
-                    var txtSevkId = GetTextBoxAt(row, 2);
-                    var txtPaketAdi = GetTextBoxAt(row, 3);
-
-                    if (txtSevkId == null || string.IsNullOrEmpty(txtSevkId.Text.Trim()) ||
-                        txtPaketAdi == null || string.IsNullOrEmpty(txtPaketAdi.Text.Trim()))
+                    connection.Open();
+                    using (var transaction = connection.BeginTransaction())
                     {
-                        continue;
-                    }
-
-                    int aracSira = 0;
-                    if (lblAracNo != null && lblAracNo.Tag is int)
-                    {
-                        aracSira = (int)lblAracNo.Tag; 
-                    }
-                    else
-                    {
-                        if (lblAracNo != null && lblAracNo.Text.Contains("."))
+                        try
                         {
-                            int.TryParse(lblAracNo.Text.Split('.')[0], out aracSira);
+                            foreach (var itemToDelete in _pendingDeletions)
+                            {
+                                if (!_sevkiyatService.SevkiyatSilBySevkiyatId(projeId.Value, itemToDelete.sevkiyatId, itemToDelete.aracSira))
+                                {
+                                    throw new Exception($"Silme işlemi başarısız: {itemToDelete.sevkiyatId}");
+                                }
+                            }
+
+                            var mevcutSevkiyatlar = _sevkiyatService.GetSevkiyatByProje(projeId.Value);
+
+                            for (int row = 1; row < tableLayoutPanel1.RowCount; row++)
+                            {
+                                var lblAracNo = GetLabelAt(row, 1);
+                                var txtSevkId = GetTextBoxAt(row, 3);
+                                var txtPaketAdi = GetTextBoxAt(row, 4);
+
+                                if (txtSevkId == null || string.IsNullOrEmpty(txtSevkId.Text.Trim()) ||
+                                    txtPaketAdi == null || string.IsNullOrEmpty(txtPaketAdi.Text.Trim()))
+                                {
+                                    continue;
+                                }
+
+                                var txtAracSevkTarihi = GetTextBoxAt(row, 2);
+                                var txtTasimaBilgileri = GetTextBoxAt(row, 5);
+                                var txtSatisSipNo = GetTextBoxAt(row, 6);
+                                var txtIrsaliyeNo = GetTextBoxAt(row, 7);
+                                var txtAgirlik = GetTextBoxAt(row, 8);
+                                var txtFaturaToplami = GetTextBoxAt(row, 9);
+                                var txtFaturaNo = GetTextBoxAt(row, 10);
+
+                                bool tumAlanlarDolu = !string.IsNullOrWhiteSpace(txtAracSevkTarihi?.Text) &&
+                                                      !string.IsNullOrWhiteSpace(txtTasimaBilgileri?.Text) &&
+                                                      !string.IsNullOrWhiteSpace(txtSatisSipNo?.Text) &&
+                                                      !string.IsNullOrWhiteSpace(txtIrsaliyeNo?.Text) &&
+                                                      !string.IsNullOrWhiteSpace(txtAgirlik?.Text) &&
+                                                      !string.IsNullOrWhiteSpace(txtFaturaToplami?.Text) &&
+                                                      !string.IsNullOrWhiteSpace(txtFaturaNo?.Text);
+
+                                string statu = tumAlanlarDolu ? "Kapatıldı" : "Başlatıldı";
+
+                                int aracSira = 0;
+                                if (lblAracNo != null && lblAracNo.Tag is int)
+                                {
+                                    aracSira = (int)lblAracNo.Tag;
+                                }
+                                else if (lblAracNo != null && lblAracNo.Text.Contains("."))
+                                {
+                                    int.TryParse(lblAracNo.Text.Split('.')[0], out aracSira);
+                                }
+
+                                string sevkId = txtSevkId.Text.Trim();
+                                string paketAdi = txtPaketAdi.Text.Trim();
+                                string tasimaBilgileri = txtTasimaBilgileri?.Text ?? "";
+                                string satisSiparisNo = txtSatisSipNo?.Text ?? "";
+                                string irsaliyeNo = txtIrsaliyeNo?.Text ?? "";
+                                DateTime? aracSevkTarihi = DateTime.TryParse(txtAracSevkTarihi?.Text, out DateTime date) ? date : (DateTime?)null;
+                                decimal agirlik = decimal.TryParse(txtAgirlik?.Text, NumberStyles.Any, CultureInfo.CurrentCulture, out decimal a) ? a : 0;
+
+                                decimal? faturaToplami = null;
+                                if (!string.IsNullOrWhiteSpace(txtFaturaToplami?.Text))
+                                {
+                                    if (decimal.TryParse(txtFaturaToplami.Text, NumberStyles.Any, CultureInfo.CurrentCulture, out decimal ft))
+                                    {
+                                        faturaToplami = ft;
+                                    }
+                                }
+
+                                string faturaNo = txtFaturaNo?.Text ?? "";
+                                int paketId = _sevkiyatPaketleriService.GetPaketIdByAdi(paketAdi);
+                                if (paketId == 0)
+                                {
+                                    MessageBox.Show($"Paket '{paketAdi}' için ID bulunamadı. Bu satır kaydedilemedi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    continue;
+                                }
+
+                                // Create a Sevkiyat object
+                                var sevkiyat = new Sevkiyat
+                                {
+                                    projeId = projeId.Value,
+                                    sevkId = sevkId,
+                                    paketId = paketId,
+                                    tasimaBilgileri = tasimaBilgileri,
+                                    satisSiparisNo = satisSiparisNo,
+                                    irsaliyeNo = irsaliyeNo,
+                                    aracSevkTarihi = aracSevkTarihi,
+                                    agirlik = agirlik,
+                                    faturaToplami = faturaToplami,
+                                    faturaNo = faturaNo,
+                                    aracSira = aracSira,
+                                    status = statu,
+                                    paketAdi = paketAdi 
+                                };
+
+                                var mevcutSevkiyat = mevcutSevkiyatlar.FirstOrDefault(s => s.sevkId == sevkId && s.aracSira == aracSira);
+
+                                if (mevcutSevkiyat != null && !string.IsNullOrEmpty(mevcutSevkiyat.sevkId))
+                                {
+                                    _sevkiyatService.SevkiyatGuncelle(sevkiyat);
+                                }
+                                else
+                                {
+                                    _sevkiyatService.SevkiyatKaydet(sevkiyat);
+                                }
+                            }
+                            transaction.Commit();
+
+                            var guncelSevkiyatlar = _sevkiyatService.GetSevkiyatByProje(projeId.Value);
+                            if (guncelSevkiyatlar.All(s => s.status == "Kapatıldı"))
+                            {
+                                txtStatu.Text = "Kapatıldı";
+                            }
+                            else
+                            {
+                                txtStatu.Text = "Başlatıldı";
+                            }
+
+                            _pendingDeletions.Clear();
+                            LoadSevkiyatlar(projeNo);
+                            decimal kalanTutar = toplamBedel - toplamFatura;
+                            txtKalanTutar.Text = kalanTutar.ToString("F2", CultureInfo.CurrentCulture);
+                            DataBaseHelper.ProjeDurumunuGuncelle(projeId.Value);
+                            OnSevkiyatKaydedildi?.Invoke(projeNo);
+                            MessageBox.Show("Sevkiyat bilgileri kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        }
+                        catch (Exception ex)
+                        {
+                            transaction.Rollback();
+                            MessageBox.Show($"Kaydetme işlemi başarısız: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                         }
                     }
-
-                    var txtAracSevkTarihi = GetTextBoxAt(row, 1);
-                    var txtTasimaBilgileri = GetTextBoxAt(row, 4);
-                    var txtSatisSipNo = GetTextBoxAt(row, 5);
-                    var txtIrsaliyeNo = GetTextBoxAt(row, 6);
-                    var txtAgirlik = GetTextBoxAt(row, 7);
-                    var txtFaturaToplami = GetTextBoxAt(row, 8);
-                    var txtFaturaNo = GetTextBoxAt(row, 9);
-
-                    string sevkId = txtSevkId.Text.Trim();
-                    string paketAdi = txtPaketAdi.Text.Trim();
-                    string tasimaBilgileri = txtTasimaBilgileri?.Text ?? "";
-                    string satisSiparisNo = txtSatisSipNo?.Text ?? "";
-                    string irsaliyeNo = txtIrsaliyeNo?.Text ?? "";
-                    DateTime? aracSevkTarihi = DateTime.TryParse(txtAracSevkTarihi?.Text, out DateTime date) ? date : (DateTime?)null;
-                    decimal agirlik = decimal.TryParse(txtAgirlik?.Text, out decimal a) ? a : 0;
-                    decimal faturaToplami = decimal.TryParse(txtFaturaToplami?.Text, out decimal ft) ? ft : 0;
-                    string faturaNo = txtFaturaNo?.Text ?? "";
-
-                    int sevkiyatKalemId = sevkiyatPaketleriData.GetPaketIdByAdi(paketAdi);
-                    if (sevkiyatKalemId == 0)
-                    {
-                        MessageBox.Show($"Paket '{paketAdi}' için ID bulunamadı. Bu satır kaydedilemedi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        continue;
-                    }
-
-                    if (mevcutSevkiyatlar.TryGetValue(sevkId, out var mevcutSevkiyat))
-                    {
-                        sevkiyatData.SevkiyatGuncelle(
-                            projeNo,
-                            sevkId,
-                            sevkiyatKalemId,
-                            tasimaBilgileri,
-                            satisSiparisNo,
-                            irsaliyeNo,
-                            aracSevkTarihi.GetValueOrDefault(DateTime.MinValue),
-                            agirlik,
-                            faturaToplami,
-                            faturaNo,
-                            aracSira
-                        );
-                    }
-                    else
-                    {
-                        sevkiyatData.SevkiyatKaydet(
-                            projeNo,
-                            sevkId,
-                            sevkiyatKalemId,
-                            tasimaBilgileri,
-                            satisSiparisNo,
-                            irsaliyeNo,
-                            aracSevkTarihi.GetValueOrDefault(DateTime.MinValue),
-                            agirlik,
-                            faturaToplami,
-                            faturaNo,
-                            aracSira
-                        );
-                    }
                 }
-
-                OnSevkiyatKaydedildi?.Invoke(projeNo);
-                MessageBox.Show("Sevkiyat bilgileri kaydedildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             finally
             {
                 tableLayoutPanel1.ResumeLayout(true);
             }
         }
-
         private void btnProjeAra_Click(object sender, EventArgs e)
         {
             string arananProjeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeAra.Text.Trim();
@@ -586,7 +723,16 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 return;
             }
 
-            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(arananProjeNo);
+            projeId = _finansProjelerService.GetProjeIdByNo(arananProjeNo);
+            if (!projeId.HasValue)
+            {
+                MessageBox.Show($"Aranan proje '{arananProjeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                txtProjeAra.Text = null;
+                UpdateButtonsState();
+                return;
+            }
+
+            var projeBilgi = _finansProjelerService.GetProjeBilgileri(projeId.Value);
             if (projeBilgi == null)
             {
                 MessageBox.Show($"Aranan proje '{arananProjeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -595,26 +741,70 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 return;
             }
 
-            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(arananProjeNo);
+            var projeKutuk = _projeKutukService.ProjeKutukAra(projeId.Value);
+            var arananProjeId = _finansProjelerService.GetProjeIdByNo(arananProjeNo);
             if (projeKutuk != null && projeKutuk.altProjeVarMi)
             {
                 MessageBox.Show($"Proje '{arananProjeNo}' alt projelere sahip. Ana proje için sevkiyat yapılamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var fiyatlandirmaData = new ProjeFinans_FiyatlandirmaData();
-            List<string> altProjeler = null;
-            var (toplamBedel, eksikFiyatlandirmaProjeler) = fiyatlandirmaData.GetToplamBedel(arananProjeNo, altProjeler);
+            List<int> altProjeler = null;
+            var (toplamBedel, eksikFiyatlandirmaProjeler) = _fiyatlandirmaService.GetToplamBedel(arananProjeId.Value, altProjeler);
 
-            UpdateToplamBedelUI(arananProjeNo, toplamBedel, eksikFiyatlandirmaProjeler);
+            var sevkiyatlar = _sevkiyatService.GetSevkiyatByProje(projeId.Value);
 
+            if (sevkiyatlar.All(s => s.status == "Kapatıldı"))
+            {
+                txtStatu.Text = "Kapatıldı";
+            }
+            else
+            {
+                txtStatu.Text = "Başlatıldı";
+            }
+
+            decimal toplamFatura = sevkiyatlar.Sum(s => s.faturaToplami.GetValueOrDefault());
+            decimal kalanTutar = toplamBedel - toplamFatura;
+
+            UpdateToplamBedelUI(arananProjeNo, toplamBedel, eksikFiyatlandirmaProjeler, kalanTutar);
             LoadSevkiyatlar(arananProjeNo);
             UpdateButtonsState();
         }
+        private void UpdateToplamBedelUI(string projeNo, decimal toplamBedel, List<int> eksikFiyatlandirmaProjeler, decimal kalanTutar)
+        {
+            if (this.InvokeRequired)
+            {
+                this.Invoke(new Action(() => UpdateToplamBedelUI(projeNo, toplamBedel, eksikFiyatlandirmaProjeler, kalanTutar)));
+                return;
+            }
 
+            txtToplamBedel.Text = toplamBedel.ToString("F2", CultureInfo.CurrentCulture);
+            txtKalanTutar.Text = kalanTutar.ToString("F2", CultureInfo.CurrentCulture);
+            var projeKutuk = _projeKutukService.ProjeKutukAra(projeId.Value);
+
+            bool isAltProje = _projeIliskiService.CheckAltProje(projeId.Value);
+
+            if (eksikFiyatlandirmaProjeler.Any())
+            {
+                txtToplamBedel.ForeColor = Color.Red;
+                lblToplamBedelBilgi.Text = isAltProje
+                   ? $"Alt projeler: {string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma bulunmamaktadır."
+                   : $"Proje: {string.Join(", ", eksikFiyatlandirmaProjeler)} için fiyatlandırma bulunmamaktadır.";
+                lblToplamBedelBilgi.ForeColor = Color.Red;
+            }
+            else
+            {
+                txtToplamBedel.ForeColor = Color.Black;
+                lblToplamBedelBilgi.Text = string.Empty;
+                lblToplamBedelBilgi.ForeColor = Color.Black;
+            }
+            txtKalanTutar.Refresh();
+            txtToplamBedel.Refresh();
+            lblToplamBedelBilgi.Refresh();
+        }
         private void btnPaketEkle_Click(object sender, EventArgs e)
         {
-            var frm = new frmYeniPaketEkle();
+            var frm = new frmYeniPaketEkle(_sevkiyatPaketleriService);
             frm.ShowDialog();
         }
 
@@ -626,19 +816,27 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 MessageBox.Show("Lütfen önce bir proje seçin veya girin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
+            if (!projeId.HasValue)
+            {
+                MessageBox.Show($"Proje '{projeNo}' için projeId bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             if (!ParseToplamBedel(out decimal toplamBedel) || toplamBedel == 0)
             {
                 MessageBox.Show("Projeye ait fiyatlandırma bulunmadığından sevkiyat bilgisi girilemez.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
+
+            var projeBilgi = _finansProjelerService.GetProjeBilgileri(projeId.Value); 
             if (projeBilgi == null)
             {
                 MessageBox.Show($"Geçerli proje '{projeNo}' bulunamadı. Sevkiyat eklenemiyor.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
 
-            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
+            var projeKutuk = _projeKutukService.ProjeKutukAra(projeId.Value);
             if (projeKutuk != null && projeKutuk.altProjeVarMi)
             {
                 MessageBox.Show($"Proje '{projeNo}' alt projelere sahip. Ana proje için sevkiyat eklenemez.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -665,9 +863,8 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 AddSevkiyatSatiri(sevkiyatAracSayisi, currentDateTime);
             }
 
-            AddSpacerRow(); 
+            AddSpacerRow();
         }
-
         private void UpdateButtonsState()
         {
             string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeAra.Text.Trim();
@@ -678,13 +875,12 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 return;
             }
 
-            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
+            var projeBilgi = _finansProjelerService.GetProjeBilgileri(projeId.HasValue ? projeId.Value : _finansProjelerService.GetProjeIdByNo(projeNo).GetValueOrDefault());
             bool isProjeValid = projeBilgi != null;
 
             btnPaketEkle.Enabled = isProjeValid;
             btnSevkiyatEkle.Enabled = isProjeValid;
         }
-
         private void btnSil_Click(object sender, EventArgs e)
         {
             string projeNo = cmbProjeNo.Visible ? cmbProjeNo.SelectedItem?.ToString() : txtProjeAra.Text.Trim();
@@ -694,7 +890,13 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 return;
             }
 
-            var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
+            if (!projeId.HasValue)
+            {
+                MessageBox.Show($"Proje '{projeNo}' için projeId bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var projeBilgi = _finansProjelerService.GetProjeBilgileri(projeId.Value);
             if (projeBilgi == null)
             {
                 MessageBox.Show($"Proje '{projeNo}' bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -707,10 +909,10 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 return;
             }
 
-            if (sevkiyatData.SevkiyatSil(projeNo))
+            if (_sevkiyatService.SevkiyatSil(projeId.Value))
             {
                 MessageBox.Show("Sevkiyat kayıtları başarıyla silindi.", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                InitializeTableStructure(); 
+                InitializeTableStructure();
                 UpdateButtonsState();
             }
             else
@@ -718,7 +920,6 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 MessageBox.Show("Sevkiyat silinirken bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void txtProjeAra_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -736,9 +937,10 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             }
 
             txtToplamBedel.Text = toplamBedel.ToString("F2", CultureInfo.CurrentCulture);
-            var projeKutuk = ProjeFinans_ProjeKutukData.ProjeKutukAra(projeNo);
-
-            bool isAltProje = ProjeFinans_ProjeIliskiData.CheckAltProje(projeNo);
+            txtKalanTutar.Text = toplamBedel.ToString("F2", CultureInfo.CurrentCulture);
+            var projeId = _finansProjelerService.GetProjeIdByNo(projeNo);
+            var projeKutuk = _projeKutukService.ProjeKutukAra(projeId.Value);
+            bool isAltProje = _projeIliskiService.CheckAltProje(projeId.Value);
 
             if (eksikFiyatlandirmaProjeler.Any())
             {
@@ -754,7 +956,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 lblToplamBedelBilgi.Text = string.Empty;
                 lblToplamBedelBilgi.ForeColor = Color.Black;
             }
-
+            txtKalanTutar.Refresh();
             txtToplamBedel.Refresh();
             lblToplamBedelBilgi.Refresh();
         }

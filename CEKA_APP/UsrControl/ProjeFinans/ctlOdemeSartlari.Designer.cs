@@ -56,6 +56,8 @@
             this.panelFill = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
+            this.txtStatu = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.panelAlt.SuspendLayout();
             this.panelRight.SuspendLayout();
             this.panelLeft.SuspendLayout();
@@ -70,9 +72,9 @@
             this.txtToplamBedel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtToplamBedel.Enabled = false;
             this.txtToplamBedel.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtToplamBedel.Location = new System.Drawing.Point(1191, 27);
+            this.txtToplamBedel.Location = new System.Drawing.Point(372, 40);
             this.txtToplamBedel.Name = "txtToplamBedel";
-            this.txtToplamBedel.Size = new System.Drawing.Size(293, 30);
+            this.txtToplamBedel.Size = new System.Drawing.Size(163, 30);
             this.txtToplamBedel.TabIndex = 0;
             // 
             // lblToplamBedel
@@ -80,7 +82,7 @@
             this.lblToplamBedel.AutoSize = true;
             this.lblToplamBedel.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.lblToplamBedel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-            this.lblToplamBedel.Location = new System.Drawing.Point(1055, 30);
+            this.lblToplamBedel.Location = new System.Drawing.Point(368, 14);
             this.lblToplamBedel.Name = "lblToplamBedel";
             this.lblToplamBedel.Size = new System.Drawing.Size(124, 23);
             this.lblToplamBedel.TabIndex = 1;
@@ -91,7 +93,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-            this.label2.Location = new System.Drawing.Point(25, 30);
+            this.label2.Location = new System.Drawing.Point(30, 14);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(56, 23);
             this.label2.TabIndex = 3;
@@ -102,7 +104,7 @@
             this.txtProjeAra.BackColor = System.Drawing.Color.White;
             this.txtProjeAra.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtProjeAra.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtProjeAra.Location = new System.Drawing.Point(90, 27);
+            this.txtProjeAra.Location = new System.Drawing.Point(34, 40);
             this.txtProjeAra.Name = "txtProjeAra";
             this.txtProjeAra.Size = new System.Drawing.Size(163, 30);
             this.txtProjeAra.TabIndex = 2;
@@ -115,7 +117,7 @@
             this.btnAra.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnAra.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnAra.ForeColor = System.Drawing.Color.White;
-            this.btnAra.Location = new System.Drawing.Point(260, 27);
+            this.btnAra.Location = new System.Drawing.Point(1201, 40);
             this.btnAra.Name = "btnAra";
             this.btnAra.Size = new System.Drawing.Size(149, 31);
             this.btnAra.TabIndex = 4;
@@ -322,6 +324,8 @@
             // panelUst
             // 
             this.panelUst.BackColor = System.Drawing.Color.White;
+            this.panelUst.Controls.Add(this.txtStatu);
+            this.panelUst.Controls.Add(this.label1);
             this.panelUst.Controls.Add(this.btnKopyala);
             this.panelUst.Controls.Add(this.btnSil);
             this.panelUst.Controls.Add(this.lblToplamBedelBilgi);
@@ -343,7 +347,7 @@
             this.btnKopyala.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnKopyala.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnKopyala.ForeColor = System.Drawing.Color.White;
-            this.btnKopyala.Location = new System.Drawing.Point(570, 27);
+            this.btnKopyala.Location = new System.Drawing.Point(1511, 40);
             this.btnKopyala.Name = "btnKopyala";
             this.btnKopyala.Size = new System.Drawing.Size(149, 31);
             this.btnKopyala.TabIndex = 7;
@@ -358,7 +362,7 @@
             this.btnSil.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSil.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnSil.ForeColor = System.Drawing.Color.White;
-            this.btnSil.Location = new System.Drawing.Point(415, 27);
+            this.btnSil.Location = new System.Drawing.Point(1356, 40);
             this.btnSil.Name = "btnSil";
             this.btnSil.Size = new System.Drawing.Size(149, 31);
             this.btnSil.TabIndex = 6;
@@ -371,7 +375,7 @@
             this.lblToplamBedelBilgi.AutoSize = true;
             this.lblToplamBedelBilgi.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblToplamBedelBilgi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-            this.lblToplamBedelBilgi.Location = new System.Drawing.Point(1187, 60);
+            this.lblToplamBedelBilgi.Location = new System.Drawing.Point(381, 67);
             this.lblToplamBedelBilgi.Name = "lblToplamBedelBilgi";
             this.lblToplamBedelBilgi.Size = new System.Drawing.Size(0, 20);
             this.lblToplamBedelBilgi.TabIndex = 5;
@@ -414,6 +418,27 @@
             this.ctlBaslik1.Name = "ctlBaslik1";
             this.ctlBaslik1.Size = new System.Drawing.Size(1674, 50);
             this.ctlBaslik1.TabIndex = 5;
+            // 
+            // txtStatu
+            // 
+            this.txtStatu.BackColor = System.Drawing.Color.White;
+            this.txtStatu.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtStatu.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtStatu.Location = new System.Drawing.Point(203, 40);
+            this.txtStatu.Name = "txtStatu";
+            this.txtStatu.Size = new System.Drawing.Size(163, 30);
+            this.txtStatu.TabIndex = 8;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.label1.Location = new System.Drawing.Point(199, 14);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(58, 23);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "Statü:";
             // 
             // ctlOdemeSartlari
             // 
@@ -470,5 +495,7 @@
         private System.Windows.Forms.Label lblOdemeTarihi;
         private System.Windows.Forms.DateTimePicker dtOdemeTarihi;
         private System.Windows.Forms.Button btnKopyala;
+        private System.Windows.Forms.TextBox txtStatu;
+        private System.Windows.Forms.Label label1;
     }
 }

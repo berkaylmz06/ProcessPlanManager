@@ -1,6 +1,8 @@
-﻿using CEKA_APP.DataBase;
+﻿using CEKA_APP.Concretes.ProjeFinans;
+using CEKA_APP.DataBase;
 using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Entitys.ProjeFinans;
+using CEKA_APP.Interfaces.ProjeFinans;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -19,29 +21,15 @@ namespace CEKA_APP.UsrControl
         private Button btnKaydetHepsi;
         private ctlBaslik ctlBaslik1;
 
-        private static class AppColors
-        {
-            public static readonly Color PrimaryColor = Color.FromArgb(39, 55, 70);
-            public static readonly Color SecondaryColor = Color.FromArgb(25, 118, 210);
-            public static readonly Color SuccessColor = Color.FromArgb(67, 160, 71);
-            public static readonly Color WarningColor = Color.FromArgb(255, 152, 0);
-            public static readonly Color BackgroundColor = Color.FromArgb(245, 248, 250);
-            public static readonly Color CardColor = Color.FromArgb(227, 242, 253);
-            public static readonly Color CardHoverColor = Color.FromArgb(207, 231, 246);
-        }
-
-        private static class AppFonts
-        {
-            public static readonly Font TitleFont = new Font("Arial", 14, FontStyle.Bold);
-            public static readonly Font SubtitleFont = new Font("Arial", 10, FontStyle.Regular);
-            public static readonly Font ButtonFont = new Font("Arial", 10, FontStyle.Bold);
-            public static readonly Font LabelFont = new Font("Arial", 9, FontStyle.Regular);
-            public static readonly Font InputFont = new Font("Arial", 9, FontStyle.Regular);
-        }
-
-        public ctlProjeBilgileri()
+        private readonly IFinansProjelerService _finansProjelerService;
+        private readonly IProjeKutukService _projeKutukService;
+        public ctlProjeBilgileri(IFinansProjelerService finansProjelerService, IProjeKutukService projeKutukService)
         {
             InitializeComponent();
+
+            _finansProjelerService = finansProjelerService ?? throw new ArgumentNullException(nameof(finansProjelerService));
+            _projeKutukService = projeKutukService ?? throw new ArgumentNullException(nameof(projeKutukService));
+
             DoubleBuffered = true;
             hasNewData = false;
             projeInputs = new Dictionary<string, (TextBox, DateTimePicker, TextBox)>();
@@ -75,21 +63,39 @@ namespace CEKA_APP.UsrControl
             if (this.Controls.Contains(panelProjeler))
                 this.Controls.SetChildIndex(panelProjeler, 1);
             if (this.Controls.Contains(btnKaydetHepsi))
-                this.Controls.SetChildIndex(btnKaydetHepsi, 2); 
+                this.Controls.SetChildIndex(btnKaydetHepsi, 2);
+        }
+        private static class AppColors
+        {
+            public static readonly Color PrimaryColor = Color.FromArgb(39, 55, 70);
+            public static readonly Color SecondaryColor = Color.FromArgb(25, 118, 210);
+            public static readonly Color SuccessColor = Color.FromArgb(67, 160, 71);
+            public static readonly Color WarningColor = Color.FromArgb(255, 152, 0);
+            public static readonly Color BackgroundColor = Color.FromArgb(245, 248, 250);
+            public static readonly Color CardColor = Color.FromArgb(227, 242, 253);
+            public static readonly Color CardHoverColor = Color.FromArgb(207, 231, 246);
         }
 
-        public void LoadProjects(List<string> projects, string anaProjeNo = null)
+        private static class AppFonts
+        {
+            public static readonly Font TitleFont = new Font("Arial", 14, FontStyle.Bold);
+            public static readonly Font SubtitleFont = new Font("Arial", 10, FontStyle.Regular);
+            public static readonly Font ButtonFont = new Font("Arial", 10, FontStyle.Bold);
+            public static readonly Font LabelFont = new Font("Arial", 9, FontStyle.Regular);
+            public static readonly Font InputFont = new Font("Arial", 9, FontStyle.Regular);
+        }
+        public void LoadProjects(List<string> projectsNo, string anaProjeNo = null)
         {
             panelProjeler.Controls.Clear();
             hasNewData = false;
             projeInputs.Clear();
             panelProjeler.AutoScroll = true;
 
-            int yPosition = ctlBaslik1.Height + 20; 
+            int yPosition = ctlBaslik1.Height + 20;
 
-            if (!string.IsNullOrEmpty(anaProjeNo) && projects.Any())
+            if (!string.IsNullOrEmpty(anaProjeNo) && projectsNo.Any())
             {
-                var anaProjeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(anaProjeNo);
+                var anaProjeBilgi = _finansProjelerService.GetProjeBilgileriByNo(anaProjeNo); 
                 var anaKart = CreateProjectCard(anaProjeNo, anaProjeBilgi, true);
                 anaKart.Location = new Point(20, yPosition);
                 panelProjeler.Controls.Add(anaKart);
@@ -107,10 +113,10 @@ namespace CEKA_APP.UsrControl
                 };
 
                 int xOffset = 20;
-                foreach (var proje in projects)
+                foreach (var projeNo in projectsNo)
                 {
-                    var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(proje);
-                    var card = CreateProjectCard(proje, projeBilgi, false);
+                    var projeBilgi = _finansProjelerService.GetProjeBilgileriByNo(projeNo);
+                    var card = CreateProjectCard(projeNo, projeBilgi, false);
                     card.Location = new Point(xOffset, 20);
                     altProjelerPanel.Controls.Add(card);
                     xOffset += card.Width + 20;
@@ -121,10 +127,10 @@ namespace CEKA_APP.UsrControl
             else
             {
                 int xOffset = 20;
-                foreach (var proje in projects)
+                foreach (var projeNo in projectsNo)
                 {
-                    var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(proje);
-                    var card = CreateProjectCard(proje, projeBilgi, false);
+                    var projeBilgi = _finansProjelerService.GetProjeBilgileriByNo(projeNo);
+                    var card = CreateProjectCard(projeNo, projeBilgi, false);
                     card.Location = new Point(xOffset, yPosition);
                     panelProjeler.Controls.Add(card);
                     xOffset += card.Width + 20;
@@ -162,7 +168,6 @@ namespace CEKA_APP.UsrControl
 
             var contextMenu = new ContextMenuStrip();
             var menuFiyatlandirma = new ToolStripMenuItem("Fiyatlandırma Ekle");
-            menuFiyatlandirma.Click += (s, e) => AcFiyatlandirmaFormu(projeNo);
             contextMenu.Items.Add(menuFiyatlandirma);
             card.ContextMenuStrip = contextMenu;
 
@@ -240,7 +245,6 @@ namespace CEKA_APP.UsrControl
             projeInputs[projeNo] = (txtProjeAdi, dtpOlusturmaTarihi, txtAciklama);
             return card;
         }
-
         private void lblOk_Click(object sender, EventArgs e)
         {
             if (sender is Label lblOk)
@@ -356,7 +360,7 @@ namespace CEKA_APP.UsrControl
                     if (ctrl is CustomPanel card && projeInputs.TryGetValue(card.Tag.ToString(), out var subInputs))
                     {
                         string altProjeNo = card.Tag.ToString();
-                        var altProjeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(altProjeNo);
+                        var altProjeBilgi = _finansProjelerService.GetProjeBilgileriByNo(altProjeNo); 
 
                         if (altProjeBilgi == null)
                         {
@@ -373,7 +377,6 @@ namespace CEKA_APP.UsrControl
                 }
             }
         }
-
         private void BtnKaydetHepsi_Click(object sender, EventArgs e)
         {
             if (!hasNewData)
@@ -395,7 +398,6 @@ namespace CEKA_APP.UsrControl
                 string aciklama = txtAciklama.Text == PlaceholderText ? "" : txtAciklama.Text.Trim();
                 DateTime olusturmaTarihi = dtpOlusturmaTarihi.Value;
 
-                // Zorunlu alan doğrulama
                 if (string.IsNullOrWhiteSpace(projeAdi))
                 {
                     validationErrors.Add($"Proje No: {projeNo} için proje adı zorunludur.");
@@ -414,17 +416,18 @@ namespace CEKA_APP.UsrControl
 
                 try
                 {
-                    var projeBilgi = ProjeFinans_Projeler.GetProjeBilgileri(projeNo);
+                    var projeId = _finansProjelerService.GetProjeIdByNo(projeNo);
+                    var projeBilgi = projeId.HasValue ? _finansProjelerService.GetProjeBilgileri(projeId.Value) : null;
                     bool success;
 
                     if (projeBilgi != null)
                     {
-                        success = ProjeFinans_Projeler.UpdateProjeFinans(projeNo, aciklama, projeAdi, olusturmaTarihi, out bool changed);
+                        success = _finansProjelerService.UpdateProjeFinans(projeId.Value, projeNo, aciklama, projeAdi, olusturmaTarihi, out bool changed);
                         if (changed) anyChange = true;
                     }
                     else
                     {
-                        success = ProjeFinans_Projeler.ProjeEkleProjeFinans(projeNo, aciklama, projeAdi, olusturmaTarihi);
+                        success = _projeKutukService.ProjeEkleProjeFinans(projeNo, aciklama, projeAdi, olusturmaTarihi); 
                         if (success) anyChange = true;
                     }
 
@@ -463,25 +466,6 @@ namespace CEKA_APP.UsrControl
             {
                 MessageBox.Show("Kayıt sırasında bir hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void AcFiyatlandirmaFormu(string projeNo)
-        {
-            var parentForm = this.FindForm() as frmAnaSayfa;
-            if (parentForm == null)
-            {
-                MessageBox.Show("Ana form bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (parentForm.projeFiyatlandirma == null)
-            {
-                parentForm.projeFiyatlandirma = new ctlProjeFiyatlandirma();
-                parentForm.projeFiyatlandirma.Dock = DockStyle.Fill;
-            }
-
-            parentForm.projeFiyatlandirma.LoadProjeFiyatlandirma(projeNo);
-            parentForm.NavigateToUserControl(parentForm.projeFiyatlandirma);
         }
     }
 }

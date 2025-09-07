@@ -1,4 +1,6 @@
 ﻿using CEKA_APP.DataBase;
+using CEKA_APP.UsrControl.Interfaces;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Configuration;
 using System.Deployment.Application;
@@ -13,10 +15,12 @@ namespace CEKA_APP
     public partial class frmKullaniciGirisi : Form
     {
         private readonly KullanicilarData _kullaniciService;
+        private readonly IServiceProvider _serviceProvider;
 
-        public frmKullaniciGirisi()
+        public frmKullaniciGirisi(IServiceProvider serviceProvider)
         {
             InitializeComponent();
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
             _kullaniciService = new KullanicilarData();
             this.Icon = Properties.Resources.cekalogokirmizi;
 
@@ -149,10 +153,14 @@ namespace CEKA_APP
 
                 if (kullanici != null)
                 {
-                    KullaniciBilgileriniKaydet();
-                    frmAnaSayfa form1 = new frmAnaSayfa(kullanici);
-                    form1.FormClosed += (s, args) => Application.Exit();
-                    form1.Show();
+                    var scope = _serviceProvider.CreateScope();
+
+                    var userControlFactory = scope.ServiceProvider.GetRequiredService<IUserControlFactory>();
+
+                    var formAnaSayfa = new frmAnaSayfa(kullanici, userControlFactory, scope.ServiceProvider);
+
+                    formAnaSayfa.FormClosed += (s, args) => Application.Exit();
+                    formAnaSayfa.Show();
                     this.Hide();
                 }
                 else

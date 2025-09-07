@@ -1,4 +1,6 @@
 ﻿using CEKA_APP.DataBase.ProjeFinans;
+using CEKA_APP.Interfaces.ProjeFinans;
+using CEKA_APP.Services.ProjeFinans;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -7,16 +9,18 @@ namespace CEKA_APP
 {
     public partial class frmYeniFiyatlandirmaKalemiEkle : Form
     {
-        public string KalemAdi { get; private set; }
-        public string KalemBirimi { get; private set; }
-
-        private ProjeFinans_FiyatlandirmaKalemleriData kalemData = new ProjeFinans_FiyatlandirmaKalemleriData();
+        public string KalemAdi { get; set; }
+        public string KalemBirimi { get; set; }
 
         private const int VerticalMargin = 12;
 
-        public frmYeniFiyatlandirmaKalemiEkle()
+        private readonly IFiyatlandirmaKalemleriService _fiyatlandirmaKalemleriService;
+        public frmYeniFiyatlandirmaKalemiEkle(IFiyatlandirmaKalemleriService fiyatlandirmaKalemleriService)
         {
             InitializeComponent();
+
+            _fiyatlandirmaKalemleriService = fiyatlandirmaKalemleriService ?? throw new ArgumentNullException(nameof(fiyatlandirmaKalemleriService));
+
             LoadKalemler();
 
             panelYeniKalem.Visible = false;
@@ -31,7 +35,7 @@ namespace CEKA_APP
 
         private void LoadKalemler()
         {
-            var kalemler = kalemData.GetFiyatlandirmaKalemleri();
+            var kalemler = _fiyatlandirmaKalemleriService.GetFiyatlandirmaKalemleri();
             listKalemler.Items.Clear();
             foreach (var (Id, Adi, Birimi, Tarih) in kalemler)
             {
@@ -45,13 +49,12 @@ namespace CEKA_APP
             if (listKalemler.SelectedIndex >= 0)
             {
                 string secilenKalemAdi = listKalemler.SelectedItem.ToString();
-                ProjeFinans_FiyatlandirmaKalemleriData kalemData = new ProjeFinans_FiyatlandirmaKalemleriData();
-                var kalemDetay = kalemData.GetFiyatlandirmaKalemByAdi(secilenKalemAdi);
+                var kalemDetay = _fiyatlandirmaKalemleriService.GetFiyatlandirmaKalemByAdi(secilenKalemAdi);
 
                 if (kalemDetay != null)
                 {
-                    KalemAdi = kalemDetay.KalemAdi;
-                    KalemBirimi = kalemDetay.KalemBirimi;
+                    KalemAdi = kalemDetay.kalemAdi;
+                    KalemBirimi = kalemDetay.kalemBirimi;
                     this.DialogResult = DialogResult.OK;
                 }
                 else
@@ -84,7 +87,7 @@ namespace CEKA_APP
                 {
                     KalemAdi = txtYeniKalem.Text;
                     KalemBirimi = cmbBirim.SelectedItem.ToString(); 
-                    kalemData.FiyatlandirmaKalemleriEkle(KalemAdi, KalemBirimi);
+                    _fiyatlandirmaKalemleriService.FiyatlandirmaKalemleriEkle(KalemAdi, KalemBirimi);
                     LoadKalemler();
 
                     GeriDon();

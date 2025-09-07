@@ -30,7 +30,6 @@
         {
             this.listPaketler = new System.Windows.Forms.ListBox();
             this.btnEkle = new System.Windows.Forms.Button();
-            this.btnSec = new System.Windows.Forms.Button();
             this.panelYeniPaket = new System.Windows.Forms.Panel();
             this.lblPaketAdiBilgi = new System.Windows.Forms.Label();
             this.lblPaketAdi = new System.Windows.Forms.Label();
@@ -40,7 +39,7 @@
             // 
             // listPaketler
             // 
-            this.listPaketler.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.listPaketler.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listPaketler.FormattingEnabled = true;
             this.listPaketler.ItemHeight = 16;
@@ -51,7 +50,6 @@
             // 
             // btnEkle
             // 
-            this.btnEkle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this.btnEkle.BackColor = System.Drawing.Color.Gray;
             this.btnEkle.FlatAppearance.BorderSize = 0;
             this.btnEkle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -59,27 +57,11 @@
             this.btnEkle.ForeColor = System.Drawing.Color.White;
             this.btnEkle.Location = new System.Drawing.Point(20, 237);
             this.btnEkle.Name = "btnEkle";
-            this.btnEkle.Size = new System.Drawing.Size(167, 45);
+            this.btnEkle.Size = new System.Drawing.Size(345, 45);
             this.btnEkle.TabIndex = 21;
             this.btnEkle.Text = "Yeni Ekle";
             this.btnEkle.UseVisualStyleBackColor = false;
             this.btnEkle.Click += new System.EventHandler(this.btnEkle_Click);
-            // 
-            // btnSec
-            // 
-            this.btnSec.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSec.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(122)))), ((int)(((byte)(204)))));
-            this.btnSec.FlatAppearance.BorderSize = 0;
-            this.btnSec.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSec.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.btnSec.ForeColor = System.Drawing.Color.White;
-            this.btnSec.Location = new System.Drawing.Point(198, 237);
-            this.btnSec.Name = "btnSec";
-            this.btnSec.Size = new System.Drawing.Size(167, 45);
-            this.btnSec.TabIndex = 22;
-            this.btnSec.Text = "Seç";
-            this.btnSec.UseVisualStyleBackColor = false;
-            this.btnSec.Click += new System.EventHandler(this.btnSec_Click);
             // 
             // panelYeniPaket
             // 
@@ -99,7 +81,7 @@
             this.lblPaketAdiBilgi.ForeColor = System.Drawing.Color.DimGray;
             this.lblPaketAdiBilgi.Location = new System.Drawing.Point(125, 12);
             this.lblPaketAdiBilgi.Name = "lblPaketAdiBilgi";
-            this.lblPaketAdiBilgi.Size = new System.Drawing.Size(126, 16);
+            this.lblPaketAdiBilgi.Size = new System.Drawing.Size(163, 20);
             this.lblPaketAdiBilgi.TabIndex = 20;
             this.lblPaketAdiBilgi.Text = "Yeni paket adını girin";
             // 
@@ -109,18 +91,18 @@
             this.lblPaketAdi.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.lblPaketAdi.Location = new System.Drawing.Point(13, 47);
             this.lblPaketAdi.Name = "lblPaketAdi";
-            this.lblPaketAdi.Size = new System.Drawing.Size(68, 16);
+            this.lblPaketAdi.Size = new System.Drawing.Size(85, 20);
             this.lblPaketAdi.TabIndex = 19;
             this.lblPaketAdi.Text = "Paket Adı:";
             // 
             // txtPaketAdi
             // 
-            this.txtPaketAdi.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtPaketAdi.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtPaketAdi.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.txtPaketAdi.Location = new System.Drawing.Point(123, 44);
             this.txtPaketAdi.Name = "txtPaketAdi";
-            this.txtPaketAdi.Size = new System.Drawing.Size(222, 22);
+            this.txtPaketAdi.Size = new System.Drawing.Size(222, 26);
             this.txtPaketAdi.TabIndex = 18;
             // 
             // frmYeniPaketEkle
@@ -130,7 +112,6 @@
             this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.ClientSize = new System.Drawing.Size(385, 290);
             this.Controls.Add(this.panelYeniPaket);
-            this.Controls.Add(this.btnSec);
             this.Controls.Add(this.btnEkle);
             this.Controls.Add(this.listPaketler);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
@@ -143,7 +124,6 @@
             this.panelYeniPaket.ResumeLayout(false);
             this.panelYeniPaket.PerformLayout();
             this.ResumeLayout(false);
-            this.PerformLayout();
 
         }
 
@@ -151,7 +131,6 @@
 
         private System.Windows.Forms.ListBox listPaketler;
         private System.Windows.Forms.Button btnEkle;
-        private System.Windows.Forms.Button btnSec;
         private System.Windows.Forms.Panel panelYeniPaket;
         private System.Windows.Forms.Label lblPaketAdiBilgi;
         private System.Windows.Forms.Label lblPaketAdi;

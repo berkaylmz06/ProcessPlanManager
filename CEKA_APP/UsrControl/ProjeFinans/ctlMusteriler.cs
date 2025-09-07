@@ -1,14 +1,15 @@
 ﻿using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Entitys.ProjeFinans;
-using CEKA_APP.Helper;
 using CEKA_APP.Forms;
+using CEKA_APP.Helper;
+using CEKA_APP.Interfaces.ProjeFinans;
+using ExcelDataReader;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Windows.Forms;
-using ExcelDataReader;
 using System.IO;
 using System.Linq;
+using System.Windows.Forms;
 
 namespace CEKA_APP.UsrControl
 {
@@ -18,9 +19,13 @@ namespace CEKA_APP.UsrControl
         private ToolStripMenuItem tsmiAra;
         private Dictionary<string, string> sonFiltreKriterleri = new Dictionary<string, string>();
 
-        public ctlMusteriler()
+
+        private readonly IMusterilerService _musterilerService;
+        public ctlMusteriler(IMusterilerService musterilerService)
         {
             InitializeComponent();
+
+            _musterilerService = musterilerService ?? throw new ArgumentNullException(nameof(musterilerService));
 
             DataGridViewHelper.StilUygulaProjeFinans(dataGridMusteriler);
 
@@ -56,10 +61,9 @@ namespace CEKA_APP.UsrControl
 
         private void LoadMusterilerToDataGridView()
         {
-            ProjeFinans_MusterilerData musteriData = new ProjeFinans_MusterilerData();
             try
             {
-                List<Musteriler> musteriler = musteriData.GetMusteriler();
+                List<Musteriler> musteriler = _musterilerService.GetMusteriler();
                 dataGridMusteriler.DataSource = null;
                 dataGridMusteriler.DataSource = musteriler;
 
@@ -151,7 +155,6 @@ namespace CEKA_APP.UsrControl
                                 });
 
                                 DataTable dt = result.Tables[0];
-                                ProjeFinans_MusterilerData musteriData = new ProjeFinans_MusterilerData();
 
                                 var columnMap = new Dictionary<string, string>
                                 {
@@ -173,7 +176,7 @@ namespace CEKA_APP.UsrControl
                                     }
                                 }
 
-                                musteriData.TumMusterileriSil();
+                                _musterilerService.TumMusterileriSil();
                                 int newCount = 0;
 
                                 foreach (DataRow row in dt.Rows)
@@ -192,7 +195,7 @@ namespace CEKA_APP.UsrControl
                                     if (string.IsNullOrEmpty(musteri.musteriNo))
                                         continue;
 
-                                    musteriData.MusteriKaydet(musteri);
+                                    _musterilerService.MusteriKaydet(musteri);
                                     newCount++;
 
                                     Console.WriteLine($"MusteriNo: {musteri.musteriNo}, Doviz: {musteri.doviz}, İşlem: Yeni Eklendi");
@@ -251,7 +254,6 @@ namespace CEKA_APP.UsrControl
         {
             try
             {
-                ProjeFinans_MusterilerData musteriData = new ProjeFinans_MusterilerData();
                 sonFiltreKriterleri.Clear();
                 foreach (var kutu in filtreKutulari)
                 {
@@ -260,7 +262,7 @@ namespace CEKA_APP.UsrControl
                         sonFiltreKriterleri[kutu.Key] = kutu.Value.Text.Trim();
                     }
                 }
-                return musteriData.FiltreleMusteriBilgileri(filtreKutulari, dataGridMusteriler);
+                return _musterilerService.FiltreleMusteriBilgileri(filtreKutulari, dataGridMusteriler);
             }
             catch (Exception ex)
             {

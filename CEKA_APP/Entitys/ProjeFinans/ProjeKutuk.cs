@@ -13,6 +13,7 @@ namespace CEKA_APP.Entitys
         public string musteriNo { get; set; }
         public string musteriAdi { get; set; }
         public string isFirsatiNo { get; set; }
+        public int projeId { get; set; }
         public string projeNo { get; set; }
         public bool altProjeVarMi { get; set; }
         public string digerProjeIliskisiVarMi { get; set; } 
@@ -21,8 +22,9 @@ namespace CEKA_APP.Entitys
         public string paraBirimi { get; set; }
         public string faturalamaSekli { get; set; }
         public bool nakliyeVarMi { get; set; }
-        public List<string> altProjeBilgileri { get; set; }
+        public List<int> altProjeBilgileri { get; set; }
         public string ustProjeID { get; set; }
         public string altProjeID { get; set; }
+        public string status { get; set; }
     }
 }

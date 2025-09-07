@@ -2,6 +2,7 @@
 using CEKA_APP.Entitys.ProjeFinans;
 using CEKA_APP.Forms;
 using CEKA_APP.Helper;
+using CEKA_APP.Interfaces.ProjeFinans;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -14,10 +15,15 @@ namespace CEKA_APP.UsrControl.ProjeFinans
     {
         private ToolStripMenuItem tsmiAra;
         private Dictionary<string, string> sonFiltreKriterleri = new Dictionary<string, string>();
-
-        public ctlOdemeSartlariListe()
+        private readonly IOdemeSartlariService _odemeSartlariService;
+        private readonly IOdemeHareketleriService _odemeHareketleriService;
+        public ctlOdemeSartlariListe(IOdemeSartlariService odemeSartlariService, IOdemeHareketleriService odemeHareketleriService)
         {
             InitializeComponent();
+
+            _odemeSartlariService = odemeSartlariService ?? throw new ArgumentNullException(nameof(odemeSartlariService));
+            _odemeHareketleriService = odemeHareketleriService ?? throw new ArgumentNullException(nameof(odemeHareketleriService));
+
             DataGridViewHelper.StilUygulaProjeFinans(dataGridOdemeSartlari);
 
             this.cmsOdemeSartlari = new ContextMenuStrip();
@@ -62,12 +68,11 @@ namespace CEKA_APP.UsrControl.ProjeFinans
 
         public void LoadOdemeSartlariToDataGridView()
         {
-            ProjeFinans_OdemeSartlariData odemeSekilleriData = new ProjeFinans_OdemeSartlariData();
             try
             {
-                List<OdemeSartlari> odemeSekilleri = odemeSekilleriData.GetOdemeBilgileri();
+                List<OdemeSartlari> odemeSekilleri = _odemeSartlariService.GetOdemeBilgileri();
                 dataGridOdemeSartlari.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
-                dataGridOdemeSartlari.DataSource = odemeSekilleriData.FiltreleOdemeBilgileri(new Dictionary<string, TextBox>(), dataGridOdemeSartlari);
+                dataGridOdemeSartlari.DataSource = _odemeSartlariService.FiltreleOdemeBilgileri(new Dictionary<string, TextBox>(), dataGridOdemeSartlari);
                 ConfigureDataGridColumns();
                 dataGridOdemeSartlari.ScrollBars = ScrollBars.Both;
             }
@@ -255,7 +260,6 @@ namespace CEKA_APP.UsrControl.ProjeFinans
         {
             try
             {
-                ProjeFinans_OdemeSartlariData odemeSartlariData = new ProjeFinans_OdemeSartlariData();
                 sonFiltreKriterleri.Clear();
                 foreach (var kutu in filtreKutulari)
                 {
@@ -264,7 +268,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                         sonFiltreKriterleri[kutu.Key] = kutu.Value.Text.Trim();
                     }
                 }
-                return odemeSartlariData.FiltreleOdemeBilgileri(filtreKutulari, dataGridOdemeSartlari);
+                return _odemeSartlariService.FiltreleOdemeBilgileri(filtreKutulari, dataGridOdemeSartlari);
             }
             catch (Exception ex)
             {
@@ -299,8 +303,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                 return;
             }
 
-            var odemeHareketleriData = new ProjeFinans_OdemeHareketleriData();
-            List<OdemeHareketleri> hareketler = odemeHareketleriData.GetOdemeHareketleriByOdemeId(odemeId);
+            List<OdemeHareketleri> hareketler = _odemeHareketleriService.GetOdemeHareketleriByOdemeId(odemeId);
 
             if (hareketler != null && hareketler.Count > 0)
             {
