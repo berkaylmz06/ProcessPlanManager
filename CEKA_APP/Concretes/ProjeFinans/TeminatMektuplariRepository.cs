@@ -38,7 +38,7 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 command.Parameters.AddWithValue("@komisyonTutari", mektup.komisyonTutari);
                 command.Parameters.AddWithValue("@komisyonOrani", mektup.komisyonOrani);
                 command.Parameters.AddWithValue("@komisyonVadesi", mektup.komisyonVadesi);
-                command.Parameters.AddWithValue("@projeId", mektup.projeId);
+                command.Parameters.AddWithValue("@projeId", mektup.projeId.HasValue ? (object)mektup.projeId.Value : DBNull.Value);
                 command.Parameters.AddWithValue("@kilometreTasiId", mektup.kilometreTasiId);
 
                 command.ExecuteNonQuery();
@@ -81,7 +81,7 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 cmd.Parameters.AddWithValue("@komisyonTutari", guncelMektup.komisyonTutari);
                 cmd.Parameters.AddWithValue("@komisyonOrani", guncelMektup.komisyonOrani);
                 cmd.Parameters.AddWithValue("@komisyonVadesi", guncelMektup.komisyonVadesi);
-                cmd.Parameters.AddWithValue("@projeId", guncelMektup.projeId);
+                cmd.Parameters.AddWithValue("@projeId", guncelMektup.projeId.HasValue ? (object)guncelMektup.projeId.Value : DBNull.Value);
                 cmd.Parameters.AddWithValue("@kilometreTasiId", guncelMektup.kilometreTasiId);
                 cmd.Parameters.AddWithValue("@eskiMektupNo", eskiMektupNo ?? (object)DBNull.Value);
 
@@ -125,24 +125,26 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 connection.Open();
                 string query = @"
                         SELECT 
-                            t.mektupNo, 
-                            t.musteriNo, 
-                            t.musteriAdi,
-                            k.kilometreTasiAdi,
-                            t.paraBirimi, 
-                            t.banka, 
-                            t.mektupTuru, 
-                            t.tutar, 
-                            t.vadeTarihi, 
-                            t.iadeTarihi, 
-                            t.komisyonTutari, 
-                            t.komisyonOrani, 
-                            t.komisyonVadesi, 
-                            t.projeId,
-                            t.kilometreTasiId
-                        FROM ProjeFinans_TeminatMektuplari t
-                        LEFT JOIN ProjeFinans_KilometreTaslari k ON t.kilometreTasiId = k.kilometreTasiId
-                        ORDER BY t.mektupNo";
+    t.mektupNo, 
+    t.musteriNo, 
+    t.musteriAdi,
+    k.kilometreTasiAdi,
+    t.paraBirimi, 
+    t.banka, 
+    t.mektupTuru, 
+    t.tutar, 
+    t.vadeTarihi, 
+    t.iadeTarihi, 
+    t.komisyonTutari, 
+    t.komisyonOrani, 
+    t.komisyonVadesi, 
+    p.projeNo,
+    t.kilometreTasiId,
+    t.projeId
+FROM ProjeFinans_TeminatMektuplari t
+LEFT JOIN ProjeFinans_KilometreTaslari k ON t.kilometreTasiId = k.kilometreTasiId
+LEFT JOIN ProjeFinans_Projeler p ON p.projeId= t.projeId
+ORDER BY t.mektupNo";
                 using (var cmd = new SqlCommand(query, connection))
                 {
                     using (SqlDataReader reader = cmd.ExecuteReader())
@@ -164,8 +166,9 @@ namespace CEKA_APP.Concretes.ProjeFinans
                                 komisyonTutari = reader.GetDecimal(reader.GetOrdinal("komisyonTutari")),
                                 komisyonOrani = reader.GetDecimal(reader.GetOrdinal("komisyonOrani")),
                                 komisyonVadesi = reader.GetInt32(reader.GetOrdinal("komisyonVadesi")),
-                                projeId = reader.GetInt32(reader.GetOrdinal("projeId")),
-                                kilometreTasiId = reader.GetInt32(reader.GetOrdinal("kilometreTasiId"))
+                                projeNo = reader["projeNo"] as string ?? "",
+                                kilometreTasiId = reader.GetInt32(reader.GetOrdinal("kilometreTasiId")),
+                                projeId = !reader.IsDBNull(reader.GetOrdinal("projeId")) ? (int?)reader.GetInt32(reader.GetOrdinal("projeId")) : null
                             };
                             teminatMektuplari.Add(mektup);
                         }
@@ -252,7 +255,6 @@ namespace CEKA_APP.Concretes.ProjeFinans
                             case "paraBirimi":
                             case "banka":
                             case "mektupTuru":
-                            case "projeId":
                                 string prefix = (columnName == "kilometreTasiAdi") ? "k" : "t";
                                 condition = $"LOWER({prefix}.{columnName}) LIKE {paramName}";
                                 parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = $"%{hamDeger.ToLower()}%" });
@@ -271,6 +273,13 @@ namespace CEKA_APP.Concretes.ProjeFinans
                                 {
                                     condition = $"t.{columnName} = {paramName}";
                                     parameters.Add(new SqlParameter(paramName, SqlDbType.Int) { Value = vade });
+                                }
+                                break;
+                            case "projeId":
+                                if (int.TryParse(hamDeger, out int projeId))
+                                {
+                                    condition = $"t.{columnName} = {paramName}";
+                                    parameters.Add(new SqlParameter(paramName, SqlDbType.Int) { Value = projeId });
                                 }
                                 break;
                             default:

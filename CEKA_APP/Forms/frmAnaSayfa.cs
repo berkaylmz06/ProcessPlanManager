@@ -343,22 +343,33 @@ namespace CEKA_APP
 
         private void btnOturumuKapat_Click(object sender, EventArgs e)
         {
-            if (MessageBox.Show("Oturumu kapatmak için onaylıyor musunuz?", "Bilgi", MessageBoxButtons.OKCancel, MessageBoxIcon.Question) == DialogResult.OK)
+            var result = MessageBox.Show(
+                "Oturumu kapatmak için onaylıyor musunuz?",
+                "Bilgi",
+                MessageBoxButtons.OKCancel,
+                MessageBoxIcon.Question);
+
+            if (result != DialogResult.OK)
+                return;
+
+            var scope = _serviceProvider.CreateScope();
+
+            var kullaniciGirisi = scope.ServiceProvider.GetService<frmKullaniciGirisi>();
+            if (kullaniciGirisi == null)
             {
-                using (var scope = _serviceProvider.CreateScope())
-                {
-                    var kullanicigiris = scope.ServiceProvider.GetService<frmKullaniciGirisi>();
-                    if (kullanicigiris == null)
-                    {
-                        // Eğer DI'da kayıtlı değilse veya constructor parametresi varsa
-                        kullanicigiris = ActivatorUtilities.CreateInstance<frmKullaniciGirisi>(scope.ServiceProvider);
-                    }
-                    kullanicigiris.FormClosed += (s, args) => Application.Exit();
-                    kullanicigiris.Show();
-                    this.Hide();
-                }
+                kullaniciGirisi = ActivatorUtilities.CreateInstance<frmKullaniciGirisi>(scope.ServiceProvider);
             }
+
+            kullaniciGirisi.FormClosed += (s, args) =>
+            {
+                scope.Dispose();
+                Application.Exit();
+            };
+
+            kullaniciGirisi.Show();
+            this.Hide();
         }
+
 
         private void exitToolStripMenuItem_Click(object sender, EventArgs e)
         {

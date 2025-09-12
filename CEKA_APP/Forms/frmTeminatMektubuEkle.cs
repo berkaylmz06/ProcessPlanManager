@@ -78,13 +78,7 @@ namespace CEKA_APP.Forms
                     _projeId = projeId.Value;
                     _currentMektup.projeId = _projeId.Value;
                 }
-                else
-                {
-                    _projeId = null;
-                    MessageBox.Show("Proje ID bilgisi eksik. Form açılamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    this.Close(); 
-                    return;
-                }
+
 
                 this.Text = "Yeni Teminat Mektubu Ekle";
                 btnKaydet.Text = "Kaydet";
@@ -229,7 +223,7 @@ namespace CEKA_APP.Forms
                 _currentMektup.paraBirimi = "TRY";
                 if (_projeId.HasValue)
                 {
-                    _currentMektup.projeId = _projeId.Value;  
+                    _currentMektup.projeId = _projeId.Value;
                 }
                 UpdateCheckBoxes("TRY");
             }
@@ -313,12 +307,6 @@ namespace CEKA_APP.Forms
             {
                 if (_isUpdateMode)
                 {
-                    if (!_projeId.HasValue)
-                    {
-                        MessageBox.Show("Proje ID bilgisi eksik. İşlem iptal edildi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
                     _currentMektup.mektupNo = mektupNo;
                     _currentMektup.musteriNo = musteriNo;
                     _currentMektup.musteriAdi = musteriAdi;
@@ -331,7 +319,10 @@ namespace CEKA_APP.Forms
                     _currentMektup.komisyonTutari = komisyonTutari;
                     _currentMektup.komisyonOrani = komisyonOrani;
                     _currentMektup.komisyonVadesi = komisyonVadesi;
-                    _currentMektup.projeId = _projeId.Value;  
+                    if (_projeId.HasValue)
+                    {
+                        _currentMektup.projeId = _projeId.Value;
+                    }
                     _currentMektup.kilometreTasiId = _kilometreTasiId;
 
                     _teminatMektuplariService.MektupGuncelle(_originalMektupNoForUpdate, _currentMektup);
@@ -341,13 +332,10 @@ namespace CEKA_APP.Forms
                 }
                 else
                 {
-                    if (!_projeId.HasValue)
+                    if (_projeId.HasValue)
                     {
-                        MessageBox.Show("Proje ID bilgisi eksik. İşlem iptal edildi.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
+                        _currentMektup.projeId = _projeId.Value;
                     }
-
-                    _currentMektup.projeId = _projeId.Value;  
 
                     if (_teminatMektuplariService.MektupNoVarMi(mektupNo))
                     {
