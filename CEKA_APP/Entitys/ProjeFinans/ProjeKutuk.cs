@@ -25,6 +25,7 @@ namespace CEKA_APP.Entitys
         public List<int> altProjeBilgileri { get; set; }
         public string ustProjeID { get; set; }
         public string altProjeID { get; set; }
+        public bool montajTamamlandiMi { get; set; }
         public string status { get; set; }
     }
 }

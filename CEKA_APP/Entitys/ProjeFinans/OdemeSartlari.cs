@@ -8,7 +8,8 @@ namespace CEKA_APP.Entitys.ProjeFinans
 {
     public class OdemeSartlari
     {
-        public int odemeId { get; set; } 
+        public int odemeId { get; set; }
+        public string projeNo { get; set; }
         public int projeId { get; set; }
         public string musteriAdi { get; set; }
         public string projeAciklama { get; set; }
@@ -28,6 +29,6 @@ namespace CEKA_APP.Entitys.ProjeFinans
         public string faturaNo { get; set; }
         public DateTime? odemeTarihi { get; set; }
         public int odemeSapmasi { get; set; }
-        public string statu { get; set; }
+        public string status { get; set; }
     }
 }

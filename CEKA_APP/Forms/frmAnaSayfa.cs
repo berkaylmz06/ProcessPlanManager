@@ -683,8 +683,8 @@ namespace CEKA_APP
 
         private void btnTakipTakvimi_Click(object sender, EventArgs e)
         {
-            var takipTakvim = new ctlTakipTakvimi();
-            UserControlEkle(takipTakvim);
+            var takipTakvimControl = _userControlFactory.CreateTakipTakvimiControl();
+            UserControlEkle(takipTakvimControl);
         }
     }
 }

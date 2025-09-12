@@ -25,7 +25,6 @@ namespace CEKA_APP.Concretes.ProjeFinans
             if (transaction == null)
                 throw new ArgumentNullException(nameof(transaction), "Transaction cannot be null.");
 
-
             string checkQuery = "SELECT odemeTarihi FROM ProjeFinans_OdemeSartlari WHERE projeId = @projeId AND kilometreTasiId = @kilometreTasiId";
             DateTime? existingOdemeTarihi = null;
             using (var checkCmd = new SqlCommand(checkQuery, transaction.Connection, transaction))
@@ -43,19 +42,19 @@ namespace CEKA_APP.Concretes.ProjeFinans
             if (existingOdemeTarihi != null || !string.IsNullOrWhiteSpace(odemeSartlari.faturaNo))
             {
                 query = @"
-                    UPDATE ProjeFinans_OdemeSartlari
-                    SET siralama = @siralama,
-                        oran = @oran,
-                        tutar = @tutar,
-                        tahminiTarih = @tahminiTarih,
-                        gerceklesenTarih = @gerceklesenTarih,
-                        aciklama = @aciklama,
-                        teminatMektubu = @teminatMektubu,
-                        teminatDurumu = @teminatDurumu,
-                        faturaNo = @faturaNo,
-                        durum = @durum,
-                        kalanTutar = @kalanTutar";
-
+            UPDATE ProjeFinans_OdemeSartlari
+            SET siralama = @siralama,
+                oran = @oran,
+                tutar = @tutar,
+                tahminiTarih = @tahminiTarih,
+                gerceklesenTarih = @gerceklesenTarih,
+                aciklama = @aciklama,
+                teminatMektubu = @teminatMektubu,
+                teminatDurumu = @teminatDurumu,
+                faturaNo = @faturaNo,
+                durum = @durum,
+                kalanTutar = @kalanTutar,
+                status = @status";
 
                 if (updateOdemeTarihi)
                     query += ", odemeTarihi = @odemeTarihi";
@@ -76,19 +75,19 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 if (recordCount > 0)
                 {
                     query = @"
-                        UPDATE ProjeFinans_OdemeSartlari
-                        SET siralama = @siralama,
-                            oran = @oran,
-                            tutar = @tutar,
-                            tahminiTarih = @tahminiTarih,
-                            gerceklesenTarih = @gerceklesenTarih,
-                            aciklama = @aciklama,
-                            teminatMektubu = @teminatMektubu,
-                            teminatDurumu = @teminatDurumu,
-                            faturaNo = @faturaNo,
-                            durum = @durum,
-                            kalanTutar = @kalanTutar";
-
+                UPDATE ProjeFinans_OdemeSartlari
+                SET siralama = @siralama,
+                    oran = @oran,
+                    tutar = @tutar,
+                    tahminiTarih = @tahminiTarih,
+                    gerceklesenTarih = @gerceklesenTarih,
+                    aciklama = @aciklama,
+                    teminatMektubu = @teminatMektubu,
+                    teminatDurumu = @teminatDurumu,
+                    faturaNo = @faturaNo,
+                    durum = @durum,
+                    kalanTutar = @kalanTutar,
+                    status = @status";
 
                     if (updateOdemeTarihi)
                         query += ", odemeTarihi = @odemeTarihi";
@@ -97,12 +96,10 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 }
                 else
                 {
-
                     query = @"
-                        INSERT INTO ProjeFinans_OdemeSartlari
-                        (projeId, kilometreTasiId, siralama, oran, tutar, tahminiTarih, gerceklesenTarih, aciklama, teminatMektubu, teminatDurumu, faturaNo, durum, kalanTutar, odemeTarihi)
-                        VALUES (@projeId, @kilometreTasiId, @siralama, @oran, @tutar, @tahminiTarih, @gerceklesenTarih, @aciklama, @teminatMektubu, @teminatDurumu, @faturaNo, @durum, @kalanTutar, @odemeTarihi)";
-
+                INSERT INTO ProjeFinans_OdemeSartlari
+                (projeId, kilometreTasiId, siralama, oran, tutar, tahminiTarih, gerceklesenTarih, aciklama, teminatMektubu, teminatDurumu, faturaNo, durum, kalanTutar, odemeTarihi, status)
+                VALUES (@projeId, @kilometreTasiId, @siralama, @oran, @tutar, @tahminiTarih, @gerceklesenTarih, @aciklama, @teminatMektubu, @teminatDurumu, @faturaNo, @durum, @kalanTutar, @odemeTarihi, @status)";
                 }
             }
 
@@ -121,6 +118,7 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 cmd.Parameters.Add("@faturaNo", SqlDbType.NVarChar, 50).Value = string.IsNullOrWhiteSpace(odemeSartlari.faturaNo) ? (object)DBNull.Value : odemeSartlari.faturaNo;
                 cmd.Parameters.Add("@durum", SqlDbType.NVarChar, 50).Value = string.IsNullOrWhiteSpace(odemeSartlari.durum) ? (object)DBNull.Value : odemeSartlari.durum;
                 cmd.Parameters.Add("@kalanTutar", SqlDbType.Decimal).Value = odemeSartlari.kalanTutar;
+                cmd.Parameters.Add("@status", SqlDbType.NVarChar, 50).Value = string.IsNullOrWhiteSpace(odemeSartlari.status) ? "Başlatıldı" : odemeSartlari.status;
 
                 if (query.Contains("@odemeTarihi"))
                     cmd.Parameters.Add("@odemeTarihi", SqlDbType.DateTime2).Value = odemeSartlari.odemeTarihi ?? (object)DBNull.Value;
@@ -163,13 +161,14 @@ namespace CEKA_APP.Concretes.ProjeFinans
             SELECT
                 o.odemeId,
                 o.projeId,
-                CASE 
-                    WHEN pi.ustProjeId IS NOT NULL AND pUst.musteriAdi IS NOT NULL 
+                pro.projeNo,
+                CASE
+                    WHEN pi.ustProjeId IS NOT NULL AND pUst.musteriAdi IS NOT NULL
                         THEN pUst.musteriAdi
                     ELSE p.musteriAdi
                 END AS musteriAdi,
-                CASE 
-                    WHEN pi.ustProjeId IS NOT NULL AND proUst.aciklama IS NOT NULL 
+                CASE
+                    WHEN pi.ustProjeId IS NOT NULL AND proUst.aciklama IS NOT NULL
                         THEN proUst.aciklama
                     ELSE pro.aciklama
                 END AS projeAciklama,
@@ -178,8 +177,8 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 o.siralama,
                 o.oran,
                 o.tutar,
-                CASE 
-                    WHEN pi.ustProjeId IS NOT NULL AND pUst.paraBirimi IS NOT NULL 
+                CASE
+                    WHEN pi.ustProjeId IS NOT NULL AND pUst.paraBirimi IS NOT NULL
                         THEN pUst.paraBirimi
                     ELSE p.paraBirimi
                 END AS paraBirimi,
@@ -211,6 +210,7 @@ namespace CEKA_APP.Concretes.ProjeFinans
                                 {
                                     odemeId = reader.GetInt32(reader.GetOrdinal("odemeId")),
                                     projeId = reader.GetInt32(reader.GetOrdinal("projeId")),
+                                    projeNo = reader.IsDBNull(reader.GetOrdinal("projeNo")) ? null : reader.GetString(reader.GetOrdinal("projeNo")),
                                     musteriAdi = reader.IsDBNull(reader.GetOrdinal("musteriAdi")) ? null : reader.GetString(reader.GetOrdinal("musteriAdi")),
                                     projeAciklama = reader.IsDBNull(reader.GetOrdinal("projeAciklama")) ? null : reader.GetString(reader.GetOrdinal("projeAciklama")),
                                     kilometreTasiId = reader.GetInt32(reader.GetOrdinal("kilometreTasiId")),
@@ -242,7 +242,6 @@ namespace CEKA_APP.Concretes.ProjeFinans
             }
             return odemeBilgileriList;
         }
-
         public List<OdemeSartlari> GetOdemeBilgileriByProjeId(int projeId)
         {
             var odemeBilgileriList = new List<OdemeSartlari>();
@@ -456,12 +455,30 @@ namespace CEKA_APP.Concretes.ProjeFinans
             if (transaction == null)
                 throw new ArgumentNullException(nameof(transaction), "Transaction cannot be null.");
 
-            string query = "DELETE FROM ProjeFinans_OdemeSartlari WHERE projeId = @projeId AND kilometreTasiId = @kilometreTasiId";
-            using (var cmd = new SqlCommand(query, transaction.Connection, transaction))
+            int? odemeId = null;
+            string selectQuery = "SELECT odemeId FROM ProjeFinans_OdemeSartlari WHERE projeId = @projeId AND kilometreTasiId = @kilometreTasiId";
+            using (var selectCmd = new SqlCommand(selectQuery, transaction.Connection, transaction))
             {
-                cmd.Parameters.AddWithValue("@projeId", projeId);
-                cmd.Parameters.AddWithValue("@kilometreTasiId", kilometreTasiId);
-                cmd.ExecuteNonQuery();
+                selectCmd.Parameters.AddWithValue("@projeId", projeId);
+                selectCmd.Parameters.AddWithValue("@kilometreTasiId", kilometreTasiId);
+                var result = selectCmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    odemeId = Convert.ToInt32(result);
+                }
+            }
+
+            if (odemeId.HasValue)
+            {
+                _odemeHareketleriRepo.DeleteOdemeHareketleriByOdemeIds(new List<int> { odemeId.Value }, transaction);
+            }
+
+            string deleteQuery = "DELETE FROM ProjeFinans_OdemeSartlari WHERE projeId = @projeId AND kilometreTasiId = @kilometreTasiId";
+            using (var deleteCmd = new SqlCommand(deleteQuery, transaction.Connection, transaction))
+            {
+                deleteCmd.Parameters.AddWithValue("@projeId", projeId);
+                deleteCmd.Parameters.AddWithValue("@kilometreTasiId", kilometreTasiId);
+                deleteCmd.ExecuteNonQuery();
             }
         }
 
@@ -489,7 +506,6 @@ namespace CEKA_APP.Concretes.ProjeFinans
             if (_odemeHareketleriRepo == null)
                 throw new InvalidOperationException("_odemeHareketleriRepo başlatılmamış.");
 
-            Console.WriteLine($"OdemeSartlariSil başladı, projeId: {projeId}");
             List<int> odemeIds = new List<int>();
             string selectQuery = "SELECT odemeId FROM ProjeFinans_OdemeSartlari WHERE projeId = @projeId";
             using (var selectCmd = new SqlCommand(selectQuery, transaction.Connection, transaction))
@@ -502,22 +518,18 @@ namespace CEKA_APP.Concretes.ProjeFinans
                         odemeIds.Add(reader.GetInt32(0));
                 }
             }
-            Console.WriteLine($"Bulunan odemeId sayısı: {odemeIds.Count}");
-
-            Console.WriteLine("DeleteOdemeHareketleriByOdemeIds çağrılıyor...");
             _odemeHareketleriRepo.DeleteOdemeHareketleriByOdemeIds(odemeIds, transaction);
-            Console.WriteLine("DeleteOdemeHareketleriByOdemeIds tamamlandı.");
 
             string deleteQuery = "DELETE FROM ProjeFinans_OdemeSartlari WHERE projeId = @projeId";
             using (var deleteCmd = new SqlCommand(deleteQuery, transaction.Connection, transaction))
             {
                 deleteCmd.Parameters.AddWithValue("@projeId", projeId);
                 int rowsAffected = deleteCmd.ExecuteNonQuery();
-                Console.WriteLine($"Silinen satır sayısı: {rowsAffected}");
             }
 
             return true;
         }
+
         public DataTable FiltreleOdemeBilgileri(Dictionary<string, TextBox> filtreKriterleri, DataGridView dataGrid)
         {
             var data = GetOdemeBilgileri();
@@ -761,6 +773,7 @@ namespace CEKA_APP.Concretes.ProjeFinans
             DataTable dt = new DataTable();
             dt.Columns.Add("odemeId", typeof(int));
             dt.Columns.Add("projeId", typeof(int));
+            dt.Columns.Add("projeNo", typeof(string)); // Proje No için sütun eklendi
             dt.Columns.Add("musteriAdi", typeof(string));
             dt.Columns.Add("projeAciklama", typeof(string));
             dt.Columns.Add("kilometreTasiId", typeof(int));
@@ -779,13 +792,14 @@ namespace CEKA_APP.Concretes.ProjeFinans
             dt.Columns.Add("kalanTutar", typeof(decimal));
             dt.Columns.Add("odemeTarihi", typeof(DateTime));
             dt.Columns.Add("odemeSapmasi", typeof(int));
-            dt.Columns.Add("statu", typeof(string));
+            dt.Columns.Add("status", typeof(string));
 
             foreach (var item in data)
             {
                 var row = dt.NewRow();
                 row["odemeId"] = item.odemeId;
                 row["projeId"] = item.projeId;
+                row["projeNo"] = item.projeNo ?? "N/A"; // Proje No null ise "N/A" yazılacak
                 row["musteriAdi"] = item.musteriAdi ?? (object)DBNull.Value;
                 row["projeAciklama"] = item.projeAciklama ?? (object)DBNull.Value;
                 row["kilometreTasiId"] = item.kilometreTasiId;
@@ -804,7 +818,7 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 row["kalanTutar"] = item.kalanTutar;
                 row["odemeTarihi"] = item.odemeTarihi.HasValue ? item.odemeTarihi.Value : (object)DBNull.Value;
                 row["odemeSapmasi"] = item.odemeSapmasi;
-                row["statu"] = item.statu ?? (object)DBNull.Value;
+                row["status"] = item.status ?? (object)DBNull.Value;
 
                 dt.Rows.Add(row);
             }

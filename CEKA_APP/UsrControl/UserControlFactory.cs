@@ -1,4 +1,5 @@
 ﻿using CEKA_APP.Interfaces;
+using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.ProjeFinans;
 using CEKA_APP.Services.ProjeFinans;
 using CEKA_APP.UsrControl.Interfaces;
@@ -37,8 +38,9 @@ namespace CEKA_APP.UsrControl
             var projeIliskiService = _serviceProvider.GetRequiredService<IProjeIliskiService>();
             var projeKutukService = _serviceProvider.GetRequiredService<IProjeKutukService>();
             var teminatMektuplariService = _serviceProvider.GetRequiredService<ITeminatMektuplariService>();
+            var sayfaStatusService = _serviceProvider.GetRequiredService<ISayfaStatusService>();
 
-            return new ctlOdemeSartlari(odemeSartlariService, odemeHareketleriService, kilometreTaslariService, fiyatlandirmaService, musterilerService, finansProjelerService, projeIliskiService, projeKutukService,teminatMektuplariService);
+            return new ctlOdemeSartlari(odemeSartlariService, odemeHareketleriService, kilometreTaslariService, fiyatlandirmaService, musterilerService, finansProjelerService, projeIliskiService, projeKutukService,teminatMektuplariService, sayfaStatusService);
         }
 
         public ctlOdemeSartlariListe CreateOdemeSartlariListeControl()
@@ -75,8 +77,9 @@ namespace CEKA_APP.UsrControl
             var musterilerService = _serviceProvider.GetRequiredService<IMusterilerService>();
             var finansProjelerService = _serviceProvider.GetRequiredService<IFinansProjelerService>();
             var projeKutukService = _serviceProvider.GetRequiredService<IProjeKutukService>();
+            var sayfaStatusService = _serviceProvider.GetRequiredService<ISayfaStatusService>();
 
-            return new ctlProjeKutuk(fiyatlandirmaService, musterilerService, finansProjelerService, projeKutukService);
+            return new ctlProjeKutuk(fiyatlandirmaService, musterilerService, finansProjelerService, projeKutukService, sayfaStatusService);
         }
 
         public ctlSevkiyat CreateSevkiyatControl()
@@ -87,8 +90,16 @@ namespace CEKA_APP.UsrControl
             var finansProjelerService = _serviceProvider.GetRequiredService<IFinansProjelerService>();
             var projeIliskiService = _serviceProvider.GetRequiredService<IProjeIliskiService>();
             var projeKutukService = _serviceProvider.GetRequiredService<IProjeKutukService>();
+            var sayfaStatusService = _serviceProvider.GetRequiredService<ISayfaStatusService>();
 
-            return new ctlSevkiyat(sevkiyatService, fiyatlandirmaService, sevkiyatPaketleriService, finansProjelerService, projeIliskiService, projeKutukService);
+            return new ctlSevkiyat(sevkiyatService, fiyatlandirmaService, sevkiyatPaketleriService, finansProjelerService, projeIliskiService, projeKutukService, sayfaStatusService);
+        }
+
+        public ctlTakipTakvimi CreateTakipTakvimiControl()
+        {
+            var odemeSartlariService = _serviceProvider.GetRequiredService<IOdemeSartlariService>();
+
+            return new ctlTakipTakvimi(odemeSartlariService);
         }
 
         public ctlTeminatMektuplari CreateTeminatMektuplariControl()

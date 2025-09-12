@@ -20,9 +20,12 @@ namespace CEKA_APP.Interfaces.ProjeFinans
         ProjeKutuk ProjeKutukAra(int projeId);
         void UpdateToplamBedel(string projeNo, decimal toplamBedel);
         bool IsFaturalamaSekliTekil(int projeId);
-        bool HasRelatedRecords(int projeId, List<int> altProjeler);
+        (bool HasRelated, List<string> Details) HasRelatedRecords(int projeId, List<int> altProjeler);
         bool ProjeKutukGuncelle(ProjeKutuk yeniKutuk);
-        bool ProjeKutukSil(string projeNo, List<string> altProjeler);
+        bool ProjeKutukSil(int projeId, List<int> altProjeIds);
         string GetProjeParaBirimi(int projeId);
+        bool UpdateProjeKutukDurum(int projeId, bool? montajTamamlandiMi);
+        ProjeKutuk GetProjeKutukStatus(int projeId);
+
     }
 }

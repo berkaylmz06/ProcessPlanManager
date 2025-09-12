@@ -72,7 +72,11 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             {
                 List<OdemeSartlari> odemeSekilleri = _odemeSartlariService.GetOdemeBilgileri();
                 dataGridOdemeSartlari.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
-                dataGridOdemeSartlari.DataSource = _odemeSartlariService.FiltreleOdemeBilgileri(new Dictionary<string, TextBox>(), dataGridOdemeSartlari);
+
+                // Filtreleme işlemini `FiltreleOdemeBilgileri`'nden döndürülen DataTable yerine doğrudan liste üzerinden yapın.
+                dataGridOdemeSartlari.DataSource = null; // Eski veri kaynağını temizle
+                dataGridOdemeSartlari.DataSource = odemeSekilleri;
+
                 ConfigureDataGridColumns();
                 dataGridOdemeSartlari.ScrollBars = ScrollBars.Both;
             }
@@ -109,121 +113,144 @@ namespace CEKA_APP.UsrControl.ProjeFinans
             dataGridOdemeSartlari.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.None;
 
             var columnOrder = new List<string>
-            {
-                "projeNo",
-                "musteriAdi",
-                "projeAciklama",
-                "kilometreTasiAdi",
-                "siralama",
-                "oran",
-                "tutar",
-                "paraBirimi",
-                "tahminiTarih",
-                "gerceklesenTarih",
-                "odemeAciklama",
-                "teminatMektubu",
-                "teminatDurumu",
-                "durum",
-                "kalanTutar",
-                "odemeTarihi",
-                "faturaNo",
-                "odemeSapmasi"
-            };
+    {
+        "projeNo",
+        "musteriAdi",
+        "projeAciklama",
+        "kilometreTasiAdi",
+        "siralama",
+        "oran",
+        "tutar",
+        "paraBirimi",
+        "tahminiTarih",
+        "gerceklesenTarih",
+        "odemeAciklama",
+        "teminatMektubu",
+        "teminatDurumu",
+        "durum",
+        "faturaNo",
+        "kalanTutar",
+        "odemeTarihi",
+        "odemeSapmasi",
+        "projeId",
+        "odemeId",
+        "kilometreTasiId",
+        "status"
+    };
 
-            for (int i = 0; i < columnOrder.Count; i++)
+            dataGridOdemeSartlari.Columns.Clear();
+            foreach (var columnName in columnOrder)
             {
-                string columnName = columnOrder[i];
-                if (dataGridOdemeSartlari.Columns.Contains(columnName))
+                if (!dataGridOdemeSartlari.Columns.Contains(columnName))
                 {
-                    dataGridOdemeSartlari.Columns[columnName].DisplayIndex = i;
-
-                    switch (columnName)
+                    var column = new DataGridViewTextBoxColumn
                     {
-                        case "projeNo":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Proje No";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 150;
-                            break;
-                        case "musteriAdi":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Müşteri Adı";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 200;
-                            break;
-                        case "projeAciklama":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Proje Açıklama";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 200;
-                            break;
-                        case "kilometreTasiAdi":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Kilometre Taşı";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 250;
-                            break;
-                        case "siralama":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Sıra";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 80;
-                            break;
-                        case "oran":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Oran(%)";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 100;
-                            break;
-                        case "tutar":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Tutar";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 120;
-                            break;
-                        case "paraBirimi":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Para Birimi";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 120;
-                            break;
-                        case "tahminiTarih":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Tahmini Tarih";
-                            dataGridOdemeSartlari.Columns[columnName].DefaultCellStyle.Format = "dd.MM.yyyy";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 150;
-                            break;
-                        case "gerceklesenTarih":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Gerçekleşen Tarih";
-                            dataGridOdemeSartlari.Columns[columnName].DefaultCellStyle.Format = "dd.MM.yyyy";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 150;
-                            break;
-                        case "odemeAciklama":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Ödeme Açıklama";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 250;
-                            break;
-                        case "teminatMektubu":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Teminat Mektubu Var Mı?";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 180;
-                            break;
-                        case "teminatDurumu":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Teminat Durumu";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 180;
-                            break;
-                        case "durum":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Durum";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 120;
-                            break;
-                        case "kalanTutar":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Kalan Tutar";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 120;
-                            break;
-                        case "odemeTarihi":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Ödeme Tarihi";
-                            dataGridOdemeSartlari.Columns[columnName].DefaultCellStyle.Format = "dd.MM.yyyy";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 150;
-                            break;
-                        case "faturaNo":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Fatura No";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 120;
-                            break;
-                        case "odemeSapmasi":
-                            dataGridOdemeSartlari.Columns[columnName].HeaderText = "Ödeme Sapması (Gün)";
-                            dataGridOdemeSartlari.Columns[columnName].Width = 150;
-                            break;
-                    }
+                        Name = columnName,
+                        DataPropertyName = columnName,
+                        Visible = true
+                    };
+                    dataGridOdemeSartlari.Columns.Add(column);
+                }
+                else
+                {
+                    dataGridOdemeSartlari.Columns[columnName].Visible = true;
+                    dataGridOdemeSartlari.Columns[columnName].DataPropertyName = columnName;
+                }
+
+                dataGridOdemeSartlari.Columns[columnName].DisplayIndex = columnOrder.IndexOf(columnName);
+
+                switch (columnName)
+                {
+                    case "projeNo":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Proje No";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                        break;
+                    case "musteriAdi":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Müşteri Adı";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 200;
+                        break;
+                    case "projeAciklama":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Proje Açıklama";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 200;
+                        break;
+                    case "kilometreTasiAdi":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Kilometre Taşı";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 250;
+                        break;
+                    case "siralama":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Sıra";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 80;
+                        break;
+                    case "oran":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Oran(%)";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 100;
+                        break;
+                    case "tutar":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Tutar";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 120;
+                        break;
+                    case "paraBirimi":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Para Birimi";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 120;
+                        break;
+                    case "tahminiTarih":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Tahmini Tarih";
+                        dataGridOdemeSartlari.Columns[columnName].DefaultCellStyle.Format = "dd.MM.yyyy";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                        break;
+                    case "gerceklesenTarih":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Gerçekleşen Tarih";
+                        dataGridOdemeSartlari.Columns[columnName].DefaultCellStyle.Format = "dd.MM.yyyy";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                        break;
+                    case "odemeAciklama":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Ödeme Açıklama";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                        break;
+                    case "teminatMektubu":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Teminat Mektubu Var Mı?";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                        break;
+                    case "teminatDurumu":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Teminat Durumu";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                        break;
+                    case "durum":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Durum";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                        break;
+                    case "kalanTutar":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Kalan Tutar";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                        break;
+                    case "odemeTarihi":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Ödeme Tarihi";
+                        dataGridOdemeSartlari.Columns[columnName].DefaultCellStyle.Format = "dd.MM.yyyy";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                        break;
+                    case "faturaNo":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Fatura No";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 150;
+                        break;
+                    case "odemeSapmasi":
+                        dataGridOdemeSartlari.Columns[columnName].HeaderText = "Ödeme Sapması (Gün)";
+                        dataGridOdemeSartlari.Columns[columnName].Width = 100;
+                        break;
+                    case "projeId":
+                        dataGridOdemeSartlari.Columns[columnName].Visible = false;
+                        break;
+                    case "odemeId":
+                        dataGridOdemeSartlari.Columns[columnName].Visible = false;
+                        break;
+                    case "kilometreTasiId":
+                        dataGridOdemeSartlari.Columns[columnName].Visible = false;
+                        break;
+                    case "status":
+                        dataGridOdemeSartlari.Columns[columnName].Visible = false;
+                        break;
                 }
             }
-
-            if (dataGridOdemeSartlari.Columns.Contains("odemeId"))
-                dataGridOdemeSartlari.Columns["odemeId"].Visible = false;
-            if (dataGridOdemeSartlari.Columns.Contains("kilometreTasiId"))
-                dataGridOdemeSartlari.Columns["kilometreTasiId"].Visible = false;
         }
-
         private void tsmiAra_Click(object sender, EventArgs e)
         {
             using (var tempGrid = new DataGridView())

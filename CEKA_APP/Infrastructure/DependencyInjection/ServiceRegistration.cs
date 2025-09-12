@@ -1,9 +1,13 @@
 ﻿using CEKA_APP.Abstracts;
+using CEKA_APP.Abstracts.Genel;
 using CEKA_APP.Abstracts.ProjeFinans;
+using CEKA_APP.Concretes.Genel;
 using CEKA_APP.Concretes.ProjeFinans;
 using CEKA_APP.DataBase.ProjeFinans;
 using CEKA_APP.Interfaces;
+using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.ProjeFinans;
+using CEKA_APP.Services.Genel;
 using CEKA_APP.Services.ProjeFinans;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -42,6 +46,9 @@ namespace CEKA_APP.Infrastructure.DependencyInjection
             services.AddScoped<IProjeIliskiService, ProjeIliskiService>();
             services.AddScoped<ITeminatMektuplariRepository, TeminatMektuplariRepository>();
             services.AddScoped<ITeminatMektuplariService, TeminatMektuplariService>();
+            services.AddScoped<ISayfaStatusRepository, SayfaStatusRepository>();
+            services.AddScoped<ISayfaStatusService, SayfaStatusService>();
+
 
 
             services.AddScoped<frmAnaSayfa>();

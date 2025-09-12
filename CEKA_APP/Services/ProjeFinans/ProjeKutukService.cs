@@ -54,11 +54,11 @@ namespace CEKA_APP.Services.ProjeFinans
             }
         }
 
-        public string GetProjeParaBirimi(int projeId)
+        public ProjeKutuk GetProjeKutukStatus(int projeId)
         {
             try
             {
-                return _projeKutukRepository.GetProjeParaBirimi(projeId);
+                return _projeKutukRepository.GetProjeKutukStatus(projeId);
 
             }
             catch (Exception ex)
@@ -67,11 +67,11 @@ namespace CEKA_APP.Services.ProjeFinans
             }
         }
 
-        public bool HasRelatedRecords(int projeId, List<int> altProjeler)
+        public string GetProjeParaBirimi(int projeId)
         {
             try
             {
-                return _projeKutukRepository.HasRelatedRecords(projeId, altProjeler);
+                return _projeKutukRepository.GetProjeParaBirimi(projeId);
 
             }
             catch (Exception ex)
@@ -194,7 +194,7 @@ namespace CEKA_APP.Services.ProjeFinans
             }
         }
 
-        public bool ProjeKutukSil(string projeNo, List<string> altProjeler)
+        public bool ProjeKutukSil(int projeId, List<int> altProjeIds)
         {
             using (var connection = DataBaseHelper.GetConnection())
             {
@@ -203,7 +203,7 @@ namespace CEKA_APP.Services.ProjeFinans
                 {
                     try
                     {
-                        bool sonuc = _projeKutukRepository.ProjeKutukSil(transaction, projeNo, altProjeler);
+                        bool sonuc = _projeKutukRepository.ProjeKutukSil(transaction, projeId, altProjeIds);
                         transaction.Commit();
                         return sonuc;
                     }
@@ -238,6 +238,28 @@ namespace CEKA_APP.Services.ProjeFinans
             }
         }
 
+        public bool UpdateProjeKutukDurum(int projeId, bool? montajTamamlandiMi)
+        {
+            using (var connection = DataBaseHelper.GetConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        bool sonuc = _projeKutukRepository.UpdateProjeKutukDurum(projeId, montajTamamlandiMi, transaction);
+                        transaction.Commit();
+                        return sonuc;
+                    }
+                    catch
+                    {
+                        transaction.Rollback();
+                        throw;
+                    }
+                }
+            }
+        }
+
         public void UpdateToplamBedel(string projeNo, decimal toplamBedel)
         {
             using (var connection = DataBaseHelper.GetConnection())
@@ -256,6 +278,19 @@ namespace CEKA_APP.Services.ProjeFinans
                         throw;
                     }
                 }
+            }
+        }
+
+        public (bool HasRelated, List<string> Details) HasRelatedRecords(int projeId, List<int> altProjeler)
+        {
+            try
+            {
+                return _projeKutukRepository.HasRelatedRecords(projeId, altProjeler);
+
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Veriler alınırken hata oluştu.", ex);
             }
         }
     }

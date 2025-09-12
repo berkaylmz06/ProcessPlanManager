@@ -50,14 +50,14 @@
             this.btnHesapla = new System.Windows.Forms.Button();
             this.btnKilometreTasiEkle = new System.Windows.Forms.Button();
             this.panelUst = new System.Windows.Forms.Panel();
+            this.txtStatu = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.btnKopyala = new System.Windows.Forms.Button();
             this.btnSil = new System.Windows.Forms.Button();
             this.lblToplamBedelBilgi = new System.Windows.Forms.Label();
             this.panelFill = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
-            this.txtStatu = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
             this.panelAlt.SuspendLayout();
             this.panelRight.SuspendLayout();
             this.panelLeft.SuspendLayout();
@@ -340,6 +340,28 @@
             this.panelUst.Size = new System.Drawing.Size(1674, 90);
             this.panelUst.TabIndex = 7;
             // 
+            // txtStatu
+            // 
+            this.txtStatu.BackColor = System.Drawing.Color.White;
+            this.txtStatu.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtStatu.Enabled = false;
+            this.txtStatu.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtStatu.Location = new System.Drawing.Point(203, 40);
+            this.txtStatu.Name = "txtStatu";
+            this.txtStatu.Size = new System.Drawing.Size(163, 30);
+            this.txtStatu.TabIndex = 8;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
+            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
+            this.label1.Location = new System.Drawing.Point(199, 14);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(58, 23);
+            this.label1.TabIndex = 9;
+            this.label1.Text = "Statü:";
+            // 
             // btnKopyala
             // 
             this.btnKopyala.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(204)))), ((int)(((byte)(113)))));
@@ -375,7 +397,7 @@
             this.lblToplamBedelBilgi.AutoSize = true;
             this.lblToplamBedelBilgi.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblToplamBedelBilgi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-            this.lblToplamBedelBilgi.Location = new System.Drawing.Point(381, 67);
+            this.lblToplamBedelBilgi.Location = new System.Drawing.Point(541, 46);
             this.lblToplamBedelBilgi.Name = "lblToplamBedelBilgi";
             this.lblToplamBedelBilgi.Size = new System.Drawing.Size(0, 20);
             this.lblToplamBedelBilgi.TabIndex = 5;
@@ -418,27 +440,6 @@
             this.ctlBaslik1.Name = "ctlBaslik1";
             this.ctlBaslik1.Size = new System.Drawing.Size(1674, 50);
             this.ctlBaslik1.TabIndex = 5;
-            // 
-            // txtStatu
-            // 
-            this.txtStatu.BackColor = System.Drawing.Color.White;
-            this.txtStatu.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtStatu.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtStatu.Location = new System.Drawing.Point(203, 40);
-            this.txtStatu.Name = "txtStatu";
-            this.txtStatu.Size = new System.Drawing.Size(163, 30);
-            this.txtStatu.TabIndex = 8;
-            // 
-            // label1
-            // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 10F, System.Drawing.FontStyle.Bold);
-            this.label1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-            this.label1.Location = new System.Drawing.Point(199, 14);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(58, 23);
-            this.label1.TabIndex = 9;
-            this.label1.Text = "Statü:";
             // 
             // ctlOdemeSartlari
             // 

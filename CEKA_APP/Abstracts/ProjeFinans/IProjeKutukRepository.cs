@@ -20,9 +20,11 @@ namespace CEKA_APP.Abstracts.ProjeFinans
         ProjeKutuk ProjeKutukAra(int projeId);
         void UpdateToplamBedel(SqlTransaction transaction, string projeNo, decimal toplamBedel);
         bool IsFaturalamaSekliTekil(int projeId);
-        bool HasRelatedRecords(int projeId, List<int> altProjeler);
+        (bool HasRelated, List<string> Details) HasRelatedRecords(int projeId, List<int> altProjeler);
         bool ProjeKutukGuncelle(SqlTransaction transaction, ProjeKutuk yeniKutuk);
-        bool ProjeKutukSil(SqlTransaction transaction, string projeNo, List<string> altProjeler);
+        bool ProjeKutukSil(SqlTransaction transaction, int projeId, List<int> altProjeIds);
         string GetProjeParaBirimi(int projeId);
+        bool UpdateProjeKutukDurum(int projeId, bool? montajTamamlandiMi, SqlTransaction transaction);
+        ProjeKutuk GetProjeKutukStatus(int projeId);
     }
 }

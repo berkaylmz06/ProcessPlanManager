@@ -18,5 +18,6 @@ namespace CEKA_APP.UsrControl.Interfaces
         ctlMusteriler CreateMusterilerControl();
         ctlTeminatMektuplari CreateTeminatMektuplariControl();
         ctlProjeBilgileri CreateProjeBilgileriControl();
+        ctlTakipTakvimi CreateTakipTakvimiControl();
     }
 }

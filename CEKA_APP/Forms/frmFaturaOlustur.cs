@@ -88,16 +88,20 @@ namespace CEKA_APP.Forms
                 AutoScroll = true
             };
             this.Controls.Add(notPanel);
-
             if (!string.IsNullOrEmpty(projeNo))
             {
                 int? effectiveProjeNo = projeId;
+                int? ustProjeId = null;
+
+                // Eğer alt proje ise, üst proje ID'sini al
                 if (_projeIliskiService.CheckAltProje(projeId.Value))
                 {
-                    effectiveProjeNo = _projeIliskiService.GetUstProjeId(projeId.Value) ?? projeId;
+                    ustProjeId = _projeIliskiService.GetUstProjeId(projeId.Value);
+                    effectiveProjeNo = ustProjeId ?? projeId;
                 }
 
-                var projeKutuk = _projeKutukService.ProjeKutukAra(projeId.Value);
+                // Proje kutuğu önce mevcut proje, yoksa üst proje ID ile ara
+                var projeKutuk = _projeKutukService.ProjeKutukAra(effectiveProjeNo.Value);
 
                 if (projeKutuk != null && !string.IsNullOrEmpty(projeKutuk.musteriNo))
                 {
@@ -111,7 +115,7 @@ namespace CEKA_APP.Forms
                         txtVergiNo.Text = musteriBilgi.vergiNo ?? "";
                         txtKdv.Text = "";
                         txtKdv.Enabled = !string.IsNullOrEmpty(musteriBilgi.musteriMensei) &&
-                                       musteriBilgi.musteriMensei.Trim().ToLower() == "türkiye";
+                                        musteriBilgi.musteriMensei.Trim().ToLower() == "türkiye";
                     }
                     else
                     {
@@ -120,9 +124,15 @@ namespace CEKA_APP.Forms
                 }
                 else
                 {
-                    MessageBox.Show($"Proje numarasına {projeNo} göre müşteri numarası bulunamadı.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    // Eğer üst proje varsa mesajda onu da göster
+                    string message = ustProjeId.HasValue
+                        ? $"Proje numarasına {projeNo} ve üst proje numarasına {ustProjeId} göre müşteri numarası bulunamadı."
+                        : $"Proje numarasına {projeNo} göre müşteri numarası bulunamadı.";
+
+                    MessageBox.Show(message, "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 }
             }
+
             var faturaNoSet = new HashSet<string>();
             bool hasNullFaturaNo = false;
             foreach (var kmId in kilometreTasiIds)

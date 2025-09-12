@@ -11,8 +11,8 @@ namespace CEKA_APP.Entitys.Genel
         public int sayfaStatusId { get; set; }
         public int sayfaId { get; set; }
         public int projeId { get; set; }
+        public bool bilgilerTamamMi { get; set; }
         public string status { get; set; }
-        public DateTime baslangicTarihi { get; set; }
-        public DateTime bitisTarihi { get; set; }
+        public string nedenTamamlanmadi { get; set; }
     }
 }

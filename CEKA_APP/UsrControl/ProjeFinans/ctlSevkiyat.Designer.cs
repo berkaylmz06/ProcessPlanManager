@@ -33,7 +33,7 @@
             this.panelUstSag = new System.Windows.Forms.Panel();
             this.btnAra = new System.Windows.Forms.Button();
             this.btnSil = new System.Windows.Forms.Button();
-            this.txtStatu = new System.Windows.Forms.TextBox();
+            this.txtStatus = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
             this.txtKalanTutar = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
@@ -66,7 +66,7 @@
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 245F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 228F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 236F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 246F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 249F));
             this.tableLayoutPanel1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 140);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -80,7 +80,7 @@
             // 
             this.panelUst.BackColor = System.Drawing.Color.White;
             this.panelUst.Controls.Add(this.panelUstSag);
-            this.panelUst.Controls.Add(this.txtStatu);
+            this.panelUst.Controls.Add(this.txtStatus);
             this.panelUst.Controls.Add(this.label3);
             this.panelUst.Controls.Add(this.txtKalanTutar);
             this.panelUst.Controls.Add(this.label1);
@@ -135,16 +135,16 @@
             this.btnSil.UseVisualStyleBackColor = false;
             this.btnSil.Click += new System.EventHandler(this.btnSil_Click);
             // 
-            // txtStatu
+            // txtStatus
             // 
-            this.txtStatu.BackColor = System.Drawing.Color.White;
-            this.txtStatu.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtStatu.Enabled = false;
-            this.txtStatu.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.txtStatu.Location = new System.Drawing.Point(211, 37);
-            this.txtStatu.Name = "txtStatu";
-            this.txtStatu.Size = new System.Drawing.Size(163, 30);
-            this.txtStatu.TabIndex = 11;
+            this.txtStatus.BackColor = System.Drawing.Color.White;
+            this.txtStatus.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtStatus.Enabled = false;
+            this.txtStatus.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.txtStatus.Location = new System.Drawing.Point(211, 37);
+            this.txtStatus.Name = "txtStatus";
+            this.txtStatus.Size = new System.Drawing.Size(163, 30);
+            this.txtStatus.TabIndex = 11;
             // 
             // label3
             // 
@@ -184,7 +184,7 @@
             this.lblToplamBedelBilgi.AutoSize = true;
             this.lblToplamBedelBilgi.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.lblToplamBedelBilgi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(73)))), ((int)(((byte)(94)))));
-            this.lblToplamBedelBilgi.Location = new System.Drawing.Point(1169, 70);
+            this.lblToplamBedelBilgi.Location = new System.Drawing.Point(738, 43);
             this.lblToplamBedelBilgi.Name = "lblToplamBedelBilgi";
             this.lblToplamBedelBilgi.Size = new System.Drawing.Size(0, 20);
             this.lblToplamBedelBilgi.TabIndex = 8;
@@ -260,7 +260,7 @@
             this.btnKaydet.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnKaydet.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Bold);
             this.btnKaydet.ForeColor = System.Drawing.Color.White;
-            this.btnKaydet.Location = new System.Drawing.Point(234, 6);
+            this.btnKaydet.Location = new System.Drawing.Point(234, 11);
             this.btnKaydet.Name = "btnKaydet";
             this.btnKaydet.Size = new System.Drawing.Size(146, 48);
             this.btnKaydet.TabIndex = 3;
@@ -359,7 +359,7 @@
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox txtToplamBedel;
         private System.Windows.Forms.Label lblToplamBedel;
-        private System.Windows.Forms.TextBox txtStatu;
+        private System.Windows.Forms.TextBox txtStatus;
         private System.Windows.Forms.Label label3;
         private System.Windows.Forms.Panel panelUstSag;
     }
