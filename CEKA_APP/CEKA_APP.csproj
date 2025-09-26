@@ -26,7 +26,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>58</ApplicationRevision>
+    <ApplicationRevision>67</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -208,6 +208,7 @@
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.6.3\lib\net462\System.Threading.Tasks.Extensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Transactions" />
     <Reference Include="System.Windows" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml.Linq" />
@@ -243,9 +244,19 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Abstracts\ERP\IAutoCadAktarimRepository.cs" />
+    <Compile Include="Abstracts\ERP\IKarsilastirmaTablosuRepository.cs" />
+    <Compile Include="Abstracts\Genel\IDataBaseRepository.cs" />
+    <Compile Include="Abstracts\Genel\ITabloFiltreleRepository.cs" />
+    <Compile Include="Abstracts\KesimTakip\IKesimDetaylariRepository.cs" />
     <Compile Include="Abstracts\Genel\ISayfaStatusRepository.cs" />
     <Compile Include="Abstracts\IFormArayuzu.cs" />
     <Compile Include="Abstracts\IKullaniciAdiOgren.cs" />
+    <Compile Include="Abstracts\KesimTakip\IIdUreticiRepository.cs" />
+    <Compile Include="Abstracts\KesimTakip\IKesimListesiPaketRepository.cs" />
+    <Compile Include="Abstracts\KesimTakip\IKesimListesiRepository.cs" />
+    <Compile Include="Abstracts\KesimTakip\IKesimTamamlanmisHareketRepository.cs" />
+    <Compile Include="Abstracts\KesimTakip\IKesimTamamlanmisRepository.cs" />
     <Compile Include="Abstracts\ProjeFinans\IFiyatlandirmaKalemleriRepository.cs" />
     <Compile Include="Abstracts\ProjeFinans\IFiyatlandirmaRepository.cs" />
     <Compile Include="Abstracts\ProjeFinans\IKilometreTaslariRepository.cs" />
@@ -258,9 +269,23 @@
     <Compile Include="Abstracts\ProjeFinans\ISevkiyatRepository.cs" />
     <Compile Include="Abstracts\ProjeFinans\IProjeIliskiRepository.cs" />
     <Compile Include="Abstracts\ProjeFinans\ITeminatMektuplariRepository.cs" />
+    <Compile Include="Abstracts\Sistem\IDuyurularRepository.cs" />
+    <Compile Include="Abstracts\Sistem\IKullaniciHareketLogRepository.cs" />
+    <Compile Include="Abstracts\Sistem\IKullanicilarRepository.cs" />
+    <Compile Include="Abstracts\Sistem\ISorunBildirimleriRepository.cs" />
     <Compile Include="Business\VeriOkuma.cs" />
+    <Compile Include="Concretes\ERP\AutoCadAktarimRepository.cs" />
+    <Compile Include="Concretes\ERP\KarsilastirmaTablosuRepository.cs" />
     <Compile Include="Concretes\FormArayuzu.cs" />
+    <Compile Include="Concretes\Genel\DataBaseRepository.cs" />
     <Compile Include="Concretes\Genel\SayfaStatusRepository.cs" />
+    <Compile Include="Concretes\Genel\TabloFiltreleRepository.cs" />
+    <Compile Include="Concretes\KesimTakip\IdUreticiRepository.cs" />
+    <Compile Include="Concretes\KesimTakip\KesimDetaylariRepository.cs" />
+    <Compile Include="Concretes\KesimTakip\KesimListesiPaketRepository.cs" />
+    <Compile Include="Concretes\KesimTakip\KesimListesiRepository.cs" />
+    <Compile Include="Concretes\KesimTakip\KesimTamamlanmisHareketRepository.cs" />
+    <Compile Include="Concretes\KesimTakip\KesimTamamlanmisRepository.cs" />
     <Compile Include="Concretes\KullaniciAdiOgren.cs" />
     <Compile Include="Concretes\ProjeFinans\FinansProjelerRepository.cs" />
     <Compile Include="Concretes\ProjeFinans\FiyatlandirmaKalemleriRepository.cs" />
@@ -274,19 +299,10 @@
     <Compile Include="Concretes\ProjeFinans\SevkiyatPaketleriRepository.cs" />
     <Compile Include="Concretes\ProjeFinans\SevkiyatRepository.cs" />
     <Compile Include="Concretes\ProjeFinans\TeminatMektuplariRepository.cs" />
-    <Compile Include="DataBase\ERP\AutoCadAktarimData.cs" />
-    <Compile Include="DataBase\Genel\DataBaseHelper.cs" />
-    <Compile Include="DataBase\Genel\SayfaStatusData.cs" />
-    <Compile Include="DataBase\Sistem\DuyurularData.cs" />
-    <Compile Include="DataBase\KesimTakip\IdUreticiData.cs" />
-    <Compile Include="DataBase\ERP\KarsilastirmaTablosuData.cs" />
-    <Compile Include="DataBase\KesimTakip\KesimDetaylariData.cs" />
-    <Compile Include="DataBase\KesimTakip\KesimListesiPaketData.cs" />
-    <Compile Include="DataBase\KesimTakip\KesimTamamlanmisData.cs" />
-    <Compile Include="DataBase\KesimTakip\KesimTamamlanmisHareket.cs" />
-    <Compile Include="DataBase\Sistem\KullaniciHareketLogData.cs" />
-    <Compile Include="DataBase\Sistem\KullanicilarData.cs" />
-    <Compile Include="DataBase\Sistem\SorunBildirimleriData.cs" />
+    <Compile Include="Concretes\Sistem\DuyurularRepository.cs" />
+    <Compile Include="Concretes\Sistem\KullaniciHareketLogRepository.cs" />
+    <Compile Include="Concretes\Sistem\KullanicilarRepository.cs" />
+    <Compile Include="Concretes\Sistem\SorunBildirimleriRepository.cs" />
     <Compile Include="Entitys\ERP\AutoCadAktarimDetay.cs" />
     <Compile Include="Entitys\Genel\SayfaStatus.cs" />
     <Compile Include="Entitys\Genel\Enum\SayfaTipi.cs" />
@@ -309,7 +325,6 @@
     <Compile Include="Entitys\ProjeFinans\TeminatMektuplari.cs" />
     <Compile Include="Entitys\Sistem\SorunBildirimleri.cs" />
     <Compile Include="Entitys\KesimTakip\KesimListesi.cs" />
-    <Compile Include="DataBase\KesimTakip\KesimListesiData.cs" />
     <Compile Include="Forms\frmAnaSayfa.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -321,6 +336,12 @@
     </Compile>
     <Compile Include="Forms\frmAra.Designer.cs">
       <DependentUpon>frmAra.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\frmAraBilgi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmAraBilgi.Designer.cs">
+      <DependentUpon>frmAraBilgi.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\frmFaturaOlustur.cs">
       <SubType>Form</SubType>
@@ -365,6 +386,12 @@
     <Compile Include="Forms\frmStatuBilgi.Designer.cs">
       <DependentUpon>frmStatuBilgi.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\frmSutunSiralama.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\frmSutunSiralama.Designer.cs">
+      <DependentUpon>frmSutunSiralama.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\frmTeminatMektubuEkle.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -404,10 +431,19 @@
     <Compile Include="Helper\PanelRoundHelper.cs" />
     <Compile Include="Helper\PlatformFontResolver.cs" />
     <Compile Include="Helper\RoundedPanelHelper.cs" />
-    <Compile Include="Helper\LogEkle.cs" />
     <Compile Include="Helper\TreeNodeKoleksiyonuGenisletmeleri.cs" />
     <Compile Include="Infrastructure\DependencyInjection\ServiceRegistration.cs" />
+    <Compile Include="Interfaces\ERP\IAutoCadAktarimService.cs" />
+    <Compile Include="Interfaces\ERP\IKarsilastirmaTablosuService.cs" />
+    <Compile Include="Interfaces\Genel\IDataBaseService.cs" />
     <Compile Include="Interfaces\Genel\ISayfaStatusService.cs" />
+    <Compile Include="Interfaces\Genel\ITabloFiltreleService.cs" />
+    <Compile Include="Interfaces\KesimTakip\IIdUreticiService.cs" />
+    <Compile Include="Interfaces\KesimTakip\IKesimDetaylariService.cs" />
+    <Compile Include="Interfaces\KesimTakip\IKesimListesiPaketService.cs" />
+    <Compile Include="Interfaces\KesimTakip\IKesimListesiService.cs" />
+    <Compile Include="Interfaces\KesimTakip\IKesimTamamlanmisHareketService.cs" />
+    <Compile Include="Interfaces\KesimTakip\IKesimTamamlanmisService.cs" />
     <Compile Include="Interfaces\ProjeFinans\IFinansProjelerService.cs" />
     <Compile Include="Interfaces\ProjeFinans\IFiyatlandirmaKalemleriService.cs" />
     <Compile Include="Interfaces\ProjeFinans\IFiyatlandirmaService.cs" />
@@ -420,9 +456,23 @@
     <Compile Include="Interfaces\ProjeFinans\ISevkiyatPaketleriService.cs" />
     <Compile Include="Interfaces\ProjeFinans\ISevkiyatService.cs" />
     <Compile Include="Interfaces\ProjeFinans\ITeminatMektuplariService.cs" />
+    <Compile Include="Interfaces\Sistem\IDuyurularService.cs" />
+    <Compile Include="Interfaces\Sistem\IKullaniciHareketLogService.cs" />
+    <Compile Include="Interfaces\Sistem\IKullanicilarService.cs" />
+    <Compile Include="Interfaces\Sistem\ISorunBildirimleriService.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ERP\AutoCadAktarimService.cs" />
+    <Compile Include="Services\ERP\KarsilastirmaTablosuService.cs" />
+    <Compile Include="Services\Genel\DataBaseService.cs" />
     <Compile Include="Services\Genel\SayfaStatusService.cs" />
+    <Compile Include="Services\Genel\TabloFiltreleService.cs" />
+    <Compile Include="Services\KesimTakip\IdUreticiService.cs" />
+    <Compile Include="Services\KesimTakip\KesimDetaylariService.cs" />
+    <Compile Include="Services\KesimTakip\KesimListesiPaketService.cs" />
+    <Compile Include="Services\KesimTakip\KesimListesiService.cs" />
+    <Compile Include="Services\KesimTakip\KesimTamamlanmisHareketService.cs" />
+    <Compile Include="Services\KesimTakip\KesimTamamlanmisService.cs" />
     <Compile Include="Services\ProjeFinans\FinansProjelerService.cs" />
     <Compile Include="Services\ProjeFinans\FiyatlandirmaKalemleriService.cs" />
     <Compile Include="Services\ProjeFinans\FiyatlandirmaService.cs" />
@@ -435,157 +485,164 @@
     <Compile Include="Services\ProjeFinans\SevkiyatPaketleriService.cs" />
     <Compile Include="Services\ProjeFinans\SevkiyatService.cs" />
     <Compile Include="Services\ProjeFinans\TeminatMektuplariService.cs" />
-    <Compile Include="UsrControl\ERP\ctlAutoCadAktarim.cs">
+    <Compile Include="Services\Sistem\DuyurularService.cs" />
+    <Compile Include="Services\Sistem\KullaniciHareketLogService.cs" />
+    <Compile Include="Services\Sistem\KullanicilarService.cs" />
+    <Compile Include="Services\Sistem\SorunBildirimleriService.cs" />
+    <Compile Include="UserControls\ERP\ctlAutoCadAktarim.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ERP\ctlAutoCadAktarim.Designer.cs">
+    <Compile Include="UserControls\ERP\ctlAutoCadAktarim.Designer.cs">
       <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\IUserControlFactory.cs" />
-    <Compile Include="UsrControl\KesimTakip\ctlKesimPlaniEkle.cs">
+    <Compile Include="UserControls\IUserControlFactory.cs" />
+    <Compile Include="UserControls\KesimTakip\ctlKesimPlaniEkle.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\KesimTakip\ctlKesimPlaniEkle.Designer.cs">
+    <Compile Include="UserControls\KesimTakip\ctlKesimPlaniEkle.Designer.cs">
       <DependentUpon>ctlKesimPlaniEkle.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlOdemeSartlariListe.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlOdemeSartlariListe.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlOdemeSartlariListe.Designer.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlOdemeSartlariListe.Designer.cs">
       <DependentUpon>ctlOdemeSartlariListe.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlSevkiyat.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlSevkiyat.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlSevkiyat.Designer.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlSevkiyat.Designer.cs">
       <DependentUpon>ctlSevkiyat.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlTakipTakvimi.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlTakipTakvimi.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlTakipTakvimi.Designer.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlTakipTakvimi.Designer.cs">
       <DependentUpon>ctlTakipTakvimi.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ProjeTakip\ctlImalat.cs">
+    <Compile Include="UserControls\ProjeTakip\ctlImalat.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ProjeTakip\ctlImalat.Designer.cs">
+    <Compile Include="UserControls\ProjeTakip\ctlImalat.Designer.cs">
       <DependentUpon>ctlImalat.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ProjeTakip\ctlProjeBilgileri.cs">
+    <Compile Include="UserControls\ProjeTakip\ctlProjeBilgileri.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ProjeTakip\ctlProjeBilgileri.Designer.cs">
+    <Compile Include="UserControls\ProjeTakip\ctlProjeBilgileri.Designer.cs">
       <DependentUpon>ctlProjeBilgileri.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\Sistem\ctlBaslik.cs">
+    <Compile Include="UserControls\Sistem\ctlBaslik.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\Sistem\ctlBaslik.Designer.cs">
+    <Compile Include="UserControls\Sistem\ctlBaslik.Designer.cs">
       <DependentUpon>ctlBaslik.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ERP\ctlKarsilastirmaTablosu.cs">
+    <Compile Include="UserControls\ERP\ctlKarsilastirmaTablosu.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ERP\ctlKarsilastirmaTablosu.Designer.cs">
+    <Compile Include="UserControls\ERP\ctlKarsilastirmaTablosu.Designer.cs">
       <DependentUpon>ctlKarsilastirmaTablosu.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\KesimTakip\ctlKesimDetaylari.cs">
+    <Compile Include="UserControls\KesimTakip\ctlKesimDetaylari.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\KesimTakip\ctlKesimDetaylari.Designer.cs">
+    <Compile Include="UserControls\KesimTakip\ctlKesimDetaylari.Designer.cs">
       <DependentUpon>ctlKesimDetaylari.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\KesimTakip\ctlKesimYap.cs">
+    <Compile Include="UserControls\KesimTakip\ctlKesimYap.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\KesimTakip\ctlKesimYap.Designer.cs">
+    <Compile Include="UserControls\KesimTakip\ctlKesimYap.Designer.cs">
       <DependentUpon>ctlKesimYap.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\Sistem\ctlKullaniciAyarlari.cs">
+    <Compile Include="UserControls\Sistem\ctlKullaniciAyarlari.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\Sistem\ctlKullaniciAyarlari.Designer.cs">
+    <Compile Include="UserControls\Sistem\ctlKullaniciAyarlari.Designer.cs">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlMusteriler.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlMusteriler.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlMusteriler.Designer.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlMusteriler.Designer.cs">
       <DependentUpon>ctlMusteriler.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlOdemeSartlari.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlOdemeSartlari.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlOdemeSartlari.Designer.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlOdemeSartlari.Designer.cs">
       <DependentUpon>ctlOdemeSartlari.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlProjeBilgileri.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlProjeBilgileri.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlProjeBilgileri.Designer.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlProjeBilgileri.Designer.cs">
       <DependentUpon>ctlProjeBilgileri.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlProjeFiyatlandirma.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlProjeFiyatlandirma.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlProjeFiyatlandirma.Designer.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlProjeFiyatlandirma.Designer.cs">
       <DependentUpon>ctlProjeFiyatlandirma.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlProjeKutuk.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlProjeKutuk.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlProjeKutuk.Designer.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlProjeKutuk.Designer.cs">
       <DependentUpon>ctlProjeKutuk.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ERP\ctlProjeOgeleri.cs">
+    <Compile Include="UserControls\ERP\ctlProjeOgeleri.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ERP\ctlProjeOgeleri.Designer.cs">
+    <Compile Include="UserControls\ERP\ctlProjeOgeleri.Designer.cs">
       <DependentUpon>ctlProjeOgeleri.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\Sistem\ctlSistemBilgisi.cs">
+    <Compile Include="UserControls\Sistem\ctlSistemBilgisi.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\Sistem\ctlSistemBilgisi.Designer.cs">
+    <Compile Include="UserControls\Sistem\ctlSistemBilgisi.Designer.cs">
       <DependentUpon>ctlSistemBilgisi.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\Sistem\ctlSistemHareketleri.cs">
+    <Compile Include="UserControls\Sistem\ctlSistemHareketleri.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\Sistem\ctlSistemHareketleri.Designer.cs">
+    <Compile Include="UserControls\Sistem\ctlSistemHareketleri.Designer.cs">
       <DependentUpon>ctlSistemHareketleri.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\Sistem\ctlSorunlar.cs">
+    <Compile Include="UserControls\Sistem\ctlSorunlar.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\Sistem\ctlSorunlar.Designer.cs">
+    <Compile Include="UserControls\Sistem\ctlSorunlar.Designer.cs">
       <DependentUpon>ctlSorunlar.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlTeminatMektuplari.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlTeminatMektuplari.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\ProjeFinans\ctlTeminatMektuplari.Designer.cs">
+    <Compile Include="UserControls\ProjeFinans\ctlTeminatMektuplari.Designer.cs">
       <DependentUpon>ctlTeminatMektuplari.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\KesimTakip\ctlYapilanKesimleriGor.cs">
+    <Compile Include="UserControls\KesimTakip\ctlYapilanKesimleriGor.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\KesimTakip\ctlYapilanKesimleriGor.Designer.cs">
+    <Compile Include="UserControls\KesimTakip\ctlYapilanKesimleriGor.Designer.cs">
       <DependentUpon>ctlYapilanKesimleriGor.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\KesimTakip\ctlYerlesimPlaniBilgi.cs">
+    <Compile Include="UserControls\KesimTakip\ctlYerlesimPlaniBilgi.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="UsrControl\KesimTakip\ctlYerlesimPlaniBilgi.Designer.cs">
+    <Compile Include="UserControls\KesimTakip\ctlYerlesimPlaniBilgi.Designer.cs">
       <DependentUpon>ctlYerlesimPlaniBilgi.cs</DependentUpon>
     </Compile>
-    <Compile Include="UsrControl\UserControlFactory.cs" />
+    <Compile Include="UserControls\UserControlFactory.cs" />
     <EmbeddedResource Include="Forms\frmAnaSayfa.resx">
       <DependentUpon>frmAnaSayfa.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmAra.resx">
       <DependentUpon>frmAra.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmAraBilgi.resx">
+      <DependentUpon>frmAraBilgi.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmFaturaOlustur.resx">
       <DependentUpon>frmFaturaOlustur.cs</DependentUpon>
@@ -607,6 +664,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmStatuBilgi.resx">
       <DependentUpon>frmStatuBilgi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\frmSutunSiralama.resx">
+      <DependentUpon>frmSutunSiralama.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmTeminatMektubuEkle.resx">
       <DependentUpon>frmTeminatMektubuEkle.cs</DependentUpon>
@@ -630,76 +690,76 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <EmbeddedResource Include="UsrControl\ERP\ctlAutoCadAktarim.resx">
+    <EmbeddedResource Include="UserControls\ERP\ctlAutoCadAktarim.resx">
       <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\KesimTakip\ctlKesimPlaniEkle.resx">
+    <EmbeddedResource Include="UserControls\KesimTakip\ctlKesimPlaniEkle.resx">
       <DependentUpon>ctlKesimPlaniEkle.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ProjeFinans\ctlOdemeSartlariListe.resx">
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlOdemeSartlariListe.resx">
       <DependentUpon>ctlOdemeSartlariListe.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ProjeFinans\ctlSevkiyat.resx">
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlSevkiyat.resx">
       <DependentUpon>ctlSevkiyat.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ProjeFinans\ctlTakipTakvimi.resx">
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlTakipTakvimi.resx">
       <DependentUpon>ctlTakipTakvimi.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ProjeTakip\ctlImalat.resx">
+    <EmbeddedResource Include="UserControls\ProjeTakip\ctlImalat.resx">
       <DependentUpon>ctlImalat.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ProjeTakip\ctlProjeBilgileri.resx">
+    <EmbeddedResource Include="UserControls\ProjeTakip\ctlProjeBilgileri.resx">
       <DependentUpon>ctlProjeBilgileri.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\Sistem\ctlBaslik.resx">
+    <EmbeddedResource Include="UserControls\Sistem\ctlBaslik.resx">
       <DependentUpon>ctlBaslik.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ERP\ctlKarsilastirmaTablosu.resx">
+    <EmbeddedResource Include="UserControls\ERP\ctlKarsilastirmaTablosu.resx">
       <DependentUpon>ctlKarsilastirmaTablosu.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\KesimTakip\ctlKesimDetaylari.resx">
+    <EmbeddedResource Include="UserControls\KesimTakip\ctlKesimDetaylari.resx">
       <DependentUpon>ctlKesimDetaylari.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\KesimTakip\ctlKesimYap.resx">
+    <EmbeddedResource Include="UserControls\KesimTakip\ctlKesimYap.resx">
       <DependentUpon>ctlKesimYap.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\Sistem\ctlKullaniciAyarlari.resx">
+    <EmbeddedResource Include="UserControls\Sistem\ctlKullaniciAyarlari.resx">
       <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ProjeFinans\ctlMusteriler.resx">
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlMusteriler.resx">
       <DependentUpon>ctlMusteriler.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ProjeFinans\ctlOdemeSartlari.resx">
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlOdemeSartlari.resx">
       <DependentUpon>ctlOdemeSartlari.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ProjeFinans\ctlProjeBilgileri.resx">
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlProjeBilgileri.resx">
       <DependentUpon>ctlProjeBilgileri.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ProjeFinans\ctlProjeFiyatlandirma.resx">
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlProjeFiyatlandirma.resx">
       <DependentUpon>ctlProjeFiyatlandirma.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ProjeFinans\ctlProjeKutuk.resx">
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlProjeKutuk.resx">
       <DependentUpon>ctlProjeKutuk.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ERP\ctlProjeOgeleri.resx">
+    <EmbeddedResource Include="UserControls\ERP\ctlProjeOgeleri.resx">
       <DependentUpon>ctlProjeOgeleri.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\Sistem\ctlSistemBilgisi.resx">
+    <EmbeddedResource Include="UserControls\Sistem\ctlSistemBilgisi.resx">
       <DependentUpon>ctlSistemBilgisi.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\Sistem\ctlSistemHareketleri.resx">
+    <EmbeddedResource Include="UserControls\Sistem\ctlSistemHareketleri.resx">
       <DependentUpon>ctlSistemHareketleri.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\Sistem\ctlSorunlar.resx">
+    <EmbeddedResource Include="UserControls\Sistem\ctlSorunlar.resx">
       <DependentUpon>ctlSorunlar.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\ProjeFinans\ctlTeminatMektuplari.resx">
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlTeminatMektuplari.resx">
       <DependentUpon>ctlTeminatMektuplari.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\KesimTakip\ctlYapilanKesimleriGor.resx">
+    <EmbeddedResource Include="UserControls\KesimTakip\ctlYapilanKesimleriGor.resx">
       <DependentUpon>ctlYapilanKesimleriGor.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UsrControl\KesimTakip\ctlYerlesimPlaniBilgi.resx">
+    <EmbeddedResource Include="UserControls\KesimTakip\ctlYerlesimPlaniBilgi.resx">
       <DependentUpon>ctlYerlesimPlaniBilgi.cs</DependentUpon>
     </EmbeddedResource>
     <None Include="CEKA_APP_TemporaryKey.pfx" />
@@ -738,7 +798,18 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\enAsagiOk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\yukariOk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\asagiOk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\enYukariOk.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

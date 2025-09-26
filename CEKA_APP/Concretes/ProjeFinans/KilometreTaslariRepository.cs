@@ -12,111 +12,87 @@ namespace CEKA_APP.Concretes.ProjeFinans
 {
     public class KilometreTaslariRepository: IKilometreTaslariRepository
     {
-        public List<(int Id, string Adi, DateTime Tarih)> GetFiyatlandirmaKilometreTasi()
+        public List<(int Id, string Adi, DateTime Tarih)> GetFiyatlandirmaKilometreTasi(SqlConnection connection)
         {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
             var kilometreTaslari = new List<(int Id, string Adi, DateTime Tarih)>();
-            using (var connection = DataBaseHelper.GetConnection())
+
+            string query = "SELECT kilometreTasiId, kilometreTasiAdi, olusturmaTarihi FROM ProjeFinans_KilometreTaslari";
+            using (var cmd = new SqlCommand(query, connection))
+            using (var reader = cmd.ExecuteReader())
             {
-                connection.Open();
-                string query = "SELECT kilometreTasiId, kilometreTasiAdi, olusturmaTarihi FROM ProjeFinans_KilometreTaslari";
-                using (var cmd = new SqlCommand(query, connection))
-                using (var reader = cmd.ExecuteReader())
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        kilometreTaslari.Add((reader.GetInt32(0), reader.GetString(1), reader.GetDateTime(2)));
-                    }
+                    kilometreTaslari.Add((reader.GetInt32(0), reader.GetString(1), reader.GetDateTime(2)));
                 }
-                connection.Close();
             }
+
             return kilometreTaslari;
         }
-
-        public int FiyatlandirmaKilometreTasiEkle(string kilometreTasiAdi, SqlTransaction transaction)
+        public int FiyatlandirmaKilometreTasiEkle(SqlConnection connection, SqlTransaction transaction, string kilometreTasiAdi)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+
+            string query = @"
+        INSERT INTO ProjeFinans_KilometreTaslari (kilometreTasiAdi, olusturmaTarihi) 
+        VALUES (@kilometreTasiAdi, @olusturmaTarihi);
+        SELECT CAST(SCOPE_IDENTITY() AS INT);
+    ";
+
+            using (var cmd = new SqlCommand(query, connection, transaction)) 
             {
-                connection.Open();
-                string query = @"
-            INSERT INTO ProjeFinans_KilometreTaslari (kilometreTasiAdi, olusturmaTarihi) 
-            VALUES (@kilometreTasiAdi, @olusturmaTarihi);
-            SELECT CAST(SCOPE_IDENTITY() AS INT);
-        ";
+                cmd.Parameters.AddWithValue("@kilometreTasiAdi", kilometreTasiAdi);
+                cmd.Parameters.AddWithValue("@olusturmaTarihi", DateTime.Now);
 
-                using (var cmd = new SqlCommand(query, connection, transaction))
-                {
-                    cmd.Parameters.AddWithValue("@kilometreTasiAdi", kilometreTasiAdi);
-                    cmd.Parameters.AddWithValue("@olusturmaTarihi", DateTime.Now);
-
-                    return (int)cmd.ExecuteScalar();
-                }
+                return (int)cmd.ExecuteScalar();
             }
         }
 
-
-
-        public int GetFiyatlandirmaKilometreTasiIdByAdi(string kilometreTasiAdi)
+        public int GetFiyatlandirmaKilometreTasiIdByAdi(SqlConnection connection, string kilometreTasiAdi)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
+            string query = "SELECT kilometreTasiId FROM ProjeFinans_KilometreTaslari WHERE kilometreTasiAdi = @kilometreTasiAdi";
+
+            using (var cmd = new SqlCommand(query, connection))
             {
-                connection.Open();
-                string query = "SELECT kilometreTasiId FROM ProjeFinans_KilometreTaslari WHERE kilometreTasiAdi = @kilometreTasiAdi";
-                using (var cmd = new SqlCommand(query, connection))
-                {
-                    cmd.Parameters.AddWithValue("@kilometreTasiAdi", kilometreTasiAdi);
-                    object result = cmd.ExecuteScalar();
-                    return result != null ? Convert.ToInt32(result) : 0;
-                }
+                cmd.Parameters.AddWithValue("@kilometreTasiAdi", kilometreTasiAdi);
+                object result = cmd.ExecuteScalar();
+                return result != null ? Convert.ToInt32(result) : 0;
             }
         }
 
-        public string GetKilometreTasiAdi(int kilometreTasiId)
+        public string GetKilometreTasiAdi(SqlConnection connection, int kilometreTasiId)
         {
-            string kilometreTasiAdi = "";
-            using (var connection = DataBaseHelper.GetConnection())
-            {
-                connection.Open();
-                string query = "SELECT KalemAdi FROM ProjeFinans_FiyatlandirmaKilometreTaslari WHERE FiyatlandirmaKilometreTasiId = @id";
-                using (var cmd = new SqlCommand(query, connection))
-                {
-                    cmd.Parameters.AddWithValue("@id", kilometreTasiId);
-                    object result = cmd.ExecuteScalar();
-                    if (result != null && result != DBNull.Value)
-                    {
-                        kilometreTasiAdi = result.ToString();
-                    }
-                }
-            }
-            return kilometreTasiAdi;
-        }
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
 
-        public int GetKilometreTasiId(string kilometreTasiAdi)
-        {
-            using (var connection = DataBaseHelper.GetConnection())
+            string query = "SELECT KalemAdi FROM ProjeFinans_FiyatlandirmaKilometreTaslari WHERE FiyatlandirmaKilometreTasiId = @id";
+            using (var cmd = new SqlCommand(query, connection))
             {
-                try
-                {
-                    connection.Open();
-                    string sql = @"
-                        SELECT kilometreTasiId
-                        FROM ProjeFinans_KilometreTaslari
-                        WHERE kilometreTasiAdi = @kilometreTasiAdi";
-                    using (SqlCommand command = new SqlCommand(sql, connection))
-                    {
-                        command.Parameters.AddWithValue("@kilometreTasiAdi", kilometreTasiAdi.Trim());
-                        object result = command.ExecuteScalar();
-                        return result != null ? Convert.ToInt32(result) : 0;
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Kilometre taşı ID alınırken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return 0;
-                }
+                cmd.Parameters.AddWithValue("@id", kilometreTasiId);
+                object result = cmd.ExecuteScalar();
+                return result != null && result != DBNull.Value ? result.ToString() : string.Empty;
             }
         }
 
-        public List<string> GetKilometreTasiAdlariByIds(List<int> kilometreTasiIds)
+        public int GetKilometreTasiId(SqlConnection connection, string kilometreTasiAdi)
+        {
+            string sql = @"
+        SELECT kilometreTasiId
+        FROM ProjeFinans_KilometreTaslari
+        WHERE kilometreTasiAdi = @kilometreTasiAdi";
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@kilometreTasiAdi", kilometreTasiAdi.Trim());
+                object result = command.ExecuteScalar();
+                return result != null ? Convert.ToInt32(result) : 0;
+            }
+        }
+
+        public List<string> GetKilometreTasiAdlariByIds(SqlConnection connection, List<int> kilometreTasiIds)
         {
             var kilometreTasiAdlari = new List<string>();
             if (kilometreTasiIds == null || kilometreTasiIds.Count == 0)
@@ -124,27 +100,18 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 return kilometreTasiAdlari;
             }
 
-            using (var connection = DataBaseHelper.GetConnection())
+            string idList = string.Join(",", kilometreTasiIds);
+            string query = $"SELECT kilometreTasiAdi FROM ProjeFinans_KilometreTaslari WHERE kilometreTasiId IN ({idList})";
+
+            using (var cmd = new SqlCommand(query, connection))
+            using (var reader = cmd.ExecuteReader())
             {
-                try
+                while (reader.Read())
                 {
-                    connection.Open();
-                    string idList = string.Join(",", kilometreTasiIds);
-                    string query = $"SELECT kilometreTasiAdi FROM ProjeFinans_KilometreTaslari WHERE kilometreTasiId IN ({idList})";
-                    using (var cmd = new SqlCommand(query, connection))
-                    using (var reader = cmd.ExecuteReader())
-                    {
-                        while (reader.Read())
-                        {
-                            kilometreTasiAdlari.Add(reader.GetString(0));
-                        }
-                    }
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show($"Kilometre taşı adları alınırken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    kilometreTasiAdlari.Add(reader.GetString(0));
                 }
             }
+
             return kilometreTasiAdlari;
         }
     }

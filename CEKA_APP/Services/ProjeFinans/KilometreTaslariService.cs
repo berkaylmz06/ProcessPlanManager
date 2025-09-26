@@ -2,6 +2,7 @@
 using CEKA_APP.Concretes.ProjeFinans;
 using CEKA_APP.DataBase;
 using CEKA_APP.Entitys.ProjeFinans;
+using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.ProjeFinans;
 using System;
 using System.Collections.Generic;
@@ -15,29 +16,30 @@ namespace CEKA_APP.Services.ProjeFinans
     public class KilometreTaslariService : IKilometreTaslariService
     {
         private readonly IKilometreTaslariRepository _kilometreTaslariRepository;
+        private readonly IDataBaseService _dataBaseService;
 
-        public KilometreTaslariService(IKilometreTaslariRepository kilometreTaslariRepository)
+        public KilometreTaslariService(IKilometreTaslariRepository kilometreTaslariRepository, IDataBaseService dataBaseService)
         {
             _kilometreTaslariRepository = kilometreTaslariRepository ?? throw new ArgumentNullException(nameof(kilometreTaslariRepository));
+            _dataBaseService = dataBaseService ?? throw new ArgumentNullException(nameof(dataBaseService));
         }
         public int FiyatlandirmaKilometreTasiEkle(string kilometreTasiAdi)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        int sonuc = _kilometreTaslariRepository.FiyatlandirmaKilometreTasiEkle(kilometreTasiAdi, transaction);
+                        int sonuc = _kilometreTaslariRepository.FiyatlandirmaKilometreTasiEkle(connection, transaction, kilometreTasiAdi);
                         transaction.Commit();
                         return sonuc;
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        MessageBox.Show($"SQL Hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        throw;
+                        throw new ApplicationException("Kilometre taşı eklenirken hata oluştu.", ex);
                     }
                 }
             }
@@ -45,27 +47,83 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public List<(int Id, string Adi, DateTime Tarih)> GetFiyatlandirmaKilometreTasi()
         {
-            return _kilometreTaslariRepository.GetFiyatlandirmaKilometreTasi();
+            try
+            {
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _kilometreTaslariRepository.GetFiyatlandirmaKilometreTasi(connection);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Kilometre taşları alınırken hata oluştu.", ex);
+            }
         }
 
         public int GetFiyatlandirmaKilometreTasiIdByAdi(string kilometreTasiAdi)
         {
-            return _kilometreTaslariRepository.GetFiyatlandirmaKilometreTasiIdByAdi(kilometreTasiAdi);
+            try
+            {
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _kilometreTaslariRepository.GetFiyatlandirmaKilometreTasiIdByAdi(connection, kilometreTasiAdi);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Kilometre taşları alınırken hata oluştu.", ex);
+            }
         }
 
         public string GetKilometreTasiAdi(int kilometreTasiId)
         {
-            return _kilometreTaslariRepository.GetKilometreTasiAdi(kilometreTasiId);
+            try
+            {
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _kilometreTaslariRepository.GetKilometreTasiAdi(connection, kilometreTasiId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Kilometre taş adı alınırken hata oluştu.", ex);
+            }
         }
 
         public List<string> GetKilometreTasiAdlariByIds(List<int> kilometreTasiIds)
         {
-            return _kilometreTaslariRepository.GetKilometreTasiAdlariByIds(kilometreTasiIds);
+            try
+            {
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _kilometreTaslariRepository.GetKilometreTasiAdlariByIds(connection, kilometreTasiIds);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Kilometre taşı adları alınırken hata oluştu.", ex);
+            }
         }
 
         public int GetKilometreTasiId(string kilometreTasiAdi)
         {
-            return _kilometreTaslariRepository.GetKilometreTasiId(kilometreTasiAdi);
+            try
+            {
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    int sonuc = _kilometreTaslariRepository.GetKilometreTasiId(connection, kilometreTasiAdi);
+                    return sonuc;
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Kilometre taşı id alınırken hata oluştu.", ex);
+            }
         }
     }
 }

@@ -10,8 +10,8 @@ namespace CEKA_APP.Abstracts.ProjeFinans
 {
     public interface IFiyatlandirmaKalemleriRepository
     {
-        List<(int Id, string Adi, string Birimi, DateTime Tarih)> GetFiyatlandirmaKalemleri();
-        int FiyatlandirmaKalemleriEkle(string kalemAdi, string kalemBirimi, SqlTransaction transaction);
-        FiyatlandirmaKalem GetFiyatlandirmaKalemByAdi(string kalemAdi);
+        List<(int Id, string Adi, string Birimi, DateTime Tarih)> GetFiyatlandirmaKalemleri(SqlConnection connection);
+        int FiyatlandirmaKalemleriEkle(SqlConnection connection, SqlTransaction transaction, string kalemAdi, string kalemBirimi);
+        FiyatlandirmaKalem GetFiyatlandirmaKalemByAdi(SqlConnection connection, string kalemAdi);
     }
 }

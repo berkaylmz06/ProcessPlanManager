@@ -44,7 +44,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(591, 80);
+            this.panel1.Size = new System.Drawing.Size(640, 80);
             this.panel1.TabIndex = 0;
             // 
             // label1
@@ -59,7 +59,7 @@
             // 
             // btnAra
             // 
-            this.btnAra.Location = new System.Drawing.Point(479, 94);
+            this.btnAra.Location = new System.Drawing.Point(527, 93);
             this.btnAra.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnAra.Name = "btnAra";
             this.btnAra.Size = new System.Drawing.Size(101, 38);
@@ -67,18 +67,17 @@
             this.btnAra.Text = "Ara";
             this.btnAra.UseVisualStyleBackColor = true;
             this.btnAra.Click += new System.EventHandler(this.btnAra_Click);
-            this.btnAra.KeyDown += new System.Windows.Forms.KeyEventHandler(this.btnAra_KeyDown);
             // 
             // panelFiltreler
             // 
             this.panelFiltreler.Location = new System.Drawing.Point(12, 94);
             this.panelFiltreler.Name = "panelFiltreler";
-            this.panelFiltreler.Size = new System.Drawing.Size(461, 532);
+            this.panelFiltreler.Size = new System.Drawing.Size(499, 532);
             this.panelFiltreler.TabIndex = 3;
             // 
             // btnTemizle
             // 
-            this.btnTemizle.Location = new System.Drawing.Point(479, 147);
+            this.btnTemizle.Location = new System.Drawing.Point(527, 146);
             this.btnTemizle.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.btnTemizle.Name = "btnTemizle";
             this.btnTemizle.Size = new System.Drawing.Size(101, 38);
@@ -91,12 +90,13 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(591, 638);
+            this.ClientSize = new System.Drawing.Size(640, 638);
             this.Controls.Add(this.btnTemizle);
             this.Controls.Add(this.panelFiltreler);
             this.Controls.Add(this.btnAra);
             this.Controls.Add(this.panel1);
             this.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
+            this.MaximizeBox = false;
             this.Name = "frmAra";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Ara";

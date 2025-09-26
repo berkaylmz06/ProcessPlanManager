@@ -16,5 +16,6 @@ namespace CEKA_APP.Entitys
         public string Proje { get; set; }
         public string Program { get; set; }
         public string ProgramTekrari { get; set; }
+        public string EkDurumu { get; set; }
     }
 }

@@ -10,12 +10,12 @@ namespace CEKA_APP.Abstracts.ProjeFinans
 {
     public interface IFinansProjelerRepository
     {
-        bool ProjeEkleProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi, SqlTransaction transaction);
-        bool UpdateProjeFinans(int projeId, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi, SqlTransaction transaction, out bool degisiklikVar);
-        ProjeBilgi GetProjeBilgileri(int projeId);
-        bool ProjeSil(int projeId, SqlTransaction transaction);
-        int? GetProjeIdByNo(string projeNo);
-        string GetProjeNoById(int projeId);
-        ProjeBilgi GetProjeBilgileriByNo(string projeNo);
+        bool ProjeEkleProjeFinans(SqlConnection connection, SqlTransaction transaction, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi);
+        bool UpdateProjeFinans(SqlConnection connection, SqlTransaction transaction, int projeId, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi, out bool degisiklikVar);
+        ProjeBilgi GetProjeBilgileri(SqlConnection connection, int projeId);
+        bool ProjeSil(SqlConnection connection, SqlTransaction transaction, int projeId);
+        int? GetProjeIdByNo(SqlConnection connection, string projeNo);
+        string GetProjeNoById(SqlConnection connection, int projeId);
+        ProjeBilgi GetProjeBilgileriByNo(SqlConnection connection, string projeNo);
     }
 }

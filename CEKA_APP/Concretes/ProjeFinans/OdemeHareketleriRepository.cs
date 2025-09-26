@@ -5,25 +5,19 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace CEKA_APP.Concretes.ProjeFinans
 {
     public class OdemeHareketleriRepository:IOdemeHareketleriRepository
     {
-        public bool SaveOdemeHareketi(OdemeHareketleri odemeHareketi, SqlTransaction transaction)
+        public bool SaveOdemeHareketi(SqlConnection connection, SqlTransaction transaction, OdemeHareketleri odemeHareketi)
         {
-            if (transaction == null)
-            {
-                throw new ArgumentNullException(nameof(transaction), "Transaction cannot be null.");
-            }
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
             var sql = "INSERT INTO ProjeFinans_OdemeHareketleri (odemeId, odemeMiktari, odemeTarihi, odemeAciklama) VALUES (@odemeId, @odemeMiktari, @odemeTarihi, @odemeAciklama)";
 
-            using (var command = new SqlCommand(sql, transaction.Connection, transaction))
+            using (var command = new SqlCommand(sql, connection, transaction))
             {
                 command.Parameters.Add("@odemeId", SqlDbType.Int).Value = odemeHareketi.odemeId;
                 command.Parameters.Add("@odemeMiktari", SqlDbType.Decimal).Value = odemeHareketi.odemeMiktari;
@@ -34,54 +28,49 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 return true;
             }
         }
-        public List<OdemeHareketleri> GetOdemeHareketleriByOdemeId(int odemeId)
-        {
-            var odemeHareketleriList = new List<OdemeHareketleri>();
-            using (var connection = DataBaseHelper.GetConnection())
-            {
-                connection.Open();
-                string query = "SELECT odemeHareketId, odemeId, odemeMiktari, odemeTarihi, odemeAciklama FROM ProjeFinans_OdemeHareketleri WHERE odemeId = @odemeId ORDER BY odemeTarihi DESC";
 
-                using (var cmd = new SqlCommand(query, connection))
+        public List<OdemeHareketleri> GetOdemeHareketleriByOdemeId(SqlConnection connection, int odemeId)
+        {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
+            var odemeHareketleriList = new List<OdemeHareketleri>();
+            string query = "SELECT odemeHareketId, odemeId, odemeMiktari, odemeTarihi, odemeAciklama FROM ProjeFinans_OdemeHareketleri WHERE odemeId = @odemeId ORDER BY odemeTarihi DESC";
+
+            using (var cmd = new SqlCommand(query, connection))
+            {
+                cmd.Parameters.AddWithValue("@odemeId", odemeId);
+                using (var reader = cmd.ExecuteReader())
                 {
-                    cmd.Parameters.AddWithValue("@odemeId", odemeId);
-                    using (var reader = cmd.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
+                        odemeHareketleriList.Add(new OdemeHareketleri
                         {
-                            odemeHareketleriList.Add(new OdemeHareketleri
-                            {
-                                odemeHareketId = Convert.ToInt32(reader["odemeHareketId"]),
-                                odemeId = Convert.ToInt32(reader["odemeId"]),
-                                odemeMiktari = Convert.ToDecimal(reader["odemeMiktari"]),
-                                odemeTarihi = Convert.ToDateTime(reader["odemeTarihi"]),
-                                odemeAciklama = reader["odemeAciklama"].ToString(),
-                            });
-                        }
+                            odemeHareketId = Convert.ToInt32(reader["odemeHareketId"]),
+                            odemeId = Convert.ToInt32(reader["odemeId"]),
+                            odemeMiktari = Convert.ToDecimal(reader["odemeMiktari"]),
+                            odemeTarihi = Convert.ToDateTime(reader["odemeTarihi"]),
+                            odemeAciklama = reader["odemeAciklama"].ToString(),
+                        });
                     }
                 }
             }
+
             return odemeHareketleriList;
         }
-        public void DeleteOdemeHareketleriByOdemeIds(List<int> odemeIds, SqlTransaction transaction)
+
+        public void DeleteOdemeHareketleriByOdemeIds(SqlConnection connection, SqlTransaction transaction, List<int> odemeIds)
         {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction), "Transaction cannot be null.");
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            if (odemeIds == null || odemeIds.Count == 0) return;
 
-            if (odemeIds == null || odemeIds.Count == 0)
-            {
-                return;
-            }
-
-            string createTempTableQuery = @"
-                CREATE TABLE #TempOdemeIds (odemeId INT);
-            ";
-            using (var createCmd = new SqlCommand(createTempTableQuery, transaction.Connection, transaction))
+            string createTempTableQuery = "CREATE TABLE #TempOdemeIds (odemeId INT);";
+            using (var createCmd = new SqlCommand(createTempTableQuery, connection, transaction))
             {
                 createCmd.ExecuteNonQuery();
             }
 
-            using (var bulkCopy = new SqlBulkCopy(transaction.Connection, SqlBulkCopyOptions.Default, transaction))
+            using (var bulkCopy = new SqlBulkCopy(connection, SqlBulkCopyOptions.Default, transaction))
             {
                 bulkCopy.DestinationTableName = "#TempOdemeIds";
                 bulkCopy.ColumnMappings.Add("odemeId", "odemeId");
@@ -95,17 +84,14 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 bulkCopy.WriteToServer(dt);
             }
 
-            string deleteQuery = @"
-                DELETE FROM ProjeFinans_OdemeHareketleri
-                WHERE odemeId IN (SELECT odemeId FROM #TempOdemeIds);
-            ";
-            using (var deleteCmd = new SqlCommand(deleteQuery, transaction.Connection, transaction))
+            string deleteQuery = "DELETE FROM ProjeFinans_OdemeHareketleri WHERE odemeId IN (SELECT odemeId FROM #TempOdemeIds);";
+            using (var deleteCmd = new SqlCommand(deleteQuery, connection, transaction))
             {
                 deleteCmd.ExecuteNonQuery();
             }
 
             string dropTempTableQuery = "DROP TABLE #TempOdemeIds;";
-            using (var dropCmd = new SqlCommand(dropTempTableQuery, transaction.Connection, transaction))
+            using (var dropCmd = new SqlCommand(dropTempTableQuery, connection, transaction))
             {
                 dropCmd.ExecuteNonQuery();
             }

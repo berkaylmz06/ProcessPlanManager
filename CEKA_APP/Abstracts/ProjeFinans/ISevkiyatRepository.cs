@@ -6,10 +6,10 @@ namespace CEKA_APP.Abstracts
 {
     public interface ISevkiyatRepository
     {
-        List<Sevkiyat> GetSevkiyatByProje(int projeId);
-        void SevkiyatKaydet(Sevkiyat sevkiyat, SqlTransaction transaction);
-        void SevkiyatGuncelle(Sevkiyat sevkiyat, SqlTransaction transaction);
-        bool SevkiyatSilBySevkiyatId(int projeId, string sevkiyatId, int aracSira, SqlTransaction transaction);
-        bool SevkiyatSil(int projeId, SqlTransaction transaction);
+        List<Sevkiyat> GetSevkiyatByProje(SqlConnection connection, int projeId);
+        int SevkiyatKaydet(SqlConnection connection, SqlTransaction transaction, Sevkiyat sevkiyat);
+        void SevkiyatGuncelle(SqlConnection connection, SqlTransaction transaction, Sevkiyat sevkiyat);
+        bool SevkiyatSilBySevkiyatId(SqlConnection connection, SqlTransaction transaction, int projeId, int sevkiyatId, int aracSira);
+        bool SevkiyatSil(SqlConnection connection, SqlTransaction transaction, int projeId);
     }
 }

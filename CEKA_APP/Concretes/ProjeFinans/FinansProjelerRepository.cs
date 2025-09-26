@@ -12,13 +12,14 @@ namespace CEKA_APP.Concretes.ProjeFinans
 {
     public class FinansProjelerRepository: IFinansProjelerRepository
     {
-        public bool ProjeEkleProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi, SqlTransaction transaction)
+        public bool ProjeEkleProjeFinans(SqlConnection connection, SqlTransaction transaction, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi)
         {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
             using (SqlCommand komut = new SqlCommand(@"
         INSERT INTO ProjeFinans_Projeler (projeNo, aciklama, projeAdi, olusturmaTarihi)
-        VALUES (@projeNo, @aciklama, @projeAdi, @olusturmaTarihi)", transaction.Connection, transaction))
+        VALUES (@projeNo, @aciklama, @projeAdi, @olusturmaTarihi)", connection, transaction))
             {
                 komut.Parameters.AddWithValue("@projeNo", projeNo);
                 komut.Parameters.AddWithValue("@aciklama", string.IsNullOrEmpty(aciklama) ? (object)DBNull.Value : aciklama);
@@ -30,12 +31,12 @@ namespace CEKA_APP.Concretes.ProjeFinans
             }
         }
 
-
-        public bool UpdateProjeFinans(int projeId, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi, SqlTransaction transaction, out bool degisiklikVar)
+        public bool UpdateProjeFinans(SqlConnection connection, SqlTransaction transaction, int projeId, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi, out bool degisiklikVar)
         {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
-            ProjeBilgi mevcutBilgi = GetProjeBilgileri(projeId);
+            ProjeBilgi mevcutBilgi = GetProjeBilgileri(connection, projeId);
             if (mevcutBilgi == null)
             {
                 degisiklikVar = false;
@@ -61,107 +62,113 @@ namespace CEKA_APP.Concretes.ProjeFinans
             olusturmaTarihi = @olusturmaTarihi
         WHERE projeId = @projeId";
 
-            using (SqlCommand command = new SqlCommand(sorgu, transaction.Connection, transaction))
+            using (SqlCommand command = new SqlCommand(sorgu, connection, transaction))
             {
                 command.Parameters.AddWithValue("@projeId", projeId);
                 command.Parameters.AddWithValue("@projeNo", projeNo);
                 command.Parameters.AddWithValue("@aciklama", string.IsNullOrEmpty(aciklama) ? (object)DBNull.Value : aciklama);
                 command.Parameters.AddWithValue("@projeAdi", string.IsNullOrEmpty(projeAdi) ? (object)DBNull.Value : projeAdi);
                 command.Parameters.AddWithValue("@olusturmaTarihi", olusturmaTarihi);
+
                 command.ExecuteNonQuery();
                 return true;
             }
         }
 
-        public ProjeBilgi GetProjeBilgileri(int projeId)
+        public ProjeBilgi GetProjeBilgileri(SqlConnection connection, int projeId)
         {
-            using (var connection = DataBaseHelper.GetConnection())
-            {
-                connection.Open();
-                string sql = @"
-                SELECT projeNo, projeAdi, aciklama, olusturmaTarihi
-                FROM ProjeFinans_Projeler
-                WHERE projeId = @projeId";
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
 
-                using (SqlCommand command = new SqlCommand(sql, connection))
+            string sql = @"
+        SELECT projeNo, projeAdi, aciklama, olusturmaTarihi
+        FROM ProjeFinans_Projeler
+        WHERE projeId = @projeId";
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@projeId", projeId);
+                using (var reader = command.ExecuteReader())
                 {
-                    command.Parameters.AddWithValue("@projeId", projeId);
-                    Console.WriteLine($"SQL Sorgusu için projeId: '{projeId}'");
-                    using (var reader = command.ExecuteReader())
+                    if (reader.Read())
                     {
-                        if (reader.Read())
+                        return new ProjeBilgi
                         {
-                            Console.WriteLine("Kayıt bulundu.");
-                            return new ProjeBilgi
-                            {
-                                ProjeNo = reader.IsDBNull(0) ? null : reader.GetString(0),
-                                ProjeAdi = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                Aciklama = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                OlusturmaTarihi = reader.IsDBNull(3) ? DateTime.Now : reader.GetDateTime(3)
-                            };
-                        }
-                        else
-                        {
-                            Console.WriteLine("Kayıt bulunamadı.");
-                        }
+                            ProjeNo = reader.IsDBNull(0) ? null : reader.GetString(0),
+                            ProjeAdi = reader.IsDBNull(1) ? null : reader.GetString(1),
+                            Aciklama = reader.IsDBNull(2) ? null : reader.GetString(2),
+                            OlusturmaTarihi = reader.IsDBNull(3) ? DateTime.Now : reader.GetDateTime(3)
+                        };
                     }
                 }
-                return null;
             }
+            return null;
         }
-        public bool ProjeSil(int projeId, SqlTransaction transaction)
+
+        public bool ProjeSil(SqlConnection connection, SqlTransaction transaction, int projeId)
         {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
             string sql = "DELETE FROM ProjeFinans_Projeler WHERE projeId = @projeId";
-            using (SqlCommand command = new SqlCommand(sql, transaction.Connection, transaction))
+
+            using (SqlCommand command = new SqlCommand(sql, connection, transaction))
             {
                 command.Parameters.AddWithValue("@projeId", projeId);
                 command.ExecuteNonQuery();
             }
+
             return true;
         }
 
-        public int? GetProjeIdByNo(string projeNo)
+        public int? GetProjeIdByNo(SqlConnection connection, string projeNo)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
+            string query = "SELECT projeId FROM ProjeFinans_Projeler WHERE projeNo = @projeNo";
+
+            using (var cmd = new SqlCommand(query, connection))
             {
-                connection.Open();
-                string query = "SELECT projeId FROM ProjeFinans_Projeler WHERE projeNo = @projeNo";
-                using (var cmd = new SqlCommand(query, connection))
+                cmd.Parameters.AddWithValue("@projeNo", projeNo);
+                var result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
                 {
-                    cmd.Parameters.AddWithValue("@projeNo", projeNo);
-                    var result = cmd.ExecuteScalar();
-                    if (result != null)
-                    {
-                        return Convert.ToInt32(result);
-                    }
+                    return Convert.ToInt32(result);
                 }
             }
+
             return null;
         }
-        public string GetProjeNoById(int projeId)
+
+        public string GetProjeNoById(SqlConnection connection, int projeId)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
+            string query = "SELECT projeNo FROM ProjeFinans_Projeler WHERE projeId = @projeId";
+
+            using (var cmd = new SqlCommand(query, connection))
             {
-                connection.Open();
-                string query = "SELECT projeNo FROM ProjeFinans_Projeler WHERE projeId = @projeId";
-                using (var cmd = new SqlCommand(query, connection))
+                cmd.Parameters.AddWithValue("@projeId", projeId);
+                var result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
                 {
-                    cmd.Parameters.AddWithValue("@projeId", projeId);
-                    var result = cmd.ExecuteScalar();
-                    if (result != null)
-                    {
-                        return result.ToString();
-                    }
+                    return result.ToString();
                 }
             }
+
             return null;
         }
-        public ProjeBilgi GetProjeBilgileriByNo(string projeNo)
+
+        public ProjeBilgi GetProjeBilgileriByNo(SqlConnection connection, string projeNo)
         {
-            int? projeId = GetProjeIdByNo(projeNo);
-            return projeId.HasValue ? GetProjeBilgileri(projeId.Value) : null;
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
+            int? projeId = GetProjeIdByNo(connection, projeNo);
+            if (projeId.HasValue)
+            {
+                return GetProjeBilgileri(connection, projeId.Value);
+            }
+
+            return null;
         }
     }
 }

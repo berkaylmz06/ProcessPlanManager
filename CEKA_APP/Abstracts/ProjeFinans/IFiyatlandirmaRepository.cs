@@ -10,11 +10,11 @@ namespace CEKA_APP.Abstracts.ProjeFinans
 {
     public interface IFiyatlandirmaRepository
     {
-        List<Fiyatlandirma> GetFiyatlandirmaByProje(int projeId);
-        bool FiyatlandirmaKaydet(Fiyatlandirma fiyat, SqlTransaction transaction);
-        bool FiyatlandirmaGuncelle(Fiyatlandirma fiyat, SqlTransaction transaction);
-        bool FiyatlandirmaSil(int projeId, SqlTransaction transaction);
-        bool FiyatlandirmaSilById(int projeId, int fiyatlandirmaKalemId, SqlTransaction transaction);
-        (decimal toplamBedel, List<int> eksikFiyatlandirmaProjeler) GetToplamBedel(int projeId, List<int> altProjeler = null);
+        List<Fiyatlandirma> GetFiyatlandirmaByProje(SqlConnection connection, int projeId);
+        bool FiyatlandirmaKaydet(SqlConnection connection, SqlTransaction transaction, Fiyatlandirma fiyat);
+        bool FiyatlandirmaGuncelle(SqlConnection connection, SqlTransaction transaction, Fiyatlandirma fiyat);
+        bool FiyatlandirmaSil(SqlConnection connection, SqlTransaction transaction, int projeId);
+        bool FiyatlandirmaSilById(SqlConnection connection, SqlTransaction transaction, int projeId, int fiyatlandirmaKalemId);
+        (decimal toplamBedel, List<int> eksikFiyatlandirmaProjeler) GetToplamBedel(SqlConnection connection, int projeId, List<int> altProjeler = null);
     }
 }

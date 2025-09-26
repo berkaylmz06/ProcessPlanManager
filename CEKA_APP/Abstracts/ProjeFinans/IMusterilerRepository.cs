@@ -1,23 +1,20 @@
 ﻿using CEKA_APP.Entitys.ProjeFinans;
-using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CEKA_APP.Abstracts.ProjeFinans
 {
     public interface IMusterilerRepository
     {
-        void MusteriKaydet(Musteriler musteri, SqlTransaction transaction);
-        bool MusteriNoVarMi(string musteriNo, SqlTransaction transaction);
-        Musteriler GetMusteriByMusteriNo(string musteriNo);
-        List<Musteriler> GetMusteriler();
-        void TumMusterileriSil(SqlTransaction transaction);
-        DataTable FiltreleMusteriBilgileri(Dictionary<string, TextBox> filtreKutulari, DataGridView dataGrid);
-        string NormalizeColumnName(string columnName);
+        void MusteriKaydet(SqlConnection connection, SqlTransaction transaction, Musteriler musteri);
+        bool MusteriNoVarMi(SqlConnection connection, string musteriNo);
+        Musteriler GetMusteriByMusteriNo(SqlConnection connection, string musteriNo);
+        List<Musteriler> GetMusteriler(SqlConnection connection);
+        void TumMusterileriSil(SqlConnection connection, SqlTransaction transaction);
+        string GetMusterilerQuery();
+        List<Musteriler> GetMusterilerAraFormu(SqlConnection connection);
+        string GetMusterilerAraFormuQuery();
     }
 }

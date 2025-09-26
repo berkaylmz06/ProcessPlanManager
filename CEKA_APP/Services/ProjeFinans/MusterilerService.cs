@@ -1,14 +1,10 @@
 ﻿using CEKA_APP.Abstracts.ProjeFinans;
-using CEKA_APP.Concretes.ProjeFinans;
-using CEKA_APP.DataBase;
 using CEKA_APP.Entitys.ProjeFinans;
+using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.ProjeFinans;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CEKA_APP.Services.ProjeFinans
@@ -16,34 +12,27 @@ namespace CEKA_APP.Services.ProjeFinans
     public class MusterilerService : IMusterilerService
     {
         private readonly IMusterilerRepository _musterilerRepository;
+        private readonly IDataBaseService _dataBaseService;
 
-        public MusterilerService(IMusterilerRepository musterilerRepository)
+        public MusterilerService(IMusterilerRepository musterilerRepository, IDataBaseService dataBaseService)
         {
             _musterilerRepository = musterilerRepository ?? throw new ArgumentNullException(nameof(musterilerRepository));
-        }
-        public DataTable FiltreleMusteriBilgileri(Dictionary<string, TextBox> filtreKutulari, DataGridView dataGrid)
-        {
-            try
-            {
-                return _musterilerRepository.FiltreleMusteriBilgileri(filtreKutulari,dataGrid);
-
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Müşteriler alınırken hata oluştu.", ex); throw;
-            }
+            _dataBaseService = dataBaseService ?? throw new ArgumentNullException(nameof(dataBaseService));
         }
 
         public Musteriler GetMusteriByMusteriNo(string musteriNo)
         {
             try
             {
-                return _musterilerRepository.GetMusteriByMusteriNo(musteriNo);
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _musterilerRepository.GetMusteriByMusteriNo(connection, musteriNo);
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Müşteriler alınırken hata oluştu.", ex); throw;
+                throw new ApplicationException("Müşteriler alınırken hata oluştu.", ex);
             }
         }
 
@@ -51,31 +40,60 @@ namespace CEKA_APP.Services.ProjeFinans
         {
             try
             {
-                return _musterilerRepository.GetMusteriler();
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _musterilerRepository.GetMusteriler(connection);
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Müşteriler alınırken hata oluştu.", ex); throw;
+                throw new ApplicationException("Müşteriler alınırken hata oluştu.", ex);
             }
+        }
+
+        public List<Musteriler> GetMusterilerAraFormu()
+        {
+            try
+            {
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _musterilerRepository.GetMusterilerAraFormu(connection);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Müşteriler alınırken hata oluştu.", ex);
+            }
+        }
+
+        public string GetMusterilerAraFormuQuery()
+        {
+            return _musterilerRepository.GetMusterilerAraFormuQuery();
+        }
+
+        public string GetMusterilerQuery()
+        {
+            return _musterilerRepository.GetMusterilerQuery();
         }
 
         public void MusteriKaydet(Musteriler musteri)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        _musterilerRepository.MusteriKaydet(musteri, transaction);
+                        _musterilerRepository.MusteriKaydet(connection, transaction, musteri);
                         transaction.Commit();
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Müşteri kaydı yapılırken hata oluştu.", ex);
                     }
                 }
             }
@@ -83,55 +101,37 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public bool MusteriNoVarMi(string musteriNo)
         {
-            using (var connection = DataBaseHelper.GetConnection())
-            {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
-                {
-                    try
-                    {
-                        bool sonuc = _musterilerRepository.MusteriNoVarMi(musteriNo, transaction);
-                        transaction.Commit();
-                        return sonuc;
-                    }
-                    catch
-                    {
-                        transaction.Rollback();
-                        throw;
-                    }
-                }
-            }
-        }
-
-        public string NormalizeColumnName(string columnName)
-        {
             try
             {
-                return NormalizeColumnName(columnName);
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    bool sonuc = _musterilerRepository.MusteriNoVarMi(connection, musteriNo);
+                    return sonuc;
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Müşteriler alınırken hata oluştu.", ex); throw;
+                throw new ApplicationException("Müşteri no alınırken hata oluştu.", ex);
             }
         }
 
         public void TumMusterileriSil()
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        _musterilerRepository.TumMusterileriSil(transaction);
+                        _musterilerRepository.TumMusterileriSil(connection, transaction);
                         transaction.Commit();
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Müşteri silinirken hata oluştu.", ex);
                     }
                 }
             }

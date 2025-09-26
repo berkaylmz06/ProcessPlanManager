@@ -3,44 +3,47 @@ using CEKA_APP.DataBase;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CEKA_APP.Concretes.ProjeFinans
 {
     public class SevkiyatPaketleriRepository: ISevkiyatPaketleriRepository
     {
-        public List<(int Id, string Adi, DateTime Tarih)> GetPaketler()
+        public List<(int Id, string Adi, DateTime Tarih)> GetPaketler(SqlConnection connection)
         {
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+
             var paketler = new List<(int Id, string Adi, DateTime Tarih)>();
-            using (var connection = DataBaseHelper.GetConnection())
+
+            const string query = @"
+        SELECT paketId, paketAdi, olusturmaTarihi 
+        FROM ProjeFinans_SevkiyatPaketleri";
+
+            using (var cmd = new SqlCommand(query, connection))
+            using (var reader = cmd.ExecuteReader())
             {
-                connection.Open();
-                string query = "SELECT paketId, paketAdi, olusturmaTarihi FROM ProjeFinans_SevkiyatPaketleri";
-                using (var cmd = new SqlCommand(query, connection))
-                using (var reader = cmd.ExecuteReader())
+                while (reader.Read())
                 {
-                    while (reader.Read())
-                    {
-                        paketler.Add((reader.GetInt32(0), reader.GetString(1), reader.GetDateTime(2)));
-                    }
+                    paketler.Add((reader.GetInt32(0), reader.GetString(1), reader.GetDateTime(2)));
                 }
-                connection.Close();
             }
+
             return paketler;
         }
 
-        public int PaketEkle(string paketAdi, SqlTransaction transaction)
+        public int PaketEkle(SqlConnection connection, SqlTransaction transaction, string paketAdi)
         {
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
             if (transaction == null)
                 throw new ArgumentNullException(nameof(transaction));
 
-            string query = "INSERT INTO ProjeFinans_SevkiyatPaketleri (paketAdi, olusturmaTarihi) " +
-                           "VALUES (@paketAdi, @olusturmaTarihi); " +
-                           "SELECT SCOPE_IDENTITY();";
+            string query = @"
+        INSERT INTO ProjeFinans_SevkiyatPaketleri (paketAdi, olusturmaTarihi) 
+        VALUES (@paketAdi, @olusturmaTarihi); 
+        SELECT SCOPE_IDENTITY();";
 
-            using (var cmd = new SqlCommand(query, transaction.Connection, transaction))
+            using (var cmd = new SqlCommand(query, connection, transaction))
             {
                 cmd.Parameters.AddWithValue("@paketAdi", paketAdi);
                 cmd.Parameters.AddWithValue("@olusturmaTarihi", DateTime.Now);
@@ -48,24 +51,24 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 return Convert.ToInt32(cmd.ExecuteScalar());
             }
         }
-
-        public int GetPaketIdByAdi(string paketAdi)
+        public int GetPaketIdByAdi(SqlConnection connection, string paketAdi)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+
+            string query = "SELECT paketId FROM ProjeFinans_SevkiyatPaketleri WHERE paketAdi = @paketAdi";
+            using (var cmd = new SqlCommand(query, connection))
             {
-                connection.Open();
-                string query = "SELECT paketId FROM ProjeFinans_SevkiyatPaketleri WHERE paketAdi = @paketAdi";
-                using (var cmd = new SqlCommand(query, connection))
+                cmd.Parameters.AddWithValue("@paketAdi", paketAdi);
+                object result = cmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
                 {
-                    cmd.Parameters.AddWithValue("@paketAdi", paketAdi);
-                    object result = cmd.ExecuteScalar();
-                    if (result != null && result != DBNull.Value)
-                    {
-                        return Convert.ToInt32(result);
-                    }
+                    return Convert.ToInt32(result);
                 }
             }
+
             return 0;
         }
+
     }
 }

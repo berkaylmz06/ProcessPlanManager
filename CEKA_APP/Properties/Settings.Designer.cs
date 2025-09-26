@@ -70,5 +70,50 @@ namespace CEKA_APP.Properties {
                 this["KlasorYolu"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string OdemeSartlariGridSettings {
+            get {
+                return ((string)(this["OdemeSartlariGridSettings"]));
+            }
+            set {
+                this["OdemeSartlariGridSettings"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection SutunSirasiOdemeSartlari {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["SutunSirasiOdemeSartlari"]));
+            }
+            set {
+                this["SutunSirasiOdemeSartlari"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection SutunSirasiMusteriler {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["SutunSirasiMusteriler"]));
+            }
+            set {
+                this["SutunSirasiMusteriler"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection SutunSirasiTeminatMektuplari {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["SutunSirasiTeminatMektuplari"]));
+            }
+            set {
+                this["SutunSirasiTeminatMektuplari"] = value;
+            }
+        }
     }
 }

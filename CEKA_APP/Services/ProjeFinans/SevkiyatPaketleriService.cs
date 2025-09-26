@@ -1,33 +1,35 @@
 ﻿using CEKA_APP.Abstracts.ProjeFinans;
-using CEKA_APP.Concretes.ProjeFinans;
-using CEKA_APP.DataBase;
+using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.ProjeFinans;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CEKA_APP.Services.ProjeFinans
 {
     public class SevkiyatPaketleriService : ISevkiyatPaketleriService
     {
         private readonly ISevkiyatPaketleriRepository _sevkiyatPaketleriRepository;
+        private readonly IDataBaseService _dataBaseService;
 
-        public SevkiyatPaketleriService(ISevkiyatPaketleriRepository sevkiyatPaketleriRepository)
+        public SevkiyatPaketleriService(ISevkiyatPaketleriRepository sevkiyatPaketleriRepository, IDataBaseService dataBaseService)
         {
             _sevkiyatPaketleriRepository = sevkiyatPaketleriRepository ?? throw new ArgumentNullException(nameof(sevkiyatPaketleriRepository));
+            _dataBaseService = dataBaseService ?? throw new ArgumentNullException(nameof(dataBaseService));
         }
         public int GetPaketIdByAdi(string paketAdi)
         {
             try
             {
-                return _sevkiyatPaketleriRepository.GetPaketIdByAdi(paketAdi);
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    int sonuc = _sevkiyatPaketleriRepository.GetPaketIdByAdi(connection, paketAdi);
+                    return sonuc;
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Servis Paketleri alınırken hata oluştu.", ex); throw;
+                throw new ApplicationException("Paketler id alınırken hata oluştu.", ex);
             }
         }
 
@@ -35,32 +37,35 @@ namespace CEKA_APP.Services.ProjeFinans
         {
             try
             {
-                return _sevkiyatPaketleriRepository.GetPaketler();
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _sevkiyatPaketleriRepository.GetPaketler(connection);
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Servis Paketleri alınırken hata oluştu.", ex); throw;
+                throw new ApplicationException("Paketler alınırken hata oluştu.", ex);
             }
         }
 
         public int PaketEkle(string paketAdi)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        int sonuc = _sevkiyatPaketleriRepository.PaketEkle(paketAdi, transaction);
+                        int sonuc = _sevkiyatPaketleriRepository.PaketEkle(connection, transaction, paketAdi);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Paket eklenirken hata oluştu.", ex);
                     }
                 }
             }

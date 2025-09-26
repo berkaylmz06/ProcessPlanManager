@@ -1,4 +1,8 @@
-﻿using System;
+﻿using CEKA_APP.DataBase;
+using CEKA_APP.Interfaces.Sistem;
+using CEKA_APP.Services.Sistem;
+using CEKA_APP.UsrControl;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,18 +12,21 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using CEKA_APP.DataBase;
-using CEKA_APP.UsrControl;
 
 namespace CEKA_APP
 {
     public partial class frmKullaniciEkle : Form
     {
         private ctlKullaniciAyarlari kullaniciAyar;
-        public frmKullaniciEkle(ctlKullaniciAyarlari kullaniciAyarKontrol)
+        private readonly IKullanicilarService _kullaniciService;
+
+
+        public frmKullaniciEkle(ctlKullaniciAyarlari kullaniciAyarKontrol, IKullanicilarService kullanicilarService)
         {
             InitializeComponent();
             kullaniciAyar = kullaniciAyarKontrol;
+            _kullaniciService = kullanicilarService ?? throw new ArgumentNullException(nameof(kullanicilarService));
+
 
             this.Icon = Properties.Resources.cekalogokirmizi;
         }
@@ -49,13 +56,13 @@ namespace CEKA_APP
                 email = txtMail.Text.Trim()
             };
 
-            if (KullanicilarData.KullaniciAdiVarMi(yeniKullanici.kullaniciAdi))
+            if (_kullaniciService.KullaniciAdiVarMi(yeniKullanici.kullaniciAdi))
             {
                 MessageBox.Show("Bu kullanıcı adı zaten mevcut.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            KullanicilarData.KullaniciEkle(yeniKullanici);
+            _kullaniciService.KullaniciEkle(yeniKullanici);
             MessageBox.Show("Kullanıcı başarıyla eklendi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
             this.Close();
 

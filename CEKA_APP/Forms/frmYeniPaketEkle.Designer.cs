@@ -115,7 +115,6 @@
             this.Controls.Add(this.btnEkle);
             this.Controls.Add(this.listPaketler);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmYeniPaketEkle";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

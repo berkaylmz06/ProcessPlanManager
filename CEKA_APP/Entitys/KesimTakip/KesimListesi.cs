@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CEKA_APP.Entitys
 {
-    class KesimListesi
+    public class KesimListesi
     {
         public int id { get; set; }
         public string olusturan { get; set; }

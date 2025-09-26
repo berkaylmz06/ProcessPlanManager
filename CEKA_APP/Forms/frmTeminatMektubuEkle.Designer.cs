@@ -175,7 +175,6 @@
             // 
             // dtIadeTarihi
             // 
-            this.dtIadeTarihi.Enabled = false;
             this.dtIadeTarihi.Location = new System.Drawing.Point(191, 652);
             this.dtIadeTarihi.Name = "dtIadeTarihi";
             this.dtIadeTarihi.Size = new System.Drawing.Size(279, 22);
@@ -295,7 +294,6 @@
             this.cmbKomisyonVadesi.Name = "cmbKomisyonVadesi";
             this.cmbKomisyonVadesi.Size = new System.Drawing.Size(279, 24);
             this.cmbKomisyonVadesi.TabIndex = 11;
-            this.cmbKomisyonVadesi.SelectedIndexChanged += new System.EventHandler(this.cmbKomisyonVadesi_SelectedIndexChanged);
             // 
             // cmbBankalar
             // 
@@ -343,6 +341,7 @@
             this.Controls.Add(this.txtMusteriNo);
             this.Controls.Add(this.lblMektupNo);
             this.Controls.Add(this.txtMektupNo);
+            this.MaximizeBox = false;
             this.Name = "frmTeminatMektubuEkle";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Teminat Mektubu Ekle";

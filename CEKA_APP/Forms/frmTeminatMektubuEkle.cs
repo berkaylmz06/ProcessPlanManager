@@ -514,26 +514,12 @@ namespace CEKA_APP.Forms
         {
             UpdateIadeTarihi();
         }
-        private void cmbKomisyonVadesi_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdateIadeTarihi();
-        }
+
         private void UpdateIadeTarihi()
         {
-            if (cmbKomisyonVadesi.SelectedItem == null)
-            {
-                return;
-            }
+            DateTime secilenTarih = dtVadeTarihi.Value;
 
-            string selectedValue = cmbKomisyonVadesi.SelectedItem.ToString();
-            if (int.TryParse(selectedValue.Split(' ')[0], out int aySayisi))
-            {
-                DateTime vadeTarihi = dtVadeTarihi.Value;
-
-                DateTime iadeTarihi = vadeTarihi.AddMonths(aySayisi);
-
-                dtIadeTarihi.Value = iadeTarihi;
-            }
+            dtIadeTarihi.Value = secilenTarih;
         }
 
         private void txtMusteriNo_Leave(object sender, EventArgs e)

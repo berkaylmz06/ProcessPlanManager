@@ -1,6 +1,7 @@
 ﻿using CEKA_APP.Abstracts;
 using CEKA_APP.Entitys.ProjeFinans;
 using CEKA_APP.Interfaces;
+using CEKA_APP.Interfaces.Genel;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
@@ -10,36 +11,47 @@ namespace CEKA_APP.DataBase.ProjeFinans
     public class SevkiyatService : ISevkiyatService
     {
         private readonly ISevkiyatRepository _sevkiyatRepository;
+        private readonly IDataBaseService _dataBaseService;
 
-        public SevkiyatService(ISevkiyatRepository sevkiyatRepository)
+        public SevkiyatService(ISevkiyatRepository sevkiyatRepository, IDataBaseService dataBaseService)
         {
             _sevkiyatRepository = sevkiyatRepository ?? throw new ArgumentNullException(nameof(sevkiyatRepository));
+            _dataBaseService = dataBaseService ?? throw new ArgumentNullException(nameof(dataBaseService));
         }
 
         public List<Sevkiyat> GetSevkiyatByProje(int projeId)
         {
-            if (projeId <= 0)
-                throw new ArgumentException("Proje ID geçerli olmalıdır.", nameof(projeId));
-
-            return _sevkiyatRepository.GetSevkiyatByProje(projeId);
+            try
+            {
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _sevkiyatRepository.GetSevkiyatByProje(connection, projeId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Sevkiyatlar alınırken hata oluştu.", ex);
+            }
         }
 
-        public void SevkiyatKaydet(Sevkiyat sevkiyat)
+        public int SevkiyatKaydet(Sevkiyat sevkiyat)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        _sevkiyatRepository.SevkiyatKaydet(sevkiyat, transaction);
+                        int  sonuc = _sevkiyatRepository.SevkiyatKaydet(connection, transaction, sevkiyat);
                         transaction.Commit();
+                        return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Sevkiyat kaydedilirken hata oluştu.", ex);
                     }
                 }
             }
@@ -47,46 +59,42 @@ namespace CEKA_APP.DataBase.ProjeFinans
 
         public void SevkiyatGuncelle(Sevkiyat sevkiyat)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        _sevkiyatRepository.SevkiyatGuncelle(sevkiyat, transaction);
+                        _sevkiyatRepository.SevkiyatGuncelle(connection, transaction, sevkiyat);
                         transaction.Commit();
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Sevkiyat güncellenirken hata oluştu.", ex);
                     }
                 }
             }
         }
 
-        public bool SevkiyatSilBySevkiyatId(int projeId, string sevkiyatId, int aracSira)
+        public bool SevkiyatSilBySevkiyatId(int projeId, int sevkiyatId, int aracSira)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool result = _sevkiyatRepository.SevkiyatSilBySevkiyatId(projeId, sevkiyatId, aracSira, transaction);
-                        if (result)
-                            transaction.Commit();
-                        else
-                            transaction.Rollback();
-
-                        return result;
+                        bool sonuc = _sevkiyatRepository.SevkiyatSilBySevkiyatId(connection, transaction, projeId, sevkiyatId, aracSira);
+                        transaction.Commit();
+                        return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Sevkiyat silinirken hata oluştu.", ex);
                     }
                 }
             }
@@ -94,28 +102,21 @@ namespace CEKA_APP.DataBase.ProjeFinans
 
         public bool SevkiyatSil(int projeId)
         {
-            if (projeId <= 0)
-                throw new ArgumentException("Proje ID geçerli olmalıdır.", nameof(projeId));
-
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool result = _sevkiyatRepository.SevkiyatSil(projeId, transaction);
-                        if (result)
-                            transaction.Commit();
-                        else
-                            transaction.Rollback();
-
-                        return result;
+                        bool sonuc = _sevkiyatRepository.SevkiyatSil(connection, transaction, projeId);
+                        transaction.Commit();
+                        return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Sevkiyat silinirken hata oluştu.", ex);
                     }
                 }
             }

@@ -1,24 +1,21 @@
 ﻿using CEKA_APP.DataBase;
 using CEKA_APP.Entitys;
 using CEKA_APP.Helper;
+using CEKA_APP.Interfaces.ERP;
 using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Data.SqlClient;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace CEKA_APP
 {
     public partial class frmStandartProjeler : Form
     {
-        public frmStandartProjeler()
+        private readonly IAutoCadAktarimService _autoCadAktarimService;
+        public frmStandartProjeler(IAutoCadAktarimService autoCadAktarimService)
         {
             InitializeComponent();
+
+            _autoCadAktarimService = autoCadAktarimService ?? throw new ArgumentNullException(nameof(autoCadAktarimService));
+
             ListBoxHelper.StilUygula(listGruplar);
             this.Icon = Properties.Resources.cekalogokirmizi;
         }
@@ -36,7 +33,7 @@ namespace CEKA_APP
 
             try
             {
-                AutoCadAktarimData.ProjeEkle(projeNo, aciklama, olusturmaTarihi);
+                _autoCadAktarimService.ProjeEkle(projeNo, aciklama, olusturmaTarihi);
 
                 MessageBox.Show(
                     $"Proje '{projeNo}' başarıyla oluşturuldu.",
@@ -69,7 +66,7 @@ namespace CEKA_APP
 
             try
             {
-                AutoCadAktarimData.StandartGrupEkle(grupNo);
+                _autoCadAktarimService.StandartGrupEkle(grupNo);
                 MessageBox.Show("Grup başarıyla eklendi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 txtGrupNo.Clear();
 
@@ -89,7 +86,7 @@ namespace CEKA_APP
         private void ListeleGruplar()
         {
             listGruplar.Items.Clear();
-            var gruplar = AutoCadAktarimData.GetirStandartGruplarListe();
+            var gruplar = _autoCadAktarimService.GetirStandartGruplarListe();
             listGruplar.Items.AddRange(gruplar.ToArray());
         }
 
@@ -113,7 +110,7 @@ namespace CEKA_APP
             {
                 try
                 {
-                    AutoCadAktarimData.StandartGrupSil(secilenGrupNo);
+                    _autoCadAktarimService.StandartGrupSil(secilenGrupNo);
                     MessageBox.Show("Grup başarıyla silindi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
 
                     ListeleGruplar();
@@ -124,7 +121,6 @@ namespace CEKA_APP
                 }
             }
         }
-
         private void btnProjeBagla_Click(object sender, EventArgs e)
         {
             if (listGruplar.SelectedItem == null || string.IsNullOrWhiteSpace(txtProjeBagla.Text))
@@ -138,33 +134,14 @@ namespace CEKA_APP
                 string secilenGrup = listGruplar.SelectedItem.ToString();
                 string projeAdi = txtProjeBagla.Text.Trim();
 
-                using (var conn = DataBaseHelper.GetConnection())
-                {
-                    conn.Open();
-                    string checkProjeQuery = "SELECT COUNT(*) FROM Projeler WHERE projeAdi = @projeAdi";
-                    using (var checkCmd = new SqlCommand(checkProjeQuery, conn))
-                    {
-                        checkCmd.Parameters.AddWithValue("@projeAdi", projeAdi);
-                        int projeCount = (int)checkCmd.ExecuteScalar();
-                        if (projeCount == 0)
-                        {
-                            MessageBox.Show("Girilen proje numarası mevcut değil.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                            return;
-                        }
-                    }
-                }
-
-                Guid yeniYuklemeId = Guid.NewGuid();
-
-                AutoCadAktarimData.UstGrupEkleGuncelle(projeAdi, secilenGrup, yeniYuklemeId, 1, null);
+                _autoCadAktarimService.BaglaProjeVeGrup(projeAdi, secilenGrup);
 
                 MessageBox.Show($"Grup '{secilenGrup}' başarıyla '{projeAdi}' projesine bağlandı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
-
                 txtProjeBagla.Clear();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Hata oluştu: {ex.Message}\nDetay: {ex.StackTrace}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

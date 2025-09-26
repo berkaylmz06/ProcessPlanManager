@@ -2,40 +2,40 @@
 using CEKA_APP.DataBase;
 using CEKA_APP.Entitys;
 using CEKA_APP.Entitys.ProjeFinans;
+using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.ProjeFinans;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CEKA_APP.Services.ProjeFinans
 {
     public class ProjeKutukService : IProjeKutukService
     {
         private readonly IProjeKutukRepository _projeKutukRepository;
+        private readonly IDataBaseService _dataBaseService;
 
-        public ProjeKutukService(IProjeKutukRepository projeKutukRepository)
+        public ProjeKutukService(IProjeKutukRepository projeKutukRepository, IDataBaseService dataBaseService)
         {
             _projeKutukRepository = projeKutukRepository ?? throw new ArgumentNullException(nameof(projeKutukRepository));
+            _dataBaseService = dataBaseService ?? throw new ArgumentNullException(nameof(dataBaseService));
         }
         public bool AltProjeEkle(int ustProjeId, int altProjeId)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _projeKutukRepository.AltProjeEkle(ustProjeId, altProjeId, transaction);
+                        bool sonuc = _projeKutukRepository.AltProjeEkle(connection, transaction, ustProjeId, altProjeId);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Alt proje eklenirken hata oluştu.", ex);
                     }
                 }
             }
@@ -45,12 +45,16 @@ namespace CEKA_APP.Services.ProjeFinans
         {
             try
             {
-                return _projeKutukRepository.GetProjeBilgileri(projeNo);
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    ProjeBilgi sonuc = _projeKutukRepository.GetProjeBilgileri(connection, projeNo);
+                    return sonuc;
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Proje NO alınırken hata oluştu.", ex);
+                throw new ApplicationException("Proje bilgileri alınırken hata oluştu.", ex);
             }
         }
 
@@ -58,12 +62,15 @@ namespace CEKA_APP.Services.ProjeFinans
         {
             try
             {
-                return _projeKutukRepository.GetProjeKutukStatus(projeId);
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _projeKutukRepository.GetProjeKutukStatus(connection, projeId);
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Proje ID alınırken hata oluştu.", ex);
+                throw new ApplicationException("Proje kütük bilgileri alınırken hata oluştu.", ex);
             }
         }
 
@@ -71,12 +78,15 @@ namespace CEKA_APP.Services.ProjeFinans
         {
             try
             {
-                return _projeKutukRepository.GetProjeParaBirimi(projeId);
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _projeKutukRepository.GetProjeParaBirimi(connection, projeId);
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Proje ID alınırken hata oluştu.", ex);
+                throw new ApplicationException("Proje para birimi alınırken hata oluştu.", ex);
             }
         }
 
@@ -84,32 +94,35 @@ namespace CEKA_APP.Services.ProjeFinans
         {
             try
             {
-                return _projeKutukRepository.IsFaturalamaSekliTekil(projeId);
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _projeKutukRepository.IsFaturalamaSekliTekil(connection, projeId);
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Proje ID alınırken hata oluştu.", ex);
+                throw new ApplicationException("Faturalama şekli alınırken hata oluştu.", ex);
             }
         }
 
         public bool ProjeEkleProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _projeKutukRepository.ProjeEkleProjeFinans(projeNo, aciklama, projeAdi, olusturmaTarihi, transaction);
+                        bool sonuc = _projeKutukRepository.ProjeEkleProjeFinans(connection, transaction, projeNo, aciklama, projeAdi, olusturmaTarihi);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Proje eklenirken hata oluştu.", ex);
                     }
                 }
             }
@@ -117,21 +130,21 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public bool ProjeFiyatlandirmaEkle(string projeNo, decimal fiyat)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _projeKutukRepository.ProjeFiyatlandirmaEkle(projeNo, fiyat, transaction);
+                        bool sonuc = _projeKutukRepository.ProjeFiyatlandirmaEkle(connection, transaction, projeNo, fiyat);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Proje fiyatlandırma eklenirken hata oluştu.", ex);
                     }
                 }
             }
@@ -141,32 +154,35 @@ namespace CEKA_APP.Services.ProjeFinans
         {
             try
             {
-                return _projeKutukRepository.ProjeKutukAra(projeId);
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _projeKutukRepository.ProjeKutukAra(connection, projeId);
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Proje ID alınırken hata oluştu.", ex);
+                throw new ApplicationException("Kütük bilgileri alınırken hata oluştu.", ex);
             }
         }
 
         public bool ProjeKutukEkle(ProjeKutuk kutuk)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _projeKutukRepository.ProjeKutukEkle(kutuk, transaction);
+                        bool sonuc = _projeKutukRepository.ProjeKutukEkle(connection, transaction, kutuk);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Proje kütük eklenirken hata oluştu.", ex);
                     }
                 }
             }
@@ -174,21 +190,21 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public bool ProjeKutukGuncelle(ProjeKutuk yeniKutuk)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _projeKutukRepository.ProjeKutukGuncelle(transaction, yeniKutuk);
+                        bool sonuc = _projeKutukRepository.ProjeKutukGuncelle(connection, transaction, yeniKutuk);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Proje kütük güncellenirken hata oluştu.", ex);
                     }
                 }
             }
@@ -196,21 +212,21 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public bool ProjeKutukSil(int projeId, List<int> altProjeIds)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _projeKutukRepository.ProjeKutukSil(transaction, projeId, altProjeIds);
+                        bool sonuc = _projeKutukRepository.ProjeKutukSil(connection, transaction, projeId, altProjeIds);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Proje kütük silinirken hata oluştu.", ex);
                     }
                 }
             }
@@ -218,21 +234,21 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public bool UpdateProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _projeKutukRepository.UpdateProjeFinans(projeNo, aciklama, projeAdi, olusturmaTarihi, transaction);
+                        bool sonuc = _projeKutukRepository.UpdateProjeFinans(connection, transaction, projeNo, aciklama, projeAdi, olusturmaTarihi);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Proje kütük güncellenirken hata oluştu.", ex);
                     }
                 }
             }
@@ -240,21 +256,21 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public bool UpdateProjeKutukDurum(int projeId, bool? montajTamamlandiMi)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _projeKutukRepository.UpdateProjeKutukDurum(projeId, montajTamamlandiMi, transaction);
+                        bool sonuc = _projeKutukRepository.UpdateProjeKutukDurum(connection, transaction, projeId, montajTamamlandiMi);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Proje kütük statü güncellenirken hata oluştu.", ex);
                     }
                 }
             }
@@ -262,20 +278,20 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public void UpdateToplamBedel(string projeNo, decimal toplamBedel)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        _projeKutukRepository.UpdateToplamBedel(transaction, projeNo, toplamBedel);
+                        _projeKutukRepository.UpdateToplamBedel(connection, transaction, projeNo, toplamBedel);
                         transaction.Commit();
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Toplam bedel alınırken hata oluştu.", ex);
                     }
                 }
             }
@@ -285,12 +301,15 @@ namespace CEKA_APP.Services.ProjeFinans
         {
             try
             {
-                return _projeKutukRepository.HasRelatedRecords(projeId, altProjeler);
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _projeKutukRepository.HasRelatedRecords(connection, projeId, altProjeler);
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Veriler alınırken hata oluştu.", ex);
+                throw new ApplicationException("Kayıtlar alınırken hata oluştu.", ex);
             }
         }
     }

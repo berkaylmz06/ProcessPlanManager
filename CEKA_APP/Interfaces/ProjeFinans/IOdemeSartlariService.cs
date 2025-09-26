@@ -21,8 +21,6 @@ namespace CEKA_APP.Interfaces.ProjeFinans
         void DeleteOdemeBilgi(int projeId, int kilometreTasiId);
         bool UpdateFaturaNo(int odemeId, string faturaNo);
         bool OdemeSartlariSil(int projeId);
-        DataTable FiltreleOdemeBilgileri(Dictionary<string, TextBox> filtreKriterleri, DataGridView dataGrid);
-        DataTable ToDataTableWithOdemeSapmasi(List<OdemeSartlari> data);
-        string NormalizeColumnName(string columnName);
+        string GetOdemeBilgileriQuery();
     }
 }

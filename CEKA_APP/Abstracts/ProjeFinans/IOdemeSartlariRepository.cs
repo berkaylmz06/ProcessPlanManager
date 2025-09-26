@@ -1,25 +1,20 @@
 ﻿using CEKA_APP.Entitys.ProjeFinans;
-using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
-using System.Windows.Forms;
 
 namespace CEKA_APP.Abstracts.ProjeFinans
 {
     public interface IOdemeSartlariRepository
     {
-        void SaveOrUpdateOdemeBilgi(OdemeSartlari odemeSartlari, SqlTransaction transaction);
-        string GetFaturaNo(int projeId, int kilometreTasiId);
-        List<OdemeSartlari> GetOdemeBilgileri();
-        List<OdemeSartlari> GetOdemeBilgileriByProjeId(int projeId);
-        OdemeSartlari GetOdemeBilgi(string projeNo, int kilometreTasiId);
-        OdemeSartlari GetOdemeBilgiByOdemeId(int odemeId);
-        void DeleteOdemeBilgi(int projeId, int kilometreTasiId, SqlTransaction transaction);
-        bool UpdateFaturaNo(int odemeId, string faturaNo, SqlTransaction transaction);
-        bool OdemeSartlariSil(int projeId, SqlTransaction transaction);
-        DataTable FiltreleOdemeBilgileri(Dictionary<string, TextBox> filtreKriterleri, DataGridView dataGrid);
-        DataTable ToDataTableWithOdemeSapmasi(List<OdemeSartlari> data);
-        string NormalizeColumnName(string columnName);
+        void SaveOrUpdateOdemeBilgi(SqlConnection connection, SqlTransaction transaction, OdemeSartlari odemeSartlari);
+        string GetFaturaNo(SqlConnection connection, int projeId, int kilometreTasiId);
+        List<OdemeSartlari> GetOdemeBilgileri(SqlConnection connection);
+        List<OdemeSartlari> GetOdemeBilgileriByProjeId(SqlConnection connection, int projeId);
+        OdemeSartlari GetOdemeBilgi(SqlConnection connection, string projeNo, int kilometreTasiId);
+        OdemeSartlari GetOdemeBilgiByOdemeId(SqlConnection connection, int odemeId);
+        void DeleteOdemeBilgi(SqlConnection connection, SqlTransaction transaction, int projeId, int kilometreTasiId);
+        bool UpdateFaturaNo(SqlConnection connection, SqlTransaction transaction, int odemeId, string faturaNo);
+        bool OdemeSartlariSil(SqlConnection connection, SqlTransaction transaction, int projeId);
+        string GetOdemeBilgileriQuery();
     }
 }

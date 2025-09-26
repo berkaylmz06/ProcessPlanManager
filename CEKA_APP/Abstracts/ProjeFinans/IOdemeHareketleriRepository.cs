@@ -10,8 +10,8 @@ namespace CEKA_APP.Abstracts.ProjeFinans
 {
     public interface IOdemeHareketleriRepository
     {
-        bool SaveOdemeHareketi(OdemeHareketleri odemeHareketi, SqlTransaction transaction);
-        List<OdemeHareketleri> GetOdemeHareketleriByOdemeId(int odemeId);
-        void DeleteOdemeHareketleriByOdemeIds(List<int> odemeIds, SqlTransaction transaction);
+        bool SaveOdemeHareketi(SqlConnection connection, SqlTransaction transaction, OdemeHareketleri odemeHareketi);
+        List<OdemeHareketleri> GetOdemeHareketleriByOdemeId(SqlConnection connection, int odemeId);
+        void DeleteOdemeHareketleriByOdemeIds(SqlConnection connection, SqlTransaction transaction, List<int> odemeIds);
     }
 }

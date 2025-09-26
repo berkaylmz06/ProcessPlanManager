@@ -1,29 +1,26 @@
 ﻿using CEKA_APP.Abstracts.ProjeFinans;
-using CEKA_APP.DataBase;
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace CEKA_APP.Concretes.ProjeFinans
 {
     public class ProjeIliskiRepository: IProjeIliskiRepository
     {
-        public bool AltProjeEkle(int ustProjeId, int altProjeId, SqlTransaction transaction)
+        public bool AltProjeEkle(SqlConnection connection, SqlTransaction transaction, int ustProjeId, int altProjeId)
         {
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
             if (transaction == null)
                 throw new ArgumentNullException(nameof(transaction));
 
-            string sql = @"
-            INSERT INTO ProjeFinans_ProjeIliski 
-            (UstProjeId, AltProjeId)
-            VALUES 
-            (@ustProjeId, @altProjeId)";
+            const string sql = @"
+        INSERT INTO ProjeFinans_ProjeIliski 
+            (ustProjeId, altProjeId)
+        VALUES 
+            (@ustProjeId, @altProjeId);";
 
-            using (SqlCommand command = new SqlCommand(sql, transaction.Connection, transaction))
+            using (var command = new SqlCommand(sql, connection, transaction))
             {
                 command.Parameters.AddWithValue("@ustProjeId", ustProjeId);
                 command.Parameters.AddWithValue("@altProjeId", altProjeId);
@@ -33,78 +30,70 @@ namespace CEKA_APP.Concretes.ProjeFinans
             return true;
         }
 
-
-        public bool CheckAltProje(int projeId)
+        public bool CheckAltProje(SqlConnection connection, int projeId)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+
+            const string sql = @"
+        SELECT COUNT(*)
+        FROM ProjeFinans_ProjeIliski
+        WHERE AltProjeId = @projeId";
+
+            using (var command = new SqlCommand(sql, connection))
             {
-
-                connection.Open();
-                string sql = @"
-                SELECT COUNT(*)
-                FROM ProjeFinans_ProjeIliski
-                WHERE AltProjeId = @projeId";
-
-                using (SqlCommand command = new SqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@projeId", projeId);
-                    int count = (int)command.ExecuteScalar();
-                    return count > 0;
-                }
+                command.Parameters.AddWithValue("@projeId", projeId);
+                int count = (int)command.ExecuteScalar();
+                return count > 0;
             }
         }
-
-        public List<int> GetAltProjeler(int projeId)
+        public List<int> GetAltProjeler(SqlConnection connection, int projeId)
         {
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+
             var altProjeler = new List<int>();
+            const string sql = @"
+        SELECT AltProjeId
+        FROM ProjeFinans_ProjeIliski
+        WHERE UstProjeId = @projeId OR AltProjeId = @projeId";
 
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var command = new SqlCommand(sql, connection))
             {
+                command.Parameters.AddWithValue("@projeId", projeId);
 
-                connection.Open();
-                string sql = @"
-                SELECT AltProjeId
-                FROM ProjeFinans_ProjeIliski
-                WHERE UstProjeId = @projeId OR AltProjeId = @projeId";
-
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                using (var reader = command.ExecuteReader())
                 {
-                    command.Parameters.AddWithValue("@projeId", projeId);
-
-                    using (var reader = command.ExecuteReader())
+                    while (reader.Read())
                     {
-                        while (reader.Read())
+                        if (!reader.IsDBNull(0))
                         {
-                            if (!reader.IsDBNull(0))
-                            {
-                                int altProjeId = reader.GetInt32(0);
-                                altProjeler.Add(altProjeId);
-                            }
+                            altProjeler.Add(reader.GetInt32(0));
                         }
                     }
                 }
             }
+
             return altProjeler;
         }
 
-        public int? GetUstProjeId(int altProjeId)
+        public int? GetUstProjeId(SqlConnection connection, int altProjeId)
         {
-            using (var connection = DataBaseHelper.GetConnection())
-            {
-                connection.Open();
-                string sql = @"
-                SELECT UstProjeId
-                FROM ProjeFinans_ProjeIliski
-                WHERE AltProjeId = @altProjeId";
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
 
-                using (SqlCommand command = new SqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@altProjeId", altProjeId);
-                    object result = command.ExecuteScalar();
-                    return result != DBNull.Value && result != null
-                        ? Convert.ToInt32(result)
-                        : (int?)null;
-                }
+            const string sql = @"
+        SELECT UstProjeId
+        FROM ProjeFinans_ProjeIliski
+        WHERE AltProjeId = @altProjeId";
+
+            using (var command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@altProjeId", altProjeId);
+                object result = command.ExecuteScalar();
+                return result != null && result != DBNull.Value
+                    ? Convert.ToInt32(result)
+                    : (int?)null;
             }
         }
     }

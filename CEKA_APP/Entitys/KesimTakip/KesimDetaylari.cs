@@ -14,9 +14,9 @@ namespace CEKA_APP.Entitys
         public string malzemeKod{ get; set; }
         public string proje { get; set; }
         public string kesimId { get; set; }
-        public int kesilmisAdet { get; set; }
-        public int kesilecekAdet { get; set; }
-        public int toplamAdet { get; set; }
+        public decimal  kesilmisAdet { get; set; }
+        public decimal kesilecekAdet { get; set; }
+        public decimal toplamAdet { get; set; }
         public string Key { get; set; }
         public string poz
         {

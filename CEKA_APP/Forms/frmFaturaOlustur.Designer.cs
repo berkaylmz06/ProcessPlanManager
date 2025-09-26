@@ -301,6 +301,7 @@
             this.Controls.Add(this.txtTutar);
             this.Controls.Add(this.lblAcıklama);
             this.Controls.Add(this.lblTutar);
+            this.MaximizeBox = false;
             this.Name = "frmFaturaOlustur";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Fatura Oluştur";

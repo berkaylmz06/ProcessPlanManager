@@ -38,13 +38,13 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.txtProjeBagla = new System.Windows.Forms.TextBox();
+            this.btnProjeBagla = new System.Windows.Forms.Button();
             this.btnSil = new System.Windows.Forms.Button();
             this.txtGrupNo = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
             this.btnEkle = new System.Windows.Forms.Button();
             this.listGruplar = new System.Windows.Forms.ListBox();
-            this.btnProjeBagla = new System.Windows.Forms.Button();
-            this.txtProjeBagla = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
@@ -155,6 +155,23 @@
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Standart Grup Oluştur";
             // 
+            // txtProjeBagla
+            // 
+            this.txtProjeBagla.Location = new System.Drawing.Point(226, 158);
+            this.txtProjeBagla.Name = "txtProjeBagla";
+            this.txtProjeBagla.Size = new System.Drawing.Size(172, 22);
+            this.txtProjeBagla.TabIndex = 5;
+            // 
+            // btnProjeBagla
+            // 
+            this.btnProjeBagla.Location = new System.Drawing.Point(226, 186);
+            this.btnProjeBagla.Name = "btnProjeBagla";
+            this.btnProjeBagla.Size = new System.Drawing.Size(172, 41);
+            this.btnProjeBagla.TabIndex = 4;
+            this.btnProjeBagla.Text = "Projeye Bağla";
+            this.btnProjeBagla.UseVisualStyleBackColor = true;
+            this.btnProjeBagla.Click += new System.EventHandler(this.btnProjeBagla_Click);
+            // 
             // btnSil
             // 
             this.btnSil.Location = new System.Drawing.Point(315, 98);
@@ -202,23 +219,6 @@
             this.listGruplar.Size = new System.Drawing.Size(200, 241);
             this.listGruplar.TabIndex = 0;
             // 
-            // btnProjeBagla
-            // 
-            this.btnProjeBagla.Location = new System.Drawing.Point(226, 186);
-            this.btnProjeBagla.Name = "btnProjeBagla";
-            this.btnProjeBagla.Size = new System.Drawing.Size(172, 41);
-            this.btnProjeBagla.TabIndex = 4;
-            this.btnProjeBagla.Text = "Projeye Bağla";
-            this.btnProjeBagla.UseVisualStyleBackColor = true;
-            this.btnProjeBagla.Click += new System.EventHandler(this.btnProjeBagla_Click);
-            // 
-            // txtProjeBagla
-            // 
-            this.txtProjeBagla.Location = new System.Drawing.Point(226, 158);
-            this.txtProjeBagla.Name = "txtProjeBagla";
-            this.txtProjeBagla.Size = new System.Drawing.Size(172, 22);
-            this.txtProjeBagla.TabIndex = 5;
-            // 
             // frmStandartProjeler
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -226,6 +226,7 @@
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(424, 276);
             this.Controls.Add(this.tabControl1);
+            this.MaximizeBox = false;
             this.Name = "frmStandartProjeler";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Standart Projeler";

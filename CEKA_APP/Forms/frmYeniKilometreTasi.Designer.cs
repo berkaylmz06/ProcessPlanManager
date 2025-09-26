@@ -42,7 +42,7 @@
             // 
             // listKilometreTaslari
             // 
-            this.listKilometreTaslari.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.listKilometreTaslari.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.listKilometreTaslari.FormattingEnabled = true;
             this.listKilometreTaslari.ItemHeight = 16;
@@ -69,7 +69,6 @@
             // 
             // btnEkle
             // 
-            this.btnEkle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)));
             this.btnEkle.BackColor = System.Drawing.Color.Gray;
             this.btnEkle.FlatAppearance.BorderSize = 0;
             this.btnEkle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
@@ -89,20 +88,20 @@
             this.lblOran.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.lblOran.Location = new System.Drawing.Point(17, 237);
             this.lblOran.Name = "lblOran";
-            this.lblOran.Size = new System.Drawing.Size(39, 16);
+            this.lblOran.Size = new System.Drawing.Size(51, 20);
             this.lblOran.TabIndex = 15;
             this.lblOran.Text = "Oran:";
             // 
             // cmbOran
             // 
-            this.cmbOran.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.cmbOran.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.cmbOran.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cmbOran.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.cmbOran.FormattingEnabled = true;
             this.cmbOran.Location = new System.Drawing.Point(198, 234);
             this.cmbOran.Name = "cmbOran";
-            this.cmbOran.Size = new System.Drawing.Size(167, 24);
+            this.cmbOran.Size = new System.Drawing.Size(167, 28);
             this.cmbOran.TabIndex = 16;
             // 
             // panelYeniKilometreTasi
@@ -118,12 +117,12 @@
             // 
             // txtKilometreTasi
             // 
-            this.txtKilometreTasi.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left)
+            this.txtKilometreTasi.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.txtKilometreTasi.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.txtKilometreTasi.Location = new System.Drawing.Point(188, 44);
             this.txtKilometreTasi.Name = "txtKilometreTasi";
-            this.txtKilometreTasi.Size = new System.Drawing.Size(167, 22);
+            this.txtKilometreTasi.Size = new System.Drawing.Size(167, 26);
             this.txtKilometreTasi.TabIndex = 11;
             // 
             // lblYeniKilometreTasiBilgi
@@ -133,7 +132,7 @@
             this.lblYeniKilometreTasiBilgi.ForeColor = System.Drawing.Color.DimGray;
             this.lblYeniKilometreTasiBilgi.Location = new System.Drawing.Point(85, 12);
             this.lblYeniKilometreTasiBilgi.Name = "lblYeniKilometreTasiBilgi";
-            this.lblYeniKilometreTasiBilgi.Size = new System.Drawing.Size(192, 16);
+            this.lblYeniKilometreTasiBilgi.Size = new System.Drawing.Size(250, 20);
             this.lblYeniKilometreTasiBilgi.TabIndex = 12;
             this.lblYeniKilometreTasiBilgi.Text = "Lütfen yeni kilometre taşı giriniz.";
             // 
@@ -143,7 +142,7 @@
             this.lblYeniKilometreTasi.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.lblYeniKilometreTasi.Location = new System.Drawing.Point(10, 47);
             this.lblYeniKilometreTasi.Name = "lblYeniKilometreTasi";
-            this.lblYeniKilometreTasi.Size = new System.Drawing.Size(119, 16);
+            this.lblYeniKilometreTasi.Size = new System.Drawing.Size(151, 20);
             this.lblYeniKilometreTasi.TabIndex = 13;
             this.lblYeniKilometreTasi.Text = "Kilometre Taşı Adı:";
             // 
@@ -160,7 +159,6 @@
             this.Controls.Add(this.btnSec);
             this.Controls.Add(this.listKilometreTaslari);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmYeniKilometreTasi";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

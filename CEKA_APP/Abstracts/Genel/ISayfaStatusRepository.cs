@@ -2,20 +2,17 @@
 using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CEKA_APP.Abstracts.Genel
 {
     public interface ISayfaStatusRepository
     {
-        int Insert(SayfaStatus status, SqlTransaction transaction);
-        SayfaStatus Get(int sayfaId, int projeId);
-        void Update(SayfaStatus status, SqlTransaction transaction);
-        void Delete(int sayfaStatusId, SqlTransaction transaction);
-        bool IsAllAltProjelerSayfa4Kapali(int projeId);
-        bool IsSayfa3Kapali(int projeId);
-        List<string> GetNedenTamamlanmadiByProjeId(int projeId);
+        int Insert(SqlConnection connection, SqlTransaction transaction, SayfaStatus status);
+        SayfaStatus Get(SqlConnection connection, int sayfaId, int projeId);
+        void Update(SqlConnection connection, SqlTransaction transaction, SayfaStatus status);
+        void Delete(SqlConnection connection, SqlTransaction transaction, int sayfaStatusId);
+        bool IsAllAltProjelerSayfa4Kapali(SqlConnection connection, SqlTransaction transaction, int projeId);
+        bool IsSayfa3Kapali(SqlConnection connection, SqlTransaction transaction, int projeId);
+        List<string> GetNedenTamamlanmadiByProjeId(SqlConnection connection, int projeId);
     }
 }

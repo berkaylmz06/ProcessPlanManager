@@ -1,4 +1,5 @@
 ﻿using CEKA_APP.DataBase;
+using CEKA_APP.Interfaces.Sistem;
 using CEKA_APP.UsrControl.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -14,14 +15,14 @@ namespace CEKA_APP
 {
     public partial class frmKullaniciGirisi : Form
     {
-        private readonly KullanicilarData _kullaniciService;
         private readonly IServiceProvider _serviceProvider;
 
         public frmKullaniciGirisi(IServiceProvider serviceProvider)
         {
             InitializeComponent();
+
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            _kullaniciService = new KullanicilarData();
+            
             this.Icon = Properties.Resources.cekalogokirmizi;
 
             this.BackColor = ColorTranslator.FromHtml("#2C3E50");
@@ -149,15 +150,16 @@ namespace CEKA_APP
 
             try
             {
-                Kullanicilar kullanici = _kullaniciService.GirisYap(kullaniciAdi, sifre);
+                var kullanciciService = _serviceProvider.GetService<IKullanicilarService>();
+                Kullanicilar kullanici = kullanciciService.GirisYap(kullaniciAdi, sifre);
 
                 if (kullanici != null)
                 {
                     var scope = _serviceProvider.CreateScope();
 
                     var userControlFactory = scope.ServiceProvider.GetRequiredService<IUserControlFactory>();
-
                     var formAnaSayfa = new frmAnaSayfa(kullanici, userControlFactory, scope.ServiceProvider);
+
 
                     formAnaSayfa.FormClosed += (s, args) => Application.Exit();
                     formAnaSayfa.Show();
@@ -190,24 +192,6 @@ namespace CEKA_APP
                 txtSifre.Text = Properties.Settings.Default.KaydedilenSifre ?? string.Empty;
                 chkBeniHatirla.Checked = true;
             }
-        }
-
-        private void KullaniciBilgileriniKaydet()
-        {
-            if (chkBeniHatirla.Checked)
-            {
-                Properties.Settings.Default.KaydedilenKullaniciAdi = txtKullaniciAdi.Text;
-                Properties.Settings.Default.KaydedilenSifre = txtSifre.Text;
-                Properties.Settings.Default.BeniHatirla = true;
-            }
-            else
-            {
-                Properties.Settings.Default.KaydedilenKullaniciAdi = string.Empty;
-                Properties.Settings.Default.KaydedilenSifre = string.Empty;
-                Properties.Settings.Default.BeniHatirla = false;
-            }
-
-            Properties.Settings.Default.Save();
         }
 
         private void frmKullaniciGirisi_Resize(object sender, EventArgs e)

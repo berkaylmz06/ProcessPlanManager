@@ -73,6 +73,16 @@ namespace CEKA_APP.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap asagiOk {
+            get {
+                object obj = ResourceManager.GetObject("asagiOk", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap cekalogo {
             get {
                 object obj = ResourceManager.GetObject("cekalogo", resourceCulture);
@@ -103,6 +113,26 @@ namespace CEKA_APP.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap enAsagiOk {
+            get {
+                object obj = ResourceManager.GetObject("enAsagiOk", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap enYukariOk {
+            get {
+                object obj = ResourceManager.GetObject("enYukariOk", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap kullanici {
             get {
                 object obj = ResourceManager.GetObject("kullanici", resourceCulture);
@@ -126,6 +156,16 @@ namespace CEKA_APP.Properties {
         internal static System.Drawing.Bitmap navigationForward {
             get {
                 object obj = ResourceManager.GetObject("navigationForward", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap yukariOk {
+            get {
+                object obj = ResourceManager.GetObject("yukariOk", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

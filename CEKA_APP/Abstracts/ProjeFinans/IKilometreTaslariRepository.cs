@@ -9,12 +9,11 @@ namespace CEKA_APP.Abstracts.ProjeFinans
 {
     public interface IKilometreTaslariRepository
     {
-        List<(int Id, string Adi, DateTime Tarih)> GetFiyatlandirmaKilometreTasi();
-        int FiyatlandirmaKilometreTasiEkle(string kilometreTasiAdi, SqlTransaction transaction);
-        int GetFiyatlandirmaKilometreTasiIdByAdi(string kilometreTasiAdi);
-        string GetKilometreTasiAdi(int kilometreTasiId);
-        int GetKilometreTasiId(string kilometreTasiAdi);
-        List<string> GetKilometreTasiAdlariByIds(List<int> kilometreTasiIds);
-
+        List<(int Id, string Adi, DateTime Tarih)> GetFiyatlandirmaKilometreTasi(SqlConnection connection);
+        int FiyatlandirmaKilometreTasiEkle(SqlConnection connection, SqlTransaction transaction, string kilometreTasiAdi);
+        int GetFiyatlandirmaKilometreTasiIdByAdi(SqlConnection connection, string kilometreTasiAdi);
+        string GetKilometreTasiAdi(SqlConnection connection, int kilometreTasiId);
+        int GetKilometreTasiId(SqlConnection connection, string kilometreTasiAdi);
+        List<string> GetKilometreTasiAdlariByIds(SqlConnection connection, List<int> kilometreTasiIds);
     }
 }

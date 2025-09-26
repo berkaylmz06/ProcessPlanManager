@@ -1,4 +1,5 @@
 ﻿using CEKA_APP.DataBase;
+using CEKA_APP.Interfaces.Sistem;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,9 +17,15 @@ namespace CEKA_APP
     {
         private string kullaniciAdi;
         private Kullanicilar mevcutKullanici;
-        public frmKullaniciAyarlari(string kullaniciAdi)
+
+        private readonly IKullanicilarService _kullaniciService;
+        public frmKullaniciAyarlari(string kullaniciAdi, IKullanicilarService kullanicilarService)
         {
             InitializeComponent();
+
+            _kullaniciService = kullanicilarService ?? throw new ArgumentNullException(nameof(kullanicilarService));
+
+
             this.kullaniciAdi = kullaniciAdi;
 
             this.Icon = Properties.Resources.cekalogokirmizi;
@@ -31,7 +38,7 @@ namespace CEKA_APP
 
             try
             {
-                mevcutKullanici = KullanicilarData.KullaniciBilgiGetir(kullaniciAdi);
+                mevcutKullanici = _kullaniciService.KullaniciBilgiGetir(kullaniciAdi);
                 if (mevcutKullanici != null)
                 {
                     txtKullaniciAdi.Text = mevcutKullanici.kullaniciAdi;
@@ -73,7 +80,7 @@ namespace CEKA_APP
             {
                 if (BilgilerDegistiMi(mevcutKullanici, yeniKullanici))
                 {
-                    bool basarili = KullanicilarData.KullaniciGuncelleKullaniciBilgi(yeniKullanici);
+                    bool basarili = _kullaniciService.KullaniciGuncelleKullaniciBilgi(yeniKullanici);
                     if (basarili)
                     {
                         MessageBox.Show("Kullanıcı bilgileri güncellendi!", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);

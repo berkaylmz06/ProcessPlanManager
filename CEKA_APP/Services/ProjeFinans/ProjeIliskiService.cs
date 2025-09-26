@@ -1,40 +1,39 @@
 ﻿using CEKA_APP.Abstracts.ProjeFinans;
-using CEKA_APP.Concretes.ProjeFinans;
 using CEKA_APP.DataBase;
+using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.ProjeFinans;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CEKA_APP.Services.ProjeFinans
 {
     public class ProjeIliskiService : IProjeIliskiService
     {
         private readonly IProjeIliskiRepository _projeIliskiRepository;
+        private readonly IDataBaseService _dataBaseService;
 
-        public ProjeIliskiService(IProjeIliskiRepository projeIliskiRepository)
+        public ProjeIliskiService(IProjeIliskiRepository projeIliskiRepository, IDataBaseService dataBaseService)
         {
             _projeIliskiRepository = projeIliskiRepository ?? throw new ArgumentNullException(nameof(projeIliskiRepository));
+            _dataBaseService = dataBaseService ?? throw new ArgumentNullException(nameof(dataBaseService));
         }
         public bool AltProjeEkle(int ustProjeId, int altProjeId)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _projeIliskiRepository.AltProjeEkle(ustProjeId, altProjeId, transaction);
+                        bool sonuc = _projeIliskiRepository.AltProjeEkle(connection, transaction, ustProjeId, altProjeId);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Alt proje eklenirken hata oluştu.", ex);
                     }
                 }
             }
@@ -44,12 +43,16 @@ namespace CEKA_APP.Services.ProjeFinans
         {
             try
             {
-                return _projeIliskiRepository.CheckAltProje(projeId);
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    bool sonuc = _projeIliskiRepository.CheckAltProje(connection, projeId);
+                    return sonuc;
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Proje ID alınırken hata oluştu.", ex);
+                throw new ApplicationException("Alt projeler alınırken hata oluştu.", ex);
             }
         }
 
@@ -57,12 +60,15 @@ namespace CEKA_APP.Services.ProjeFinans
         {
             try
             {
-                return _projeIliskiRepository.GetAltProjeler(projeId);
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _projeIliskiRepository.GetAltProjeler(connection, projeId);
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Proje ID alınırken hata oluştu.", ex);
+                throw new ApplicationException("Alt projeler alınırken hata oluştu.", ex);
             }
         }
 
@@ -70,12 +76,16 @@ namespace CEKA_APP.Services.ProjeFinans
         {
             try
             {
-                return _projeIliskiRepository.GetUstProjeId(altProjeId);
-
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    int? sonuc = _projeIliskiRepository.GetUstProjeId(connection, altProjeId);
+                    return sonuc;
+                }
             }
             catch (Exception ex)
             {
-                throw new ApplicationException("Proje ID alınırken hata oluştu.", ex);
+                throw new ApplicationException("Üst proje Id alınırken hata oluştu.", ex);
             }
         }
     }

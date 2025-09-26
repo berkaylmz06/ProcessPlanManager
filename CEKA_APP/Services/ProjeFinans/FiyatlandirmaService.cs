@@ -1,42 +1,39 @@
-﻿using CEKA_APP.Abstracts;
-using CEKA_APP.Abstracts.ProjeFinans;
-using CEKA_APP.DataBase;
-using CEKA_APP.DataBase.ProjeFinans;
+﻿using CEKA_APP.Abstracts.ProjeFinans;
 using CEKA_APP.Entitys.ProjeFinans;
+using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.ProjeFinans;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CEKA_APP.Services.ProjeFinans
 {
     public class FiyatlandirmaService : IFiyatlandirmaService
     {
         private readonly IFiyatlandirmaRepository _fiyalandirmaRepository;
+        private readonly IDataBaseService _dataBaseService;
 
-        public FiyatlandirmaService(IFiyatlandirmaRepository fiyalandirmaRepository)
+        public FiyatlandirmaService(IFiyatlandirmaRepository fiyalandirmaRepository, IDataBaseService dataBaseService)
         {
             _fiyalandirmaRepository = fiyalandirmaRepository ?? throw new ArgumentNullException(nameof(fiyalandirmaRepository));
+            _dataBaseService = dataBaseService ?? throw new ArgumentNullException(nameof(dataBaseService));
         }
         public bool FiyatlandirmaGuncelle(Fiyatlandirma fiyat)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _fiyalandirmaRepository.FiyatlandirmaGuncelle(fiyat, transaction);
+                        bool sonuc = _fiyalandirmaRepository.FiyatlandirmaGuncelle(connection, transaction, fiyat);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Fiyatlandırma güncellenirken hata oluştu.", ex);
                     }
                 }
             }
@@ -44,21 +41,21 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public bool FiyatlandirmaKaydet(Fiyatlandirma fiyat)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _fiyalandirmaRepository.FiyatlandirmaKaydet(fiyat, transaction);
+                        bool sonuc = _fiyalandirmaRepository.FiyatlandirmaKaydet(connection, transaction, fiyat);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Fiyatlandırma kaydedilirken hata oluştu.", ex);
                     }
                 }
             }
@@ -66,21 +63,21 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public bool FiyatlandirmaSil(int projeId)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _fiyalandirmaRepository.FiyatlandirmaSil(projeId, transaction);
+                        bool sonuc = _fiyalandirmaRepository.FiyatlandirmaSil(connection, transaction, projeId);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Fiyatlandırma silinirken hata oluştu.", ex);
                     }
                 }
             }
@@ -88,21 +85,21 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public bool FiyatlandirmaSilById(int projeId, int fiyatlandirmaKalemId)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _fiyalandirmaRepository.FiyatlandirmaSilById(projeId, fiyatlandirmaKalemId, transaction);
+                        bool sonuc = _fiyalandirmaRepository.FiyatlandirmaSilById(connection, transaction, projeId, fiyatlandirmaKalemId);
                         transaction.Commit();
                         return sonuc;
                     }
-                    catch
+                    catch (Exception ex)
                     {
                         transaction.Rollback();
-                        throw;
+                        throw new ApplicationException("Fiyatlandırma silinirken hata oluştu.", ex);
                     }
                 }
             }
@@ -110,18 +107,34 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public List<Fiyatlandirma> GetFiyatlandirmaByProje(int projeId)
         {
-            if (projeId <= 0)
-                throw new ArgumentException("Proje ID geçerli olmalıdır.", nameof(projeId));
-
-            return _fiyalandirmaRepository.GetFiyatlandirmaByProje(projeId);
+            try
+            {
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _fiyalandirmaRepository.GetFiyatlandirmaByProje(connection, projeId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Fiyatlandırma alınırken hata oluştu.", ex);
+            }
         }
 
         public (decimal toplamBedel, List<int> eksikFiyatlandirmaProjeler) GetToplamBedel(int projeId, List<int> altProjeler = null)
         {
-            if (projeId <= 0)
-                throw new ArgumentException("Proje ID geçerli olmalıdır.", nameof(projeId));
-
-            return _fiyalandirmaRepository.GetToplamBedel(projeId, altProjeler);
+            try
+            {
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _fiyalandirmaRepository.GetToplamBedel(connection, projeId, altProjeler);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Toplam bedel alınırken hata oluştu.", ex);
+            }
         }
     }
 }

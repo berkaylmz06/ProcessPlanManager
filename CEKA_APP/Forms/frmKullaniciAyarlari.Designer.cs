@@ -42,9 +42,9 @@
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabKullaniciBilgileri = new System.Windows.Forms.TabPage();
             this.tabXMLDosyaYolu = new System.Windows.Forms.TabPage();
-            this.label5 = new System.Windows.Forms.Label();
-            this.txtKlasorYolu = new System.Windows.Forms.TextBox();
             this.btnDosyaSec = new System.Windows.Forms.Button();
+            this.txtKlasorYolu = new System.Windows.Forms.TextBox();
+            this.label5 = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabKullaniciBilgileri.SuspendLayout();
             this.tabXMLDosyaYolu.SuspendLayout();
@@ -192,22 +192,6 @@
             this.tabXMLDosyaYolu.TabIndex = 1;
             this.tabXMLDosyaYolu.Text = "XML Dosya Yolu";
             // 
-            // label5
-            // 
-            this.label5.AutoSize = true;
-            this.label5.Location = new System.Drawing.Point(55, 31);
-            this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(345, 16);
-            this.label5.TabIndex = 0;
-            this.label5.Text = "Lütfen XML dosyasının yükleneceği dosya yolunu seçiniz.";
-            // 
-            // txtKlasorYolu
-            // 
-            this.txtKlasorYolu.Location = new System.Drawing.Point(58, 144);
-            this.txtKlasorYolu.Name = "txtKlasorYolu";
-            this.txtKlasorYolu.Size = new System.Drawing.Size(342, 22);
-            this.txtKlasorYolu.TabIndex = 1;
-            // 
             // btnDosyaSec
             // 
             this.btnDosyaSec.Location = new System.Drawing.Point(58, 84);
@@ -218,6 +202,22 @@
             this.btnDosyaSec.UseVisualStyleBackColor = true;
             this.btnDosyaSec.Click += new System.EventHandler(this.btnDosyaSec_Click);
             // 
+            // txtKlasorYolu
+            // 
+            this.txtKlasorYolu.Location = new System.Drawing.Point(58, 144);
+            this.txtKlasorYolu.Name = "txtKlasorYolu";
+            this.txtKlasorYolu.Size = new System.Drawing.Size(342, 22);
+            this.txtKlasorYolu.TabIndex = 1;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(55, 31);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(345, 16);
+            this.label5.TabIndex = 0;
+            this.label5.Text = "Lütfen XML dosyasının yükleneceği dosya yolunu seçiniz.";
+            // 
             // frmKullaniciAyarlari
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -225,6 +225,7 @@
             this.BackColor = System.Drawing.SystemColors.Window;
             this.ClientSize = new System.Drawing.Size(481, 360);
             this.Controls.Add(this.tabControl1);
+            this.MaximizeBox = false;
             this.Name = "frmKullaniciAyarlari";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Kullanıcı Ayarları";

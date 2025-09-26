@@ -1,6 +1,5 @@
 ﻿using CEKA_APP.Abstracts.Genel;
 using CEKA_APP.Abstracts.ProjeFinans;
-using CEKA_APP.DataBase;
 using CEKA_APP.Entitys;
 using CEKA_APP.Entitys.ProjeFinans;
 using System;
@@ -8,10 +7,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace CEKA_APP.Concretes.ProjeFinans
 {
@@ -25,21 +20,20 @@ namespace CEKA_APP.Concretes.ProjeFinans
             _projeIliskiRepository = projeIliskiRepository ?? throw new ArgumentNullException(nameof(projeIliskiRepository));
             _sayfaStatusRepository = sayfaStatusRepository ?? throw new ArgumentNullException(nameof(sayfaStatusRepository));
         }
-        public bool ProjeKutukEkle(ProjeKutuk kutuk, SqlTransaction transaction)
+        public bool ProjeKutukEkle(SqlConnection connection, SqlTransaction transaction, ProjeKutuk kutuk)
         {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
             string projeNo = kutuk.projeNo.Trim();
             string kok = projeNo.Split('.')[0].Trim();
 
-
             string checkSql = @"
-            SELECT COUNT(*) 
-            FROM ProjeFinans_ProjeKutuk 
-            WHERE LEFT(TRIM(projeNo), 5) = @kok";
+        SELECT COUNT(*) 
+        FROM ProjeFinans_ProjeKutuk 
+        WHERE LEFT(TRIM(projeNo), 5) = @kok";
 
-            using (SqlCommand checkCommand = new SqlCommand(checkSql, transaction.Connection, transaction))
+            using (SqlCommand checkCommand = new SqlCommand(checkSql, connection, transaction))
             {
                 checkCommand.Parameters.AddWithValue("@kok", kok);
                 int count = (int)checkCommand.ExecuteScalar();
@@ -50,12 +44,12 @@ namespace CEKA_APP.Concretes.ProjeFinans
             }
 
             string sql = @"
-            INSERT INTO ProjeFinans_ProjeKutuk 
-            (projeId, musteriNo, musteriAdi, isFirsatiNo, projeNo, altProjeVarMi, digerProjeIliskisiVarMi, siparisSozlesmeTarihi, paraBirimi, toplamBedel, faturalamaSekli, nakliyeVarMi, montajTamamlandiMi)
-            VALUES 
-            (@projeId, @musteriNo, @musteriAdi, @isFirsatiNo, @projeNo, @altProjeVarMi, @digerProjeIliskisiVarMi, @siparisSozlesmeTarihi, @paraBirimi, @toplamBedel, @faturalamaSekli, @nakliyeVarMi, @montajTamamlandiMi)";
+        INSERT INTO ProjeFinans_ProjeKutuk 
+        (projeId, musteriNo, musteriAdi, isFirsatiNo, projeNo, altProjeVarMi, digerProjeIliskisiVarMi, siparisSozlesmeTarihi, paraBirimi, toplamBedel, faturalamaSekli, nakliyeVarMi, montajTamamlandiMi)
+        VALUES 
+        (@projeId, @musteriNo, @musteriAdi, @isFirsatiNo, @projeNo, @altProjeVarMi, @digerProjeIliskisiVarMi, @siparisSozlesmeTarihi, @paraBirimi, @toplamBedel, @faturalamaSekli, @nakliyeVarMi, @montajTamamlandiMi)";
 
-            using (SqlCommand command = new SqlCommand(sql, transaction.Connection, transaction))
+            using (SqlCommand command = new SqlCommand(sql, connection, transaction))
             {
                 command.Parameters.AddWithValue("@projeId", kutuk.projeId);
                 command.Parameters.AddWithValue("@musteriNo", kutuk.musteriNo ?? (object)DBNull.Value);
@@ -73,15 +67,17 @@ namespace CEKA_APP.Concretes.ProjeFinans
 
                 command.ExecuteNonQuery();
             }
+
             return true;
         }
-        public bool ProjeFiyatlandirmaEkle(string projeNo, decimal fiyat, SqlTransaction transaction)
+
+        public bool ProjeFiyatlandirmaEkle(SqlConnection connection, SqlTransaction transaction, string projeNo, decimal fiyat)
         {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
             string checkSorgu = "SELECT COUNT(*) FROM ProjeFinans WHERE projeNo = @projeNo";
-            using (SqlCommand checkKomut = new SqlCommand(checkSorgu, transaction.Connection, transaction))
+            using (SqlCommand checkKomut = new SqlCommand(checkSorgu, connection, transaction))
             {
                 checkKomut.Parameters.AddWithValue("@projeNo", projeNo.Trim());
                 int count = (int)checkKomut.ExecuteScalar();
@@ -90,18 +86,18 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 if (count > 0)
                 {
                     sorgu = @"
-                    UPDATE ProjeFinans
-                    SET fiyat = @fiyat
-                    WHERE projeNo = @projeNo";
+                UPDATE ProjeFinans
+                SET fiyat = @fiyat
+                WHERE projeNo = @projeNo";
                 }
                 else
                 {
                     sorgu = @"
-                    INSERT INTO ProjeFinans (projeNo, fiyat)
-                    VALUES (@projeNo, @fiyat)";
+                INSERT INTO ProjeFinans (projeNo, fiyat)
+                VALUES (@projeNo, @fiyat)";
                 }
 
-                using (SqlCommand komut = new SqlCommand(sorgu, transaction.Connection, transaction))
+                using (SqlCommand komut = new SqlCommand(sorgu, connection, transaction))
                 {
                     komut.Parameters.AddWithValue("@projeNo", projeNo.Trim());
                     komut.Parameters.AddWithValue("@fiyat", fiyat);
@@ -111,18 +107,18 @@ namespace CEKA_APP.Concretes.ProjeFinans
             }
         }
 
-        public bool AltProjeEkle(int ustProjeId, int altProjeId, SqlTransaction transaction)
+        public bool AltProjeEkle(SqlConnection connection, SqlTransaction transaction, int ustProjeId, int altProjeId)
         {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
             string sql = @"
-            INSERT INTO ProjeFinans_ProjeIliski 
-            (ustProjeId, altProjeId)
-            VALUES 
-            (@ustProjeId, @altProjeId)";
+        INSERT INTO ProjeFinans_ProjeIliski 
+        (UstProjeId, AltProjeId)
+        VALUES 
+        (@ustProjeId, @altProjeId)";
 
-            using (SqlCommand command = new SqlCommand(sql, transaction.Connection, transaction))
+            using (SqlCommand command = new SqlCommand(sql, connection, transaction))
             {
                 command.Parameters.AddWithValue("@ustProjeId", ustProjeId);
                 command.Parameters.AddWithValue("@altProjeId", altProjeId);
@@ -132,16 +128,16 @@ namespace CEKA_APP.Concretes.ProjeFinans
             return true;
         }
 
-        public bool ProjeEkleProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi, SqlTransaction transaction)
+        public bool ProjeEkleProjeFinans(SqlConnection connection, SqlTransaction transaction, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi)
         {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
             string sorgu = @"
-            INSERT INTO ProjeFinans_Projeler (projeNo, aciklama, projeAdi, olusturmaTarihi)
-            VALUES (@projeNo, @aciklama, @projeAdi, @olusturmaTarihi)";
+        INSERT INTO ProjeFinans_Projeler (projeNo, aciklama, projeAdi, olusturmaTarihi)
+        VALUES (@projeNo, @aciklama, @projeAdi, @olusturmaTarihi)";
 
-            using (SqlCommand komut = new SqlCommand(sorgu, transaction.Connection, transaction))
+            using (SqlCommand komut = new SqlCommand(sorgu, connection, transaction))
             {
                 komut.Parameters.AddWithValue("@projeNo", projeNo);
                 komut.Parameters.AddWithValue("@aciklama", string.IsNullOrEmpty(aciklama) ? (object)DBNull.Value : aciklama);
@@ -153,13 +149,12 @@ namespace CEKA_APP.Concretes.ProjeFinans
             return true;
         }
 
-
-        public bool UpdateProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi, SqlTransaction transaction)
+        public bool UpdateProjeFinans(SqlConnection connection, SqlTransaction transaction, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi)
         {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
-            ProjeBilgi mevcutBilgi = GetProjeBilgileri(projeNo);
+            ProjeBilgi mevcutBilgi = GetProjeBilgileri(connection, projeNo);
             if (mevcutBilgi == null)
             {
                 return false;
@@ -176,130 +171,135 @@ namespace CEKA_APP.Concretes.ProjeFinans
             }
 
             string sorgu = @"
-            UPDATE ProjeFinans_Projeler
-            SET aciklama = @aciklama, 
-                projeAdi = @projeAdi, 
-                olusturmaTarihi = @olusturmaTarihi
-            WHERE projeNo = @projeNo";
+        UPDATE ProjeFinans_Projeler
+        SET aciklama = @aciklama, 
+            projeAdi = @projeAdi, 
+            olusturmaTarihi = @olusturmaTarihi
+        WHERE projeNo = @projeNo";
 
-            using (SqlCommand command = new SqlCommand(sorgu, transaction.Connection, transaction))
+            using (SqlCommand command = new SqlCommand(sorgu, connection, transaction))
             {
                 command.Parameters.AddWithValue("@projeNo", projeNo.Trim());
                 command.Parameters.AddWithValue("@aciklama", string.IsNullOrEmpty(aciklama) ? (object)DBNull.Value : aciklama);
                 command.Parameters.AddWithValue("@projeAdi", string.IsNullOrEmpty(projeAdi) ? (object)DBNull.Value : projeAdi);
                 command.Parameters.AddWithValue("@olusturmaTarihi", olusturmaTarihi);
                 command.ExecuteNonQuery();
-
-                return true;
             }
+
+            return true;
         }
 
-
-        public ProjeBilgi GetProjeBilgileri(string projeNo)
+        public ProjeBilgi GetProjeBilgileri(SqlConnection connection, string projeNo)
         {
-            using (var connection = DataBaseHelper.GetConnection())
-            {
-                connection.Open();
-                string sql = @"
-                        SELECT projeNo, projeAdi, aciklama, olusturmaTarihi
-                        FROM ProjeFinans_Projeler
-                        WHERE TRIM(projeNo) = @projeNo";
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
 
-                using (SqlCommand command = new SqlCommand(sql, connection))
+            string sql = @"
+        SELECT projeNo, projeAdi, aciklama, olusturmaTarihi
+        FROM ProjeFinans_Projeler
+        WHERE TRIM(projeNo) = @projeNo";
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
+            {
+                command.Parameters.AddWithValue("@projeNo", projeNo.Trim());
+
+                using (var reader = command.ExecuteReader())
                 {
-                    command.Parameters.AddWithValue("@projeNo", projeNo.Trim());
-                    using (var reader = command.ExecuteReader())
+                    if (reader.Read())
                     {
-                        if (reader.Read())
+                        return new ProjeBilgi
                         {
-                            return new ProjeBilgi
-                            {
-                                ProjeNo = reader.IsDBNull(0) ? null : reader.GetString(0),
-                                ProjeAdi = reader.IsDBNull(1) ? null : reader.GetString(1),
-                                Aciklama = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                OlusturmaTarihi = reader.IsDBNull(3) ? DateTime.Now : reader.GetDateTime(3)
-                            };
-                        }
+                            ProjeNo = reader.IsDBNull(0) ? null : reader.GetString(0),
+                            ProjeAdi = reader.IsDBNull(1) ? null : reader.GetString(1),
+                            Aciklama = reader.IsDBNull(2) ? null : reader.GetString(2),
+                            OlusturmaTarihi = reader.IsDBNull(3) ? DateTime.Now : reader.GetDateTime(3)
+                        };
                     }
                 }
-                return null;
             }
+
+            return null;
         }
 
-        public ProjeKutuk ProjeKutukAra(int projeId)
+        public ProjeKutuk ProjeKutukAra(SqlConnection connection, int projeId)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
+            string sql = @"
+        SELECT 
+            projeKutukId, projeId, musteriNo, musteriAdi, isFirsatiNo, projeNo,
+            altProjeVarMi, digerProjeIliskisiVarMi, siparisSozlesmeTarihi, paraBirimi, toplamBedel, faturalamaSekli, nakliyeVarMi, montajTamamlandiMi, status
+        FROM ProjeFinans_ProjeKutuk
+        WHERE projeId = @projeId";
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
             {
-                connection.Open();
-                string sql = @"
-                SELECT 
-                    projeKutukId, projeId, musteriNo, musteriAdi, isFirsatiNo, projeNo,
-                    altProjeVarMi, digerProjeIliskisiVarMi, siparisSozlesmeTarihi, paraBirimi, toplamBedel, faturalamaSekli, nakliyeVarMi, montajTamamlandiMi, status
-                FROM ProjeFinans_ProjeKutuk
-                WHERE projeId = @projeId";
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                command.Parameters.AddWithValue("@projeId", projeId);
+
+                using (var reader = command.ExecuteReader())
                 {
-                    command.Parameters.AddWithValue("@projeId", projeId);
-                    using (var reader = command.ExecuteReader())
+                    if (reader.Read())
                     {
-                        if (reader.Read())
+                        var kutuk = new ProjeKutuk
                         {
-                            var kutuk = new ProjeKutuk
-                            {
-                                projeKutukId = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
-                                projeId = reader.GetInt32(1),
-                                musteriNo = reader.IsDBNull(2) ? null : reader.GetString(2),
-                                musteriAdi = reader.IsDBNull(3) ? null : reader.GetString(3),
-                                isFirsatiNo = reader.IsDBNull(4) ? null : reader.GetString(4),
-                                projeNo = reader.IsDBNull(5) ? null : reader.GetString(5),
-                                altProjeVarMi = reader.IsDBNull(6) ? false : reader.GetBoolean(6),
-                                digerProjeIliskisiVarMi = reader.IsDBNull(7) ? "0" : reader.GetString(7),
-                                siparisSozlesmeTarihi = reader.IsDBNull(8) ? DateTime.Now : reader.GetDateTime(8),
-                                paraBirimi = reader.IsDBNull(9) ? null : reader.GetString(9),
-                                toplamBedel = reader.IsDBNull(10) ? 0 : reader.GetDecimal(10),
-                                faturalamaSekli = reader.IsDBNull(11) ? null : reader.GetString(11),
-                                nakliyeVarMi = reader.IsDBNull(12) ? false : reader.GetBoolean(12),
-                                montajTamamlandiMi = reader.IsDBNull(13) ? false : reader.GetBoolean(13),
-                                status = reader.IsDBNull(14) ? null : reader.GetString(14),
-                                altProjeBilgileri = new List<int>()
-                            };
+                            projeKutukId = reader.IsDBNull(0) ? 0 : reader.GetInt32(0),
+                            projeId = reader.GetInt32(1),
+                            musteriNo = reader.IsDBNull(2) ? null : reader.GetString(2),
+                            musteriAdi = reader.IsDBNull(3) ? null : reader.GetString(3),
+                            isFirsatiNo = reader.IsDBNull(4) ? null : reader.GetString(4),
+                            projeNo = reader.IsDBNull(5) ? null : reader.GetString(5),
+                            altProjeVarMi = reader.IsDBNull(6) ? false : reader.GetBoolean(6),
+                            digerProjeIliskisiVarMi = reader.IsDBNull(7) ? "0" : reader.GetString(7),
+                            siparisSozlesmeTarihi = reader.IsDBNull(8) ? DateTime.Now : reader.GetDateTime(8),
+                            paraBirimi = reader.IsDBNull(9) ? null : reader.GetString(9),
+                            toplamBedel = reader.IsDBNull(10) ? 0 : reader.GetDecimal(10),
+                            faturalamaSekli = reader.IsDBNull(11) ? null : reader.GetString(11),
+                            nakliyeVarMi = reader.IsDBNull(12) ? false : reader.GetBoolean(12),
+                            montajTamamlandiMi = reader.IsDBNull(13) ? false : reader.GetBoolean(13),
+                            status = reader.IsDBNull(14) ? null : reader.GetString(14),
+                            altProjeBilgileri = new List<int>()
+                        };
 
-                            reader.Close();
+                        reader.Close();
 
-                            if (kutuk.altProjeVarMi)
+                        if (kutuk.altProjeVarMi)
+                        {
+                            string altProjeSql = @"
+                        SELECT altProjeId
+                        FROM ProjeFinans_ProjeIliski
+                        WHERE ustProjeId = @projeId";
+
+                            using (SqlCommand altCommand = new SqlCommand(altProjeSql, connection))
                             {
-                                string altProjeSql = @"
-                                SELECT altProjeId
-                                FROM ProjeFinans_ProjeIliski
-                                WHERE ustProjeId = @projeId";
-                                using (SqlCommand altCommand = new SqlCommand(altProjeSql, connection))
+                                altCommand.Parameters.AddWithValue("@projeId", projeId);
+
+                                using (var altReader = altCommand.ExecuteReader())
                                 {
-                                    altCommand.Parameters.AddWithValue("@projeId", projeId);
-                                    using (var altReader = altCommand.ExecuteReader())
+                                    while (altReader.Read())
                                     {
-                                        while (altReader.Read())
-                                        {
-                                            kutuk.altProjeBilgileri.Add(altReader.IsDBNull(0) ? 0 : altReader.GetInt32(0));
-                                        }
+                                        kutuk.altProjeBilgileri.Add(altReader.IsDBNull(0) ? 0 : altReader.GetInt32(0));
                                     }
                                 }
                             }
-
-                            return kutuk;
                         }
+
+                        return kutuk;
                     }
                 }
-                return null;
             }
-        }
-        public void UpdateToplamBedel(SqlTransaction transaction, string projeNo, decimal toplamBedel)
-        {
-            string query = @"
-            UPDATE ProjeFinans_ProjeKutuk
-            SET toplamBedel = @toplamBedel
-            WHERE projeNo = @projeNo";
 
-            using (var cmd = new SqlCommand(query, transaction.Connection, transaction))
+            return null;
+        }
+        public void UpdateToplamBedel(SqlConnection connection, SqlTransaction transaction, string projeNo, decimal toplamBedel)
+        {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+
+            string query = @"
+        UPDATE ProjeFinans_ProjeKutuk
+        SET toplamBedel = @toplamBedel
+        WHERE projeNo = @projeNo";
+
+            using (var cmd = new SqlCommand(query, connection, transaction))
             {
                 cmd.Parameters.AddWithValue("@projeNo", projeNo);
                 cmd.Parameters.AddWithValue("@toplamBedel", toplamBedel);
@@ -307,114 +307,113 @@ namespace CEKA_APP.Concretes.ProjeFinans
             }
         }
 
-        public bool IsFaturalamaSekliTekil(int projeId)
+        public bool IsFaturalamaSekliTekil(SqlConnection connection, int projeId)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+
+            string sql = @"
+        SELECT faturalamaSekli
+        FROM ProjeFinans_ProjeKutuk
+        WHERE projeId = @projeId";
+
+            using (SqlCommand command = new SqlCommand(sql, connection))
             {
-                connection.Open();
-                string sql = @"
-                        SELECT faturalamaSekli
-                        FROM ProjeFinans_ProjeKutuk
-                        WHERE projeId = @projeId";
-                using (SqlCommand command = new SqlCommand(sql, connection))
-                {
-                    command.Parameters.AddWithValue("@projeId", projeId);
-                    var result = command.ExecuteScalar();
-                    return result != null && result.ToString().Trim().ToLower() == "tekil";
-                }
+                command.Parameters.AddWithValue("@projeId", projeId);
+                var result = command.ExecuteScalar();
+                return result != null && result.ToString().Trim().ToLower() == "tekil";
             }
         }
-        public (bool HasRelated, List<string> Details) HasRelatedRecords(int projeId, List<int> altProjeler)
+
+        public (bool HasRelated, List<string> Details) HasRelatedRecords(SqlConnection connection, int projeId, List<int> altProjeler)
         {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
             var details = new List<string>();
-            using (var connection = DataBaseHelper.GetConnection())
+
+            var projeler = new List<int> { projeId };
+            if (altProjeler != null && altProjeler.Any())
             {
-                connection.Open();
-
-                var projeler = new List<int> { projeId };
-                if (altProjeler != null && altProjeler.Any())
-                {
-                    projeler.AddRange(altProjeler);
-                }
-
-                var parameters = projeler.Select((p, i) => "@p" + i).ToList();
-                string inClause = string.Join(",", parameters);
-
-                // Fiyatlandırma kontrolü
-                string fiyatlandirmaSql = $"SELECT COUNT(*) FROM ProjeFinans_Fiyatlandirma WHERE projeId IN ({inClause})";
-                using (SqlCommand command = new SqlCommand(fiyatlandirmaSql, connection))
-                {
-                    for (int i = 0; i < projeler.Count; i++)
-                    {
-                        command.Parameters.AddWithValue("@p" + i, projeler[i]);
-                    }
-                    int count = (int)command.ExecuteScalar();
-                    if (count > 0)
-                    {
-                        details.Add($"Fiyatlandırma tablosunda {count} kayıt var.");
-                    }
-                }
-
-                // Ödeme Şartları kontrolü
-                string odemeSartlariSql = $"SELECT COUNT(*) FROM ProjeFinans_OdemeSartlari WHERE projeId IN ({inClause})";
-                using (SqlCommand command = new SqlCommand(odemeSartlariSql, connection))
-                {
-                    for (int i = 0; i < projeler.Count; i++)
-                    {
-                        command.Parameters.AddWithValue("@p" + i, projeler[i]);
-                    }
-                    int count = (int)command.ExecuteScalar();
-                    if (count > 0)
-                    {
-                        details.Add($"Ödeme Şartları tablosunda {count} kayıt var.");
-                    }
-                }
-
-                // Sevkiyat kontrolü
-                string sevkiyatSql = $"SELECT COUNT(*) FROM ProjeFinans_Sevkiyat WHERE projeId IN ({inClause})";
-                using (SqlCommand command = new SqlCommand(sevkiyatSql, connection))
-                {
-                    for (int i = 0; i < projeler.Count; i++)
-                    {
-                        command.Parameters.AddWithValue("@p" + i, projeler[i]);
-                    }
-                    int count = (int)command.ExecuteScalar();
-                    if (count > 0)
-                    {
-                        details.Add($"Sevkiyat tablosunda {count} kayıt var.");
-                    }
-                }
-
-                // Teminat Mektupları kontrolü
-                string teminatSql = $"SELECT COUNT(*) FROM ProjeFinans_TeminatMektuplari WHERE projeId IN ({inClause})";
-                using (SqlCommand command = new SqlCommand(teminatSql, connection))
-                {
-                    for (int i = 0; i < projeler.Count; i++)
-                    {
-                        command.Parameters.AddWithValue("@p" + i, projeler[i]);
-                    }
-                    int count = (int)command.ExecuteScalar();
-                    if (count > 0)
-                    {
-                        details.Add($"Teminat Mektupları tablosunda {count} kayıt var.");
-                    }
-                }
-
-                bool hasRelated = details.Any();
-                return (hasRelated, details);
+                projeler.AddRange(altProjeler);
             }
+
+            var parameters = projeler.Select((p, i) => "@p" + i).ToList();
+            string inClause = string.Join(",", parameters);
+
+            string fiyatlandirmaSql = $"SELECT COUNT(*) FROM ProjeFinans_Fiyatlandirma WHERE projeId IN ({inClause})";
+            using (SqlCommand command = new SqlCommand(fiyatlandirmaSql, connection))
+            {
+                for (int i = 0; i < projeler.Count; i++)
+                {
+                    command.Parameters.AddWithValue("@p" + i, projeler[i]);
+                }
+                int count = (int)command.ExecuteScalar();
+                if (count > 0)
+                {
+                    details.Add($"Fiyatlandırma tablosunda {count} kayıt var.");
+                }
+            }
+
+            string odemeSartlariSql = $"SELECT COUNT(*) FROM ProjeFinans_OdemeSartlari WHERE projeId IN ({inClause})";
+            using (SqlCommand command = new SqlCommand(odemeSartlariSql, connection))
+            {
+                for (int i = 0; i < projeler.Count; i++)
+                {
+                    command.Parameters.AddWithValue("@p" + i, projeler[i]);
+                }
+                int count = (int)command.ExecuteScalar();
+                if (count > 0)
+                {
+                    details.Add($"Ödeme Şartları tablosunda {count} kayıt var.");
+                }
+            }
+
+            string sevkiyatSql = $"SELECT COUNT(*) FROM ProjeFinans_Sevkiyat WHERE projeId IN ({inClause})";
+            using (SqlCommand command = new SqlCommand(sevkiyatSql, connection))
+            {
+                for (int i = 0; i < projeler.Count; i++)
+                {
+                    command.Parameters.AddWithValue("@p" + i, projeler[i]);
+                }
+                int count = (int)command.ExecuteScalar();
+                if (count > 0)
+                {
+                    details.Add($"Sevkiyat tablosunda {count} kayıt var.");
+                }
+            }
+
+            string teminatSql = $"SELECT COUNT(*) FROM ProjeFinans_TeminatMektuplari WHERE projeId IN ({inClause})";
+            using (SqlCommand command = new SqlCommand(teminatSql, connection))
+            {
+                for (int i = 0; i < projeler.Count; i++)
+                {
+                    command.Parameters.AddWithValue("@p" + i, projeler[i]);
+                }
+                int count = (int)command.ExecuteScalar();
+                if (count > 0)
+                {
+                    details.Add($"Teminat Mektupları tablosunda {count} kayıt var.");
+                }
+            }
+
+            bool hasRelated = details.Any();
+            return (hasRelated, details);
         }
-        public bool ProjeKutukGuncelle(SqlTransaction transaction, ProjeKutuk yeniKutuk)
+
+        public bool ProjeKutukGuncelle(SqlConnection connection, SqlTransaction transaction, ProjeKutuk yeniKutuk)
         {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+
             string yeniProjeNo = yeniKutuk.projeNo.Trim();
             string kok = yeniProjeNo.Split('.')[0].Trim();
 
             string checkSql = @"
-            SELECT COUNT(*) 
-            FROM ProjeFinans_ProjeKutuk 
-            WHERE LEFT(TRIM(projeNo), 5) = @kok AND TRIM(projeNo) <> @projeNo";
+    SELECT COUNT(*) 
+    FROM ProjeFinans_ProjeKutuk 
+    WHERE LEFT(TRIM(projeNo), 5) = @kok AND TRIM(projeNo) <> @projeNo";
 
-            using (SqlCommand checkCommand = new SqlCommand(checkSql, transaction.Connection, transaction))
+            using (SqlCommand checkCommand = new SqlCommand(checkSql, connection, transaction))
             {
                 checkCommand.Parameters.AddWithValue("@kok", kok);
                 checkCommand.Parameters.AddWithValue("@projeNo", yeniProjeNo);
@@ -426,22 +425,22 @@ namespace CEKA_APP.Concretes.ProjeFinans
             }
 
             string sql = @"
-            UPDATE ProjeFinans_ProjeKutuk 
-            SET projeId = @projeId,
-                musteriNo = @musteriNo, 
-                musteriAdi = @musteriAdi, 
-                isFirsatiNo = @isFirsatiNo, 
-                altProjeVarMi = @altProjeVarMi, 
-                digerProjeIliskisiVarMi = @digerProjeIliskisiVarMi, 
-                siparisSozlesmeTarihi = @siparisSozlesmeTarihi, 
-                paraBirimi = @paraBirimi, 
-                toplamBedel = @toplamBedel, 
-                faturalamaSekli = @faturalamaSekli, 
-                nakliyeVarMi = @nakliyeVarMi,
-                montajTamamlandiMi = @montajTamamlandiMi
-            WHERE projeNo = @projeNo";
+    UPDATE ProjeFinans_ProjeKutuk 
+    SET projeId = @projeId,
+        musteriNo = @musteriNo, 
+        musteriAdi = @musteriAdi, 
+        isFirsatiNo = @isFirsatiNo, 
+        altProjeVarMi = @altProjeVarMi, 
+        digerProjeIliskisiVarMi = @digerProjeIliskisiVarMi, 
+        siparisSozlesmeTarihi = @siparisSozlesmeTarihi, 
+        paraBirimi = @paraBirimi, 
+        toplamBedel = @toplamBedel, 
+        faturalamaSekli = @faturalamaSekli, 
+        nakliyeVarMi = @nakliyeVarMi,
+        montajTamamlandiMi = @montajTamamlandiMi
+    WHERE projeNo = @projeNo";
 
-            using (SqlCommand command = new SqlCommand(sql, transaction.Connection, transaction))
+            using (SqlCommand command = new SqlCommand(sql, connection, transaction))
             {
                 command.Parameters.AddWithValue("@projeId", yeniKutuk.projeId);
                 command.Parameters.AddWithValue("@musteriNo", yeniKutuk.musteriNo ?? (object)DBNull.Value);
@@ -462,10 +461,10 @@ namespace CEKA_APP.Concretes.ProjeFinans
             if (yeniKutuk.altProjeVarMi)
             {
                 string altProjeSilSql = @"
-                DELETE FROM ProjeFinans_ProjeIliski 
-                WHERE ustProjeId = @projeId";
+        DELETE FROM ProjeFinans_ProjeIliski 
+        WHERE ustProjeId = @projeId";
 
-                using (SqlCommand command = new SqlCommand(altProjeSilSql, transaction.Connection, transaction))
+                using (SqlCommand command = new SqlCommand(altProjeSilSql, connection, transaction))
                 {
                     command.Parameters.AddWithValue("@projeId", yeniKutuk.projeId);
                     command.ExecuteNonQuery();
@@ -474,12 +473,12 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 foreach (var altProje in yeniKutuk.altProjeBilgileri)
                 {
                     string altProjeEkleSql = @"
-                    INSERT INTO ProjeFinans_ProjeIliski 
-                    (ustProjeId, altProjeId)
-                    VALUES 
-                    (@ustProjeId, @altProjeId)";
+            INSERT INTO ProjeFinans_ProjeIliski 
+            (ustProjeId, altProjeId)
+            VALUES 
+            (@ustProjeId, @altProjeId)";
 
-                    using (SqlCommand command = new SqlCommand(altProjeEkleSql, transaction.Connection, transaction))
+                    using (SqlCommand command = new SqlCommand(altProjeEkleSql, connection, transaction))
                     {
                         command.Parameters.AddWithValue("@ustProjeId", yeniKutuk.projeId);
                         command.Parameters.AddWithValue("@altProjeId", altProje != 0 ? (object)altProje : DBNull.Value);
@@ -490,8 +489,12 @@ namespace CEKA_APP.Concretes.ProjeFinans
 
             return true;
         }
-        public bool ProjeKutukSil(SqlTransaction transaction, int projeId, List<int> altProjeIds)
+
+        public bool ProjeKutukSil(SqlConnection connection, SqlTransaction transaction, int projeId, List<int> altProjeIds)
         {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+
             var projeler = new List<int> { projeId };
             if (altProjeIds != null && altProjeIds.Any())
                 projeler.AddRange(altProjeIds);
@@ -499,209 +502,118 @@ namespace CEKA_APP.Concretes.ProjeFinans
             var parameters = projeler.Select((p, i) => "@p" + i).ToList();
             string inClause = string.Join(",", parameters);
 
-          
-            string sayfaStatusSilSql =
-                $"DELETE FROM SayfaStatus WHERE projeId IN ({inClause})";
-            using (SqlCommand command = new SqlCommand(sayfaStatusSilSql, transaction.Connection, transaction))
+            string sayfaStatusSilSql = $"DELETE FROM SayfaStatus WHERE projeId IN ({inClause})";
+            using (SqlCommand command = new SqlCommand(sayfaStatusSilSql, connection, transaction))
             {
                 for (int i = 0; i < projeler.Count; i++)
                     command.Parameters.AddWithValue("@p" + i, projeler[i]);
-
                 command.ExecuteNonQuery();
             }
 
-           
-            string projeKutukSilSql =
-                $"DELETE FROM ProjeFinans_ProjeKutuk WHERE projeId IN ({inClause})";
-            using (SqlCommand command = new SqlCommand(projeKutukSilSql, transaction.Connection, transaction))
+            string projeKutukSilSql = $"DELETE FROM ProjeFinans_ProjeKutuk WHERE projeId IN ({inClause})";
+            using (SqlCommand command = new SqlCommand(projeKutukSilSql, connection, transaction))
             {
                 for (int i = 0; i < projeler.Count; i++)
                     command.Parameters.AddWithValue("@p" + i, projeler[i]);
-
                 command.ExecuteNonQuery();
             }
 
-            
             string altProjeIliskiSilSql =
                 $"DELETE FROM ProjeFinans_ProjeIliski WHERE ustProjeId IN ({inClause}) OR altProjeId IN ({inClause})";
-            using (SqlCommand command = new SqlCommand(altProjeIliskiSilSql, transaction.Connection, transaction))
+            using (SqlCommand command = new SqlCommand(altProjeIliskiSilSql, connection, transaction))
             {
                 for (int i = 0; i < projeler.Count; i++)
                     command.Parameters.AddWithValue("@p" + i, projeler[i]);
-
                 command.ExecuteNonQuery();
             }
 
-           
-            string projeFinansSilSql =
-                $"DELETE FROM ProjeFinans_Projeler WHERE projeId IN ({inClause})";
-            using (SqlCommand command = new SqlCommand(projeFinansSilSql, transaction.Connection, transaction))
+            string projeFinansSilSql = $"DELETE FROM ProjeFinans_Projeler WHERE projeId IN ({inClause})";
+            using (SqlCommand command = new SqlCommand(projeFinansSilSql, connection, transaction))
             {
                 for (int i = 0; i < projeler.Count; i++)
                     command.Parameters.AddWithValue("@p" + i, projeler[i]);
-
                 command.ExecuteNonQuery();
             }
 
             return true;
         }
 
-        //public static bool ProjeKutukSil(string projeNo, List<string> altProjeler)
-        //{
-        //    using (var connection = DataBaseHelper.GetConnection())
-        //    {
-        //        try
-        //        {
-        //            connection.Open();
-
-        //            using (var transaction = connection.BeginTransaction())
-        //            {
-        //                try
-        //                {
-        //                    var projeler = new List<string> { projeNo };
-        //                    if (altProjeler != null && altProjeler.Any())
-        //                    {
-        //                        projeler.AddRange(altProjeler);
-        //                    }
-
-        //                    var parameters = projeler.Select((p, i) => "@p" + i).ToList();
-        //                    string inClause = string.Join(",", parameters);
-
-        //                    string projeKutukSilSql = @"
-        //                        DELETE FROM ProjeFinans_ProjeKutuk 
-        //                        WHERE projeNo IN ({0})";
-        //                    projeKutukSilSql = string.Format(projeKutukSilSql, inClause);
-
-        //                    using (SqlCommand command = new SqlCommand(projeKutukSilSql, connection, transaction))
-        //                    {
-        //                        for (int i = 0; i < projeler.Count; i++)
-        //                        {
-        //                            command.Parameters.AddWithValue("@p" + i, projeler[i].Trim());
-        //                        }
-        //                        command.ExecuteNonQuery();
-        //                    }
-
-        //                    string altProjeIliskiSilSql = @"
-        //                        DELETE FROM ProjeFinans_ProjeIliski 
-        //                        WHERE ustProjeId IN ({0}) OR altProjeId IN ({0})";
-        //                    altProjeIliskiSilSql = string.Format(altProjeIliskiSilSql, inClause);
-
-        //                    using (SqlCommand command = new SqlCommand(altProjeIliskiSilSql, connection, transaction))
-        //                    {
-        //                        for (int i = 0; i < projeler.Count; i++)
-        //                        {
-        //                            command.Parameters.AddWithValue("@p" + i, projeler[i].Trim());
-        //                        }
-        //                        command.ExecuteNonQuery();
-        //                    }
-
-        //                    string projeFinansSilSql = @"
-        //                        DELETE FROM ProjeFinans_Projeler 
-        //                        WHERE projeNo IN ({0})";
-        //                    projeFinansSilSql = string.Format(projeFinansSilSql, inClause);
-
-        //                    using (SqlCommand command = new SqlCommand(projeFinansSilSql, connection, transaction))
-        //                    {
-        //                        for (int i = 0; i < projeler.Count; i++)
-        //                        {
-        //                            command.Parameters.AddWithValue("@p" + i, projeler[i].Trim());
-        //                        }
-        //                        command.ExecuteNonQuery();
-        //                    }
-
-        //                    transaction.Commit();
-        //                    return true;
-        //                }
-        //                catch (Exception ex)
-        //                {
-        //                    transaction.Rollback();
-        //                    MessageBox.Show($"Proje silinirken hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //                    return false;
-        //                }
-        //            }
-        //        }
-        //        catch (Exception ex)
-        //        {
-        //            MessageBox.Show($"Bağlantı hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //            return false;
-        //        }
-        //    }
-        //}
-        public string GetProjeParaBirimi(int projeId)
+        public string GetProjeParaBirimi(SqlConnection connection, int projeId)
         {
-            int? ustProjeId = _projeIliskiRepository.GetUstProjeId(projeId);
-            int hedefProjeId = ustProjeId.HasValue ? ustProjeId.Value : projeId;
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
 
-            ProjeKutuk kutuk = ProjeKutukAra(hedefProjeId);
+            int? ustProjeId = _projeIliskiRepository.GetUstProjeId(connection, projeId);
+            int hedefProjeId = ustProjeId ?? projeId;
+
+            ProjeKutuk kutuk = ProjeKutukAra(connection, hedefProjeId);
+
             return kutuk?.paraBirimi;
         }
-        public ProjeKutuk GetProjeKutukStatus(int projeId)
+
+
+        public ProjeKutuk GetProjeKutukStatus(SqlConnection connection, int projeId)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+
+            const string sql = @"
+        SELECT projeId, status
+        FROM ProjeFinans_ProjeKutuk
+        WHERE projeId = @projeId";
+
+            using (var command = new SqlCommand(sql, connection))
             {
-                connection.Open();
-                string sql = @"
-            SELECT projeId, status
-            FROM ProjeFinans_ProjeKutuk
-            WHERE projeId = @projeId"; 
+                command.Parameters.Add("@projeId", SqlDbType.Int).Value = projeId;
 
-                using (SqlCommand command = new SqlCommand(sql, connection))
+                using (var reader = command.ExecuteReader())
                 {
-                    command.Parameters.AddWithValue("@projeId", projeId);
-
-                    using (var reader = command.ExecuteReader())
+                    if (reader.Read())
                     {
-                        if (reader.Read())
+                        return new ProjeKutuk
                         {
-                            return new ProjeKutuk
-                            {
-                                projeId = reader.GetInt32(reader.GetOrdinal("projeId")),
-
-                                status = reader.IsDBNull(reader.GetOrdinal("status"))
-                                    ? "Başlatıldı" 
-                                    : reader.GetString(reader.GetOrdinal("status"))
-                            };
-                        }
+                            projeId = reader.GetInt32(reader.GetOrdinal("projeId")),
+                            status = reader.IsDBNull(reader.GetOrdinal("status"))
+                                ? "Başlatıldı"
+                                : reader.GetString(reader.GetOrdinal("status"))
+                        };
                     }
                 }
-                return null;
             }
+
+            return null;
         }
 
-        public bool UpdateProjeKutukDurum(int projeId, bool? montajTamamlandiMi, SqlTransaction transaction)
+        public bool UpdateProjeKutukDurum(SqlConnection connection, SqlTransaction transaction, int projeId, bool? montajTamamlandiMi)
         {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
             string kontrolQuery = @"
-SELECT TOP 1 ustProjeId 
-FROM ProjeFinans_ProjeIliski
-WHERE altProjeId = @projeId";
+        SELECT TOP 1 ustProjeId
+        FROM ProjeFinans_ProjeIliski
+        WHERE altProjeId = @projeId";
 
             int? ustProjeId = null;
-            using (var cmd = new SqlCommand(kontrolQuery, transaction.Connection, transaction))
+            using (var cmd = new SqlCommand(kontrolQuery, connection, transaction))
             {
                 cmd.Parameters.Add("@projeId", SqlDbType.Int).Value = projeId;
                 using (var reader = cmd.ExecuteReader())
                 {
                     if (reader.Read())
-                    {
                         ustProjeId = reader.GetInt32(reader.GetOrdinal("ustProjeId"));
-                    }
                 }
             }
 
             int targetProjeId = ustProjeId.HasValue ? ustProjeId.Value : projeId;
 
             string checkQuery = @"SELECT COUNT(*) FROM ProjeFinans_ProjeKutuk WHERE projeId = @projeId";
-            using (var checkCmd = new SqlCommand(checkQuery, transaction.Connection, transaction))
+            using (var checkCmd = new SqlCommand(checkQuery, connection, transaction))
             {
                 checkCmd.Parameters.Add("@projeId", SqlDbType.Int).Value = targetProjeId;
                 int count = (int)checkCmd.ExecuteScalar();
                 if (count == 0)
-                {
                     return false;
-                }
             }
 
             bool finalMontajTamamlandiMi;
@@ -716,59 +628,40 @@ WHERE altProjeId = @projeId";
             FROM ProjeFinans_ProjeKutuk 
             WHERE projeId = @projeId";
 
-                using (var cmd = new SqlCommand(currentStatusQuery, transaction.Connection, transaction))
+                using (var cmd = new SqlCommand(currentStatusQuery, connection, transaction))
                 {
                     cmd.Parameters.Add("@projeId", SqlDbType.Int).Value = targetProjeId;
                     var result = cmd.ExecuteScalar();
-                    finalMontajTamamlandiMi = (result != null && result != DBNull.Value)
-                                                ? (bool)result
-                                                : false;
+                    finalMontajTamamlandiMi =
+                        (result != null && result != DBNull.Value)
+                        ? (bool)result
+                        : false;
                 }
             }
 
             bool sayfa3Kapali;
             bool sayfa4Kapali;
 
-            try
-            {
-                sayfa3Kapali = _sayfaStatusRepository.IsSayfa3Kapali(targetProjeId);
-                sayfa4Kapali = _sayfaStatusRepository.IsAllAltProjelerSayfa4Kapali(targetProjeId);
-
-            }
-            catch (Exception ex)
-            {
-                return false;
-            }
+            sayfa3Kapali = _sayfaStatusRepository.IsSayfa3Kapali(connection, transaction, targetProjeId);
+            sayfa4Kapali = _sayfaStatusRepository.IsAllAltProjelerSayfa4Kapali(connection, transaction, targetProjeId);
 
             string status = (sayfa3Kapali && sayfa4Kapali && finalMontajTamamlandiMi)
-                            ? "Kapatıldı"
-                            : "Başlatıldı";
+                ? "Kapatıldı"
+                : "Başlatıldı";
 
             string updateQuery = @"
-UPDATE ProjeFinans_ProjeKutuk
-SET status = @status
-WHERE projeId = @projeId";
+        UPDATE ProjeFinans_ProjeKutuk
+        SET status = @status
+        WHERE projeId = @projeId";
 
-            using (var cmd = new SqlCommand(updateQuery, transaction.Connection, transaction))
+            using (var cmd = new SqlCommand(updateQuery, connection, transaction))
             {
                 cmd.Parameters.Add("@projeId", SqlDbType.Int).Value = targetProjeId;
                 cmd.Parameters.Add("@status", SqlDbType.NVarChar, 50).Value = status;
 
-                try
-                {
-                    int rowsAffected = cmd.ExecuteNonQuery();
-                    if (rowsAffected == 0)
-                    {
-                        return false;
-                    }
-                }
-                catch (SqlException ex)
-                {
-                    return false;
-                }
+                int rowsAffected = cmd.ExecuteNonQuery();
+                return rowsAffected > 0;
             }
-
-            return true;
         }
     }
 }

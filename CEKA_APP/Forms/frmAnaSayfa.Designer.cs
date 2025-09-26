@@ -87,6 +87,7 @@
             this.btnKarsilastirmaTablolari = new System.Windows.Forms.Button();
             this.btnProjeKutuk = new System.Windows.Forms.Button();
             this.panelAraYuz = new System.Windows.Forms.Panel();
+            this.btnTakipTakvimi = new System.Windows.Forms.Button();
             this.btnSevkiyat = new System.Windows.Forms.Button();
             this.btnOdemeSarlariListe = new System.Windows.Forms.Button();
             this.btnMusteriler = new System.Windows.Forms.Button();
@@ -102,7 +103,6 @@
             this.lblDuyuru = new System.Windows.Forms.Label();
             this.panelAnaSayfaContainer = new System.Windows.Forms.Panel();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
-            this.btnTakipTakvimi = new System.Windows.Forms.Button();
             this.panelNavigasyon.SuspendLayout();
             this.p2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxGeri)).BeginInit();
@@ -492,6 +492,7 @@
             this.richTextBox4.Size = new System.Drawing.Size(366, 144);
             this.richTextBox4.TabIndex = 132;
             this.richTextBox4.Text = "";
+            this.richTextBox4.Visible = false;
             this.richTextBox4.WordWrap = false;
             // 
             // btnAktar
@@ -503,6 +504,7 @@
             this.btnAktar.TabIndex = 130;
             this.btnAktar.Text = "Aktar";
             this.btnAktar.UseVisualStyleBackColor = true;
+            this.btnAktar.Visible = false;
             // 
             // label20
             // 
@@ -523,6 +525,7 @@
             this.richTextBox1.Size = new System.Drawing.Size(324, 144);
             this.richTextBox1.TabIndex = 104;
             this.richTextBox1.Text = "";
+            this.richTextBox1.Visible = false;
             this.richTextBox1.WordWrap = false;
             // 
             // richTextBox2
@@ -533,6 +536,7 @@
             this.richTextBox2.Size = new System.Drawing.Size(335, 144);
             this.richTextBox2.TabIndex = 109;
             this.richTextBox2.Text = "";
+            this.richTextBox2.Visible = false;
             this.richTextBox2.WordWrap = false;
             // 
             // label19
@@ -553,6 +557,7 @@
             this.richTextBox3.Size = new System.Drawing.Size(290, 144);
             this.richTextBox3.TabIndex = 126;
             this.richTextBox3.Text = "";
+            this.richTextBox3.Visible = false;
             this.richTextBox3.WordWrap = false;
             // 
             // label18
@@ -784,6 +789,17 @@
             this.panelAraYuz.Size = new System.Drawing.Size(215, 1192);
             this.panelAraYuz.TabIndex = 212;
             // 
+            // btnTakipTakvimi
+            // 
+            this.btnTakipTakvimi.Location = new System.Drawing.Point(15, 907);
+            this.btnTakipTakvimi.Margin = new System.Windows.Forms.Padding(2);
+            this.btnTakipTakvimi.Name = "btnTakipTakvimi";
+            this.btnTakipTakvimi.Size = new System.Drawing.Size(160, 30);
+            this.btnTakipTakvimi.TabIndex = 133;
+            this.btnTakipTakvimi.Text = "Takip Takvimi";
+            this.btnTakipTakvimi.UseVisualStyleBackColor = true;
+            this.btnTakipTakvimi.Click += new System.EventHandler(this.btnTakipTakvimi_Click);
+            // 
             // btnSevkiyat
             // 
             this.btnSevkiyat.Location = new System.Drawing.Point(15, 856);
@@ -938,17 +954,6 @@
             // openFileDialog1
             // 
             this.openFileDialog1.FileName = "openFileDialog1";
-            // 
-            // btnTakipTakvimi
-            // 
-            this.btnTakipTakvimi.Location = new System.Drawing.Point(15, 907);
-            this.btnTakipTakvimi.Margin = new System.Windows.Forms.Padding(2);
-            this.btnTakipTakvimi.Name = "btnTakipTakvimi";
-            this.btnTakipTakvimi.Size = new System.Drawing.Size(160, 30);
-            this.btnTakipTakvimi.TabIndex = 133;
-            this.btnTakipTakvimi.Text = "Takip Takvimi";
-            this.btnTakipTakvimi.UseVisualStyleBackColor = true;
-            this.btnTakipTakvimi.Click += new System.EventHandler(this.btnTakipTakvimi_Click);
             // 
             // frmAnaSayfa
             // 

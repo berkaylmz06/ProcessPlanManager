@@ -1,30 +1,21 @@
 ﻿using CEKA_APP.Abstracts.ProjeFinans;
-using CEKA_APP.DataBase;
 using CEKA_APP.Entitys.ProjeFinans;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace CEKA_APP.Concretes.ProjeFinans
 {
     public class MusterilerRepository: IMusterilerRepository
     {
-        public void MusteriKaydet(Musteriler musteri, SqlTransaction transaction)
+        public void MusteriKaydet(SqlConnection connection, SqlTransaction transaction, Musteriler musteri)
         {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
-            string query = @"
-        INSERT INTO ProjeFinans_Musteriler
-        (musteriNo, musteriAdi, vergiNo, vergiDairesi, adres, musteriMensei, doviz)
-        VALUES (@musteriNo, @musteriAdi, @vergiNo, @vergiDairesi, @adres, @musteriMensei, @doviz)";
+            string query = "INSERT INTO ProjeFinans_Musteriler (musteriNo, musteriAdi, vergiNo, vergiDairesi, adres, musteriMensei, doviz) VALUES (@musteriNo, @musteriAdi, @vergiNo, @vergiDairesi, @adres, @musteriMensei, @doviz)";
 
-            using (var cmd = new SqlCommand(query, transaction.Connection, transaction))
+            using (var cmd = new SqlCommand(query, connection, transaction))
             {
                 cmd.Parameters.AddWithValue("@musteriNo", musteri.musteriNo ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@musteriAdi", musteri.musteriAdi ?? (object)DBNull.Value);
@@ -33,182 +24,122 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 cmd.Parameters.AddWithValue("@adres", musteri.adres ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@musteriMensei", musteri.musteriMensei ?? (object)DBNull.Value);
                 cmd.Parameters.AddWithValue("@doviz", musteri.doviz ?? (object)DBNull.Value);
-
                 cmd.ExecuteNonQuery();
             }
         }
-
-
-        public bool MusteriNoVarMi(string musteriNo, SqlTransaction transaction)
+        public bool MusteriNoVarMi(SqlConnection connection, string musteriNo)
         {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
 
             string query = "SELECT COUNT(1) FROM ProjeFinans_Musteriler WHERE musteriNo = @musteriNo";
 
-            using (var cmd = new SqlCommand(query, transaction.Connection, transaction))
+            using (var cmd = new SqlCommand(query, connection))
             {
                 cmd.Parameters.AddWithValue("@musteriNo", musteriNo ?? (object)DBNull.Value);
                 int count = (int)cmd.ExecuteScalar();
                 return count > 0;
             }
         }
-
-
-        public Musteriler GetMusteriByMusteriNo(string musteriNo)
+        public Musteriler GetMusteriByMusteriNo(SqlConnection connection, string musteriNo)
         {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
             Musteriler musteri = null;
-            using (var connection = DataBaseHelper.GetConnection())
+            string query = "SELECT musteriNo, musteriAdi, vergiNo, vergiDairesi, adres, musteriMensei, doviz FROM ProjeFinans_Musteriler WHERE musteriNo = @musteriNo";
+
+            using (var cmd = new SqlCommand(query, connection))
             {
-                connection.Open();
-                string query = "SELECT musteriNo, musteriAdi, vergiNo, vergiDairesi, adres, musteriMensei, doviz FROM ProjeFinans_Musteriler WHERE musteriNo = @musteriNo";
-                using (var cmd = new SqlCommand(query, connection))
+                cmd.Parameters.AddWithValue("@musteriNo", musteriNo ?? (object)DBNull.Value);
+                using (var reader = cmd.ExecuteReader())
                 {
-                    cmd.Parameters.AddWithValue("@musteriNo", musteriNo);
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    if (reader.Read())
                     {
-                        if (reader.Read())
+                        musteri = new Musteriler
                         {
-                            musteri = new Musteriler
-                            {
-                                musteriNo = reader["musteriNo"] as string,
-                                musteriAdi = reader["musteriAdi"] as string,
-                                vergiNo = reader["vergiNo"] as string,
-                                vergiDairesi = reader["vergiDairesi"] as string,
-                                adres = reader["adres"] as string,
-                                musteriMensei = reader["musteriMensei"] as string,
-                                doviz = reader["doviz"] as string
-                            };
-                        }
+                            musteriNo = reader["musteriNo"] as string,
+                            musteriAdi = reader["musteriAdi"] as string,
+                            vergiNo = reader["vergiNo"] as string,
+                            vergiDairesi = reader["vergiDairesi"] as string,
+                            adres = reader["adres"] as string,
+                            musteriMensei = reader["musteriMensei"] as string,
+                            doviz = reader["doviz"] as string
+                        };
                     }
                 }
             }
             return musteri;
         }
-
-        public List<Musteriler> GetMusteriler()
+        public string GetMusterilerQuery() 
         {
+            return @"SELECT musteriNo, musteriAdi, vergiNo, vergiDairesi, adres, musteriMensei, doviz FROM ProjeFinans_Musteriler";
+        } 
+
+        public List<Musteriler> GetMusteriler(SqlConnection connection)
+        {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
             List<Musteriler> musterilerListesi = new List<Musteriler>();
-            using (var connection = DataBaseHelper.GetConnection())
+
+            using (var cmd = new SqlCommand(GetMusterilerQuery(), connection))
+            using (var reader = cmd.ExecuteReader())
             {
-                connection.Open();
-                string query = "SELECT musteriNo, musteriAdi, vergiNo, vergiDairesi, adres, musteriMensei, doviz FROM ProjeFinans_Musteriler ORDER BY musteriAdi";
-                using (var cmd = new SqlCommand(query, connection))
+                while (reader.Read())
                 {
-                    using (SqlDataReader reader = cmd.ExecuteReader())
+                    Musteriler musteri = new Musteriler
                     {
-                        while (reader.Read())
-                        {
-                            Musteriler musteri = new Musteriler
-                            {
-                                musteriNo = reader["musteriNo"] as string,
-                                musteriAdi = reader["musteriAdi"] as string,
-                                vergiNo = reader["vergiNo"] as string,
-                                vergiDairesi = reader["vergiDairesi"] as string,
-                                adres = reader["adres"] as string,
-                                musteriMensei = reader["musteriMensei"] as string,
-                                doviz = reader["doviz"] as string
-                            };
-                            musterilerListesi.Add(musteri);
-                        }
-                    }
+                        musteriNo = reader["musteriNo"] as string,
+                        musteriAdi = reader["musteriAdi"] as string,
+                        vergiNo = reader["vergiNo"] as string,
+                        vergiDairesi = reader["vergiDairesi"] as string,
+                        adres = reader["adres"] as string,
+                        musteriMensei = reader["musteriMensei"] as string,
+                        doviz = reader["doviz"] as string
+                    };
+                    musterilerListesi.Add(musteri);
                 }
             }
+
             return musterilerListesi;
         }
-
-        public void TumMusterileriSil(SqlTransaction transaction)
+        public void TumMusterileriSil(SqlConnection connection, SqlTransaction transaction)
         {
-            if (transaction == null)
-                throw new ArgumentNullException(nameof(transaction));
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
             string query = "DELETE FROM ProjeFinans_Musteriler";
 
-            using (var cmd = new SqlCommand(query, transaction.Connection, transaction))
+            using (var cmd = new SqlCommand(query, connection, transaction))
             {
                 cmd.ExecuteNonQuery();
             }
         }
-
-
-        public DataTable FiltreleMusteriBilgileri(Dictionary<string, TextBox> filtreKutulari, DataGridView dataGrid)
+        public string GetMusterilerAraFormuQuery()
         {
-            using (var connection = DataBaseHelper.GetConnection())
-            {
-                connection.Open();
-                string baseQuery = @"
-                        SELECT
-                            musteriNo,
-                            musteriAdi,
-                            vergiDairesi,
-                            vergiNo,
-                            adres,
-                            musteriMensei,
-                            doviz
-                        FROM ProjeFinans_Musteriler
-                        WHERE 1=1";
-
-                var conditions = new List<string>();
-                var parameters = new List<SqlParameter>();
-                int paramIndex = 0;
-
-                foreach (var kutu in filtreKutulari)
-                {
-                    string hamDeger = kutu.Value.Text.Trim();
-                    if (string.IsNullOrEmpty(hamDeger))
-                    {
-                        continue;
-                    }
-
-                    string dataGridHeader = kutu.Key.Replace("_Baslangic", "").Replace("_Bitis", "");
-                    string columnName = dataGrid.Columns.Cast<DataGridViewColumn>()
-                            .FirstOrDefault(c => NormalizeColumnName(c.HeaderText) == NormalizeColumnName(dataGridHeader))?.Name;
-
-                    if (string.IsNullOrEmpty(columnName))
-                    {
-                        MessageBox.Show($"Sütun bulunamadı: {kutu.Key}", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        continue;
-                    }
-
-                    string sqlColumnName = (columnName.Contains(" ") || columnName.Contains(".")) ? $"[{columnName}]" : columnName;
-
-
-                    string paramName = $"@p{paramIndex++}";
-                    string condition = $"LOWER({sqlColumnName}) LIKE {paramName}";
-                    conditions.Add(condition);
-                    parameters.Add(new SqlParameter(paramName, SqlDbType.NVarChar) { Value = "%" + hamDeger.ToLower() + "%" });
-                }
-
-                if (conditions.Any())
-                {
-                    baseQuery += " AND " + string.Join(" AND ", conditions);
-                }
-
-                baseQuery += " ORDER BY musteriAdi";
-
-                using (var cmd = new SqlCommand(baseQuery, connection))
-                {
-                    cmd.Parameters.AddRange(parameters.ToArray());
-
-                    using (var adapter = new SqlDataAdapter(cmd))
-                    {
-                        DataTable dt = new DataTable();
-                        adapter.Fill(dt);
-                        return dt;
-                    }
-                }
-            }
+            return @"SELECT musteriNo, musteriAdi FROM ProjeFinans_Musteriler";
         }
 
-        public string NormalizeColumnName(string columnName)
+        public List<Musteriler> GetMusterilerAraFormu(SqlConnection connection)
         {
-            if (string.IsNullOrEmpty(columnName))
-                return columnName;
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
 
-            return columnName.Replace("ı", "i").Replace("İ", "I").Replace("ş", "s").Replace("Ş", "S")
-                            .Replace("ğ", "g").Replace("Ğ", "G").Replace("ü", "u").Replace("Ü", "U")
-                            .Replace("ç", "c").Replace("Ç", "C").Replace("ö", "o").Replace("Ö", "O")
-                            .ToLower();
+            List<Musteriler> musterilerListesi = new List<Musteriler>();
+
+            using (var cmd = new SqlCommand(GetMusterilerQuery(), connection))
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    Musteriler musteri = new Musteriler
+                    {
+                        musteriNo = reader["musteriNo"] as string,
+                        musteriAdi = reader["musteriAdi"] as string,
+                    };
+                    musterilerListesi.Add(musteri);
+                }
+            }
+
+            return musterilerListesi;
         }
     }
 }

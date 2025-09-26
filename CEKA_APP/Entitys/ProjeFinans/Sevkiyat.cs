@@ -8,6 +8,7 @@ namespace CEKA_APP.Entitys.ProjeFinans
 {
     public class Sevkiyat
     {
+        public int sevkiyatId { get; set; }
         public int projeId { get; set; }
         public int sevkiyatPaketId { get; set; }
         public int paketId { get; set; }

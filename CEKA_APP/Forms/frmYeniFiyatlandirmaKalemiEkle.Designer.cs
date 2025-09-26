@@ -163,7 +163,6 @@
             this.Controls.Add(this.btnSec);
             this.Controls.Add(this.listKalemler);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
-            this.MaximizeBox = false;
             this.MinimizeBox = false;
             this.Name = "frmYeniFiyatlandirmaKalemiEkle";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;

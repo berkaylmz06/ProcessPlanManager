@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.SqlClient;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace CEKA_APP.Abstracts.ProjeFinans
 {
     public interface IProjeIliskiRepository
     {
-        bool AltProjeEkle(int ustProjeId, int altProjeId, SqlTransaction transaction);
-        bool CheckAltProje(int projeId);
-        List<int> GetAltProjeler(int projeId);
-        int? GetUstProjeId(int altProjeId);
+        bool AltProjeEkle(SqlConnection connection, SqlTransaction transaction, int ustProjeId, int altProjeId);
+        bool CheckAltProje(SqlConnection connection, int projeId);
+        List<int> GetAltProjeler(SqlConnection connection, int projeId);
+        int? GetUstProjeId(SqlConnection connection, int altProjeId);
     }
 }

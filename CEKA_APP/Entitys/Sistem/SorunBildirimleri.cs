@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace CEKA_APP.Entitys
 {
-    class SorunBildirimleri
+    public class SorunBildirimleri
     {
         public int id { get; set; }
         public string kullanici { get; set; }

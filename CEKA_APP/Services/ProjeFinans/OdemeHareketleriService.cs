@@ -1,42 +1,38 @@
 ﻿using CEKA_APP.Abstracts.ProjeFinans;
-using CEKA_APP.Concretes.ProjeFinans;
-using CEKA_APP.DataBase;
 using CEKA_APP.Entitys.ProjeFinans;
+using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.ProjeFinans;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Forms;
 
 namespace CEKA_APP.Services.ProjeFinans
 {
     public class OdemeHareketleriService : IOdemeHareketleriService
     {
         private readonly IOdemeHareketleriRepository _odemeHareketleriRepository;
+        private readonly IDataBaseService _dataBaseService;
 
-        public OdemeHareketleriService(IOdemeHareketleriRepository odemeHareketleriRepository)
+        public OdemeHareketleriService(IOdemeHareketleriRepository odemeHareketleriRepository, IDataBaseService dataBaseService)
         {
-            _odemeHareketleriRepository = odemeHareketleriRepository ?? throw new ArgumentNullException(nameof(odemeHareketleriRepository), "Ödeme şartları deposu null olamaz.");
+            _odemeHareketleriRepository = odemeHareketleriRepository ?? throw new ArgumentNullException(nameof(odemeHareketleriRepository));
+            _dataBaseService = dataBaseService ?? throw new ArgumentNullException(nameof(dataBaseService));
         }
         public void DeleteOdemeHareketleriByOdemeIds(List<int> odemeIds)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        _odemeHareketleriRepository.DeleteOdemeHareketleriByOdemeIds(odemeIds, transaction);
+                         _odemeHareketleriRepository.DeleteOdemeHareketleriByOdemeIds(connection, transaction, odemeIds);
                         transaction.Commit();
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        MessageBox.Show($"SQL Hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        throw;
+                        throw new ApplicationException("Ödeme hareketleri silinirken hata oluştu.", ex);
                     }
                 }
             }
@@ -44,37 +40,37 @@ namespace CEKA_APP.Services.ProjeFinans
 
         public List<OdemeHareketleri> GetOdemeHareketleriByOdemeId(int odemeId)
         {
-            if (odemeId <= 0)
-                throw new ArgumentException("Odeme ID geçerli olmalıdır.", nameof(odemeId));
-
             try
             {
-                return _odemeHareketleriRepository.GetOdemeHareketleriByOdemeId(odemeId);
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _odemeHareketleriRepository.GetOdemeHareketleriByOdemeId(connection, odemeId);
+                }
             }
             catch (Exception ex)
             {
-                throw new Exception("Odeme ID'ye göre ödeme bilgileri alınırken hata oluştu.", ex);
+                throw new ApplicationException("Ödeme hareketleri alınırken hata oluştu.", ex);
             }
         }
 
         public bool SaveOdemeHareketi(OdemeHareketleri odemeHareketi)
         {
-            using (var connection = DataBaseHelper.GetConnection())
+            using (var connection = _dataBaseService.GetConnection())
             {
                 connection.Open();
                 using (var transaction = connection.BeginTransaction())
                 {
                     try
                     {
-                        bool sonuc = _odemeHareketleriRepository.SaveOdemeHareketi(odemeHareketi, transaction);
+                        bool sonuc = _odemeHareketleriRepository.SaveOdemeHareketi(connection, transaction, odemeHareketi);
                         transaction.Commit();
                         return sonuc;
                     }
                     catch (Exception ex)
                     {
                         transaction.Rollback();
-                        MessageBox.Show($"SQL Hatası: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        throw;
+                        throw new ApplicationException("Ödeme hareketleri kaydedilirken hata oluştu.", ex);
                     }
                 }
             }

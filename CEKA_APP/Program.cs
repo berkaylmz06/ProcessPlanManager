@@ -20,12 +20,11 @@ namespace CEKA_APP
             var services = new ServiceCollection();
             services.AddApplicationServices();
             services.AddScoped<IUserControlFactory, UserControlFactory>(); 
-
             ServiceProvider = services.BuildServiceProvider();
 
             using (var scope = ServiceProvider.CreateScope())
             {
-                var form = scope.ServiceProvider.GetService<frmKullaniciGirisi>();
+                var form = scope.ServiceProvider.GetRequiredService<frmKullaniciGirisi>();
                 Application.Run(form);
             }
         }

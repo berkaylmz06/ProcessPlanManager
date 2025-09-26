@@ -1,14 +1,27 @@
 ﻿using CEKA_APP.Abstracts;
+using CEKA_APP.Abstracts.ERP;
 using CEKA_APP.Abstracts.Genel;
+using CEKA_APP.Abstracts.KesimTakip;
 using CEKA_APP.Abstracts.ProjeFinans;
+using CEKA_APP.Abstracts.Sistem;
+using CEKA_APP.Concretes.ERP;
 using CEKA_APP.Concretes.Genel;
+using CEKA_APP.Concretes.KesimTakip;
 using CEKA_APP.Concretes.ProjeFinans;
+using CEKA_APP.Concretes.Sistem;
 using CEKA_APP.DataBase.ProjeFinans;
+using CEKA_APP.Entitys;
 using CEKA_APP.Interfaces;
+using CEKA_APP.Interfaces.ERP;
 using CEKA_APP.Interfaces.Genel;
+using CEKA_APP.Interfaces.KesimTakip;
 using CEKA_APP.Interfaces.ProjeFinans;
+using CEKA_APP.Interfaces.Sistem;
+using CEKA_APP.Services.ERP;
 using CEKA_APP.Services.Genel;
+using CEKA_APP.Services.KesimTakip;
 using CEKA_APP.Services.ProjeFinans;
+using CEKA_APP.Services.Sistem;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -50,9 +63,46 @@ namespace CEKA_APP.Infrastructure.DependencyInjection
             services.AddScoped<ISayfaStatusService, SayfaStatusService>();
 
 
+            services.AddScoped<IIdUreticiRepository, IdUreticiRepository>();
+            services.AddScoped<IIdUreticiService, IdUreticiService>();
+            services.AddScoped<IKesimDetaylariRepository, KesimDetaylariRepository>();
+            services.AddScoped<IKesimDetaylariService, KesimDetaylariService>();
+            services.AddScoped<IKesimListesiRepository, KesimListesiRepository>();
+            services.AddScoped<IKesimListesiService, KesimListesiService>();
+            services.AddScoped<IKesimListesiPaketRepository, KesimListesiPaketRepository>();
+            services.AddScoped<IKesimListesiPaketService, KesimListesiPaketService>();
+            services.AddScoped<IKesimTamamlanmisRepository, KesimTamamlanmisRepository>();
+            services.AddScoped<IKesimTamamlanmisService, KesimTamamlanmisService>();
+            services.AddScoped<IKesimTamamlanmisHareketRepository, KesimTamamlanmisHareketRepository>();
+            services.AddScoped<IKesimTamamlanmisHareketService, KesimTamamlanmisHareketService>();
+
+
+            services.AddScoped<IAutoCadAktarimRepository, AutoCadAktarimRepository>();
+            services.AddScoped<IAutoCadAktarimService, AutoCadAktarimService>();
+            services.AddScoped<IKarsilastirmaTablosuRepository, KarsilastirmaTablosuRepository>();
+            services.AddScoped<IKarsilastirmaTablosuService, KarsilastirmaTablosuService>();
+
+
+            services.AddScoped<IDuyurularRepository, DuyurularRepository>();
+            services.AddScoped<IDuyurularService, DuyurularService>();
+            services.AddScoped<IKullaniciHareketLogRepository, KullaniciHareketLogRepository>();
+            services.AddScoped<IKullaniciHareketLogService, KullaniciHareketLogService>();
+            services.AddScoped<IKullanicilarRepository, KullanicilarRepository>();
+            services.AddScoped<IKullanicilarService, KullanicilarService>();
+            services.AddScoped<ISorunBildirimleriRepository, SorunBildirimleriRepository>();
+            services.AddScoped<ISorunBildirimleriService, SorunBildirimleriService>();
+
+
+            services.AddSingleton<IDataBaseRepository, DataBaseRepository>();
+            services.AddSingleton<IDataBaseService, DataBaseService>();
+            services.AddSingleton<ITabloFiltreleRepository, TabloFiltreleRepository>();
+            services.AddSingleton<ITabloFiltreleService, TabloFiltreleService>();
+
+
 
             services.AddScoped<frmAnaSayfa>();
             services.AddScoped<frmKullaniciGirisi>();
+            services.AddScoped<frmKullaniciAyarlari>();
             return services;
         }
     }
