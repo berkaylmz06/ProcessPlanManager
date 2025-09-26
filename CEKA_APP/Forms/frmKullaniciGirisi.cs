@@ -1,6 +1,7 @@
 ﻿using CEKA_APP.DataBase;
 using CEKA_APP.Interfaces.Sistem;
 using CEKA_APP.UsrControl.Interfaces;
+using CEKA_APP.Security;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Configuration;
@@ -22,7 +23,7 @@ namespace CEKA_APP
             InitializeComponent();
 
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            
+
             this.Icon = Properties.Resources.cekalogokirmizi;
 
             this.BackColor = ColorTranslator.FromHtml("#2C3E50");
@@ -126,7 +127,7 @@ namespace CEKA_APP
                         }
                     }
 
-                    Application.Exit(); 
+                    Application.Exit();
                 }
             }
             catch (Exception ex)
@@ -155,11 +156,32 @@ namespace CEKA_APP
 
                 if (kullanici != null)
                 {
+                    try
+                    {
+                        if (chkBeniHatirla.Checked)
+                        {
+                            Properties.Settings.Default.BeniHatirla = true;
+                            Properties.Settings.Default.KaydedilenKullaniciAdi = kullaniciAdi;
+                            Properties.Settings.Default.KaydedilenSifre = SecurityHelpers.ProtectString(sifre);
+                        }
+                        else
+                        {
+                            Properties.Settings.Default.BeniHatirla = false;
+                            Properties.Settings.Default.KaydedilenKullaniciAdi = string.Empty;
+                            Properties.Settings.Default.KaydedilenSifre = string.Empty;
+                        }
+
+                        Properties.Settings.Default.Save();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.WriteLine("Ayar kaydetme hatası: " + ex.Message);
+                    }
+
                     var scope = _serviceProvider.CreateScope();
 
                     var userControlFactory = scope.ServiceProvider.GetRequiredService<IUserControlFactory>();
                     var formAnaSayfa = new frmAnaSayfa(kullanici, userControlFactory, scope.ServiceProvider);
-
 
                     formAnaSayfa.FormClosed += (s, args) => Application.Exit();
                     formAnaSayfa.Show();
@@ -189,8 +211,31 @@ namespace CEKA_APP
             if (Properties.Settings.Default.BeniHatirla)
             {
                 txtKullaniciAdi.Text = Properties.Settings.Default.KaydedilenKullaniciAdi ?? string.Empty;
-                txtSifre.Text = Properties.Settings.Default.KaydedilenSifre ?? string.Empty;
-                chkBeniHatirla.Checked = true;
+
+                var encrypted = Properties.Settings.Default.KaydedilenSifre;
+                if (!string.IsNullOrEmpty(encrypted))
+                {
+                    var decrypted = SecurityHelpers.UnprotectString(encrypted);
+                    if (!string.IsNullOrEmpty(decrypted))
+                    {
+                        txtSifre.Text = decrypted;
+                        chkBeniHatirla.Checked = true;
+                    }
+                    else
+                    {
+                        Properties.Settings.Default.BeniHatirla = false;
+                        Properties.Settings.Default.KaydedilenKullaniciAdi = string.Empty;
+                        Properties.Settings.Default.KaydedilenSifre = string.Empty;
+                        Properties.Settings.Default.Save();
+
+                        txtSifre.Text = string.Empty;
+                        chkBeniHatirla.Checked = false;
+                    }
+                }
+                else
+                {
+                    chkBeniHatirla.Checked = false;
+                }
             }
         }
 

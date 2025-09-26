@@ -26,7 +26,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>67</ApplicationRevision>
+    <ApplicationRevision>69</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -431,6 +431,7 @@
     <Compile Include="Helper\PanelRoundHelper.cs" />
     <Compile Include="Helper\PlatformFontResolver.cs" />
     <Compile Include="Helper\RoundedPanelHelper.cs" />
+    <Compile Include="Helper\SecurityHelpers.cs" />
     <Compile Include="Helper\TreeNodeKoleksiyonuGenisletmeleri.cs" />
     <Compile Include="Infrastructure\DependencyInjection\ServiceRegistration.cs" />
     <Compile Include="Interfaces\ERP\IAutoCadAktarimService.cs" />
