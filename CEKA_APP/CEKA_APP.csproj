@@ -1,0 +1,839 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\PdfiumViewer.Native.x86.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86.v8-xfa.props" Condition="Exists('..\packages\PdfiumViewer.Native.x86.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86.v8-xfa.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{81154A3F-C98D-4F3F-AAC9-B3395B0B22F9}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>CEKA_APP</RootNamespace>
+    <AssemblyName>CEKA_APP</AssemblyName>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <PublishUrl>publish\\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <ApplicationRevision>69</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <PublishWizardCompleted>true</PublishWizardCompleted>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>Resources\cekalogokirmizi.ico</ApplicationIcon>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestCertificateThumbprint>1267E13D776421A46548D8F320D5ED8683979BC1</ManifestCertificateThumbprint>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ManifestKeyFile>CEKA_APP_TemporaryKey.pfx</ManifestKeyFile>
+  </PropertyGroup>
+  <PropertyGroup>
+    <GenerateManifests>true</GenerateManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="BouncyCastle.Cryptography, Version=2.0.0.0, Culture=neutral, PublicKeyToken=072edcf4a5328938, processorArchitecture=MSIL">
+      <HintPath>..\packages\BouncyCastle.Cryptography.2.6.1\lib\net461\BouncyCastle.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader, Version=3.7.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.3.7.0\lib\net462\ExcelDataReader.dll</HintPath>
+    </Reference>
+    <Reference Include="ExcelDataReader.DataSet, Version=3.7.0.0, Culture=neutral, PublicKeyToken=93517dbe6a4012fa, processorArchitecture=MSIL">
+      <HintPath>..\packages\ExcelDataReader.DataSet.3.7.0\lib\net462\ExcelDataReader.DataSet.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.barcodes, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.9.2.0\lib\net461\itext.barcodes.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.bouncy-castle-adapter, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.bouncy-castle-adapter.9.2.0\lib\net461\itext.bouncy-castle-adapter.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.bouncy-castle-connector, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.9.2.0\lib\net461\itext.bouncy-castle-connector.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.commons, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.commons.9.2.0\lib\net461\itext.commons.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.forms, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.9.2.0\lib\net461\itext.forms.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.io, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.9.2.0\lib\net461\itext.io.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.kernel, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.9.2.0\lib\net461\itext.kernel.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.layout, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.9.2.0\lib\net461\itext.layout.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.pdfa, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.9.2.0\lib\net461\itext.pdfa.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.pdfua, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.9.2.0\lib\net461\itext.pdfua.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.sign, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.9.2.0\lib\net461\itext.sign.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.styledxmlparser, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.9.2.0\lib\net461\itext.styledxmlparser.dll</HintPath>
+    </Reference>
+    <Reference Include="itext.svg, Version=9.2.0.0, Culture=neutral, PublicKeyToken=8354ae6d2174ddca, processorArchitecture=MSIL">
+      <HintPath>..\packages\itext.9.2.0\lib\net461\itext.svg.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=9.0.0.7, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.9.0.7\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.Cryptography, Version=9.0.0.7, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Cryptography.9.0.7\lib\net462\Microsoft.Bcl.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.HashCode, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.HashCode.6.0.0\lib\net462\Microsoft.Bcl.HashCode.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection, Version=9.0.0.7, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.9.0.7\lib\net462\Microsoft.Extensions.DependencyInjection.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=9.0.0.7, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.9.0.7\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging, Version=9.0.0.7, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.9.0.7\lib\net462\Microsoft.Extensions.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=9.0.0.7, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.9.0.7\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Options, Version=9.0.0.7, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Options.9.0.7\lib\net462\Microsoft.Extensions.Options.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Primitives, Version=9.0.0.7, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Primitives.9.0.7\lib\net462\Microsoft.Extensions.Primitives.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualBasic" />
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfiumViewer, Version=2.13.0.0, Culture=neutral, PublicKeyToken=91e4789cfb0609e0, processorArchitecture=MSIL">
+      <HintPath>..\packages\PdfiumViewer.2.13.0.0\lib\net20\PdfiumViewer.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp, Version=6.2.1.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.6.2.1\lib\netstandard2.0\PdfSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.BarCodes, Version=6.2.1.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.6.2.1\lib\netstandard2.0\PdfSharp.BarCodes.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Charting, Version=6.2.1.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.6.2.1\lib\netstandard2.0\PdfSharp.Charting.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Cryptography, Version=6.2.1.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.6.2.1\lib\netstandard2.0\PdfSharp.Cryptography.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Quality, Version=6.2.1.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.6.2.1\lib\netstandard2.0\PdfSharp.Quality.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Shared, Version=6.2.1.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.6.2.1\lib\netstandard2.0\PdfSharp.Shared.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.Snippets, Version=6.2.1.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.6.2.1\lib\netstandard2.0\PdfSharp.Snippets.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.System, Version=6.2.1.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.6.2.1\lib\netstandard2.0\PdfSharp.System.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp.WPFonts, Version=6.2.1.0, Culture=neutral, PublicKeyToken=f94615aa0424f9eb, processorArchitecture=MSIL">
+      <HintPath>..\packages\PDFsharp.6.2.1\lib\netstandard2.0\PdfSharp.WPFonts.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.6.1\lib\net462\System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=9.0.0.7, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.9.0.7\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Formats.Asn1, Version=9.0.0.7, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Formats.Asn1.9.0.7\lib\net462\System.Formats.Asn1.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Memory, Version=4.0.5.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.6.3\lib\net462\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.6.1\lib\net462\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.3.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.1.2\lib\net462\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Security" />
+    <Reference Include="System.Security.Cryptography.Pkcs, Version=9.0.0.7, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Security.Cryptography.Pkcs.9.0.7\lib\net462\System.Security.Cryptography.Pkcs.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.6.3\lib\net462\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Windows" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Deployment" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="UglyToad.PdfPig, Version=0.1.11.0, Culture=neutral, PublicKeyToken=605d367334e74123, processorArchitecture=MSIL">
+      <HintPath>..\packages\PdfPig.0.1.11\lib\net471\UglyToad.PdfPig.dll</HintPath>
+    </Reference>
+    <Reference Include="UglyToad.PdfPig.Core, Version=0.1.11.0, Culture=neutral, PublicKeyToken=605d367334e74123, processorArchitecture=MSIL">
+      <HintPath>..\packages\PdfPig.0.1.11\lib\net471\UglyToad.PdfPig.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="UglyToad.PdfPig.DocumentLayoutAnalysis, Version=0.1.11.0, Culture=neutral, PublicKeyToken=605d367334e74123, processorArchitecture=MSIL">
+      <HintPath>..\packages\PdfPig.0.1.11\lib\net471\UglyToad.PdfPig.DocumentLayoutAnalysis.dll</HintPath>
+    </Reference>
+    <Reference Include="UglyToad.PdfPig.Fonts, Version=0.1.11.0, Culture=neutral, PublicKeyToken=605d367334e74123, processorArchitecture=MSIL">
+      <HintPath>..\packages\PdfPig.0.1.11\lib\net471\UglyToad.PdfPig.Fonts.dll</HintPath>
+    </Reference>
+    <Reference Include="UglyToad.PdfPig.Package, Version=0.1.11.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\PdfPig.0.1.11\lib\net471\UglyToad.PdfPig.Package.dll</HintPath>
+    </Reference>
+    <Reference Include="UglyToad.PdfPig.Tokenization, Version=0.1.11.0, Culture=neutral, PublicKeyToken=605d367334e74123, processorArchitecture=MSIL">
+      <HintPath>..\packages\PdfPig.0.1.11\lib\net471\UglyToad.PdfPig.Tokenization.dll</HintPath>
+    </Reference>
+    <Reference Include="UglyToad.PdfPig.Tokens, Version=0.1.11.0, Culture=neutral, PublicKeyToken=605d367334e74123, processorArchitecture=MSIL">
+      <HintPath>..\packages\PdfPig.0.1.11\lib\net471\UglyToad.PdfPig.Tokens.dll</HintPath>
+    </Reference>
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Abstracts\ERP\IAutoCadAktarimRepository.cs" />
+    <Compile Include="Abstracts\ERP\IKarsilastirmaTablosuRepository.cs" />
+    <Compile Include="Abstracts\Genel\IDataBaseRepository.cs" />
+    <Compile Include="Abstracts\Genel\ITabloFiltreleRepository.cs" />
+    <Compile Include="Abstracts\KesimTakip\IKesimDetaylariRepository.cs" />
+    <Compile Include="Abstracts\Genel\ISayfaStatusRepository.cs" />
+    <Compile Include="Abstracts\IFormArayuzu.cs" />
+    <Compile Include="Abstracts\IKullaniciAdiOgren.cs" />
+    <Compile Include="Abstracts\KesimTakip\IIdUreticiRepository.cs" />
+    <Compile Include="Abstracts\KesimTakip\IKesimListesiPaketRepository.cs" />
+    <Compile Include="Abstracts\KesimTakip\IKesimListesiRepository.cs" />
+    <Compile Include="Abstracts\KesimTakip\IKesimTamamlanmisHareketRepository.cs" />
+    <Compile Include="Abstracts\KesimTakip\IKesimTamamlanmisRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IFiyatlandirmaKalemleriRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IFiyatlandirmaRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IKilometreTaslariRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IMusterilerRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IOdemeHareketleriRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IOdemeSartlariRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IFinansProjelerRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IProjeKutukRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\ISevkiyatPaketleriRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\ISevkiyatRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\IProjeIliskiRepository.cs" />
+    <Compile Include="Abstracts\ProjeFinans\ITeminatMektuplariRepository.cs" />
+    <Compile Include="Abstracts\ProjeTakip\IUrunGruplariRepository.cs" />
+    <Compile Include="Abstracts\Sistem\IDuyurularRepository.cs" />
+    <Compile Include="Abstracts\Sistem\IKullaniciHareketLogRepository.cs" />
+    <Compile Include="Abstracts\Sistem\IKullanicilarRepository.cs" />
+    <Compile Include="Abstracts\Sistem\ISorunBildirimleriRepository.cs" />
+    <Compile Include="Business\VeriOkuma.cs" />
+    <Compile Include="Concretes\ERP\AutoCadAktarimRepository.cs" />
+    <Compile Include="Concretes\ERP\KarsilastirmaTablosuRepository.cs" />
+    <Compile Include="Concretes\FormArayuzu.cs" />
+    <Compile Include="Concretes\Genel\DataBaseRepository.cs" />
+    <Compile Include="Concretes\Genel\SayfaStatusRepository.cs" />
+    <Compile Include="Concretes\Genel\TabloFiltreleRepository.cs" />
+    <Compile Include="Concretes\KesimTakip\IdUreticiRepository.cs" />
+    <Compile Include="Concretes\KesimTakip\KesimDetaylariRepository.cs" />
+    <Compile Include="Concretes\KesimTakip\KesimListesiPaketRepository.cs" />
+    <Compile Include="Concretes\KesimTakip\KesimListesiRepository.cs" />
+    <Compile Include="Concretes\KesimTakip\KesimTamamlanmisHareketRepository.cs" />
+    <Compile Include="Concretes\KesimTakip\KesimTamamlanmisRepository.cs" />
+    <Compile Include="Concretes\KullaniciAdiOgren.cs" />
+    <Compile Include="Concretes\ProjeFinans\FinansProjelerRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\FiyatlandirmaKalemleriRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\FiyatlandirmaRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\KilometreTaslariRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\MusterilerRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\OdemeHareketleriRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\OdemeSartlariRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\ProjeIliskiRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\ProjeKutukRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\SevkiyatPaketleriRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\SevkiyatRepository.cs" />
+    <Compile Include="Concretes\ProjeFinans\TeminatMektuplariRepository.cs" />
+    <Compile Include="Concretes\ProjeTakip\UrunGruplariRepository.cs" />
+    <Compile Include="Concretes\Sistem\DuyurularRepository.cs" />
+    <Compile Include="Concretes\Sistem\KullaniciHareketLogRepository.cs" />
+    <Compile Include="Concretes\Sistem\KullanicilarRepository.cs" />
+    <Compile Include="Concretes\Sistem\SorunBildirimleriRepository.cs" />
+    <Compile Include="Entitys\ERP\AutoCadAktarimDetay.cs" />
+    <Compile Include="Entitys\Genel\SayfaStatus.cs" />
+    <Compile Include="Entitys\Genel\Enum\SayfaTipi.cs" />
+    <Compile Include="Entitys\ProjeFinans\Fiyatlandirma.cs" />
+    <Compile Include="Entitys\ProjeFinans\FiyatlandirmaKalem.cs" />
+    <Compile Include="Entitys\ProjeFinans\OdemeHareketleri.cs" />
+    <Compile Include="Entitys\ProjeTakip\UrunGruplari.cs" />
+    <Compile Include="Entitys\Sistem\Duyurular.cs" />
+    <Compile Include="Entitys\ERP\KarsilastirmaTablosu.cs" />
+    <Compile Include="Entitys\KesimTakip\KesimDetaylari.cs" />
+    <Compile Include="Entitys\KesimTakip\KesimListesiPaket.cs" />
+    <Compile Include="Entitys\KesimTakip\KesimTamamlanmisPaket.cs" />
+    <Compile Include="Entitys\Sistem\KullaniciHareket.cs" />
+    <Compile Include="Entitys\KesimTakip\MalzemeBilgisi.cs" />
+    <Compile Include="Entitys\ERP\AutoCadAktarim.cs" />
+    <Compile Include="Entitys\ProjeFinans\Musteriler.cs" />
+    <Compile Include="Entitys\ProjeFinans\OdemeSartlari.cs" />
+    <Compile Include="Entitys\ProjeFinans\ProjeBilgi.cs" />
+    <Compile Include="Entitys\ProjeFinans\ProjeKutuk.cs" />
+    <Compile Include="Entitys\ProjeFinans\Sevkiyat.cs" />
+    <Compile Include="Entitys\ProjeFinans\TeminatMektuplari.cs" />
+    <Compile Include="Entitys\Sistem\SorunBildirimleri.cs" />
+    <Compile Include="Entitys\KesimTakip\KesimListesi.cs" />
+    <Compile Include="Forms\Genel\frmAnaSayfa.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Genel\frmAnaSayfa.Designer.cs">
+      <DependentUpon>frmAnaSayfa.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Genel\frmAra.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Genel\frmAra.Designer.cs">
+      <DependentUpon>frmAra.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Genel\frmAraBilgi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Genel\frmAraBilgi.Designer.cs">
+      <DependentUpon>frmAraBilgi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmFaturaOlustur.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmFaturaOlustur.Designer.cs">
+      <DependentUpon>frmFaturaOlustur.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Genel\frmKullaniciAyarlari.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Genel\frmKullaniciAyarlari.Designer.cs">
+      <DependentUpon>frmKullaniciAyarlari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Genel\frmKullaniciGirisi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Genel\frmKullaniciGirisi.Designer.cs">
+      <DependentUpon>frmKullaniciGirisi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Genel\frmKullaniciEkle.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Genel\frmKullaniciEkle.Designer.cs">
+      <DependentUpon>frmKullaniciEkle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Entitys\Sistem\Kullanicilar.cs" />
+    <Compile Include="Forms\ProjeFinans\frmOdemeHareketleri .cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmOdemeHareketleri .Designer.cs">
+      <DependentUpon>frmOdemeHareketleri .cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\KesimTakip\frmStandartProjeler.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\KesimTakip\frmStandartProjeler.Designer.cs">
+      <DependentUpon>frmStandartProjeler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmStatuBilgi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmStatuBilgi.Designer.cs">
+      <DependentUpon>frmStatuBilgi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\Genel\frmSutunSiralama.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\Genel\frmSutunSiralama.Designer.cs">
+      <DependentUpon>frmSutunSiralama.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmTeminatMektubuEkle.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmTeminatMektubuEkle.Designer.cs">
+      <DependentUpon>frmTeminatMektubuEkle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmYeniFiyatlandirmaKalemiEkle.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmYeniFiyatlandirmaKalemiEkle.Designer.cs">
+      <DependentUpon>frmYeniFiyatlandirmaKalemiEkle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmYeniKilometreTasi.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmYeniKilometreTasi.Designer.cs">
+      <DependentUpon>frmYeniKilometreTasi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmYeniPaketEkle.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProjeFinans\frmYeniPaketEkle.Designer.cs">
+      <DependentUpon>frmYeniPaketEkle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\ProjeTakip\frmUrunGrubuEkle.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\ProjeTakip\frmUrunGrubuEkle.Designer.cs">
+      <DependentUpon>frmUrunGrubuEkle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Helper\ButonGenelHelper.cs" />
+    <Compile Include="Helper\ButonMakinaSecHelper.cs" />
+    <Compile Include="Helper\ChartiTiklanmazYap.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Helper\CustomPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Helper\DataGridViewHelper.cs" />
+    <Compile Include="Helper\DataGridViewSettingsManager.cs" />
+    <Compile Include="Helper\ListBoxHelper.cs" />
+    <Compile Include="Helper\LogHelper.cs" />
+    <Compile Include="Helper\MenuStripGenelHelper.cs" />
+    <Compile Include="Helper\PanelRoundHelper.cs" />
+    <Compile Include="Helper\PlatformFontResolver.cs" />
+    <Compile Include="Helper\RoundedPanelHelper.cs" />
+    <Compile Include="Helper\SecurityHelpers.cs" />
+    <Compile Include="Helper\SiralabilirBindingList.cs" />
+    <Compile Include="Helper\TreeNodeKoleksiyonuGenisletmeleri.cs" />
+    <Compile Include="Infrastructure\DependencyInjection\ServiceRegistration.cs" />
+    <Compile Include="Interfaces\ERP\IAutoCadAktarimService.cs" />
+    <Compile Include="Interfaces\ERP\IKarsilastirmaTablosuService.cs" />
+    <Compile Include="Interfaces\Genel\IDataBaseService.cs" />
+    <Compile Include="Interfaces\Genel\ISayfaStatusService.cs" />
+    <Compile Include="Interfaces\Genel\ITabloFiltreleService.cs" />
+    <Compile Include="Interfaces\KesimTakip\IIdUreticiService.cs" />
+    <Compile Include="Interfaces\KesimTakip\IKesimDetaylariService.cs" />
+    <Compile Include="Interfaces\KesimTakip\IKesimListesiPaketService.cs" />
+    <Compile Include="Interfaces\KesimTakip\IKesimListesiService.cs" />
+    <Compile Include="Interfaces\KesimTakip\IKesimTamamlanmisHareketService.cs" />
+    <Compile Include="Interfaces\KesimTakip\IKesimTamamlanmisService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IFinansProjelerService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IFiyatlandirmaKalemleriService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IFiyatlandirmaService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IKilometreTaslariService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IMusterilerService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IOdemeHareketleriService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IOdemeSartlariService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IProjeIliskiService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\IProjeKutukService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\ISevkiyatPaketleriService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\ISevkiyatService.cs" />
+    <Compile Include="Interfaces\ProjeFinans\ITeminatMektuplariService.cs" />
+    <Compile Include="Interfaces\ProjeTakip\IUrunGruplariService.cs" />
+    <Compile Include="Interfaces\Sistem\IDuyurularService.cs" />
+    <Compile Include="Interfaces\Sistem\IKullaniciHareketLogService.cs" />
+    <Compile Include="Interfaces\Sistem\IKullanicilarService.cs" />
+    <Compile Include="Interfaces\Sistem\ISorunBildirimleriService.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\ERP\AutoCadAktarimService.cs" />
+    <Compile Include="Services\ERP\KarsilastirmaTablosuService.cs" />
+    <Compile Include="Services\Genel\DataBaseService.cs" />
+    <Compile Include="Services\Genel\SayfaStatusService.cs" />
+    <Compile Include="Services\Genel\TabloFiltreleService.cs" />
+    <Compile Include="Services\KesimTakip\IdUreticiService.cs" />
+    <Compile Include="Services\KesimTakip\KesimDetaylariService.cs" />
+    <Compile Include="Services\KesimTakip\KesimListesiPaketService.cs" />
+    <Compile Include="Services\KesimTakip\KesimListesiService.cs" />
+    <Compile Include="Services\KesimTakip\KesimTamamlanmisHareketService.cs" />
+    <Compile Include="Services\KesimTakip\KesimTamamlanmisService.cs" />
+    <Compile Include="Services\ProjeFinans\FinansProjelerService.cs" />
+    <Compile Include="Services\ProjeFinans\FiyatlandirmaKalemleriService.cs" />
+    <Compile Include="Services\ProjeFinans\FiyatlandirmaService.cs" />
+    <Compile Include="Services\ProjeFinans\KilometreTaslariService.cs" />
+    <Compile Include="Services\ProjeFinans\MusterilerService.cs" />
+    <Compile Include="Services\ProjeFinans\OdemeHareketleriService.cs" />
+    <Compile Include="Services\ProjeFinans\OdemeSartlariService.cs" />
+    <Compile Include="Services\ProjeFinans\ProjeIliskiService.cs" />
+    <Compile Include="Services\ProjeFinans\ProjeKutukService.cs" />
+    <Compile Include="Services\ProjeFinans\SevkiyatPaketleriService.cs" />
+    <Compile Include="Services\ProjeFinans\SevkiyatService.cs" />
+    <Compile Include="Services\ProjeFinans\TeminatMektuplariService.cs" />
+    <Compile Include="Services\ProjeTakip\UrunGruplariService.cs" />
+    <Compile Include="Services\Sistem\DuyurularService.cs" />
+    <Compile Include="Services\Sistem\KullaniciHareketLogService.cs" />
+    <Compile Include="Services\Sistem\KullanicilarService.cs" />
+    <Compile Include="Services\Sistem\SorunBildirimleriService.cs" />
+    <Compile Include="UserControls\ERP\ctlAutoCadAktarim.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ERP\ctlAutoCadAktarim.Designer.cs">
+      <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\IUserControlFactory.cs" />
+    <Compile Include="UserControls\KesimTakip\ctlKesimPlaniEkle.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\KesimTakip\ctlKesimPlaniEkle.Designer.cs">
+      <DependentUpon>ctlKesimPlaniEkle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlOdemeSartlariListe.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlOdemeSartlariListe.Designer.cs">
+      <DependentUpon>ctlOdemeSartlariListe.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlSevkiyat.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlSevkiyat.Designer.cs">
+      <DependentUpon>ctlSevkiyat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlTakipTakvimi.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlTakipTakvimi.Designer.cs">
+      <DependentUpon>ctlTakipTakvimi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProjeTakip\ctlImalat.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ProjeTakip\ctlImalat.Designer.cs">
+      <DependentUpon>ctlImalat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProjeTakip\ctlProjeKarti.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ProjeTakip\ctlProjeKarti.Designer.cs">
+      <DependentUpon>ctlProjeKarti.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Sistem\ctlBaslik.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Sistem\ctlBaslik.Designer.cs">
+      <DependentUpon>ctlBaslik.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ERP\ctlKarsilastirmaTablosu.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ERP\ctlKarsilastirmaTablosu.Designer.cs">
+      <DependentUpon>ctlKarsilastirmaTablosu.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\KesimTakip\ctlKesimDetaylari.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\KesimTakip\ctlKesimDetaylari.Designer.cs">
+      <DependentUpon>ctlKesimDetaylari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\KesimTakip\ctlKesimYap.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\KesimTakip\ctlKesimYap.Designer.cs">
+      <DependentUpon>ctlKesimYap.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Sistem\ctlKullaniciAyarlari.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Sistem\ctlKullaniciAyarlari.Designer.cs">
+      <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlMusteriler.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlMusteriler.Designer.cs">
+      <DependentUpon>ctlMusteriler.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlOdemeSartlari.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlOdemeSartlari.Designer.cs">
+      <DependentUpon>ctlOdemeSartlari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlProjeBilgileri.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlProjeBilgileri.Designer.cs">
+      <DependentUpon>ctlProjeBilgileri.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlProjeFiyatlandirma.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlProjeFiyatlandirma.Designer.cs">
+      <DependentUpon>ctlProjeFiyatlandirma.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlProjeKutuk.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlProjeKutuk.Designer.cs">
+      <DependentUpon>ctlProjeKutuk.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ERP\ctlProjeOgeleri.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ERP\ctlProjeOgeleri.Designer.cs">
+      <DependentUpon>ctlProjeOgeleri.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Sistem\ctlSistemBilgisi.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Sistem\ctlSistemBilgisi.Designer.cs">
+      <DependentUpon>ctlSistemBilgisi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Sistem\ctlSistemHareketleri.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Sistem\ctlSistemHareketleri.Designer.cs">
+      <DependentUpon>ctlSistemHareketleri.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\Sistem\ctlSorunlar.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\Sistem\ctlSorunlar.Designer.cs">
+      <DependentUpon>ctlSorunlar.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlTeminatMektuplari.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\ProjeFinans\ctlTeminatMektuplari.Designer.cs">
+      <DependentUpon>ctlTeminatMektuplari.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\KesimTakip\ctlYapilanKesimleriGor.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\KesimTakip\ctlYapilanKesimleriGor.Designer.cs">
+      <DependentUpon>ctlYapilanKesimleriGor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\KesimTakip\ctlYerlesimPlaniBilgi.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="UserControls\KesimTakip\ctlYerlesimPlaniBilgi.Designer.cs">
+      <DependentUpon>ctlYerlesimPlaniBilgi.cs</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\UserControlFactory.cs" />
+    <EmbeddedResource Include="Forms\Genel\frmAnaSayfa.resx">
+      <DependentUpon>frmAnaSayfa.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Genel\frmAra.resx">
+      <DependentUpon>frmAra.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Genel\frmAraBilgi.resx">
+      <DependentUpon>frmAraBilgi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProjeFinans\frmFaturaOlustur.resx">
+      <DependentUpon>frmFaturaOlustur.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Genel\frmKullaniciAyarlari.resx">
+      <DependentUpon>frmKullaniciAyarlari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Genel\frmKullaniciGirisi.resx">
+      <DependentUpon>frmKullaniciGirisi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Genel\frmKullaniciEkle.resx">
+      <DependentUpon>frmKullaniciEkle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProjeFinans\frmOdemeHareketleri .resx">
+      <DependentUpon>frmOdemeHareketleri .cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\KesimTakip\frmStandartProjeler.resx">
+      <DependentUpon>frmStandartProjeler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProjeFinans\frmStatuBilgi.resx">
+      <DependentUpon>frmStatuBilgi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\Genel\frmSutunSiralama.resx">
+      <DependentUpon>frmSutunSiralama.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProjeFinans\frmTeminatMektubuEkle.resx">
+      <DependentUpon>frmTeminatMektubuEkle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProjeFinans\frmYeniFiyatlandirmaKalemiEkle.resx">
+      <DependentUpon>frmYeniFiyatlandirmaKalemiEkle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProjeFinans\frmYeniKilometreTasi.resx">
+      <DependentUpon>frmYeniKilometreTasi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProjeFinans\frmYeniPaketEkle.resx">
+      <DependentUpon>frmYeniPaketEkle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\ProjeTakip\frmUrunGrubuEkle.resx">
+      <DependentUpon>frmUrunGrubuEkle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Resources.resx</DependentUpon>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <EmbeddedResource Include="UserControls\ERP\ctlAutoCadAktarim.resx">
+      <DependentUpon>ctlAutoCadAktarim.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\KesimTakip\ctlKesimPlaniEkle.resx">
+      <DependentUpon>ctlKesimPlaniEkle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlOdemeSartlariListe.resx">
+      <DependentUpon>ctlOdemeSartlariListe.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlSevkiyat.resx">
+      <DependentUpon>ctlSevkiyat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlTakipTakvimi.resx">
+      <DependentUpon>ctlTakipTakvimi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ProjeTakip\ctlImalat.resx">
+      <DependentUpon>ctlImalat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ProjeTakip\ctlProjeKarti.resx">
+      <DependentUpon>ctlProjeKarti.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\Sistem\ctlBaslik.resx">
+      <DependentUpon>ctlBaslik.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ERP\ctlKarsilastirmaTablosu.resx">
+      <DependentUpon>ctlKarsilastirmaTablosu.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\KesimTakip\ctlKesimDetaylari.resx">
+      <DependentUpon>ctlKesimDetaylari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\KesimTakip\ctlKesimYap.resx">
+      <DependentUpon>ctlKesimYap.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\Sistem\ctlKullaniciAyarlari.resx">
+      <DependentUpon>ctlKullaniciAyarlari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlMusteriler.resx">
+      <DependentUpon>ctlMusteriler.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlOdemeSartlari.resx">
+      <DependentUpon>ctlOdemeSartlari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlProjeBilgileri.resx">
+      <DependentUpon>ctlProjeBilgileri.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlProjeFiyatlandirma.resx">
+      <DependentUpon>ctlProjeFiyatlandirma.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlProjeKutuk.resx">
+      <DependentUpon>ctlProjeKutuk.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ERP\ctlProjeOgeleri.resx">
+      <DependentUpon>ctlProjeOgeleri.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\Sistem\ctlSistemBilgisi.resx">
+      <DependentUpon>ctlSistemBilgisi.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\Sistem\ctlSistemHareketleri.resx">
+      <DependentUpon>ctlSistemHareketleri.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\Sistem\ctlSorunlar.resx">
+      <DependentUpon>ctlSorunlar.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\ProjeFinans\ctlTeminatMektuplari.resx">
+      <DependentUpon>ctlTeminatMektuplari.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\KesimTakip\ctlYapilanKesimleriGor.resx">
+      <DependentUpon>ctlYapilanKesimleriGor.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserControls\KesimTakip\ctlYerlesimPlaniBilgi.resx">
+      <DependentUpon>ctlYerlesimPlaniBilgi.cs</DependentUpon>
+    </EmbeddedResource>
+    <None Include="CEKA_APP_TemporaryKey.pfx" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\cekalogokirmizi.ico" />
+    <None Include="Resources\copKutusu.png" />
+    <None Include="Resources\cekalogo.png" />
+    <None Include="Resources\kullanici.png" />
+    <None Include="Resources\anasayfa.png" />
+    <None Include="Resources\navigationForward.png" />
+    <None Include="Resources\navigationBack.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.8">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.8 %28x86 and x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\enAsagiOk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\yukariOk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\asagiOk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\enYukariOk.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\PdfiumViewer.Native.x86.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86.v8-xfa.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\PdfiumViewer.Native.x86.v8-xfa.2018.4.8.256\build\PdfiumViewer.Native.x86.v8-xfa.props'))" />
+    <Error Condition="!Exists('..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets'))" />
+  </Target>
+  <Import Project="..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets" Condition="Exists('..\packages\System.ValueTuple.4.6.1\build\net471\System.ValueTuple.targets')" />
+</Project>
