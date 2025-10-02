@@ -7,6 +7,9 @@
         /// </summary>
         private System.ComponentModel.IContainer components = null;
 
+        // Yeni eklenen TableLayoutPanel değişkeni
+        private System.Windows.Forms.TableLayoutPanel tlpProjeBilgileri;
+
         /// <summary> 
         /// Clean up any resources being used.
         /// </summary>
@@ -44,19 +47,27 @@
             this.lblProjeBasTarihi = new System.Windows.Forms.Label();
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tbProjeBilgileri = new System.Windows.Forms.TabPage();
-            this.btnUrunGrubuEkle = new System.Windows.Forms.Button();
-            this.txtProjeNo = new System.Windows.Forms.TextBox();
-            this.lblProjeNo = new System.Windows.Forms.Label();
+            this.tlpProjeBilgileri = new System.Windows.Forms.TableLayoutPanel(); // YENİ EKLENDİ
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.txtRefProje = new System.Windows.Forms.TextBox();
+            this.lblProjeMuh = new System.Windows.Forms.Label();
+            this.txtProjeMuh = new System.Windows.Forms.TextBox();
+            this.lblReferansProje = new System.Windows.Forms.Label();
             this.chkRefProjeYok = new System.Windows.Forms.CheckBox();
             this.chkRefProjeVar = new System.Windows.Forms.CheckBox();
-            this.txtRefProje = new System.Windows.Forms.TextBox();
-            this.lblReferansProje = new System.Windows.Forms.Label();
-            this.txtProjeMuh = new System.Windows.Forms.TextBox();
-            this.lblProjeMuh = new System.Windows.Forms.Label();
+            this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.txtMusteriAdi = new System.Windows.Forms.TextBox();
-            this.lblMusteriAdi = new System.Windows.Forms.Label();
-            this.txtMusteriNo = new System.Windows.Forms.TextBox();
             this.lblMusteriNo = new System.Windows.Forms.Label();
+            this.txtMusteriNo = new System.Windows.Forms.TextBox();
+            this.lblMusteriAdi = new System.Windows.Forms.Label();
+            this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.txtProjeBitisTarihi = new System.Windows.Forms.TextBox();
+            this.lblProjeBitisTarihi = new System.Windows.Forms.Label();
+            this.txtProjeAdi = new System.Windows.Forms.TextBox();
+            this.lblProjeAdi = new System.Windows.Forms.Label();
+            this.lblProjeNo = new System.Windows.Forms.Label();
+            this.txtProjeNo = new System.Windows.Forms.TextBox();
+            this.btnUrunGrubuEkle = new System.Windows.Forms.Button();
             this.tbUrunGruplari = new System.Windows.Forms.TabPage();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.dataGridUstGruplar = new System.Windows.Forms.DataGridView();
@@ -66,6 +77,10 @@
             this.panelUstSag.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tbProjeBilgileri.SuspendLayout();
+            this.tlpProjeBilgileri.SuspendLayout(); // YENİ EKLENDİ
+            this.groupBox3.SuspendLayout();
+            this.groupBox2.SuspendLayout();
+            this.groupBox1.SuspendLayout();
             this.tbUrunGruplari.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridUstGruplar)).BeginInit();
@@ -232,7 +247,7 @@
             this.txtProjeBasTarihi.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtProjeBasTarihi.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtProjeBasTarihi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtProjeBasTarihi.Location = new System.Drawing.Point(330, 100);
+            this.txtProjeBasTarihi.Location = new System.Drawing.Point(320, 157);
             this.txtProjeBasTarihi.Name = "txtProjeBasTarihi";
             this.txtProjeBasTarihi.Size = new System.Drawing.Size(369, 27);
             this.txtProjeBasTarihi.TabIndex = 331;
@@ -242,7 +257,7 @@
             this.lblProjeBasTarihi.AutoSize = true;
             this.lblProjeBasTarihi.Font = new System.Drawing.Font("Segoe UI", 10F);
             this.lblProjeBasTarihi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.lblProjeBasTarihi.Location = new System.Drawing.Point(40, 100);
+            this.lblProjeBasTarihi.Location = new System.Drawing.Point(30, 157);
             this.lblProjeBasTarihi.Name = "lblProjeBasTarihi";
             this.lblProjeBasTarihi.Size = new System.Drawing.Size(173, 23);
             this.lblProjeBasTarihi.TabIndex = 332;
@@ -261,21 +276,7 @@
             // 
             // tbProjeBilgileri
             // 
-            this.tbProjeBilgileri.Controls.Add(this.btnUrunGrubuEkle);
-            this.tbProjeBilgileri.Controls.Add(this.txtProjeNo);
-            this.tbProjeBilgileri.Controls.Add(this.lblProjeNo);
-            this.tbProjeBilgileri.Controls.Add(this.chkRefProjeYok);
-            this.tbProjeBilgileri.Controls.Add(this.chkRefProjeVar);
-            this.tbProjeBilgileri.Controls.Add(this.txtRefProje);
-            this.tbProjeBilgileri.Controls.Add(this.lblReferansProje);
-            this.tbProjeBilgileri.Controls.Add(this.txtProjeMuh);
-            this.tbProjeBilgileri.Controls.Add(this.lblProjeMuh);
-            this.tbProjeBilgileri.Controls.Add(this.txtMusteriAdi);
-            this.tbProjeBilgileri.Controls.Add(this.lblMusteriAdi);
-            this.tbProjeBilgileri.Controls.Add(this.txtMusteriNo);
-            this.tbProjeBilgileri.Controls.Add(this.lblMusteriNo);
-            this.tbProjeBilgileri.Controls.Add(this.txtProjeBasTarihi);
-            this.tbProjeBilgileri.Controls.Add(this.lblProjeBasTarihi);
+            this.tbProjeBilgileri.Controls.Add(this.tlpProjeBilgileri); // tlpProjeBilgileri'ni ekle
             this.tbProjeBilgileri.Location = new System.Drawing.Point(4, 25);
             this.tbProjeBilgileri.Name = "tbProjeBilgileri";
             this.tbProjeBilgileri.Padding = new System.Windows.Forms.Padding(3);
@@ -284,47 +285,89 @@
             this.tbProjeBilgileri.Text = "Proje Bilgileri";
             this.tbProjeBilgileri.UseVisualStyleBackColor = true;
             // 
-            // btnUrunGrubuEkle
+            // tlpProjeBilgileri
             // 
-            this.btnUrunGrubuEkle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
-            this.btnUrunGrubuEkle.FlatAppearance.BorderSize = 0;
-            this.btnUrunGrubuEkle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnUrunGrubuEkle.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnUrunGrubuEkle.ForeColor = System.Drawing.Color.White;
-            this.btnUrunGrubuEkle.Location = new System.Drawing.Point(34, 348);
-            this.btnUrunGrubuEkle.Name = "btnUrunGrubuEkle";
-            this.btnUrunGrubuEkle.Size = new System.Drawing.Size(143, 28);
-            this.btnUrunGrubuEkle.TabIndex = 330;
-            this.btnUrunGrubuEkle.Text = "Ürün Grubu Ekle";
-            this.btnUrunGrubuEkle.UseVisualStyleBackColor = false;
-            this.btnUrunGrubuEkle.Click += new System.EventHandler(this.btnUrunGrubuEkle_Click);
+            this.tlpProjeBilgileri.ColumnCount = 1;
+            this.tlpProjeBilgileri.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
+            this.tlpProjeBilgileri.Controls.Add(this.groupBox1, 0, 0);
+            this.tlpProjeBilgileri.Controls.Add(this.groupBox2, 0, 1);
+            this.tlpProjeBilgileri.Controls.Add(this.groupBox3, 0, 2);
+            this.tlpProjeBilgileri.Controls.Add(this.btnUrunGrubuEkle, 0, 3);
+            this.tlpProjeBilgileri.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tlpProjeBilgileri.Location = new System.Drawing.Point(3, 3);
+            this.tlpProjeBilgileri.Name = "tlpProjeBilgileri";
+            this.tlpProjeBilgileri.RowCount = 4;
+            this.tlpProjeBilgileri.RowStyles.Add(new System.Windows.Forms.RowStyle()); // groupBox1 için otomatik boyut
+            this.tlpProjeBilgileri.RowStyles.Add(new System.Windows.Forms.RowStyle()); // groupBox2 için otomatik boyut
+            this.tlpProjeBilgileri.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F)); // groupBox3 için kalan alanı kullan
+            this.tlpProjeBilgileri.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 34F)); // buton için sabit yükseklik
+            this.tlpProjeBilgileri.Size = new System.Drawing.Size(1626, 840);
+            this.tlpProjeBilgileri.TabIndex = 352;
             // 
-            // txtProjeNo
+            // groupBox3
             // 
-            this.txtProjeNo.BackColor = System.Drawing.Color.White;
-            this.txtProjeNo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtProjeNo.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtProjeNo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtProjeNo.Location = new System.Drawing.Point(330, 50);
-            this.txtProjeNo.Name = "txtProjeNo";
-            this.txtProjeNo.Size = new System.Drawing.Size(369, 27);
-            this.txtProjeNo.TabIndex = 343;
+            this.groupBox3.Controls.Add(this.txtRefProje);
+            this.groupBox3.Controls.Add(this.lblProjeMuh);
+            this.groupBox3.Controls.Add(this.txtProjeMuh);
+            this.groupBox3.Controls.Add(this.lblReferansProje);
+            this.groupBox3.Controls.Add(this.chkRefProjeYok);
+            this.groupBox3.Controls.Add(this.chkRefProjeVar);
+            this.groupBox3.Location = new System.Drawing.Point(3, 497);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(715, 172); // Size'ı koruyoruz, ancak yükseklik dinamikleşecek
+            this.groupBox3.TabIndex = 351;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Genel";
             // 
-            // lblProjeNo
+            // txtRefProje
             // 
-            this.lblProjeNo.AutoSize = true;
-            this.lblProjeNo.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblProjeNo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.lblProjeNo.Location = new System.Drawing.Point(40, 50);
-            this.lblProjeNo.Name = "lblProjeNo";
-            this.lblProjeNo.Size = new System.Drawing.Size(81, 23);
-            this.lblProjeNo.TabIndex = 344;
-            this.lblProjeNo.Text = "Proje No:";
+            this.txtRefProje.BackColor = System.Drawing.Color.White;
+            this.txtRefProje.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtRefProje.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtRefProje.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.txtRefProje.Location = new System.Drawing.Point(512, 95);
+            this.txtRefProje.Name = "txtRefProje";
+            this.txtRefProje.Size = new System.Drawing.Size(177, 27);
+            this.txtRefProje.TabIndex = 339;
+            this.txtRefProje.Visible = false;
+            // 
+            // lblProjeMuh
+            // 
+            this.lblProjeMuh.AutoSize = true;
+            this.lblProjeMuh.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblProjeMuh.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.lblProjeMuh.Location = new System.Drawing.Point(30, 52);
+            this.lblProjeMuh.Name = "lblProjeMuh";
+            this.lblProjeMuh.Size = new System.Drawing.Size(137, 23);
+            this.lblProjeMuh.TabIndex = 338;
+            this.lblProjeMuh.Text = "Proje Mühendisi:";
+            // 
+            // txtProjeMuh
+            // 
+            this.txtProjeMuh.BackColor = System.Drawing.Color.White;
+            this.txtProjeMuh.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtProjeMuh.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtProjeMuh.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.txtProjeMuh.Location = new System.Drawing.Point(320, 52);
+            this.txtProjeMuh.Name = "txtProjeMuh";
+            this.txtProjeMuh.Size = new System.Drawing.Size(369, 27);
+            this.txtProjeMuh.TabIndex = 337;
+            // 
+            // lblReferansProje
+            // 
+            this.lblReferansProje.AutoSize = true;
+            this.lblReferansProje.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblReferansProje.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.lblReferansProje.Location = new System.Drawing.Point(30, 102);
+            this.lblReferansProje.Name = "lblReferansProje";
+            this.lblReferansProje.Size = new System.Drawing.Size(179, 23);
+            this.lblReferansProje.TabIndex = 340;
+            this.lblReferansProje.Text = "Referans proje var mı?";
             // 
             // chkRefProjeYok
             // 
             this.chkRefProjeYok.AutoSize = true;
-            this.chkRefProjeYok.Location = new System.Drawing.Point(440, 300);
+            this.chkRefProjeYok.Location = new System.Drawing.Point(440, 102);
             this.chkRefProjeYok.Name = "chkRefProjeYok";
             this.chkRefProjeYok.Size = new System.Drawing.Size(53, 20);
             this.chkRefProjeYok.TabIndex = 342;
@@ -334,57 +377,25 @@
             // chkRefProjeVar
             // 
             this.chkRefProjeVar.AutoSize = true;
-            this.chkRefProjeVar.Location = new System.Drawing.Point(339, 300);
+            this.chkRefProjeVar.Location = new System.Drawing.Point(340, 102);
             this.chkRefProjeVar.Name = "chkRefProjeVar";
             this.chkRefProjeVar.Size = new System.Drawing.Size(50, 20);
             this.chkRefProjeVar.TabIndex = 341;
             this.chkRefProjeVar.Text = "Var";
             this.chkRefProjeVar.UseVisualStyleBackColor = true;
             // 
-            // txtRefProje
+            // groupBox2
             // 
-            this.txtRefProje.BackColor = System.Drawing.Color.White;
-            this.txtRefProje.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtRefProje.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtRefProje.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtRefProje.Location = new System.Drawing.Point(522, 300);
-            this.txtRefProje.Name = "txtRefProje";
-            this.txtRefProje.Size = new System.Drawing.Size(177, 27);
-            this.txtRefProje.TabIndex = 339;
-            this.txtRefProje.Visible = false;
-            // 
-            // lblReferansProje
-            // 
-            this.lblReferansProje.AutoSize = true;
-            this.lblReferansProje.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblReferansProje.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.lblReferansProje.Location = new System.Drawing.Point(40, 300);
-            this.lblReferansProje.Name = "lblReferansProje";
-            this.lblReferansProje.Size = new System.Drawing.Size(179, 23);
-            this.lblReferansProje.TabIndex = 340;
-            this.lblReferansProje.Text = "Referans proje var mı?";
-            // 
-            // txtProjeMuh
-            // 
-            this.txtProjeMuh.BackColor = System.Drawing.Color.White;
-            this.txtProjeMuh.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
-            this.txtProjeMuh.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.txtProjeMuh.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtProjeMuh.Location = new System.Drawing.Point(330, 250);
-            this.txtProjeMuh.Name = "txtProjeMuh";
-            this.txtProjeMuh.Size = new System.Drawing.Size(369, 27);
-            this.txtProjeMuh.TabIndex = 337;
-            // 
-            // lblProjeMuh
-            // 
-            this.lblProjeMuh.AutoSize = true;
-            this.lblProjeMuh.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblProjeMuh.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.lblProjeMuh.Location = new System.Drawing.Point(40, 250);
-            this.lblProjeMuh.Name = "lblProjeMuh";
-            this.lblProjeMuh.Size = new System.Drawing.Size(137, 23);
-            this.lblProjeMuh.TabIndex = 338;
-            this.lblProjeMuh.Text = "Proje Mühendisi:";
+            this.groupBox2.Controls.Add(this.txtMusteriAdi);
+            this.groupBox2.Controls.Add(this.lblMusteriNo);
+            this.groupBox2.Controls.Add(this.txtMusteriNo);
+            this.groupBox2.Controls.Add(this.lblMusteriAdi);
+            this.groupBox2.Location = new System.Drawing.Point(3, 315);
+            this.groupBox2.Name = "groupBox2";
+            this.groupBox2.Size = new System.Drawing.Size(715, 176);
+            this.groupBox2.TabIndex = 350;
+            this.groupBox2.TabStop = false;
+            this.groupBox2.Text = "Müşteri Bilgileri";
             // 
             // txtMusteriAdi
             // 
@@ -392,21 +403,21 @@
             this.txtMusteriAdi.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtMusteriAdi.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtMusteriAdi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtMusteriAdi.Location = new System.Drawing.Point(330, 200);
+            this.txtMusteriAdi.Location = new System.Drawing.Point(320, 104);
             this.txtMusteriAdi.Name = "txtMusteriAdi";
             this.txtMusteriAdi.Size = new System.Drawing.Size(369, 27);
             this.txtMusteriAdi.TabIndex = 335;
             // 
-            // lblMusteriAdi
+            // lblMusteriNo
             // 
-            this.lblMusteriAdi.AutoSize = true;
-            this.lblMusteriAdi.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblMusteriAdi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.lblMusteriAdi.Location = new System.Drawing.Point(40, 200);
-            this.lblMusteriAdi.Name = "lblMusteriAdi";
-            this.lblMusteriAdi.Size = new System.Drawing.Size(101, 23);
-            this.lblMusteriAdi.TabIndex = 336;
-            this.lblMusteriAdi.Text = "Müşteri Adı:";
+            this.lblMusteriNo.AutoSize = true;
+            this.lblMusteriNo.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblMusteriNo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.lblMusteriNo.Location = new System.Drawing.Point(30, 54);
+            this.lblMusteriNo.Name = "lblMusteriNo";
+            this.lblMusteriNo.Size = new System.Drawing.Size(99, 23);
+            this.lblMusteriNo.TabIndex = 334;
+            this.lblMusteriNo.Text = "Müşteri No:";
             // 
             // txtMusteriNo
             // 
@@ -414,21 +425,120 @@
             this.txtMusteriNo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.txtMusteriNo.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.txtMusteriNo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.txtMusteriNo.Location = new System.Drawing.Point(330, 150);
+            this.txtMusteriNo.Location = new System.Drawing.Point(320, 54);
             this.txtMusteriNo.Name = "txtMusteriNo";
             this.txtMusteriNo.Size = new System.Drawing.Size(369, 27);
             this.txtMusteriNo.TabIndex = 333;
             // 
-            // lblMusteriNo
+            // lblMusteriAdi
             // 
-            this.lblMusteriNo.AutoSize = true;
-            this.lblMusteriNo.Font = new System.Drawing.Font("Segoe UI", 10F);
-            this.lblMusteriNo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
-            this.lblMusteriNo.Location = new System.Drawing.Point(40, 150);
-            this.lblMusteriNo.Name = "lblMusteriNo";
-            this.lblMusteriNo.Size = new System.Drawing.Size(99, 23);
-            this.lblMusteriNo.TabIndex = 334;
-            this.lblMusteriNo.Text = "Müşteri No:";
+            this.lblMusteriAdi.AutoSize = true;
+            this.lblMusteriAdi.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblMusteriAdi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.lblMusteriAdi.Location = new System.Drawing.Point(30, 104);
+            this.lblMusteriAdi.Name = "lblMusteriAdi";
+            this.lblMusteriAdi.Size = new System.Drawing.Size(101, 23);
+            this.lblMusteriAdi.TabIndex = 336;
+            this.lblMusteriAdi.Text = "Müşteri Adı:";
+            // 
+            // groupBox1
+            // 
+            this.groupBox1.Controls.Add(this.txtProjeBasTarihi);
+            this.groupBox1.Controls.Add(this.txtProjeBitisTarihi);
+            this.groupBox1.Controls.Add(this.lblProjeBitisTarihi);
+            this.groupBox1.Controls.Add(this.txtProjeAdi);
+            this.groupBox1.Controls.Add(this.lblProjeBasTarihi);
+            this.groupBox1.Controls.Add(this.lblProjeAdi);
+            this.groupBox1.Controls.Add(this.lblProjeNo);
+            this.groupBox1.Controls.Add(this.txtProjeNo);
+            this.groupBox1.Location = new System.Drawing.Point(3, 3);
+            this.groupBox1.Name = "groupBox1";
+            this.groupBox1.Size = new System.Drawing.Size(715, 306); // Size'ı koruyoruz
+            this.groupBox1.TabIndex = 349;
+            this.groupBox1.TabStop = false;
+            this.groupBox1.Text = "Proje Bilgileri";
+            // 
+            // txtProjeBitisTarihi
+            // 
+            this.txtProjeBitisTarihi.BackColor = System.Drawing.Color.White;
+            this.txtProjeBitisTarihi.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtProjeBitisTarihi.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtProjeBitisTarihi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.txtProjeBitisTarihi.Location = new System.Drawing.Point(320, 213);
+            this.txtProjeBitisTarihi.Name = "txtProjeBitisTarihi";
+            this.txtProjeBitisTarihi.Size = new System.Drawing.Size(369, 27);
+            this.txtProjeBitisTarihi.TabIndex = 345;
+            // 
+            // lblProjeBitisTarihi
+            // 
+            this.lblProjeBitisTarihi.AutoSize = true;
+            this.lblProjeBitisTarihi.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblProjeBitisTarihi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.lblProjeBitisTarihi.Location = new System.Drawing.Point(30, 213);
+            this.lblProjeBitisTarihi.Name = "lblProjeBitisTarihi";
+            this.lblProjeBitisTarihi.Size = new System.Drawing.Size(133, 23);
+            this.lblProjeBitisTarihi.TabIndex = 346;
+            this.lblProjeBitisTarihi.Text = "Proje bitiş tarihi:";
+            // 
+            // txtProjeAdi
+            // 
+            this.txtProjeAdi.BackColor = System.Drawing.Color.White;
+            this.txtProjeAdi.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtProjeAdi.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtProjeAdi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.txtProjeAdi.Location = new System.Drawing.Point(320, 105);
+            this.txtProjeAdi.Name = "txtProjeAdi";
+            this.txtProjeAdi.Size = new System.Drawing.Size(369, 27);
+            this.txtProjeAdi.TabIndex = 347;
+            // 
+            // lblProjeAdi
+            // 
+            this.lblProjeAdi.AutoSize = true;
+            this.lblProjeAdi.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblProjeAdi.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.lblProjeAdi.Location = new System.Drawing.Point(30, 105);
+            this.lblProjeAdi.Name = "lblProjeAdi";
+            this.lblProjeAdi.Size = new System.Drawing.Size(83, 23);
+            this.lblProjeAdi.TabIndex = 348;
+            this.lblProjeAdi.Text = "Proje Adı:";
+            // 
+            // lblProjeNo
+            // 
+            this.lblProjeNo.AutoSize = true;
+            this.lblProjeNo.Font = new System.Drawing.Font("Segoe UI", 10F);
+            this.lblProjeNo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.lblProjeNo.Location = new System.Drawing.Point(30, 54);
+            this.lblProjeNo.Name = "lblProjeNo";
+            this.lblProjeNo.Size = new System.Drawing.Size(81, 23);
+            this.lblProjeNo.TabIndex = 344;
+            this.lblProjeNo.Text = "Proje No:";
+            // 
+            // txtProjeNo
+            // 
+            this.txtProjeNo.BackColor = System.Drawing.Color.White;
+            this.txtProjeNo.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.txtProjeNo.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.txtProjeNo.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(44)))), ((int)(((byte)(62)))), ((int)(((byte)(80)))));
+            this.txtProjeNo.Location = new System.Drawing.Point(320, 54);
+            this.txtProjeNo.Name = "txtProjeNo";
+            this.txtProjeNo.Size = new System.Drawing.Size(369, 27);
+            this.txtProjeNo.TabIndex = 343;
+            // 
+            // btnUrunGrubuEkle
+            // 
+            this.btnUrunGrubuEkle.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left))); // Butonu sola ve alta sabitle
+            this.btnUrunGrubuEkle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(52)))), ((int)(((byte)(152)))), ((int)(((byte)(219)))));
+            this.btnUrunGrubuEkle.FlatAppearance.BorderSize = 0;
+            this.btnUrunGrubuEkle.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnUrunGrubuEkle.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btnUrunGrubuEkle.ForeColor = System.Drawing.Color.White;
+            this.btnUrunGrubuEkle.Location = new System.Drawing.Point(3, 809);
+            this.btnUrunGrubuEkle.Name = "btnUrunGrubuEkle";
+            this.btnUrunGrubuEkle.Size = new System.Drawing.Size(143, 28);
+            this.btnUrunGrubuEkle.TabIndex = 330;
+            this.btnUrunGrubuEkle.Text = "Ürün Grubu Ekle";
+            this.btnUrunGrubuEkle.UseVisualStyleBackColor = false;
+            this.btnUrunGrubuEkle.Click += new System.EventHandler(this.btnUrunGrubuEkle_Click);
             // 
             // tbUrunGruplari
             // 
@@ -504,7 +614,13 @@
             this.panelUstSag.ResumeLayout(false);
             this.tabControl1.ResumeLayout(false);
             this.tbProjeBilgileri.ResumeLayout(false);
-            this.tbProjeBilgileri.PerformLayout();
+            this.tlpProjeBilgileri.ResumeLayout(false); // YENİ EKLENDİ
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
+            this.groupBox2.ResumeLayout(false);
+            this.groupBox2.PerformLayout();
+            this.groupBox1.ResumeLayout(false);
+            this.groupBox1.PerformLayout();
             this.tbUrunGruplari.ResumeLayout(false);
             this.tbUrunGruplari.PerformLayout();
             this.tableLayoutPanel1.ResumeLayout(false);
@@ -549,7 +665,14 @@
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.DataGridView dataGridUstGruplar;
         private System.Windows.Forms.DataGridView dataGridUrunGruplari;
-
-    
+        private System.Windows.Forms.TextBox txtProjeBitisTarihi;
+        private System.Windows.Forms.Label lblProjeBitisTarihi;
+        private System.Windows.Forms.TextBox txtProjeAdi;
+        private System.Windows.Forms.Label lblProjeAdi;
+        private System.Windows.Forms.GroupBox groupBox1;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.GroupBox groupBox2;
+        // YENİ EKLENEN KONTROL
+        private System.Windows.Forms.TableLayoutPanel xtlpProjeBilgileri;
     }
 }

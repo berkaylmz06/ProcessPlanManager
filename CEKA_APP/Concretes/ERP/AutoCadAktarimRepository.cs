@@ -948,6 +948,7 @@ WHERE m.kalite = @Kalite
 SELECT SUM(KD.toplamAdet) AS ToplamAdetYuklenen
 FROM KesimDetaylari KD
 WHERE KD.kalite = @Kalite
+  AND KD.malzeme = @malzemeAd
   AND KD.malzemeKod LIKE @malzemeKodLike
   AND KD.proje = @ProjeAdi";
 
@@ -963,9 +964,6 @@ WHERE KD.kalite = @Kalite
                     : $"{kalipParcalari[0]}-{kalipParcalari[1]}-{kalipParcalari[2]}"; 
                 command.Parameters.AddWithValue("@malzemeKodLike", malzemeKodLike);
 
-
-                System.Diagnostics.Debug.WriteLine($"KontrolAdeta Sorgusu: kalite={kalite}, malzemeAd={malzeme}, malzemeKod={kalip}, projeAdi={proje}, malzemeKodLike={malzemeKodLike}");
-
                 using (var reader = command.ExecuteReader())
                 {
                     int toplamAdetIfs = 0;
@@ -974,7 +972,6 @@ WHERE KD.kalite = @Kalite
                     if (reader.Read())
                     {
                         toplamAdetIfs = reader["ToplamAdetIfs"] != DBNull.Value ? Convert.ToInt32(reader["ToplamAdetIfs"]) : 0;
-                        System.Diagnostics.Debug.WriteLine($"ToplamAdetIfs: {toplamAdetIfs}");
                     }
 
                     reader.NextResult();
@@ -982,11 +979,9 @@ WHERE KD.kalite = @Kalite
                     if (reader.Read())
                     {
                         toplamAdetYuklenen = reader["ToplamAdetYuklenen"] != DBNull.Value ? Convert.ToInt32(reader["ToplamAdetYuklenen"]) : 0;
-                        System.Diagnostics.Debug.WriteLine($"ToplamAdetYuklenen: {toplamAdetYuklenen}");
                     }
 
                     bool isValid = girilenAdet + toplamAdetYuklenen <= toplamAdetIfs;
-                    System.Diagnostics.Debug.WriteLine($"isValid: {isValid}, girilenAdet={girilenAdet}, toplamAdetYuklenen={toplamAdetYuklenen}, toplamAdetIfs={toplamAdetIfs}");
 
                     return (isValid, toplamAdetIfs, toplamAdetYuklenen);
                 }

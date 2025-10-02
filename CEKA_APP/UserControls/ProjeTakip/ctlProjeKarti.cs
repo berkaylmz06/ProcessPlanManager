@@ -33,7 +33,9 @@ namespace CEKA_APP.UserControls.ProjeTakip
             {
                 if (chkRefProjeYok.Checked) chkRefProjeVar.Checked = false;
             };
-            
+
+            Helper.DataGridViewHelper.StilUygulaUrunGrubuSecim(dataGridUrunGruplari);
+            Helper.DataGridViewHelper.StilUygulaUrunGrubuSecim(dataGridUstGruplar);
         }
         private void tbUrunGruplari_Resize(object sender, System.EventArgs e)
         {
@@ -53,14 +55,11 @@ namespace CEKA_APP.UserControls.ProjeTakip
 
                     if (secilenUrunGruplari != null && secilenUrunGruplari.Count > 0)
                     {
-                        // DataGridView'i temizle
                         dataGridUstGruplar.DataSource = null;
 
-                        // DataGridView'e ata
                         dataGridUstGruplar.DataSource = secilenUrunGruplari;
 
-                        // Opsiyonel: Kolon başlıklarını düzenleyebilirsin
-                        dataGridUstGruplar.Columns["urunGrubuId"].Visible = false; // ID gizle
+                        dataGridUstGruplar.Columns["urunGrubuId"].Visible = false; 
                         dataGridUstGruplar.Columns["urunGrubu"].HeaderText = "Ürün Grubu";
                         dataGridUstGruplar.Columns["urunGrubuAdi"].HeaderText = "Ürün Grubu Adı";
                     }
