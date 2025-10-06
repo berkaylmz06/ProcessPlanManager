@@ -13,5 +13,6 @@ namespace CEKA_APP.Interfaces.ProjeFinans
         bool MektupNoVarMi(string mektupNo);
         List<TeminatMektuplari> GetTeminatMektuplari();
         string GetTeminatMektuplariQuery();
+        void UpdateKilometreTasiAdi(string mektupNo, int kilometreTasiId);
     }
 }

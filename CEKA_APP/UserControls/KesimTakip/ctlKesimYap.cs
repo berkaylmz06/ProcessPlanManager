@@ -4,12 +4,15 @@ using CEKA_APP.Interfaces.ERP;
 using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.KesimTakip;
 using CEKA_APP.Interfaces.Sistem;
+using CEKA_APP.Services.ERP;
+using CEKA_APP.Services.KesimTakip;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Text;
+using System.Transactions;
 using System.Windows.Forms;
 
 namespace CEKA_APP.UsrControl
@@ -156,6 +159,7 @@ namespace CEKA_APP.UsrControl
             frm.ShowDialog();
         }
 
+
         private void btnPaketKes_Click(object sender, EventArgs e)
         {
             DateTime currentDateTime = DateTime.Now;
@@ -200,141 +204,109 @@ namespace CEKA_APP.UsrControl
                 StringBuilder hataAyrintilari = new StringBuilder();
                 List<string> hataMesajlari = new List<string>();
 
-                foreach (DataRow row in dt.Rows)
+                // 🔹 TransactionScope başlatıyoruz
+                using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
                 {
-                    string kalite = row["kalite"].ToString();
-                    string malzeme = row["malzeme"].ToString();
-                    string kalipNo = row["kalipNo"].ToString();
-                    string poz = row["kesilecekPozlar"].ToString();
-                    string proje = row["projeNo"].ToString();
-                    string adetSatır = row["kpAdetSayilari"].ToString();
-
-                    string ifsKalite = _karsilastirmaTablosuService.GetIfsCodeByAutoCadCodeKalite(kalite);
-                    if (string.IsNullOrEmpty(ifsKalite))
-                    {
-                        MessageBox.Show($"Kalite kodu '{kalite}' için eşleşme bulunamadı.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    string hataMesaji;
-                    string ifsMalzeme = _karsilastirmaTablosuService.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
-                    if (string.IsNullOrEmpty(ifsMalzeme))
-                    {
-                        hataMesajlari.Add(hataMesaji);
-                        MessageBox.Show(hataMesaji, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    if (!decimal.TryParse(adetSatır, out decimal kpAdet))
-                    {
-                        MessageBox.Show("Veritabanındaki bazı adet değerleri geçerli değil.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-
-                    decimal sondurum = kpAdet * carpan;
-
-                    string kalipNoPoz = $"{kalipNo}-{poz}";
-                    string kalipNoPozForValidation = kalipNoPoz;
-
-                    int tireSayisi = kalipNoPoz.Count(c => c == '-');
-                    if (tireSayisi >= 3)
-                    {
-                        int ucuncuTireIndex = kalipNoPoz.IndexOf('-', kalipNoPoz.IndexOf('-', kalipNoPoz.IndexOf('-') + 1) + 1);
-                        kalipNoPozForValidation = kalipNoPoz.Substring(0, ucuncuTireIndex);
-                    }
-
-                    string pozbilgileri = $"{ifsKalite}-{ifsMalzeme}-{kalipNoPozForValidation}-{proje}";
-                    pozVeSondurumMesaj.AppendLine($"Poz: {pozbilgileri}, Sondurum: {sondurum}");
-
-                    hataAyrintilari.AppendLine($"Kontrol edilen pozbilgileri: {pozbilgileri}");
-
-                    if (!_kesimDetaylariService.PozExists(ifsKalite, ifsMalzeme, kalipNoPozForValidation, proje))
-                    {
-                        MessageBox.Show($"Poz: {pozbilgileri} KesimDetaylari tablosunda bulunamadı.\nAyrıntılar:\n{hataAyrintilari.ToString()}",
-                            "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                }
-
-                string hata;
-                bool paketSonuc = _kesimListesiPaketService.KesimListesiPaketKontrolluDusme(kesimId, carpan, out hata);
-                if (!paketSonuc)
+                    IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted,
+                    Timeout = TimeSpan.FromMinutes(3)
+                }))
                 {
-                    MessageBox.Show(hata, "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-
-                foreach (DataRow row in dt.Rows)
-                {
-                    string kalite = row["kalite"].ToString();
-                    string malzeme = row["malzeme"].ToString();
-                    string kalipNo = row["kalipNo"].ToString();
-                    string poz = row["kesilecekPozlar"].ToString();
-                    string proje = row["projeNo"].ToString();
-                    string adetSatır = row["kpAdetSayilari"].ToString();
-
-                    string ifsKalite = _karsilastirmaTablosuService.GetIfsCodeByAutoCadCodeKalite(kalite);
-                    if (string.IsNullOrEmpty(ifsKalite))
+                    foreach (DataRow row in dt.Rows)
                     {
-                        MessageBox.Show($"Kalite kodu '{kalite}' için eşleşme bulunamadı.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
+                        string kalite = row["kalite"].ToString();
+                        string malzeme = row["malzeme"].ToString();
+                        string kalipNo = row["kalipNo"].ToString();
+                        string poz = row["kesilecekPozlar"].ToString();
+                        string proje = row["projeNo"].ToString();
+                        string adetSatır = row["kpAdetSayilari"].ToString();
+
+                        string ifsKalite = _karsilastirmaTablosuService.GetIfsCodeByAutoCadCodeKalite(kalite);
+                        if (string.IsNullOrEmpty(ifsKalite))
+                            throw new Exception($"Kalite kodu '{kalite}' için eşleşme bulunamadı.");
+
+                        string hataMesaji;
+                        string ifsMalzeme = _karsilastirmaTablosuService.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
+                        if (string.IsNullOrEmpty(ifsMalzeme))
+                            throw new Exception(hataMesaji);
+
+                        if (!decimal.TryParse(adetSatır, out decimal kpAdet))
+                            throw new Exception("Veritabanındaki bazı adet değerleri geçerli değil.");
+
+                        decimal sondurum = kpAdet * carpan;
+
+                        string[] pozParcalari = poz.Split('-');
+                        string pozIlkKisim = pozParcalari.Length > 0 ? pozParcalari[0] : poz;
+                        string kalipNoPoz = $"{kalipNo}-{pozIlkKisim}";
+                        string kalipNoPozForValidation = kalipNoPoz;
+
+                        int tireSayisi = kalipNoPoz.Count(c => c == '-');
+                        if (tireSayisi >= 3)
+                        {
+                            int ucuncuTireIndex = kalipNoPoz.IndexOf('-', kalipNoPoz.IndexOf('-', kalipNoPoz.IndexOf('-') + 1) + 1);
+                            kalipNoPozForValidation = kalipNoPoz.Substring(0, ucuncuTireIndex);
+                        }
+
+                        string pozbilgileri = $"{ifsKalite}-{ifsMalzeme}-{kalipNoPozForValidation}-{proje}";
+                        pozVeSondurumMesaj.AppendLine($"Poz: {pozbilgileri}, Sondurum: {sondurum}");
+
+                        if (!_kesimDetaylariService.PozExists(ifsKalite, ifsMalzeme, kalipNoPozForValidation, proje))
+                            throw new Exception($"Poz: {pozbilgileri} KesimDetaylari tablosunda bulunamadı.");
                     }
 
-                    string hataMesaji;
-                    string ifsMalzeme = _karsilastirmaTablosuService.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
-                    if (string.IsNullOrEmpty(ifsMalzeme))
+                    string hata;
+                    bool paketSonuc = _kesimListesiPaketService.KesimListesiPaketKontrolluDusme(kesimId, carpan, out hata);
+                    if (!paketSonuc)
+                        throw new Exception(hata);
+
+                    foreach (DataRow row in dt.Rows)
                     {
-                        hataMesajlari.Add(hataMesaji);
-                        MessageBox.Show(hataMesaji, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
+                        string kalite = row["kalite"].ToString();
+                        string malzeme = row["malzeme"].ToString();
+                        string kalipNo = row["kalipNo"].ToString();
+                        string poz = row["kesilecekPozlar"].ToString();
+                        string proje = row["projeNo"].ToString();
+                        string adetSatır = row["kpAdetSayilari"].ToString();
+
+                        string ifsKalite = _karsilastirmaTablosuService.GetIfsCodeByAutoCadCodeKalite(kalite);
+                        string hataMesaji;
+                        string ifsMalzeme = _karsilastirmaTablosuService.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
+                        decimal kpAdet = decimal.Parse(adetSatır);
+                        decimal sondurum = kpAdet * carpan;
+
+                        string[] pozParcalari = poz.Split('-');
+                        string pozIlkKisim = pozParcalari.Length > 0 ? pozParcalari[0] : poz;
+                        string kalipNoPoz = $"{kalipNo}-{pozIlkKisim}";
+                        string kalipNoPozForValidation = kalipNoPoz.Contains("-EK")
+                            ? kalipNoPoz.Substring(0, kalipNoPoz.IndexOf("-EK"))
+                            : kalipNoPoz;
+
+                        bool updateSuccess = _kesimDetaylariService.UpdateKesilmisAdet(ifsKalite, ifsMalzeme, kalipNoPozForValidation, proje, sondurum);
+                        if (!updateSuccess)
+                            throw new Exception($"Poz: {ifsKalite}-{ifsMalzeme}-{kalipNoPozForValidation}-{proje} için kesilmisAdet güncellenemedi.");
                     }
 
-                    if (!decimal.TryParse(adetSatır, out decimal kpAdet))
-                    {
-                        MessageBox.Show("Veritabanındaki bazı adet değerleri geçerli değil.", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
+                    bool sonuc1 = _kesimTamamlanmisService.TablodanKesimTamamlanmisEkleme(olusturan, kesimId, carpan, tarih, saat, kesilenLot);
+                    bool sonuc2 = _kesimTamamlanmisHareketService.TablodanKesimTamamlanmisHareketEkleme(olusturan, kesimId, carpan, tarih, saat);
 
-                    decimal sondurum = kpAdet * carpan;
-                    string kalipNoPoz = $"{kalipNo}-{poz}";
-                    string kalipNoPozForValidation = kalipNoPoz;
-                    if (kalipNoPoz.Contains("-EK"))
-                    {
-                        kalipNoPozForValidation = kalipNoPoz.Substring(0, kalipNoPoz.IndexOf("-EK"));
-                    }
+                    if (!sonuc1 || !sonuc2)
+                        throw new Exception("Kayıt işlemi sırasında hata oluştu.");
 
-                    bool updateSuccess = _kesimDetaylariService.UpdateKesilmisAdet(ifsKalite, ifsMalzeme, kalipNoPozForValidation, proje, sondurum);
-                    if (!updateSuccess)
-                    {
-                        MessageBox.Show($"Poz: {ifsKalite}-{ifsMalzeme}-{kalipNoPozForValidation}-{proje} için kesilmisAdet veya kesilecekAdet güncellenemedi. Kesilecek adet yetersiz olabilir.\nSondurum: {sondurum}",
-                            "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        return;
-                    }
-                }
-
-                bool sonuc1 = _kesimTamamlanmisService.TablodanKesimTamamlanmisEkleme(olusturan, kesimId, carpan, tarih, saat, kesilenLot);
-                bool sonuc2 = _kesimTamamlanmisHareketService.TablodanKesimTamamlanmisHareketEkleme(olusturan, kesimId, carpan, tarih, saat);
-
-                if (sonuc1 && sonuc2)
-                {
                     int kullaniciId = _kullaniciService.GetKullaniciIdByKullaniciAdi(_kullaniciAdi.lblSistemKullaniciMetinAl());
-                    _kullaniciHareketleriService.LogEkle(kullaniciId, "KesimPlaniKesildi", "Kesim Yap", $"Kullanıcı {kesimId} numaralı kesim planının kesimini tamamladı. Kesilen Lot: {kesilenLot}");
-                }
-                else
-                {
-                    MessageBox.Show("Kayıt işlemi sırasında hata oluştu.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
+                    _kullaniciHareketleriService.LogEkle(kullaniciId, "KesimPlaniKesildi", "Kesim Yap",
+                        $"Kullanıcı {kesimId} numaralı kesim planının kesimini tamamladı. Kesilen Lot: {kesilenLot}");
+
+                    // 🔹 Tüm işlemler başarılıysa commit
+                    scope.Complete();
                 }
 
-                MessageBox.Show("Kesim başarıyla tamamlandı.",
-                    "Başarılı!", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                MessageBox.Show("Kesim başarıyla tamamlandı.", "Başarılı!", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 _kesimListesiPaketService.VerileriYenile(dataGridKesimListesi);
                 tabloDuzenle();
                 VerileriYukle();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Bir hata oluştu: {ex.Message}", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Bir hata oluştu, işlem geri alındı: {ex.Message}", "Hata!", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

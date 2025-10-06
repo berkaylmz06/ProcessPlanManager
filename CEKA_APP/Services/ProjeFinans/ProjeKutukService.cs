@@ -19,22 +19,6 @@ namespace CEKA_APP.Services.ProjeFinans
             _projeKutukRepository = projeKutukRepository ?? throw new ArgumentNullException(nameof(projeKutukRepository));
             _dataBaseService = dataBaseService ?? throw new ArgumentNullException(nameof(dataBaseService));
         }
-        public ProjeBilgi GetProjeBilgileri(string projeNo)
-        {
-            try
-            {
-                using (var connection = _dataBaseService.GetConnection())
-                {
-                    connection.Open();
-                    ProjeBilgi sonuc = _projeKutukRepository.GetProjeBilgileri(connection, projeNo);
-                    return sonuc;
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new ApplicationException("Proje bilgileri alınırken hata oluştu.", ex);
-            }
-        }
 
         public ProjeKutuk GetProjeKutukStatus(int projeId)
         {
@@ -81,50 +65,6 @@ namespace CEKA_APP.Services.ProjeFinans
             catch (Exception ex)
             {
                 throw new ApplicationException("Faturalama şekli alınırken hata oluştu.", ex);
-            }
-        }
-
-        public bool ProjeEkleProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi)
-        {
-            using (var connection = _dataBaseService.GetConnection())
-            {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
-                {
-                    try
-                    {
-                        bool sonuc = _projeKutukRepository.ProjeEkleProjeFinans(connection, transaction, projeNo, aciklama, projeAdi, olusturmaTarihi);
-                        transaction.Commit();
-                        return sonuc;
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        throw new ApplicationException("Proje eklenirken hata oluştu.", ex);
-                    }
-                }
-            }
-        }
-
-        public bool ProjeFiyatlandirmaEkle(string projeNo, decimal fiyat)
-        {
-            using (var connection = _dataBaseService.GetConnection())
-            {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
-                {
-                    try
-                    {
-                        bool sonuc = _projeKutukRepository.ProjeFiyatlandirmaEkle(connection, transaction, projeNo, fiyat);
-                        transaction.Commit();
-                        return sonuc;
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        throw new ApplicationException("Proje fiyatlandırma eklenirken hata oluştu.", ex);
-                    }
-                }
             }
         }
 
@@ -205,28 +145,6 @@ namespace CEKA_APP.Services.ProjeFinans
                     {
                         transaction.Rollback();
                         throw new ApplicationException("Proje kütük silinirken hata oluştu.", ex);
-                    }
-                }
-            }
-        }
-
-        public bool UpdateProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi)
-        {
-            using (var connection = _dataBaseService.GetConnection())
-            {
-                connection.Open();
-                using (var transaction = connection.BeginTransaction())
-                {
-                    try
-                    {
-                        bool sonuc = _projeKutukRepository.UpdateProjeFinans(connection, transaction, projeNo, aciklama, projeAdi, olusturmaTarihi);
-                        transaction.Commit();
-                        return sonuc;
-                    }
-                    catch (Exception ex)
-                    {
-                        transaction.Rollback();
-                        throw new ApplicationException("Proje kütük güncellenirken hata oluştu.", ex);
                     }
                 }
             }

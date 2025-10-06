@@ -20,6 +20,8 @@ namespace CEKA_APP.Business
             HashSet<string> invalidDataSet = new HashSet<string>();
 
             string validPattern = @"(?i)(ST\d+)\s*-\s*([^-]+)\s*-\s*(\d+-\d+)\s*-\s*(P\d+)\s*-\s*(\d+AD)\s*-\s*(\d{5}\.\d{2,})\s*(-EK)?(\d*).*";
+            //string validPattern = @"(?i)(ST\d+)\s*-\s*([^-]+)\s*-\s*([A-Z0-9]+-\d+|\d+-\d+)\s*-\s*(P\d+)\s*-\s*(\d+AD)\s*-\s*(\d{5}\.\d{2,})\s*(-EK)?(\d*).*"
+;
 
             var lines = text.Split(new[] { '\r', '\n' }, StringSplitOptions.RemoveEmptyEntries);
 

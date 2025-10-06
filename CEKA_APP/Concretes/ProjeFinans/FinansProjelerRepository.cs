@@ -7,26 +7,30 @@ namespace CEKA_APP.Concretes.ProjeFinans
 {
     public class FinansProjelerRepository: IFinansProjelerRepository
     {
-        public bool ProjeEkleProjeFinans(SqlConnection connection, SqlTransaction transaction, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi)
+        public bool ProjeEkleProjeFinans(SqlConnection connection, SqlTransaction transaction, string projeNo, string projeTipi, string aciklama, string projeAdi, DateTime olusturmaTarihi)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
-            using (SqlCommand komut = new SqlCommand(@"
-        INSERT INTO ProjeFinans_Projeler (projeNo, aciklama, projeAdi, olusturmaTarihi)
-        VALUES (@projeNo, @aciklama, @projeAdi, @olusturmaTarihi)", connection, transaction))
+            string sorgu = @"
+INSERT INTO ProjeFinans_Projeler (projeNo, aciklama, projeAdi, olusturmaTarihi, projeTipi)
+VALUES (@projeNo, @aciklama, @projeAdi, @olusturmaTarihi, @projeTipi)";
+
+            using (SqlCommand komut = new SqlCommand(sorgu, connection, transaction))
             {
                 komut.Parameters.AddWithValue("@projeNo", projeNo);
                 komut.Parameters.AddWithValue("@aciklama", string.IsNullOrEmpty(aciklama) ? (object)DBNull.Value : aciklama);
                 komut.Parameters.AddWithValue("@projeAdi", string.IsNullOrEmpty(projeAdi) ? (object)DBNull.Value : projeAdi);
                 komut.Parameters.AddWithValue("@olusturmaTarihi", olusturmaTarihi);
+                komut.Parameters.AddWithValue("@projeTipi", string.IsNullOrEmpty(projeTipi) ? (object)DBNull.Value : projeTipi);
 
                 komut.ExecuteNonQuery();
-                return true;
             }
+
+            return true;
         }
 
-        public bool UpdateProjeFinans(SqlConnection connection, SqlTransaction transaction, int projeId, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi, out bool degisiklikVar)
+        public bool UpdateProjeFinans(SqlConnection connection, SqlTransaction transaction, int projeId, string projeNo, string projeTipi, string aciklama, string projeAdi, DateTime olusturmaTarihi, out bool degisiklikVar)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
@@ -46,11 +50,14 @@ namespace CEKA_APP.Concretes.ProjeFinans
             string uiProjeAdi = normalize(projeAdi);
             string dbAciklama = normalize(mevcutBilgi.Aciklama);
             string uiAciklama = normalize(aciklama);
+            string dbProjeTipi = normalize(mevcutBilgi.ProjeTipi);
+            string uiProjeTipi = normalize(projeTipi);
 
             degisiklikVar =
                 !string.Equals(dbProjeNo, uiProjeNo, StringComparison.Ordinal) ||
                 !string.Equals(dbProjeAdi, uiProjeAdi, StringComparison.Ordinal) ||
                 !string.Equals(dbAciklama, uiAciklama, StringComparison.Ordinal) ||
+                !string.Equals(dbProjeTipi, uiProjeTipi, StringComparison.Ordinal) ||
                 mevcutBilgi.OlusturmaTarihi.Date != olusturmaTarihi.Date;
 
             if (!degisiklikVar)
@@ -59,12 +66,13 @@ namespace CEKA_APP.Concretes.ProjeFinans
             }
 
             string sorgu = @"
-        UPDATE ProjeFinans_Projeler
-        SET projeNo = @projeNo,
-            aciklama = @aciklama, 
-            projeAdi = @projeAdi, 
-            olusturmaTarihi = @olusturmaTarihi
-        WHERE projeId = @projeId";
+UPDATE ProjeFinans_Projeler
+SET projeNo = @projeNo,
+    aciklama = @aciklama, 
+    projeAdi = @projeAdi, 
+    olusturmaTarihi = @olusturmaTarihi,
+    projeTipi = @projeTipi
+WHERE projeId = @projeId";
 
             using (SqlCommand command = new SqlCommand(sorgu, connection, transaction))
             {
@@ -73,6 +81,7 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 command.Parameters.AddWithValue("@aciklama", string.IsNullOrEmpty(aciklama) ? (object)DBNull.Value : aciklama);
                 command.Parameters.AddWithValue("@projeAdi", string.IsNullOrEmpty(projeAdi) ? (object)DBNull.Value : projeAdi);
                 command.Parameters.AddWithValue("@olusturmaTarihi", olusturmaTarihi);
+                command.Parameters.AddWithValue("@projeTipi", string.IsNullOrEmpty(projeTipi) ? (object)DBNull.Value : projeTipi);
 
                 command.ExecuteNonQuery();
                 return true;
@@ -84,7 +93,7 @@ namespace CEKA_APP.Concretes.ProjeFinans
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
             string sql = @"
-        SELECT projeNo, projeAdi, aciklama, olusturmaTarihi
+        SELECT projeNo, projeAdi, projeTipi, aciklama, olusturmaTarihi
         FROM ProjeFinans_Projeler
         WHERE projeId = @projeId";
 
@@ -99,8 +108,9 @@ namespace CEKA_APP.Concretes.ProjeFinans
                         {
                             ProjeNo = reader.IsDBNull(0) ? null : reader.GetString(0),
                             ProjeAdi = reader.IsDBNull(1) ? null : reader.GetString(1),
-                            Aciklama = reader.IsDBNull(2) ? null : reader.GetString(2),
-                            OlusturmaTarihi = reader.IsDBNull(3) ? DateTime.Now : reader.GetDateTime(3)
+                            ProjeTipi = reader.IsDBNull(2) ? null : reader.GetString(2),
+                            Aciklama = reader.IsDBNull(3) ? null : reader.GetString(3),
+                            OlusturmaTarihi = reader.IsDBNull(4) ? DateTime.Now : reader.GetDateTime(4)
                         };
                     }
                 }

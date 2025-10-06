@@ -146,7 +146,8 @@
             this.cmbBirim.Items.AddRange(new object[] {
             "ad·s",
             "kg",
-            "ad"});
+            "ad",
+            "m"});
             this.cmbBirim.Location = new System.Drawing.Point(123, 76);
             this.cmbBirim.Name = "cmbBirim";
             this.cmbBirim.Size = new System.Drawing.Size(222, 28);

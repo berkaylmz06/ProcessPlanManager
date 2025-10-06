@@ -113,7 +113,7 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 cmd.Parameters.Add("@tahminiTarih", SqlDbType.DateTime2).Value = odemeSartlari.tahminiTarih ?? (object)DBNull.Value;
                 cmd.Parameters.Add("@gerceklesenTarih", SqlDbType.DateTime2).Value = odemeSartlari.gerceklesenTarih ?? (object)DBNull.Value;
                 cmd.Parameters.Add("@aciklama", SqlDbType.NVarChar, 500).Value = string.IsNullOrWhiteSpace(odemeSartlari.odemeAciklama) ? (object)DBNull.Value : odemeSartlari.odemeAciklama;
-                cmd.Parameters.Add("@teminatMektubu", SqlDbType.Bit).Value = odemeSartlari.teminatMektubu;
+                cmd.Parameters.Add("@teminatMektubu", SqlDbType. NVarChar, 50).Value = string.IsNullOrWhiteSpace(odemeSartlari.teminatMektubu) ? (object)DBNull.Value : odemeSartlari.teminatMektubu;
                 cmd.Parameters.Add("@teminatDurumu", SqlDbType.NVarChar, 50).Value = string.IsNullOrWhiteSpace(odemeSartlari.teminatDurumu) ? (object)DBNull.Value : odemeSartlari.teminatDurumu;
                 cmd.Parameters.Add("@faturaNo", SqlDbType.NVarChar, 50).Value = string.IsNullOrWhiteSpace(odemeSartlari.faturaNo) ? (object)DBNull.Value : odemeSartlari.faturaNo;
                 cmd.Parameters.Add("@durum", SqlDbType.NVarChar, 50).Value = string.IsNullOrWhiteSpace(odemeSartlari.durum) ? (object)DBNull.Value : odemeSartlari.durum;
@@ -215,7 +215,7 @@ FROM ProjeFinans_OdemeSartlari o
                             tahminiTarih = reader.IsDBNull(reader.GetOrdinal("tahminiTarih")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("tahminiTarih")),
                             gerceklesenTarih = reader.IsDBNull(reader.GetOrdinal("gerceklesenTarih")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("gerceklesenTarih")),
                             odemeAciklama = reader.IsDBNull(reader.GetOrdinal("odemeAciklama")) ? null : reader.GetString(reader.GetOrdinal("odemeAciklama")),
-                            teminatMektubu = reader.GetBoolean(reader.GetOrdinal("teminatMektubu")),
+                            teminatMektubu = reader.IsDBNull(reader.GetOrdinal("teminatMektubu")) ? null : reader.GetString(reader.GetOrdinal("teminatMektubu")),
                             teminatDurumu = reader.IsDBNull(reader.GetOrdinal("teminatDurumu")) ? null : reader.GetString(reader.GetOrdinal("teminatDurumu")),
                             durum = reader.IsDBNull(reader.GetOrdinal("durum")) ? null : reader.GetString(reader.GetOrdinal("durum")),
                             faturaNo = reader.IsDBNull(reader.GetOrdinal("faturaNo")) ? null : reader.GetString(reader.GetOrdinal("faturaNo")),
@@ -280,7 +280,7 @@ FROM ProjeFinans_OdemeSartlari o
                             tahminiTarih = reader.IsDBNull(reader.GetOrdinal("tahminiTarih")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("tahminiTarih")),
                             gerceklesenTarih = reader.IsDBNull(reader.GetOrdinal("gerceklesenTarih")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("gerceklesenTarih")),
                             odemeAciklama = reader.IsDBNull(reader.GetOrdinal("aciklama")) ? null : reader.GetString(reader.GetOrdinal("aciklama")),
-                            teminatMektubu = reader.GetBoolean(reader.GetOrdinal("teminatMektubu")),
+                            teminatMektubu = reader.IsDBNull(reader.GetOrdinal("teminatMektubu")) ? null : reader.GetString(reader.GetOrdinal("teminatMektubu")),
                             teminatDurumu = reader.IsDBNull(reader.GetOrdinal("teminatDurumu")) ? null : reader.GetString(reader.GetOrdinal("teminatDurumu")),
                             durum = reader.IsDBNull(reader.GetOrdinal("durum")) ? null : reader.GetString(reader.GetOrdinal("durum")),
                             faturaNo = reader.IsDBNull(reader.GetOrdinal("faturaNo")) ? null : reader.GetString(reader.GetOrdinal("faturaNo")),
@@ -345,7 +345,7 @@ FROM ProjeFinans_OdemeSartlari o
                             tahminiTarih = reader.IsDBNull(reader.GetOrdinal("tahminiTarih")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("tahminiTarih")),
                             gerceklesenTarih = reader.IsDBNull(reader.GetOrdinal("gerceklesenTarih")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("gerceklesenTarih")),
                             odemeAciklama = reader.IsDBNull(reader.GetOrdinal("aciklama")) ? null : reader.GetString(reader.GetOrdinal("aciklama")),
-                            teminatMektubu = reader.GetBoolean(reader.GetOrdinal("teminatMektubu")),
+                            teminatMektubu = reader.IsDBNull(reader.GetOrdinal("teminatMektubu")) ? null : reader.GetString(reader.GetOrdinal("teminatMektubu")),
                             teminatDurumu = reader.IsDBNull(reader.GetOrdinal("teminatDurumu")) ? null : reader.GetString(reader.GetOrdinal("teminatDurumu")),
                             durum = reader.IsDBNull(reader.GetOrdinal("durum")) ? null : reader.GetString(reader.GetOrdinal("durum")),
                             faturaNo = reader.IsDBNull(reader.GetOrdinal("faturaNo")) ? null : reader.GetString(reader.GetOrdinal("faturaNo")),
@@ -403,7 +403,7 @@ FROM ProjeFinans_OdemeSartlari o
                             tahminiTarih = reader.IsDBNull(reader.GetOrdinal("tahminiTarih")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("tahminiTarih")),
                             gerceklesenTarih = reader.IsDBNull(reader.GetOrdinal("gerceklesenTarih")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("gerceklesenTarih")),
                             odemeAciklama = reader.IsDBNull(reader.GetOrdinal("aciklama")) ? null : reader.GetString(reader.GetOrdinal("aciklama")),
-                            teminatMektubu = reader.GetBoolean(reader.GetOrdinal("teminatMektubu")),
+                            teminatMektubu = reader.IsDBNull(reader.GetOrdinal("teminatMektubu")) ? null : reader.GetString(reader.GetOrdinal("teminatMektubu")),
                             teminatDurumu = reader.IsDBNull(reader.GetOrdinal("teminatDurumu")) ? null : reader.GetString(reader.GetOrdinal("teminatDurumu")),
                             durum = reader.IsDBNull(reader.GetOrdinal("durum")) ? null : reader.GetString(reader.GetOrdinal("durum")),
                             faturaNo = reader.IsDBNull(reader.GetOrdinal("faturaNo")) ? null : reader.GetString(reader.GetOrdinal("faturaNo")),
@@ -491,6 +491,103 @@ FROM ProjeFinans_OdemeSartlari o
             }
 
             return true;
+        }
+        public List<OdemeSartlari> GetAllOdemeBilgileri(SqlConnection connection, int projeId)
+        {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+
+            var odemeBilgileriList = new List<OdemeSartlari>();
+            int? ustProjeId = null;
+
+            string checkUstProjeQuery = @"
+                SELECT ustProjeId 
+                FROM ProjeFinans_ProjeIliski 
+                WHERE altProjeId = @projeId";
+            using (var checkCmd = new SqlCommand(checkUstProjeQuery, connection))
+            {
+                checkCmd.Parameters.AddWithValue("@projeId", projeId);
+                var result = checkCmd.ExecuteScalar();
+                if (result != null && result != DBNull.Value)
+                {
+                    ustProjeId = Convert.ToInt32(result); 
+                }
+                else
+                {
+                    ustProjeId = projeId;
+                }
+            }
+
+            var projeIds = new List<int> { ustProjeId.Value };
+            string getAltProjelerQuery = @"
+                SELECT altProjeId 
+                FROM ProjeFinans_ProjeIliski 
+                WHERE ustProjeId = @ustProjeId";
+            using (var altProjelerCmd = new SqlCommand(getAltProjelerQuery, connection))
+            {
+                altProjelerCmd.Parameters.AddWithValue("@ustProjeId", ustProjeId);
+                using (var reader = altProjelerCmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        projeIds.Add(reader.GetInt32(0));
+                    }
+                }
+            }
+
+            string query = @"
+                SELECT
+                    o.odemeId,
+                    o.projeId,
+                    o.kilometreTasiId,
+                    k.kilometreTasiAdi AS kilometreTasiAdi,
+                    o.siralama,
+                    o.oran,
+                    o.tutar,
+                    o.tahminiTarih,
+                    o.gerceklesenTarih,
+                    o.aciklama,
+                    o.teminatMektubu,
+                    o.teminatDurumu,
+                    o.durum,
+                    o.faturaNo,
+                    o.kalanTutar,
+                    o.odemeTarihi
+                FROM ProjeFinans_OdemeSartlari o
+                JOIN ProjeFinans_KilometreTaslari k ON o.kilometreTasiId = k.kilometreTasiId
+                WHERE o.projeId IN (" + string.Join(",", projeIds) + @")
+                ORDER BY o.projeId, o.siralama";
+
+            using (var cmd = new SqlCommand(query, connection))
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var odemeSartlari = new OdemeSartlari
+                        {
+                            odemeId = reader.GetInt32(reader.GetOrdinal("odemeId")),
+                            projeId = reader.GetInt32(reader.GetOrdinal("projeId")),
+                            kilometreTasiId = reader.GetInt32(reader.GetOrdinal("kilometreTasiId")),
+                            kilometreTasiAdi = reader.IsDBNull(reader.GetOrdinal("kilometreTasiAdi")) ? null : reader.GetString(reader.GetOrdinal("kilometreTasiAdi")),
+                            siralama = reader.GetInt32(reader.GetOrdinal("siralama")),
+                            oran = reader.GetDecimal(reader.GetOrdinal("oran")),
+                            tutar = reader.GetDecimal(reader.GetOrdinal("tutar")),
+                            tahminiTarih = reader.IsDBNull(reader.GetOrdinal("tahminiTarih")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("tahminiTarih")),
+                            gerceklesenTarih = reader.IsDBNull(reader.GetOrdinal("gerceklesenTarih")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("gerceklesenTarih")),
+                            odemeAciklama = reader.IsDBNull(reader.GetOrdinal("aciklama")) ? null : reader.GetString(reader.GetOrdinal("aciklama")),
+                            teminatMektubu = reader.IsDBNull(reader.GetOrdinal("teminatMektubu")) ? null : reader.GetString(reader.GetOrdinal("teminatMektubu")),
+                            teminatDurumu = reader.IsDBNull(reader.GetOrdinal("teminatDurumu")) ? null : reader.GetString(reader.GetOrdinal("teminatDurumu")),
+                            durum = reader.IsDBNull(reader.GetOrdinal("durum")) ? null : reader.GetString(reader.GetOrdinal("durum")),
+                            faturaNo = reader.IsDBNull(reader.GetOrdinal("faturaNo")) ? null : reader.GetString(reader.GetOrdinal("faturaNo")),
+                            kalanTutar = reader.GetDecimal(reader.GetOrdinal("kalanTutar")),
+                            odemeTarihi = reader.IsDBNull(reader.GetOrdinal("odemeTarihi")) ? (DateTime?)null : reader.GetDateTime(reader.GetOrdinal("odemeTarihi"))
+                        };
+                        odemeBilgileriList.Add(odemeSartlari);
+                    }
+                }
+            }
+
+            return odemeBilgileriList;
         }
     }
 }

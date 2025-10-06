@@ -5,6 +5,7 @@ using CEKA_APP.Helper;
 using CEKA_APP.Interfaces.Sistem;
 using CEKA_APP.UsrControl;
 using CEKA_APP.UsrControl.Interfaces;
+using ClosedXML.Excel;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -23,8 +24,8 @@ namespace CEKA_APP
         public IKullaniciAdiOgren KullaniciAdiInterface { get; private set; }
 
         private Kullanicilar aktifKullanici;
-        private Stack<UserControl> geriYigin = new Stack<UserControl>();
-        private Stack<UserControl> ileriYigin = new Stack<UserControl>();
+        public Stack<UserControl> geriYigin = new Stack<UserControl>();
+        public Stack<UserControl> ileriYigin = new Stack<UserControl>(); 
 
         private ctlKesimPlaniEkle kesimPlaniEkle;
         private ctlSistemBilgisi sistemBilgisiAnaSayfa;
@@ -40,12 +41,14 @@ namespace CEKA_APP
         private readonly IUserControlFactory _userControlFactory;
         private readonly IServiceProvider _serviceProvider;
 
+        private ContextMenuStrip contextMenuYeniSekme;
+
         public frmAnaSayfa(Kullanicilar kullanici, IUserControlFactory userControlFactory, IServiceProvider serviceProvider)
         {
             InitializeComponent();
 
-            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
-            _userControlFactory = userControlFactory ?? throw new ArgumentNullException(nameof(userControlFactory));
+            _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(_serviceProvider));
+            _userControlFactory = userControlFactory ?? throw new ArgumentNullException(nameof(_userControlFactory));
 
             aktifKullanici = kullanici ?? throw new ArgumentNullException(nameof(kullanici));
             FormArayuzuInterface = new FormArayuzu(this);
@@ -74,10 +77,19 @@ namespace CEKA_APP
             pictureBoxIleri.Enabled = false;
 
             InitializeButtonGroups();
+            InitializeContextMenu();
             SetupDynamicMenu();
         }
 
         private frmAnaSayfa() { }
+
+        private void InitializeContextMenu()
+        {
+            contextMenuYeniSekme = new ContextMenuStrip();
+            ToolStripMenuItem yeniSekmeAc = new ToolStripMenuItem("Yeni Sekmede Aç");
+            yeniSekmeAc.Click += YeniSekmedeAc_Click;
+            contextMenuYeniSekme.Items.Add(yeniSekmeAc);
+        }
 
         private void ShowCurrentDateTime()
         {
@@ -235,6 +247,15 @@ namespace CEKA_APP
                         TextAlign = ContentAlignment.MiddleLeft
                     };
                     groupButton.Click += (s, e) => ShowSubMenu(group.Key);
+
+                    groupButton.MouseUp += (s, e) =>
+                    {
+                        if (e.Button == MouseButtons.Right)
+                        {
+                            ShowSubMenu(group.Key);
+                        }
+                    };
+
                     panelAraYuz.Controls.Add(groupButton);
                     y += 50;
                 }
@@ -274,7 +295,18 @@ namespace CEKA_APP
                         FlatStyle = FlatStyle.Flat
                     };
                     ButonGenelHelper.StilUygula(subButton);
+
                     subButton.Click += (s, e) => button.ClickAction.Invoke();
+
+                    subButton.MouseUp += (s, e) =>
+                    {
+                        if (e.Button == MouseButtons.Right)
+                        {
+                            contextMenuYeniSekme.Tag = button.ClickAction;
+                            contextMenuYeniSekme.Show(subButton, e.Location);
+                        }
+                    };
+
                     subButtons.Add(subButton);
                     y += 35;
                 }
@@ -300,6 +332,69 @@ namespace CEKA_APP
 
             panelAraYuz.Refresh();
         }
+
+        private void YeniSekmedeAc_Click(object sender, EventArgs e)
+        {
+            var menuItem = (ToolStripMenuItem)sender;
+            var contextMenu = (ContextMenuStrip)menuItem.Owner;
+
+            if (contextMenu.Tag is Action clickAction)
+            {
+                UserControl mevcutUC = panelAnaSayfaContainer.Controls.Count > 0
+                    ? panelAnaSayfaContainer.Controls[0] as UserControl
+                    : null;
+
+                clickAction.Invoke();
+
+                UserControl yeniEklenenUC = panelAnaSayfaContainer.Controls.Count > 0
+                    ? panelAnaSayfaContainer.Controls[0] as UserControl
+                    : null;
+
+                panelAnaSayfaContainer.Controls.Clear();
+
+                if (mevcutUC != null)
+                {
+                    panelAnaSayfaContainer.Controls.Add(mevcutUC);
+
+                    if (geriYigin.Count > 0 && geriYigin.Peek() == yeniEklenenUC)
+                    {
+                        geriYigin.Pop();
+                    }
+                }
+                else
+                {
+                    if (panelAnaSayfa != null)
+                    {
+                        panelAnaSayfaContainer.Controls.Add(panelAnaSayfa);
+                    }
+                }
+
+                if (yeniEklenenUC != null)
+                {
+                    var yeniForm = ActivatorUtilities.CreateInstance<frmAnaSayfa>(
+                        _serviceProvider,
+                        aktifKullanici,
+                        _userControlFactory,
+                        _serviceProvider
+                    );
+
+                    yeniForm.Load += (s, args) =>
+                    {
+                        yeniForm.UserControlEkle(yeniEklenenUC);
+
+                        yeniForm.geriYigin.Clear();
+                        yeniForm.ileriYigin.Clear();
+                        yeniForm.pictureBoxGeri.Enabled = false;
+                        yeniForm.pictureBoxIleri.Enabled = false;
+                    };
+
+                    yeniForm.Show();
+                }
+
+                SetupDynamicMenu();
+                pictureBoxGeri.Enabled = geriYigin.Count > 0;
+            }
+        }
         public void NavigateToUserControl(UserControl uc)
         {
             UserControlEkle(uc);
@@ -313,6 +408,7 @@ namespace CEKA_APP
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnSistem);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnYardim);
             ButonGenelHelper.TuruncuZeminButonStilUygula(btnDuyuru);
+            ButonGenelHelper.TuruncuZeminButonStilUygula(btnCikti);
 
             lblSistemKullanici.Text = aktifKullanici.kullaniciAdi;
 
@@ -331,6 +427,10 @@ namespace CEKA_APP
             pictureBoxIleri.Image = Properties.Resources.navigationForward;
             pictureBoxIleri.SizeMode = PictureBoxSizeMode.Zoom;
             pictureBoxIleri.Cursor = Cursors.Hand;
+
+            pictureBoxExcel.Image = Properties.Resources.excel;
+            pictureBoxExcel.SizeMode = PictureBoxSizeMode.Zoom;
+            pictureBoxExcel.Cursor = Cursors.Hand;
 
             panelNavigasyon.Padding = new Padding(5);
             panelAraYuz.Width = 250;
@@ -392,6 +492,7 @@ namespace CEKA_APP
         {
             timerCounter++;
             lblTimer.Text = TimeSpan.FromSeconds(timerCounter).ToString(@"hh\:mm\:ss") + "\n";
+            ShowCurrentDateTime();
         }
 
         private void btnGonder_Click(object sender, EventArgs e)
@@ -429,19 +530,25 @@ namespace CEKA_APP
                 var mevcut = panelAnaSayfaContainer.Controls[0] as UserControl;
                 if (mevcut != null)
                 {
-                    geriYigin.Push(mevcut);
-                    pictureBoxGeri.Enabled = true;
-                    Console.WriteLine($"Geri yığınına eklendi: {mevcut.GetType().Name}");
+                    if (mevcut.GetType() != uc.GetType() && !geriYigin.Contains(mevcut))
+                    {
+                        geriYigin.Push(mevcut);
+                        pictureBoxGeri.Enabled = true;
+                    }
                 }
             }
+
+            if (panelAnaSayfaContainer.Controls.Contains(uc))
+            {
+                panelAnaSayfaContainer.Controls.Remove(uc);
+            }
+
 
             panelAnaSayfaContainer.Controls.Clear();
             uc.Dock = DockStyle.Fill;
             panelAnaSayfaContainer.Controls.Add(uc);
             ileriYigin.Clear();
             pictureBoxIleri.Enabled = false;
-
-            Console.WriteLine($"Yeni UserControl eklendi: {uc.GetType().Name}");
         }
 
         private void pictureBoxGeri_Click(object sender, EventArgs e)
@@ -452,7 +559,6 @@ namespace CEKA_APP
                 if (mevcut != null)
                 {
                     ileriYigin.Push(mevcut);
-                    Console.WriteLine($"İleri yığınına eklendi: {mevcut.GetType().Name}");
                 }
 
                 var onceki = geriYigin.Pop();
@@ -461,8 +567,6 @@ namespace CEKA_APP
 
                 pictureBoxGeri.Enabled = geriYigin.Count > 0;
                 pictureBoxIleri.Enabled = true;
-
-                Console.WriteLine($"Geri gidildi: {onceki.GetType().Name}");
             }
         }
 
@@ -474,7 +578,6 @@ namespace CEKA_APP
                 if (mevcut != null)
                 {
                     geriYigin.Push(mevcut);
-                    Console.WriteLine($"Geri yığınına eklendi: {mevcut.GetType().Name}");
                 }
 
                 var sonraki = ileriYigin.Pop();
@@ -483,8 +586,6 @@ namespace CEKA_APP
 
                 pictureBoxIleri.Enabled = ileriYigin.Count > 0;
                 pictureBoxGeri.Enabled = true;
-
-                Console.WriteLine($"İleri gidildi: {sonraki.GetType().Name}");
             }
         }
 
@@ -621,7 +722,6 @@ namespace CEKA_APP
             if (panelAnaSayfa != null)
             {
                 panelAnaSayfaContainer.Controls.Add(panelAnaSayfa);
-                Console.WriteLine("Ana sayfa eklendi, gezinme geçmişine dahil değil.");
             }
         }
 
@@ -629,7 +729,10 @@ namespace CEKA_APP
         {
             PanelGosterYardimMenu(panelDuyuru);
         }
-
+        private void btnCikti_Click(object sender, EventArgs e)
+        {
+            PanelGosterYardimMenu(panelCikti);
+        }
         private void btnYayınla_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrEmpty(richTextDuyuru.Text))
@@ -716,6 +819,142 @@ namespace CEKA_APP
         {
             var projeKartiControl = _userControlFactory.CreateProjeKartiControl();
             UserControlEkle(projeKartiControl);
+        }
+
+        private void frmAnaSayfa_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (e.CloseReason == CloseReason.UserClosing)
+            {
+                if (Application.OpenForms.OfType<frmAnaSayfa>().Count() <= 1)
+                {
+                    var result = MessageBox.Show(
+                        "Bu sayfa son uygulama penceresidir. Kapatmak istiyor musunuz?",
+                        "Son Uygulama Penceresi",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning);
+
+                    if (result == DialogResult.Yes)
+                    {
+                        e.Cancel = false;
+                        Application.Exit(); 
+                    }
+                    else
+                    {
+                        e.Cancel = true;
+                    }
+                }
+                else
+                {
+                    e.Cancel = true;
+                    this.Hide();
+                    this.Dispose();
+                }
+            }
+        }
+
+        private void pictureBoxExcel_Click(object sender, EventArgs e)
+        {
+            if (panelAnaSayfaContainer.Controls.Count == 0 || !(panelAnaSayfaContainer.Controls[0] is UserControl userControl))
+            {
+                MessageBox.Show("Aktif bir kullanıcı kontrolü bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var dataGridView = userControl.Controls.OfType<DataGridView>().FirstOrDefault();
+            if (dataGridView == null)
+            {
+                MessageBox.Show("Aktif kontrolde DataGridView bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var result = MessageBox.Show(
+                "Seçili satırları mı yoksa tüm satırları mı Excel'e aktarmak istiyorsunuz?\n\nEvet: Seçili satırlar\nHayır: Tüm satırlar",
+                "Dışa Aktarma Seçimi",
+                MessageBoxButtons.YesNoCancel,
+                MessageBoxIcon.Question);
+
+            if (result == DialogResult.Cancel)
+            {
+                return;
+            }
+
+            bool exportSelectedRows = result == DialogResult.Yes;
+            var rowsToExport = exportSelectedRows && dataGridView.SelectedRows.Count > 0
+                ? dataGridView.SelectedRows.Cast<DataGridViewRow>().OrderBy(r => r.Index).ToList()
+                : dataGridView.Rows.Cast<DataGridViewRow>().Where(r => !r.IsNewRow).ToList();
+
+            if (!rowsToExport.Any())
+            {
+                MessageBox.Show("Dışa aktarılacak veri bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            var visibleColumns = dataGridView.Columns.Cast<DataGridViewColumn>()
+                .Where(c => c.Visible)
+                .OrderBy(c => c.DisplayIndex)
+                .ToList();
+
+            if (!visibleColumns.Any())
+            {
+                MessageBox.Show("Görünür sütun bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string userControlName = userControl.GetType().Name.Replace("ctl", "");
+            string fileName = $"{userControlName}_{DateTime.Now:yyyyMMdd_HHmmss}.xlsx";
+
+            using (var saveFileDialog = new SaveFileDialog())
+            {
+                saveFileDialog.Filter = "Excel Files|*.xlsx";
+                saveFileDialog.Title = "Excel Dosyasını Kaydet";
+                saveFileDialog.FileName = fileName;
+
+                if (saveFileDialog.ShowDialog() != DialogResult.OK)
+                {
+                    MessageBox.Show("Dosya kaydetme işlemi iptal edildi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    return;
+                }
+
+                try
+                {
+                    using (var workbook = new XLWorkbook())
+                    {
+                        var worksheet = workbook.Worksheets.Add("Veriler");
+
+                        for (int i = 0; i < visibleColumns.Count; i++)
+                        {
+                            worksheet.Cell(1, i + 1).Value = visibleColumns[i].HeaderText;
+                            worksheet.Cell(1, i + 1).Style.Font.Bold = true;
+                        }
+
+                        for (int i = 0; i < rowsToExport.Count; i++)
+                        {
+                            for (int j = 0; j < visibleColumns.Count; j++)
+                            {
+                                var cellValue = rowsToExport[i].Cells[visibleColumns[j].Index].Value?.ToString() ?? "";
+                                worksheet.Cell(i + 2, j + 1).Value = cellValue;
+                            }
+                        }
+
+                        var range = worksheet.Range(1, 1, rowsToExport.Count + 1, visibleColumns.Count);
+                        range.CreateTable();
+
+                        worksheet.Columns().AdjustToContents();
+
+                        workbook.SaveAs(saveFileDialog.FileName);
+
+                        System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
+                        {
+                            FileName = saveFileDialog.FileName,
+                            UseShellExecute = true
+                        });
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Excel dosyasına aktarma sırasında bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }

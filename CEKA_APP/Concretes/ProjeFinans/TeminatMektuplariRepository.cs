@@ -67,8 +67,7 @@ namespace CEKA_APP.Concretes.ProjeFinans
             komisyonTutari = @komisyonTutari,
             komisyonOrani = @komisyonOrani,
             komisyonVadesi = @komisyonVadesi,
-            projeId = @projeId,
-            kilometreTasiId = @kilometreTasiId
+            projeId = @projeId
         WHERE mektupNo = @eskiMektupNo";
 
             using (SqlCommand cmd = new SqlCommand(query, connection, transaction))
@@ -85,7 +84,6 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 cmd.Parameters.AddWithValue("@komisyonOrani", guncelMektup.komisyonOrani);
                 cmd.Parameters.AddWithValue("@komisyonVadesi", guncelMektup.komisyonVadesi);
                 cmd.Parameters.AddWithValue("@projeId", guncelMektup.projeId.HasValue ? (object)guncelMektup.projeId.Value : DBNull.Value);
-                cmd.Parameters.AddWithValue("@kilometreTasiId", guncelMektup.kilometreTasiId);
                 cmd.Parameters.AddWithValue("@eskiMektupNo", eskiMektupNo ?? (object)DBNull.Value);
 
                 cmd.ExecuteNonQuery();
@@ -184,6 +182,28 @@ namespace CEKA_APP.Concretes.ProjeFinans
             }
 
             return teminatMektuplari;
+        }
+        public void UpdateKilometreTasiAdi(SqlConnection connection, SqlTransaction transaction, string mektupNo, int kilometreTasiId)
+        {
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+            if (string.IsNullOrEmpty(mektupNo))
+                throw new ArgumentNullException(nameof(mektupNo));
+
+            string query = @"
+        UPDATE ProjeFinans_TeminatMektuplari
+        SET kilometreTasiId = @kilometreTasiId
+        WHERE mektupNo = @mektupNo";
+
+            using (SqlCommand cmd = new SqlCommand(query, connection, transaction))
+            {
+                cmd.Parameters.AddWithValue("@kilometreTasiId", kilometreTasiId);
+                cmd.Parameters.AddWithValue("@mektupNo", mektupNo);
+
+                cmd.ExecuteNonQuery();
+            }
         }
     }
 }

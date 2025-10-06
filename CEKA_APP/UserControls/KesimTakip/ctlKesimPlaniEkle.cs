@@ -2137,9 +2137,8 @@ namespace CEKA_APP.UsrControl
             "\nRichTextBox4 Verileri:"
         };
 
-                Regex pozRegex = new Regex(
-     @"ST[A-Z0-9]{2,}\s*-\s*[A-Z0-9]{2,}\s*-\s*(\d{1,3}\s*-\s*\d{1,3}\s*-\s*P\d+\s*-\s*\d+AD\s*-\s*\d{5,6}\.\d{2,}(?:\s*-\s*EK[A-Za-z0-9]*)?)",
-     RegexOptions.IgnoreCase);
+                Regex pozRegex = new Regex(@"ST[A-Z0-9]{2,}\s*-\s*[A-Z0-9]{2,}\s*-\s*(\d{1,3}\s*-\s*\d{1,3}\s*-\s*P\d+\s*-\s*\d+AD\s*-\s*\d{5,6}\.\d{2,}(?:\s*-\s*EK[A-Za-z0-9]*)?)", RegexOptions.IgnoreCase);
+                //Regex pozRegex = new Regex(@"^ST[A-Z0-9]{2,}\s*-\s*[A-Z0-9]{2,}\s*-\s*([A-Z0-9]+(?:-[A-Z0-9]+)*\s*-\s*P\d+\s*-\s*\d+AD\s*-\s*\d{5,6}\.\d{2,}(?:\s*-\s*EK[A-Za-z0-9]*)?)", RegexOptions.IgnoreCase);
 
                 Regex suffixRegex = new Regex(@"-(?!EK[A-Za-z0-9]*$)[A-Za-z0-9]+$", RegexOptions.IgnoreCase);
                 Regex sayfaSimpleRegex = new Regex(@"Sayfa:\s*(\d+)", RegexOptions.IgnoreCase);

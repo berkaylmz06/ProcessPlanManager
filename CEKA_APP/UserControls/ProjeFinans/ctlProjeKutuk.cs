@@ -3,6 +3,7 @@ using CEKA_APP.Entitys.ProjeFinans;
 using CEKA_APP.Forms;
 using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.ProjeFinans;
+using CEKA_APP.Services.ProjeFinans;
 using CEKA_APP.UsrControl.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
@@ -47,6 +48,7 @@ namespace CEKA_APP.UsrControl
         private ISayfaStatusService _sayfaStatusService => _serviceProvider.GetRequiredService<ISayfaStatusService>();
         private IUserControlFactory _userControlFactory => _serviceProvider.GetRequiredService<IUserControlFactory>();
         private IProjeIliskiService _projeIliskiService=> _serviceProvider.GetRequiredService<IProjeIliskiService>();
+        private ITeminatMektuplariService _teminatMektuplariService => _serviceProvider.GetRequiredService<ITeminatMektuplariService>();
 
         public ctlProjeKutuk(IServiceProvider serviceProvider)
         {
@@ -1452,6 +1454,57 @@ namespace CEKA_APP.UsrControl
                 }
 
                 txtProjeNo.BackColor = Color.White;
+            }
+        }
+
+        private void btnMektupEkle_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtProjeNo.Text))
+            {
+                MessageBox.Show("Lütfen önce bir proje numarası girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string projeNo = txtProjeNo.Text.Trim();
+            int? projeId = _finansProjelerService.GetProjeIdByNo(projeNo);
+
+            if (!projeId.HasValue)
+            {
+                MessageBox.Show($"Proje '{projeNo}' bulunamadı. Lütfen geçerli bir proje numarası girin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            List<string> altProjeler = chkAltProjeVar.Checked
+                ? flpAltProjeTextBoxes.Controls.OfType<Panel>()
+                    .SelectMany(p => p.Controls.OfType<TextBox>())
+                    .Where(txt => txt.Text != $"Proje #{txt.Name.Split('_').Last()}" && !string.IsNullOrWhiteSpace(txt.Text))
+                    .Select(txt => txt.Text.Trim())
+                    .ToList()
+                : new List<string>();
+
+            try
+            {
+                var teminatMektubuForm = new frmTeminatMektubuEkle(
+                    musterilerService: _musterilerService,
+                    teminatMektup: null, 
+                    finansProjelerService: _finansProjelerService,
+                    projeKutukService: _projeKutukService,
+                    teminatMektuplariService: _teminatMektuplariService,
+                    projeId: projeId.Value,
+                    kilometreTasiId: 0,
+                    tutar: "0.00",
+                    altProjeler: altProjeler, 
+                    activateTeminatTab: true
+                );
+
+                if (teminatMektubuForm.ShowDialog() == DialogResult.OK)
+                {
+                    MessageBox.Show("Teminat mektubu başarıyla eklendi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Teminat mektubu eklenirken bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }

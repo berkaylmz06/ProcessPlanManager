@@ -9,10 +9,6 @@ namespace CEKA_APP.Abstracts.ProjeFinans
     public interface IProjeKutukRepository
     {
         bool ProjeKutukEkle(SqlConnection connection, SqlTransaction transaction, ProjeKutuk kutuk);
-        bool ProjeFiyatlandirmaEkle(SqlConnection connection, SqlTransaction transaction, string projeNo, decimal fiyat);
-        bool ProjeEkleProjeFinans(SqlConnection connection, SqlTransaction transaction, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi);
-        bool UpdateProjeFinans(SqlConnection connection, SqlTransaction transaction, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi);
-        ProjeBilgi GetProjeBilgileri(SqlConnection connection, string projeNo);
         ProjeKutuk ProjeKutukAra(SqlConnection connection, int projeId);
         void UpdateToplamBedel(SqlConnection connection, SqlTransaction transaction, string projeNo, decimal toplamBedel);
         bool IsFaturalamaSekliTekil(SqlConnection connection, int projeId);

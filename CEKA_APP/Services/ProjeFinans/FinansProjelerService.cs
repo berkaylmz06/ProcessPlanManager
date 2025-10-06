@@ -99,7 +99,7 @@ namespace CEKA_APP.Services.ProjeFinans
             }
         }
 
-        public bool ProjeEkleProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi)
+        public bool ProjeEkleProjeFinans(string projeNo, string projeTipi, string aciklama, string projeAdi, DateTime olusturmaTarihi)
         {
             using (var connection = _dataBaseService.GetConnection())
             {
@@ -108,7 +108,7 @@ namespace CEKA_APP.Services.ProjeFinans
                 {
                     try
                     {
-                        bool sonuc = _finansProjelerRepository.ProjeEkleProjeFinans(connection, transaction, projeNo, aciklama, projeAdi, olusturmaTarihi);
+                        bool sonuc = _finansProjelerRepository.ProjeEkleProjeFinans(connection, transaction, projeNo, projeTipi, aciklama, projeAdi, olusturmaTarihi);
                         transaction.Commit();
                         return sonuc;
                     }
@@ -143,7 +143,7 @@ namespace CEKA_APP.Services.ProjeFinans
             }
         }
 
-        public bool UpdateProjeFinans(int projeId, string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi, out bool degisiklikVar)
+        public bool UpdateProjeFinans(int projeId, string projeNo, string projeTipi, string aciklama, string projeAdi, DateTime olusturmaTarihi, out bool degisiklikVar)
         {
             using (var connection = _dataBaseService.GetConnection())
             {
@@ -152,7 +152,7 @@ namespace CEKA_APP.Services.ProjeFinans
                 {
                     try
                     {
-                        bool sonuc = _finansProjelerRepository.UpdateProjeFinans(connection, transaction, projeId, projeNo, aciklama, projeAdi, olusturmaTarihi, out degisiklikVar);
+                        bool sonuc = _finansProjelerRepository.UpdateProjeFinans(connection, transaction, projeId, projeNo, projeTipi, aciklama, projeAdi, olusturmaTarihi, out degisiklikVar);
                         transaction.Commit();
                         return sonuc;
                     }

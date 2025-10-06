@@ -22,5 +22,6 @@ namespace CEKA_APP.Interfaces.ProjeFinans
         bool UpdateFaturaNo(int odemeId, string faturaNo);
         bool OdemeSartlariSil(int projeId);
         string GetOdemeBilgileriQuery();
+        List<OdemeSartlari> GetAllOdemeBilgileri(int projeId);
     }
 }

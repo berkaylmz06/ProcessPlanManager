@@ -16,5 +16,6 @@ namespace CEKA_APP.Abstracts.ProjeFinans
         bool UpdateFaturaNo(SqlConnection connection, SqlTransaction transaction, int odemeId, string faturaNo);
         bool OdemeSartlariSil(SqlConnection connection, SqlTransaction transaction, int projeId);
         string GetOdemeBilgileriQuery();
+        List<OdemeSartlari> GetAllOdemeBilgileri(SqlConnection connection, int projeId);
     }
 }

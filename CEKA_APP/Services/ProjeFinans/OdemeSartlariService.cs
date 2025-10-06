@@ -192,5 +192,21 @@ namespace CEKA_APP.Services.ProjeFinans
         {
             return _odemeSartlariRepository.GetOdemeBilgileriQuery();
         }
+
+        public List<OdemeSartlari> GetAllOdemeBilgileri(int projeId)
+        {
+            try
+            {
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _odemeSartlariRepository.GetAllOdemeBilgileri(connection, projeId);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Ödeme bilgileri alınırken hata oluştu.", ex);
+            }
+        }
     }
 }

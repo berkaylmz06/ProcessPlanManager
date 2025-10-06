@@ -12,5 +12,6 @@ namespace CEKA_APP.Abstracts.ProjeFinans
         bool MektupNoVarMi(SqlConnection connection, string mektupNo);
         List<TeminatMektuplari> GetTeminatMektuplari(SqlConnection connection);
         string GetTeminatMektuplariQuery();
+        void UpdateKilometreTasiAdi(SqlConnection connection, SqlTransaction transaction, string mektupNo, int kilometreTasiId);
     }
 }

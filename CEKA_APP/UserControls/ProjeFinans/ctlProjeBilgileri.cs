@@ -5,7 +5,6 @@ using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -17,7 +16,7 @@ namespace CEKA_APP.UsrControl
         private const string PlaceholderText = "Açıklama girin...";
         private const string ProjeAdiPlaceholder = "Proje adı girin...";
         private bool hasNewData;
-        private Dictionary<string, (TextBox txtProjeAdi, DateTimePicker dtpOlusturmaTarihi, TextBox txtAciklama)> projeInputs;
+        private Dictionary<string, (TextBox txtProjeAdi, DateTimePicker dtpOlusturmaTarihi, TextBox txtAciklama, ComboBox cmbProjeTipi)> projeInputs;
         private Button btnKaydetHepsi;
         private ctlBaslik ctlBaslik1;
 
@@ -25,7 +24,6 @@ namespace CEKA_APP.UsrControl
         private IFinansProjelerService _finansProjelerService => _serviceProvider.GetRequiredService<IFinansProjelerService>();
         private IProjeKutukService _projeKutukService => _serviceProvider.GetRequiredService<IProjeKutukService>();
         private IUserControlFactory _userControlFactory => _serviceProvider.GetRequiredService<IUserControlFactory>();
-
 
         public ctlProjeBilgileri(IServiceProvider serviceProvider)
         {
@@ -35,7 +33,7 @@ namespace CEKA_APP.UsrControl
 
             DoubleBuffered = true;
             hasNewData = false;
-            projeInputs = new Dictionary<string, (TextBox, DateTimePicker, TextBox)>();
+            projeInputs = new Dictionary<string, (TextBox, DateTimePicker, TextBox, ComboBox)>();
             this.BackColor = AppColors.BackgroundColor;
 
             ctlBaslik1 = new ctlBaslik
@@ -68,6 +66,7 @@ namespace CEKA_APP.UsrControl
             if (this.Controls.Contains(btnKaydetHepsi))
                 this.Controls.SetChildIndex(btnKaydetHepsi, 2);
         }
+
         private static class AppColors
         {
             public static readonly Color PrimaryColor = Color.FromArgb(39, 55, 70);
@@ -87,6 +86,7 @@ namespace CEKA_APP.UsrControl
             public static readonly Font LabelFont = new Font("Arial", 9, FontStyle.Regular);
             public static readonly Font InputFont = new Font("Arial", 9, FontStyle.Regular);
         }
+
         public void LoadProjects(List<string> projectsNo, string anaProjeNo = null)
         {
             panelProjeler.Controls.Clear();
@@ -98,16 +98,19 @@ namespace CEKA_APP.UsrControl
 
             if (!string.IsNullOrEmpty(anaProjeNo) && projectsNo.Any())
             {
-                var anaProjeBilgi = _finansProjelerService.GetProjeBilgileriByNo(anaProjeNo); 
+                var anaProjeBilgi = _finansProjelerService.GetProjeBilgileriByNo(anaProjeNo);
                 var anaKart = CreateProjectCard(anaProjeNo, anaProjeBilgi, true);
                 anaKart.Location = new Point(20, yPosition);
                 panelProjeler.Controls.Add(anaKart);
                 yPosition = anaKart.Bottom + 20;
 
+                bool hasExistingSubProject = projectsNo.Any(projeNo => _finansProjelerService.GetProjeBilgileriByNo(projeNo) != null);
+                int panelHeight = hasExistingSubProject ? 400 : 0;
+
                 var altProjelerPanel = new Panel
                 {
                     AutoSize = false,
-                    Size = new Size(panelProjeler.Width - 40, 0),
+                    Size = new Size(panelProjeler.Width - 40, panelHeight),
                     Location = new Point(20, yPosition),
                     Visible = true,
                     BackColor = AppColors.BackgroundColor,
@@ -126,6 +129,15 @@ namespace CEKA_APP.UsrControl
                 }
 
                 panelProjeler.Controls.Add(altProjelerPanel);
+
+                if (hasExistingSubProject)
+                {
+                    var lblOk = anaKart.Controls.OfType<Label>().FirstOrDefault(l => l.Text == "►" || l.Text == "▼");
+                    if (lblOk != null)
+                    {
+                        lblOk.Text = "▼";
+                    }
+                }
             }
             else
             {
@@ -140,6 +152,7 @@ namespace CEKA_APP.UsrControl
                 }
             }
         }
+
         private Button CreateStyledButton(string text, Color backColor, Color hoverColor)
         {
             var btn = new Button
@@ -163,7 +176,7 @@ namespace CEKA_APP.UsrControl
         {
             var card = new CustomPanel(AppColors.CardColor, AppColors.CardHoverColor)
             {
-                Size = new Size(320, isAnaProje ? 280 : 240),
+                Size = new Size(320, isAnaProje ? 340 : 300),
                 Margin = new Padding(15),
                 Tag = projeNo,
                 Cursor = Cursors.Hand
@@ -185,8 +198,9 @@ namespace CEKA_APP.UsrControl
             };
 
             var txtProjeAdi = CreateTextBox(projeBilgi?.ProjeAdi, ProjeAdiPlaceholder, new Point(20, 70));
-            var dtpOlusturmaTarihi = CreateDateTimePicker(projeBilgi?.OlusturmaTarihi, new Point(20, 130));
-            var txtAciklama = CreateTextBox(projeBilgi?.Aciklama, PlaceholderText, new Point(20, 190));
+            var cmbProjeTipi = CreateComboBox(projeBilgi?.ProjeTipi, new Point(20, 130));
+            var dtpOlusturmaTarihi = CreateDateTimePicker(projeBilgi?.OlusturmaTarihi, new Point(20, 190));
+            var txtAciklama = CreateTextBox(projeBilgi?.Aciklama, PlaceholderText, new Point(20, 250));
 
             Action onInputChange = () =>
             {
@@ -204,13 +218,16 @@ namespace CEKA_APP.UsrControl
             txtProjeAdi.TextChanged += (s, e) => onInputChange();
             dtpOlusturmaTarihi.ValueChanged += (s, e) => onInputChange();
             txtAciklama.TextChanged += (s, e) => onInputChange();
+            cmbProjeTipi.SelectedIndexChanged += (s, e) => onInputChange();
 
             card.Controls.Add(lblProje);
             card.Controls.Add(CreateLabel("Proje Adı:", new Point(20, 50)));
             card.Controls.Add(txtProjeAdi);
-            card.Controls.Add(CreateLabel("Oluşturma Tarihi:", new Point(20, 110)));
+            card.Controls.Add(CreateLabel("Proje Tipi:", new Point(20, 110)));
+            card.Controls.Add(cmbProjeTipi);
+            card.Controls.Add(CreateLabel("Oluşturma Tarihi:", new Point(20, 170)));
             card.Controls.Add(dtpOlusturmaTarihi);
-            card.Controls.Add(CreateLabel("Açıklama:", new Point(20, 170)));
+            card.Controls.Add(CreateLabel("Açıklama:", new Point(20, 230)));
             card.Controls.Add(txtAciklama);
 
             if (isAnaProje)
@@ -234,7 +251,7 @@ namespace CEKA_APP.UsrControl
                     {
                         bool isPanelVisible = altProjelerPanel.Height > 0;
                         lblOk.Text = isPanelVisible ? "►" : "▼";
-                        AnimatePanelHeight(altProjelerPanel, isPanelVisible ? 0 : 300);
+                        AnimatePanelHeight(altProjelerPanel, isPanelVisible ? 0 : 400);
                         if (!isPanelVisible)
                         {
                             CopyToSubProjects(projeNo, altProjelerPanel);
@@ -282,9 +299,10 @@ namespace CEKA_APP.UsrControl
                 parentForm.projeFiyatlandirma.btnProjeAra_Click(null, EventArgs.Empty);
             };
 
-            projeInputs[projeNo] = (txtProjeAdi, dtpOlusturmaTarihi, txtAciklama);
+            projeInputs[projeNo] = (txtProjeAdi, dtpOlusturmaTarihi, txtAciklama, cmbProjeTipi);
             return card;
         }
+
         private void lblOk_Click(object sender, EventArgs e)
         {
             if (sender is Label lblOk)
@@ -294,7 +312,7 @@ namespace CEKA_APP.UsrControl
                 {
                     bool isPanelVisible = altProjelerPanel.Height > 0;
                     lblOk.Text = isPanelVisible ? "►" : "▼";
-                    AnimatePanelHeight(altProjelerPanel, isPanelVisible ? 0 : 300);
+                    AnimatePanelHeight(altProjelerPanel, isPanelVisible ? 0 : 400);
                     if (!isPanelVisible)
                     {
                         string anaProjeNo = lblOk.Parent.Tag.ToString();
@@ -367,6 +385,22 @@ namespace CEKA_APP.UsrControl
             };
         }
 
+        private ComboBox CreateComboBox(string selectedType, Point location)
+        {
+            var cmbBox = new ComboBox
+            {
+                Size = new Size(280, 25),
+                Location = location,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Font = AppFonts.InputFont,
+                BackColor = AppColors.CardHoverColor,
+                ForeColor = AppColors.PrimaryColor
+            };
+            cmbBox.Items.AddRange(new object[] { "", "Ana Kemer Kalıbı", "Araç Geçiş Kalıbı", "Yaya Geçiş Kalıbı", "Genişleme Kalıbı", "Sığınma Cebi Kalıbı", "Niş Kalıbı", "Invert Kalıbı", "Elevasyon Kalıbı", "Tırmanır Kalıp", "Demirci İskelesi", "Membran İskelesi", "Kozmetik İskelesi", "Kür İskelesi", "Yedek Malzeme Kalıbı", "Kemer Dış Kalıbı", "Aç kapa Kalıbı", "Flüt Kalıbı" });
+            cmbBox.SelectedItem = string.IsNullOrEmpty(selectedType) ? "" : selectedType;
+            return cmbBox;
+        }
+
         private void AnimatePanelHeight(Panel panel, int targetHeight)
         {
             var timer = new Timer { Interval = 16 };
@@ -394,13 +428,14 @@ namespace CEKA_APP.UsrControl
                 string projeAdi = anaInputs.txtProjeAdi.Text == ProjeAdiPlaceholder ? "" : anaInputs.txtProjeAdi.Text;
                 string aciklama = anaInputs.txtAciklama.Text == PlaceholderText ? "" : anaInputs.txtAciklama.Text;
                 DateTime tarih = anaInputs.dtpOlusturmaTarihi.Value;
+                string projeTipi = anaInputs.cmbProjeTipi.SelectedItem?.ToString() ?? "";
 
                 foreach (Control ctrl in altProjelerPanel.Controls)
                 {
                     if (ctrl is CustomPanel card && projeInputs.TryGetValue(card.Tag.ToString(), out var subInputs))
                     {
                         string altProjeNo = card.Tag.ToString();
-                        var altProjeBilgi = _finansProjelerService.GetProjeBilgileriByNo(altProjeNo); 
+                        var altProjeBilgi = _finansProjelerService.GetProjeBilgileriByNo(altProjeNo);
 
                         if (altProjeBilgi == null)
                         {
@@ -411,12 +446,16 @@ namespace CEKA_APP.UsrControl
                             subInputs.txtAciklama.ForeColor = string.IsNullOrEmpty(aciklama) ? Color.Gray : AppColors.PrimaryColor;
 
                             subInputs.dtpOlusturmaTarihi.Value = tarih;
+                            subInputs.cmbProjeTipi.SelectedItem = projeTipi;
+                            subInputs.cmbProjeTipi.ForeColor = string.IsNullOrEmpty(projeTipi) ? Color.Gray : AppColors.PrimaryColor;
+
                             hasNewData = true;
                         }
                     }
                 }
             }
         }
+
         private void BtnKaydetHepsi_Click(object sender, EventArgs e)
         {
             bool anyChange = false;
@@ -425,11 +464,12 @@ namespace CEKA_APP.UsrControl
             foreach (var kvp in projeInputs)
             {
                 string projeNo = kvp.Key;
-                var (txtProjeAdi, dtpOlusturmaTarihi, txtAciklama) = kvp.Value;
+                var (txtProjeAdi, dtpOlusturmaTarihi, txtAciklama, cmbProjeTipi) = kvp.Value;
 
                 string projeAdi = txtProjeAdi.Text == ProjeAdiPlaceholder ? "" : txtProjeAdi.Text.Trim();
                 string aciklama = txtAciklama.Text == PlaceholderText ? "" : txtAciklama.Text.Trim();
                 DateTime olusturmaTarihi = dtpOlusturmaTarihi.Value;
+                string projeTipi = cmbProjeTipi.SelectedItem?.ToString() ?? "";
 
                 if (string.IsNullOrWhiteSpace(projeAdi))
                 {
@@ -446,6 +486,11 @@ namespace CEKA_APP.UsrControl
                     validationErrors.Add($"Proje No: {projeNo} için geçerli bir oluşturma tarihi zorunludur.");
                     continue;
                 }
+                if (string.IsNullOrEmpty(projeTipi))
+                {
+                    validationErrors.Add($"Proje No: {projeNo} için proje tipi seçilmelidir.");
+                    continue;
+                }
 
                 try
                 {
@@ -458,7 +503,8 @@ namespace CEKA_APP.UsrControl
                     {
                         hasChanges = projeBilgi.ProjeAdi?.Trim() != projeAdi ||
                                      projeBilgi.Aciklama?.Trim() != aciklama ||
-                                     projeBilgi.OlusturmaTarihi.Date != olusturmaTarihi.Date;
+                                     projeBilgi.OlusturmaTarihi.Date != olusturmaTarihi.Date ||
+                                     projeBilgi.ProjeTipi != projeTipi;
                     }
                     else
                     {
@@ -470,12 +516,12 @@ namespace CEKA_APP.UsrControl
                         bool success;
                         if (projeBilgi != null)
                         {
-                            success = _finansProjelerService.UpdateProjeFinans(projeId.Value, projeNo, aciklama, projeAdi, olusturmaTarihi, out bool changed);
+                            success = _finansProjelerService.UpdateProjeFinans(projeId.Value, projeNo, projeTipi, aciklama, projeAdi, olusturmaTarihi, out bool changed);
                             if (changed) anyChange = true;
                         }
                         else
                         {
-                            success = _projeKutukService.ProjeEkleProjeFinans(projeNo, aciklama, projeAdi, olusturmaTarihi);
+                            success = _finansProjelerService.ProjeEkleProjeFinans(projeNo, projeTipi, aciklama, projeAdi, olusturmaTarihi);
                             if (success) anyChange = true;
                         }
 

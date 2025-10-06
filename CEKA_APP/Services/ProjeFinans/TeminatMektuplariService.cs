@@ -120,5 +120,26 @@ namespace CEKA_APP.Services.ProjeFinans
                 }
             }
         }
+
+        public void UpdateKilometreTasiAdi(string mektupNo, int kilometreTasiId)
+        {
+            using (var connection = _dataBaseService.GetConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        _teminatMektuplariRepository.UpdateKilometreTasiAdi(connection, transaction, mektupNo, kilometreTasiId);
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new ApplicationException("Mektup kilometre taşı güncelenirken hata oluştu.", ex);
+                    }
+                }
+            }
+        }
     }
 }

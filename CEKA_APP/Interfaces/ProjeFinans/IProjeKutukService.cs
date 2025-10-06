@@ -8,10 +8,6 @@ namespace CEKA_APP.Interfaces.ProjeFinans
     public interface IProjeKutukService
     {
         bool ProjeKutukEkle(ProjeKutuk kutuk);
-        bool ProjeFiyatlandirmaEkle(string projeNo, decimal fiyat);
-        bool ProjeEkleProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi);
-        bool UpdateProjeFinans(string projeNo, string aciklama, string projeAdi, DateTime olusturmaTarihi);
-        ProjeBilgi GetProjeBilgileri(string projeNo);
         ProjeKutuk ProjeKutukAra(int projeId);
         void UpdateToplamBedel(string projeNo, decimal toplamBedel);
         bool IsFaturalamaSekliTekil(int projeId);

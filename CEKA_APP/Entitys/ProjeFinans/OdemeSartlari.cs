@@ -19,7 +19,7 @@ namespace CEKA_APP.Entitys.ProjeFinans
         public DateTime? tahminiTarih{ get; set; }
         public DateTime? gerceklesenTarih { get; set; } 
         public string odemeAciklama { get; set; }
-        public bool teminatMektubu { get; set; }
+        public string teminatMektubu { get; set; }
         public string teminatDurumu { get; set; }
         public string durum { get; set; }
         public decimal kalanTutar { get; set; }

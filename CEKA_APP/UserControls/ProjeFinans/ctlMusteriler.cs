@@ -4,7 +4,7 @@ using CEKA_APP.Helper;
 using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.ProjeFinans;
 using CEKA_APP.Properties;
-using ExcelDataReader;
+using ClosedXML.Excel;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -119,75 +119,84 @@ namespace CEKA_APP.UsrControl
         {
             using (OpenFileDialog openFileDialog = new OpenFileDialog())
             {
-                openFileDialog.Filter = "Excel Files|*.xls;*.xlsx;*.xlsm";
+                openFileDialog.Filter = "Excel Dosyaları|*.xls;*.xlsx;*.xlsm";
                 openFileDialog.Title = "Excel Dosyası Seçin";
 
                 if (openFileDialog.ShowDialog() == DialogResult.OK)
                 {
                     try
                     {
-                        using (var stream = File.Open(openFileDialog.FileName, FileMode.Open, FileAccess.Read))
+                        using (var workbook = new XLWorkbook(openFileDialog.FileName))
                         {
-                            using (var reader = ExcelReaderFactory.CreateReader(stream))
+                            var worksheet = workbook.Worksheets.First();
+                            var rows = worksheet.RowsUsed();
+                            if (!rows.Any())
                             {
-                                var result = reader.AsDataSet(new ExcelDataSetConfiguration()
-                                {
-                                    ConfigureDataTable = (_) => new ExcelDataTableConfiguration()
-                                    {
-                                        UseHeaderRow = true
-                                    }
-                                });
+                                MessageBox.Show("Excel dosyasında veri bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
 
-                                DataTable dt = result.Tables[0];
+                            var columnMap = new Dictionary<string, string>
+                    {
+                        { "musteriNo", "MUSTERINO" },
+                        { "musteriAdi", "MUSTERIADI" },
+                        { "vergiDairesi", "VERGIDAIRESI" },
+                        { "vergiNo", "VERGINO" },
+                        { "adres", "ADRES" },
+                        { "musteriMensei", "ULKE" },
+                        { "doviz", "DOVIZ" }
+                    };
 
-                                var columnMap = new Dictionary<string, string>
+                            var headerRow = worksheet.Row(1);
+                            var headers = headerRow.CellsUsed()
+                                                   .Select(c => NormalizeColumnName(c.GetString()))
+                                                   .ToList();
+
+                            foreach (var column in columnMap.Values)
+                            {
+                                if (!headers.Contains(NormalizeColumnName(column)))
                                 {
-                                    { "musteriNo", "MUSTERINO" },
-                                    { "musteriAdi", "MUSTERIADI" },
-                                    { "vergiDairesi", "VERGIDAIRESI" },
-                                    { "vergiNo", "VERGINO" },
-                                    { "adres", "ADRES" },
-                                    { "musteriMensei", "ULKE" },
-                                    { "doviz", "DOVIZ" }
+                                    MessageBox.Show($"Lütfen excel formatını kontrol edin. Eksik sütun: {column}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    return;
+                                }
+                            }
+
+                            var columnIndices = columnMap.Values.ToDictionary(
+                                col => col,
+                                col => headers.IndexOf(NormalizeColumnName(col)) + 1
+                            );
+
+                            var mevcutMusteriler = _musterilerService.GetMusteriler();
+                            var mevcutMusteriNoList = mevcutMusteriler.Select(m => m.musteriNo).ToHashSet();
+
+                            int newCount = 0;
+
+                            foreach (var row in worksheet.RowsUsed().Skip(1))
+                            {
+                                string musteriNo = GetExcelColumnValue(row, columnIndices[columnMap["musteriNo"]]);
+                                if (string.IsNullOrEmpty(musteriNo))
+                                    continue;
+
+                                if (mevcutMusteriNoList.Contains(musteriNo))
+                                    continue;
+
+                                Musteriler musteri = new Musteriler
+                                {
+                                    musteriNo = musteriNo,
+                                    musteriAdi = GetExcelColumnValue(row, columnIndices[columnMap["musteriAdi"]]) ?? " ",
+                                    vergiDairesi = GetExcelColumnValue(row, columnIndices[columnMap["vergiDairesi"]]) ?? " ",
+                                    vergiNo = GetExcelColumnValue(row, columnIndices[columnMap["vergiNo"]]) ?? " ",
+                                    adres = GetExcelColumnValue(row, columnIndices[columnMap["adres"]]) ?? " ",
+                                    musteriMensei = GetExcelColumnValue(row, columnIndices[columnMap["musteriMensei"]]) ?? " ",
+                                    doviz = GetExcelColumnValue(row, columnIndices[columnMap["doviz"]]) ?? " "
                                 };
 
-                                foreach (var column in columnMap.Values)
-                                {
-                                    if (!dt.Columns.Cast<DataColumn>().Any(c => NormalizeColumnName(c.ColumnName) == NormalizeColumnName(column)))
-                                    {
-                                        MessageBox.Show($"Lütfen excel formatını kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                        return;
-                                    }
-                                }
-
-                                _musterilerService.TumMusterileriSil();
-                                int newCount = 0;
-
-                                foreach (DataRow row in dt.Rows)
-                                {
-                                    Musteriler musteri = new Musteriler
-                                    {
-                                        musteriNo = GetExcelColumnValue(row, columnMap["musteriNo"]),
-                                        musteriAdi = GetExcelColumnValue(row, columnMap["musteriAdi"]),
-                                        vergiDairesi = GetExcelColumnValue(row, columnMap["vergiDairesi"]),
-                                        vergiNo = GetExcelColumnValue(row, columnMap["vergiNo"]),
-                                        adres = GetExcelColumnValue(row, columnMap["adres"]),
-                                        musteriMensei = GetExcelColumnValue(row, columnMap["musteriMensei"]),
-                                        doviz = GetExcelColumnValue(row, columnMap["doviz"]) ?? "Belirtilmemiş"
-                                    };
-
-                                    if (string.IsNullOrEmpty(musteri.musteriNo))
-                                        continue;
-
-                                    _musterilerService.MusteriKaydet(musteri);
-                                    newCount++;
-
-                                    Console.WriteLine($"MusteriNo: {musteri.musteriNo}, Doviz: {musteri.doviz}, İşlem: Yeni Eklendi");
-                                }
-
-                                MessageBox.Show($"Müşteri bilgileri yüklendi. Toplam eklenen: {newCount}", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                LoadMusterilerToDataGridView();
+                                _musterilerService.MusteriKaydet(musteri);
+                                newCount++;
                             }
+
+                            MessageBox.Show($"Müşteri bilgileri yüklendi. Toplam eklenen: {newCount}", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            LoadMusterilerToDataGridView();
                         }
                     }
                     catch (Exception ex)
@@ -198,19 +207,18 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-        private string GetExcelColumnValue(DataRow row, string columnName)
+        private string GetExcelColumnValue(IXLRow row, int columnIndex)
         {
-            var column = row.Table.Columns.Cast<DataColumn>()
-                .FirstOrDefault(c => NormalizeColumnName(c.ColumnName) == NormalizeColumnName(columnName));
-            return column != null ? row[column]?.ToString() : null;
+            var cell = row.Cell(columnIndex);
+            return cell.IsEmpty() ? null : cell.GetValue<string>().Trim();
         }
 
         private string NormalizeColumnName(string columnName)
         {
             if (string.IsNullOrEmpty(columnName)) return columnName;
             return columnName.Replace("ı", "i").Replace("İ", "I").Replace("ş", "s").Replace("Ş", "S")
-                            .Replace("ğ", "g").Replace("Ğ", "G").Replace("ü", "u").Replace("Ü", "U")
-                            .Replace("ç", "c").Replace("Ç", "C").ToLower();
+                             .Replace("ğ", "g").Replace("Ğ", "G").Replace("ü", "u").Replace("Ü", "U")
+                             .Replace("ç", "c").Replace("Ç", "C").ToLower();
         }
 
         private void dataGridMusteriler_DataBindingComplete(object sender, DataGridViewBindingCompleteEventArgs e)
