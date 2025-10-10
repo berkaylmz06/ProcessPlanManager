@@ -1,4 +1,5 @@
-﻿using CEKA_APP.UserControls.ProjeTakip;
+﻿using CEKA_APP.UserControls.KesimTakip;
+using CEKA_APP.UserControls.ProjeTakip;
 using CEKA_APP.UsrControl.ProjeFinans;
 
 namespace CEKA_APP.UsrControl.Interfaces
@@ -14,7 +15,7 @@ namespace CEKA_APP.UsrControl.Interfaces
         ctlTeminatMektuplari CreateTeminatMektuplariControl();
         ctlProjeBilgileri CreateProjeBilgileriControl();
         ctlTakipTakvimi CreateTakipTakvimiControl();
-
+        ctlKesimYonetimi CreateKesimYonetimiControl();
 
 
         ctlKesimPlaniEkle CreateKesimPlaniEkleControl();

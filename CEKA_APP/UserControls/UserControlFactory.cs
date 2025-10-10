@@ -4,6 +4,7 @@ using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.KesimTakip;
 using CEKA_APP.Interfaces.ProjeFinans;
 using CEKA_APP.Interfaces.Sistem;
+using CEKA_APP.UserControls.KesimTakip;
 using CEKA_APP.UserControls.ProjeTakip;
 using CEKA_APP.UsrControl.Interfaces;
 using CEKA_APP.UsrControl.ProjeFinans;
@@ -43,6 +44,11 @@ namespace CEKA_APP.UsrControl
         public ctlKesimYap CreateKesimYapControl()
         {
             return new ctlKesimYap(_serviceProvider);
+        }
+
+        public ctlKesimYonetimi CreateKesimYonetimiControl()
+        {
+            return new ctlKesimYonetimi(_serviceProvider);
         }
 
         public ctlKullaniciAyarlari CreateKullaniciAyarlariService()

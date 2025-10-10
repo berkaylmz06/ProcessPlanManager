@@ -71,6 +71,8 @@
             this.tpMektupDagit = new System.Windows.Forms.TabPage();
             this.tlpDagitMain = new System.Windows.Forms.TableLayoutPanel();
             this.dgvMektupDagitim = new System.Windows.Forms.DataGridView();
+            this.ProjeNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Tutar = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tlpDagitSummary = new System.Windows.Forms.TableLayoutPanel();
             this.lblAnaTutar = new System.Windows.Forms.Label();
             this.txtAnaTutar = new System.Windows.Forms.TextBox();
@@ -81,8 +83,7 @@
             this.btnKaydet = new System.Windows.Forms.Button();
             this.errorProvider = new System.Windows.Forms.ErrorProvider(this.components);
             this.panel1 = new System.Windows.Forms.Panel();
-            this.ProjeNo = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Tutar = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.lblTeminatBilgi = new System.Windows.Forms.Label();
             this.tpTeminatMektubu.SuspendLayout();
             this.tpTeminatMektubuEkle.SuspendLayout();
             this.tlpMainLayout.SuspendLayout();
@@ -238,7 +239,6 @@
             this.cmbKomisyonVadesi.Name = "cmbKomisyonVadesi";
             this.cmbKomisyonVadesi.Size = new System.Drawing.Size(602, 29);
             this.cmbKomisyonVadesi.TabIndex = 13;
-            this.cmbKomisyonVadesi.SelectedIndexChanged += new System.EventHandler(this.cmbKomisyonVadesi_SelectedIndexChanged);
             // 
             // txtKomisyonOrani
             // 
@@ -613,6 +613,25 @@
             this.dgvMektupDagitim.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.DgvMektupDagitim_CellValidating);
             this.dgvMektupDagitim.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.DgvMektupDagitim_CellValueChanged);
             // 
+            // ProjeNo
+            // 
+            this.ProjeNo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.ProjeNo.HeaderText = "Alt Proje";
+            this.ProjeNo.MinimumWidth = 6;
+            this.ProjeNo.Name = "ProjeNo";
+            this.ProjeNo.ReadOnly = true;
+            // 
+            // Tutar
+            // 
+            this.Tutar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
+            dataGridViewCellStyle2.Format = "N2";
+            dataGridViewCellStyle2.NullValue = "0,00";
+            this.Tutar.DefaultCellStyle = dataGridViewCellStyle2;
+            this.Tutar.HeaderText = "Dağıtılan Tutar";
+            this.Tutar.MinimumWidth = 6;
+            this.Tutar.Name = "Tutar";
+            // 
             // tlpDagitSummary
             // 
             this.tlpDagitSummary.ColumnCount = 6;
@@ -736,6 +755,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.lblTeminatBilgi);
             this.panel1.Controls.Add(this.btnKaydet);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.panel1.Location = new System.Drawing.Point(0, 615);
@@ -743,24 +763,14 @@
             this.panel1.Size = new System.Drawing.Size(832, 43);
             this.panel1.TabIndex = 15;
             // 
-            // ProjeNo
+            // lblTeminatBilgi
             // 
-            this.ProjeNo.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.ProjeNo.HeaderText = "Alt Proje";
-            this.ProjeNo.MinimumWidth = 6;
-            this.ProjeNo.Name = "ProjeNo";
-            this.ProjeNo.ReadOnly = true;
-            // 
-            // Tutar
-            // 
-            this.Tutar.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            dataGridViewCellStyle2.Alignment = System.Windows.Forms.DataGridViewContentAlignment.MiddleRight;
-            dataGridViewCellStyle2.Format = "N2";
-            dataGridViewCellStyle2.NullValue = "0,00";
-            this.Tutar.DefaultCellStyle = dataGridViewCellStyle2;
-            this.Tutar.HeaderText = "Dağıtılan Tutar";
-            this.Tutar.MinimumWidth = 6;
-            this.Tutar.Name = "Tutar";
+            this.lblTeminatBilgi.AutoSize = true;
+            this.lblTeminatBilgi.Location = new System.Drawing.Point(14, 5);
+            this.lblTeminatBilgi.Name = "lblTeminatBilgi";
+            this.lblTeminatBilgi.Size = new System.Drawing.Size(22, 16);
+            this.lblTeminatBilgi.TabIndex = 15;
+            this.lblTeminatBilgi.Text = ".....";
             // 
             // frmTeminatMektubuEkle
             // 
@@ -798,6 +808,7 @@
             this.tlpDagitSummary.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider)).EndInit();
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -856,5 +867,6 @@
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.DataGridViewTextBoxColumn ProjeNo;
         private System.Windows.Forms.DataGridViewTextBoxColumn Tutar;
+        private System.Windows.Forms.Label lblTeminatBilgi;
     }
 }

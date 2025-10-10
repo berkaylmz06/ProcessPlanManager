@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace CEKA_APP.Interfaces.KesimTakip
@@ -14,5 +15,8 @@ namespace CEKA_APP.Interfaces.KesimTakip
         bool KesimListesiPaketKontrolluDusme(string kesimId, int kesilenMiktar, out string hataMesaji);
         void VerileriYenile(DataGridView data);
         bool KesimIdVarMi(string kesimId);
+        string GetKesimListesiPaketSureQuery();
+        DataTable GetKesimListesiPaketSure();
+        bool KesimListesiPaketIptalEt(string kesimId, string iptalNedeni);
     }
 }

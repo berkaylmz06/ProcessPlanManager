@@ -20,9 +20,9 @@ namespace CEKA_APP.Concretes.ProjeFinans
 
             string sql = @"
         INSERT INTO ProjeFinans_TeminatMektuplari
-        (mektupNo, musteriNo, musteriAdi, paraBirimi, banka, mektupTuru, tutar, vadeTarihi, iadeTarihi, komisyonTutari, komisyonOrani, komisyonVadesi, projeId, kilometreTasiId)
+        (mektupNo, musteriNo, musteriAdi, paraBirimi, banka, mektupTuru, tutar, vadeTarihi, iadeTarihi, komisyonTutari, komisyonOrani, komisyonVadesi, projeId, kilometreTasiId, durum)
         VALUES
-        (@mektupNo, @musteriNo, @musteriAdi, @paraBirimi, @banka, @mektupTuru, @tutar, @vadeTarihi, @iadeTarihi, @komisyonTutari, @komisyonOrani, @komisyonVadesi, @projeId, @kilometreTasiId)";
+        (@mektupNo, @musteriNo, @musteriAdi, @paraBirimi, @banka, @mektupTuru, @tutar, @vadeTarihi, @iadeTarihi, @komisyonTutari, @komisyonOrani, @komisyonVadesi, @projeId, @kilometreTasiId, @durum)";
 
             using (SqlCommand command = new SqlCommand(sql, connection, transaction))
             {
@@ -40,12 +40,14 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 command.Parameters.AddWithValue("@komisyonVadesi", mektup.komisyonVadesi);
                 command.Parameters.AddWithValue("@projeId", mektup.projeId.HasValue ? (object)mektup.projeId.Value : DBNull.Value);
                 command.Parameters.AddWithValue("@kilometreTasiId", mektup.kilometreTasiId);
+                command.Parameters.AddWithValue("@durum", mektup.durum ?? (object)DBNull.Value);
 
                 command.ExecuteNonQuery();
             }
 
             return true;
         }
+
 
         public void MektupGuncelle(SqlConnection connection, SqlTransaction transaction, string eskiMektupNo, TeminatMektuplari guncelMektup)
         {
@@ -138,7 +140,8 @@ namespace CEKA_APP.Concretes.ProjeFinans
             t.komisyonVadesi, 
             p.projeNo,
             t.kilometreTasiId,
-            t.projeId
+            t.projeId,
+            t.durum
         FROM ProjeFinans_TeminatMektuplari t
         LEFT JOIN ProjeFinans_KilometreTaslari k ON t.kilometreTasiId = k.kilometreTasiId
         LEFT JOIN ProjeFinans_Projeler p ON p.projeId = t.projeId";
@@ -174,7 +177,8 @@ namespace CEKA_APP.Concretes.ProjeFinans
                             komisyonVadesi = reader.GetInt32(reader.GetOrdinal("komisyonVadesi")),
                             projeNo = reader["projeNo"] as string ?? "",
                             kilometreTasiId = reader.GetInt32(reader.GetOrdinal("kilometreTasiId")),
-                            projeId = !reader.IsDBNull(reader.GetOrdinal("projeId")) ? (int?)reader.GetInt32(reader.GetOrdinal("projeId")) : null
+                            projeId = !reader.IsDBNull(reader.GetOrdinal("projeId")) ? (int?)reader.GetInt32(reader.GetOrdinal("projeId")) : null,
+                            durum = reader["durum"] as string ?? ""
                         };
                         teminatMektuplari.Add(mektup);
                     }
@@ -202,6 +206,69 @@ namespace CEKA_APP.Concretes.ProjeFinans
                 cmd.Parameters.AddWithValue("@kilometreTasiId", kilometreTasiId);
                 cmd.Parameters.AddWithValue("@mektupNo", mektupNo);
 
+                cmd.ExecuteNonQuery();
+            }
+        }
+        public TeminatMektuplari GetTeminatMektubuByProjeNo(SqlConnection connection, string projeNo)
+        {
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+            if (string.IsNullOrEmpty(projeNo))
+                return null;
+
+            string sql = GetTeminatMektuplariQuery() + " WHERE p.projeNo = @projeNo";
+
+            using (var cmd = new SqlCommand(sql, connection))
+            {
+                cmd.Parameters.AddWithValue("@projeNo", projeNo);
+
+                using (var reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        return new TeminatMektuplari
+                        {
+                            mektupNo = reader["mektupNo"] as string ?? "",
+                            musteriNo = reader["musteriNo"] as string ?? "",
+                            musteriAdi = reader["musteriAdi"] as string ?? "",
+                            kilometreTasiAdi = reader["kilometreTasiAdi"] as string ?? "",
+                            paraBirimi = reader["paraBirimi"] as string ?? "",
+                            banka = reader["banka"] as string ?? "",
+                            mektupTuru = reader["mektupTuru"] as string ?? "",
+                            tutar = reader.GetDecimal(reader.GetOrdinal("tutar")),
+                            vadeTarihi = !reader.IsDBNull(reader.GetOrdinal("vadeTarihi")) ? (DateTime?)reader.GetDateTime(reader.GetOrdinal("vadeTarihi")) : null,
+                            iadeTarihi = reader.GetDateTime(reader.GetOrdinal("iadeTarihi")),
+                            komisyonTutari = reader.GetDecimal(reader.GetOrdinal("komisyonTutari")),
+                            komisyonOrani = reader.GetDecimal(reader.GetOrdinal("komisyonOrani")),
+                            komisyonVadesi = reader.GetInt32(reader.GetOrdinal("komisyonVadesi")),
+                            projeNo = reader["projeNo"] as string ?? "",
+                            kilometreTasiId = reader.GetInt32(reader.GetOrdinal("kilometreTasiId")),
+                            projeId = !reader.IsDBNull(reader.GetOrdinal("projeId")) ? (int?)reader.GetInt32(reader.GetOrdinal("projeId")) : null,
+                            durum = reader["durum"] as string ?? ""
+                        };
+                    }
+                    return null;
+                }
+            }
+        }
+        public void UpdateTeminatDurum(SqlConnection connection, SqlTransaction transaction, string mektupNo, string durum)
+        {
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
+            if (transaction == null)
+                throw new ArgumentNullException(nameof(transaction));
+            if (string.IsNullOrEmpty(mektupNo))
+                throw new ArgumentNullException(nameof(mektupNo));
+
+            string query = @"
+                UPDATE ProjeFinans_TeminatMektuplari
+                SET durum = @durum
+                WHERE mektupNo = @mektupNo";
+
+            using (SqlCommand cmd = new SqlCommand(query, connection, transaction))
+            {
+                cmd.Parameters.AddWithValue("@durum", durum ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@mektupNo", mektupNo ?? (object)DBNull.Value);
                 cmd.ExecuteNonQuery();
             }
         }

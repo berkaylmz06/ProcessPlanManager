@@ -2,10 +2,8 @@
 using CEKA_APP.Interfaces.ProjeFinans;
 using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Drawing;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -22,6 +20,10 @@ namespace CEKA_APP.Forms
         private int? _projeId;
         private List<string> _altProjeler;
         private bool _activateTeminatTab;
+        private Dictionary<string, TeminatMektuplari> _mevcutAltProjeMektuplari = new Dictionary<string, TeminatMektuplari>();
+        private ComboBox cmbMektupNoSec;
+        private Dictionary<string, TeminatMektuplari> _mevcutMektuplarDict = new Dictionary<string, TeminatMektuplari>();
+        private bool _isFirstMektupDagitLoad = true;
 
         private readonly IMusterilerService _musterilerService;
         private readonly IFinansProjelerService _finansProjelerService;
@@ -29,17 +31,17 @@ namespace CEKA_APP.Forms
         private readonly ITeminatMektuplariService _teminatMektuplariService;
 
         public frmTeminatMektubuEkle(
-            IMusterilerService musterilerService,
-            TeminatMektuplari teminatMektup,
-            IFinansProjelerService finansProjelerService,
-            IProjeKutukService projeKutukService,
-            ITeminatMektuplariService teminatMektuplariService,
-            int? projeId = null,
-            int kilometreTasiId = 0,
-            string tutar = "0.00",
-            List<string> altProjeler = null,
-            bool activateTeminatTab = false
-        )
+           IMusterilerService musterilerService,
+           TeminatMektuplari teminatMektup,
+           IFinansProjelerService finansProjelerService,
+           IProjeKutukService projeKutukService,
+           ITeminatMektuplariService teminatMektuplariService,
+           int? projeId = null,
+           int kilometreTasiId = 0,
+           string tutar = "0.00",
+           List<string> altProjeler = null,
+           bool activateTeminatTab = false
+       )
         {
             InitializeComponent();
 
@@ -50,13 +52,24 @@ namespace CEKA_APP.Forms
 
             this.Icon = Properties.Resources.cekalogokirmizi;
 
-
             Helper.DataGridViewHelper.StilUygulaProjeOge(dgvMektupDagitim);
 
             _kilometreTasiId = kilometreTasiId;
             _tutar = tutar;
             _altProjeler = altProjeler ?? new List<string>();
             _activateTeminatTab = activateTeminatTab;
+
+            cmbMektupNoSec = new ComboBox
+            {
+                Name = "cmbMektupNoSec",
+                Font = txtMektupNo.Font,
+                Visible = false,
+                DropDownStyle = ComboBoxStyle.DropDownList,
+                Anchor = txtMektupNo.Anchor,
+                TabIndex = txtMektupNo.TabIndex,
+                Dock = DockStyle.Fill 
+            };
+            cmbMektupNoSec.SelectedIndexChanged += cmbMektupNoSec_SelectedIndexChanged;
 
             if (_altProjeler == null || !_altProjeler.Any())
             {
@@ -67,17 +80,21 @@ namespace CEKA_APP.Forms
                 dgvMektupDagitim.AutoGenerateColumns = false;
                 dgvMektupDagitim.Columns.Clear();
 
-                DataGridViewTextBoxColumn colProjeNo = new DataGridViewTextBoxColumn();
-                colProjeNo.Name = "ProjeNo";
-                colProjeNo.HeaderText = "Proje No";
-                colProjeNo.ReadOnly = true;
-                colProjeNo.DataPropertyName = "ProjeNo";
+                DataGridViewTextBoxColumn colProjeNo = new DataGridViewTextBoxColumn
+                {
+                    Name = "ProjeNo",
+                    HeaderText = "Proje No",
+                    ReadOnly = true,
+                    DataPropertyName = "ProjeNo"
+                };
                 dgvMektupDagitim.Columns.Add(colProjeNo);
 
-                DataGridViewTextBoxColumn colTutar = new DataGridViewTextBoxColumn();
-                colTutar.Name = "Tutar";
-                colTutar.HeaderText = "Dağıtılan Tutar";
-                colTutar.DataPropertyName = "Tutar";
+                DataGridViewTextBoxColumn colTutar = new DataGridViewTextBoxColumn
+                {
+                    Name = "Tutar",
+                    HeaderText = "Dağıtılan Tutar",
+                    DataPropertyName = "Tutar"
+                };
                 dgvMektupDagitim.Columns.Add(colTutar);
             }
 
@@ -94,9 +111,6 @@ namespace CEKA_APP.Forms
 
                 this.Text = "Teminat Mektubu Bilgilerini Güncelle";
                 btnKaydet.Text = "Güncelle";
-
-                LoadMektupDataToForm();
-                txtMektupNo.Enabled = false;
             }
             else
             {
@@ -133,10 +147,168 @@ namespace CEKA_APP.Forms
 
             tpTeminatMektubu.SelectedTab = tpTeminatMektubu.TabPages["tpTeminatMektubuEkle"];
         }
+        private void KontrolEtMevcutAltProjeMektuplari()
+        {
+            if (_altProjeler == null || !_altProjeler.Any())
+            {
+                txtMektupNo.Visible = true;
+                cmbMektupNoSec.Visible = false;
+                return;
+            }
 
+            List<string> mevcutMektupAltProjeler = new List<string>();
+            _mevcutAltProjeMektuplari.Clear();
+            _mevcutMektuplarDict.Clear();
+            bool tumMektuplarAyni = true;
+            bool bazilariGuncellenmis = false;
+            TeminatMektuplari referansMektup = null;
+
+            CultureInfo trCulture = new CultureInfo("tr-TR");
+            decimal toplamTutar = 0m;
+            decimal toplamKomisyonTutari = 0m;
+
+            foreach (var altProjeNo in _altProjeler)
+            {
+                TeminatMektuplari mevcutMektup = _teminatMektuplariService.GetTeminatMektubuByProjeNo(altProjeNo);
+
+                if (mevcutMektup != null)
+                {
+                    mevcutMektupAltProjeler.Add(altProjeNo);
+                    _mevcutAltProjeMektuplari.Add(altProjeNo, mevcutMektup);
+                    if (!_mevcutMektuplarDict.ContainsKey(mevcutMektup.mektupNo))
+                    {
+                        _mevcutMektuplarDict.Add(mevcutMektup.mektupNo, mevcutMektup);
+                    }
+                    toplamTutar += mevcutMektup.tutar;
+                    toplamKomisyonTutari += mevcutMektup.komisyonTutari;
+
+                    if (referansMektup == null)
+                    {
+                        referansMektup = mevcutMektup;
+                    }
+                    else
+                    {
+                        if (mevcutMektup.musteriNo != referansMektup.musteriNo ||
+                            mevcutMektup.musteriAdi != referansMektup.musteriAdi ||
+                            mevcutMektup.banka != referansMektup.banka ||
+                            mevcutMektup.mektupTuru != referansMektup.mektupTuru ||
+                            mevcutMektup.paraBirimi != referansMektup.paraBirimi ||
+                            mevcutMektup.komisyonOrani != referansMektup.komisyonOrani ||
+                            mevcutMektup.komisyonVadesi != referansMektup.komisyonVadesi ||
+                            mevcutMektup.vadeTarihi != referansMektup.vadeTarihi)
+                        {
+                            tumMektuplarAyni = false;
+                        }
+                    }
+                }
+            }
+
+            if (mevcutMektupAltProjeler.Any())
+            {
+                string projeListesi = string.Join(", ", mevcutMektupAltProjeler);
+                string mesaj;
+
+                txtMektupNo.Visible = false;
+                cmbMektupNoSec.Visible = true;
+                cmbMektupNoSec.Items.Clear();
+                foreach (var mektupNo in _mevcutMektuplarDict.Keys)
+                {
+                    cmbMektupNoSec.Items.Add(mektupNo);
+                }
+                cmbMektupNoSec.BringToFront();
+
+                if (cmbMektupNoSec.Items.Count > 0)
+                {
+                    cmbMektupNoSec.SelectedIndex = 0;
+                }
+                else
+                {
+                    MessageBox.Show("Mevcut mektuplar bulundu ancak ComboBox doldurulamadı. Servis verilerini kontrol edin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                }
+
+                if (tpTeminatMektubu.TabPages.Contains(tpMektupDagit))
+                {
+                    tpTeminatMektubu.TabPages.Remove(tpMektupDagit);
+                }
+
+                if (tumMektuplarAyni && !bazilariGuncellenmis)
+                {
+                    mesaj = $"UYARI: Aşağıdaki alt projeler için teminat mektubu zaten mevcut: \n{projeListesi}";
+                    lblTeminatBilgi.Text = mesaj;
+                    lblTeminatBilgi.ForeColor = Color.DarkOrange;
+                    lblTeminatBilgi.Font = new Font(lblTeminatBilgi.Font, FontStyle.Bold);
+
+                    _currentMektup = new TeminatMektuplari
+                    {
+                        mektupNo = referansMektup.mektupNo,
+                        musteriNo = referansMektup.musteriNo,
+                        musteriAdi = referansMektup.musteriAdi,
+                        paraBirimi = referansMektup.paraBirimi,
+                        tutar = referansMektup.tutar,
+                        banka = referansMektup.banka,
+                        mektupTuru = referansMektup.mektupTuru,
+                        vadeTarihi = referansMektup.vadeTarihi,
+                        iadeTarihi = referansMektup.iadeTarihi,
+                        komisyonTutari = referansMektup.komisyonTutari,
+                        komisyonOrani = referansMektup.komisyonOrani,
+                        komisyonVadesi = referansMektup.komisyonVadesi,
+                        projeId = _projeId.HasValue ? _projeId.Value : 0,
+                        projeNo = _projeNo,
+                        kilometreTasiId = _kilometreTasiId
+                    };
+                    _isUpdateMode = true;
+                    _originalMektupNoForUpdate = referansMektup.mektupNo;
+                    this.Text = "Teminat Mektubu Bilgilerini Güncelle";
+                    btnKaydet.Text = "Güncelle";
+                }
+                else if (bazilariGuncellenmis)
+                {
+                    mesaj = $"UYARI: Bazı alt projeler için teminat mektupları güncellenmiş: \n{projeListesi}";
+                    lblTeminatBilgi.Text = mesaj;
+                    lblTeminatBilgi.ForeColor = Color.DarkOrange;
+                    lblTeminatBilgi.Font = new Font(lblTeminatBilgi.Font, FontStyle.Bold);
+                }
+                else
+                {
+                    mesaj = $"UYARI: Bazı alt projeler için teminat mektubu bilgileri farklı";
+                    lblTeminatBilgi.Text = mesaj;
+                    lblTeminatBilgi.ForeColor = Color.DarkOrange;
+                    lblTeminatBilgi.Font = new Font(lblTeminatBilgi.Font, FontStyle.Bold);
+                }
+            }
+            else
+            {
+                txtMektupNo.Visible = true;
+                cmbMektupNoSec.Visible = false;
+                if (!tpTeminatMektubu.TabPages.Contains(tpMektupDagit) && _altProjeler.Any())
+                {
+                    tpTeminatMektubu.TabPages.Add(tpMektupDagit);
+                }
+                lblTeminatBilgi.Text = "";
+                lblTeminatBilgi.ForeColor = SystemColors.ControlText;
+                lblTeminatBilgi.Font = new Font(lblTeminatBilgi.Font, FontStyle.Regular);
+            }
+        }
         private void frmTeminatMektubuEkle_Load(object sender, EventArgs e)
         {
             ApplyCharacterLimits();
+
+            if (!tlpTemelBilgiler.Controls.ContainsKey("cmbMektupNoSec"))
+            {
+                tlpTemelBilgiler.Controls.Add(cmbMektupNoSec, 1, 0);
+            }
+
+            if (_altProjeler != null && _altProjeler.Any())
+            {
+                KontrolEtMevcutAltProjeMektuplari();
+            }
+
+            cmbMektupNoSec.BringToFront();
+
+            txtTutar.ReadOnly = false;
+            txtTutar.Enabled = true;
+
+            LoadMektupDataToForm();
 
             if (_isUpdateMode && _currentMektup != null)
             {
@@ -155,10 +327,581 @@ namespace CEKA_APP.Forms
 
             if (_altProjeler != null && _altProjeler.Any() && _activateTeminatTab)
             {
+                if (cmbMektupNoSec.Visible)
+                {
+                }
+                else
+                {
+                    LoadAltProjelerToDataGridView();
+                }
+            }
+
+            this.BeginInvoke((Action)(() =>
+            {
+                cmbBankalar.Refresh();
+                this.Invalidate();
+                this.Refresh();
+            }));
+        }
+        private void LoadBankalar()
+        {
+            if (cmbBankalar.Items.Count > 0)
+            {
+                return;
+            }
+
+            cmbBankalar.Items.Clear();
+
+            string[] hardcodedBankalar = {
+                "HALKBANK",
+                "YAPIKREDI",
+                "DENIZBANK",
+                "GARANTI",
+                "ISBANK",
+                "ZIRAAT",
+                "TEB",
+                "EXIMBANK",
+                "VAKIFBANK",
+                "KUVEVTTURK",
+                "AKBANK",
+                "QNB BANK"
+            };
+
+            try
+            {
+                foreach (string banka in hardcodedBankalar)
+                {
+                    string trimmedBanka = banka.Trim();
+                    if (!string.IsNullOrEmpty(trimmedBanka) && !cmbBankalar.Items.Contains(trimmedBanka))
+                    {
+                        cmbBankalar.Items.Add(trimmedBanka);
+                    }
+                }
+
+                if (cmbBankalar.Items.Count > 0)
+                {
+                    cmbBankalar.SelectedIndex = 0;
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Banka listesi yüklenirken bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
+            if (cmbBankalar.Items.Count == 0)
+            {
+                MessageBox.Show("Banka listesi yüklenemedi. Uygulamayı yeniden başlatın.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void LoadMektupDataToForm()
+        {
+            if (_currentMektup == null)
+            {
+                return;
+            }
+
+            if (cmbBankalar.Items.Count == 0)
+            {
+                LoadBankalar();
+            }
+
+            if (txtMektupNo.Visible)
+            {
+                txtMektupNo.Text = _currentMektup.mektupNo;
+            }
+
+            txtMusteriNo.Text = _currentMektup.musteriNo;
+            txtMusteriAdi.Text = _currentMektup.musteriAdi;
+
+            chkTL.Checked = _currentMektup.paraBirimi == "TL" || _currentMektup.paraBirimi == "TRY";
+            chkDolar.Checked = _currentMektup.paraBirimi == "USD";
+            chkEuro.Checked = _currentMektup.paraBirimi == "EUR";
+
+            CultureInfo trCulture = new CultureInfo("tr-TR");
+            txtTutar.Text = _currentMektup.tutar.ToString("N2", trCulture);
+
+            if (!string.IsNullOrEmpty(_currentMektup.banka))
+            {
+                string banka = _currentMektup.banka.Trim();
+
+                string normalizedBanka = banka.ToUpper();
+                int index = -1;
+                for (int i = 0; i < cmbBankalar.Items.Count; i++)
+                {
+                    string listedBank = cmbBankalar.Items[i].ToString().ToUpper();
+                    if (listedBank == normalizedBanka)
+                    {
+                        index = i;
+                        break;
+                    }
+                }
+
+                this.BeginInvoke((Action)(() =>
+                {
+                    if (index >= 0)
+                    {
+                        cmbBankalar.SelectedIndex = index;
+                        cmbBankalar.SelectedItem = cmbBankalar.Items[index];
+                    }
+                    else
+                    {
+                        string bankaToAdd = banka;
+                        cmbBankalar.Items.Add(bankaToAdd);
+                        int newIndex = cmbBankalar.Items.Count - 1;
+                        cmbBankalar.SelectedIndex = newIndex;
+                        cmbBankalar.SelectedItem = bankaToAdd;
+                        MessageBox.Show($"Banka '{bankaToAdd}' listeye eklendi.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    }
+
+                    cmbBankalar.Refresh();
+                }));
+            }
+            else
+            {
+                this.BeginInvoke((Action)(() =>
+                {
+                    cmbBankalar.SelectedIndex = 0;
+                    cmbBankalar.Refresh();
+                }));
+            }
+
+            if (!string.IsNullOrEmpty(_currentMektup.mektupTuru))
+            {
+                int index = cmbMektupTuru.FindStringExact(_currentMektup.mektupTuru.Trim());
+                if (index >= 0)
+                {
+                    cmbMektupTuru.SelectedIndex = index;
+                }
+                else
+                {
+                    cmbMektupTuru.Text = _currentMektup.mektupTuru;
+                }
+            }
+
+            dtVadeTarihi.Value = _currentMektup.vadeTarihi ?? DateTime.Now;
+
+            txtKomisyonTutari.Text = _currentMektup.komisyonTutari.ToString("N2", trCulture);
+            txtKomisyonOrani.Text = _currentMektup.komisyonOrani.ToString("N2", trCulture);
+
+            if (_currentMektup.komisyonVadesi > 0)
+            {
+                string vadeText = _currentMektup.komisyonVadesi.ToString() + " Ay";
+                int index = cmbKomisyonVadesi.FindStringExact(vadeText);
+                if (index >= 0)
+                {
+                    cmbKomisyonVadesi.SelectedIndex = index;
+                }
+                else
+                {
+                    cmbKomisyonVadesi.Text = vadeText;
+                }
+            }
+
+            if (_altProjeler != null && _altProjeler.Any())
+            {
                 LoadAltProjelerToDataGridView();
             }
 
-            UpdateIadeTarihi();
+            HesaplaKomisyonTutari();
+        }
+        private void LoadKomisyonVadesi()
+        {
+            cmbKomisyonVadesi.Items.Clear();
+            for (int i = 1; i <= 12; i++)
+            {
+                cmbKomisyonVadesi.Items.Add(i + " Ay");
+            }
+            cmbKomisyonVadesi.SelectedIndex = 0;
+        }
+
+        private void LoadMektupTurleri()
+        {
+            cmbMektupTuru.Items.Clear();
+            cmbMektupTuru.Items.AddRange(new object[] { "Geçici", "Kesin", "Avans", "Kati" });
+        }
+
+        private void ApplyCharacterLimits()
+        {
+            if (txtMektupNo != null)
+                txtMektupNo.MaxLength = 50;
+            if (txtMusteriNo != null)
+                txtMusteriNo.MaxLength = 50;
+            if (txtMusteriAdi != null)
+                txtMusteriAdi.MaxLength = 250;
+            if (cmbBankalar != null)
+                cmbBankalar.MaxLength = 250;
+            if (cmbMektupTuru != null)
+                cmbMektupTuru.MaxLength = 250;
+        }
+
+        private void btnKaydet_Click(object sender, EventArgs e)
+        {
+            HesaplaKomisyonTutari();
+
+            if (!string.IsNullOrEmpty(lblTeminatBilgi.Text) && lblTeminatBilgi.Text.Contains("ZATEN MEVCUT") && !cmbMektupNoSec.Visible)
+            {
+                MessageBox.Show("Mevcut teminat mektupları tespit edildi. Yeni teminat mektubu kaydedilemez. Lütfen mevcut mektupları güncelleyin.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string mektupNo = cmbMektupNoSec.Visible ? cmbMektupNoSec.SelectedItem?.ToString() : txtMektupNo.Text.Trim();
+            if (string.IsNullOrWhiteSpace(mektupNo))
+            {
+                MessageBox.Show("Mektup No boş bırakılamaz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            string musteriNo = txtMusteriNo.Text.Trim();
+            string musteriAdi = txtMusteriAdi.Text.Trim();
+            string paraBirimi = "";
+
+            if (string.IsNullOrWhiteSpace(musteriNo) || string.IsNullOrWhiteSpace(musteriAdi))
+            {
+                MessageBox.Show("Müşteri No ve Müşteri Adı boş bırakılamaz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (chkTL.Checked)
+                paraBirimi = "TL";
+            else if (chkDolar.Checked)
+                paraBirimi = "USD";
+            else if (chkEuro.Checked)
+                paraBirimi = "EUR";
+            else
+            {
+                MessageBox.Show("Lütfen para birimi seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            CultureInfo trCulture = new CultureInfo("tr-TR");
+            if (!decimal.TryParse(txtTutar.Text, NumberStyles.Any, trCulture, out decimal anaTutar))
+            {
+                MessageBox.Show("Lütfen geçerli bir ana tutar giriniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            string banka = cmbBankalar.Text.Trim();
+            string mektupTuru = cmbMektupTuru.Text.Trim();
+            DateTime? vadeTarihi = (mektupTuru == "Kesin" || mektupTuru == "Kati") ? null : (DateTime?)dtVadeTarihi.Value;
+
+            if (!decimal.TryParse(txtKomisyonTutari.Text, NumberStyles.Any, trCulture, out decimal toplamKomisyonTutari))
+            {
+                MessageBox.Show("Lütfen geçerli bir komisyon tutarı giriniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            if (!decimal.TryParse(txtKomisyonOrani.Text, NumberStyles.Any, trCulture, out decimal komisyonOrani))
+            {
+                MessageBox.Show("Lütfen geçerli bir komisyon oranı giriniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            int komisyonVadesi = 0;
+            string komisyonVadesiText = cmbKomisyonVadesi.Text.Trim();
+            if (!string.IsNullOrWhiteSpace(komisyonVadesiText))
+            {
+                string numericPart = System.Text.RegularExpressions.Regex.Match(komisyonVadesiText, @"\d+").Value;
+                if (!int.TryParse(numericPart, out komisyonVadesi))
+                {
+                    MessageBox.Show("Lütfen geçerli bir komisyon vadesi seçiniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Lütfen komisyon vadesi seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                if (_isUpdateMode || cmbMektupNoSec.Visible)
+                {
+                    _currentMektup.mektupNo = mektupNo;
+                    _currentMektup.musteriNo = musteriNo;
+                    _currentMektup.musteriAdi = musteriAdi;
+                    _currentMektup.paraBirimi = paraBirimi;
+                    _currentMektup.tutar = anaTutar;
+                    _currentMektup.banka = banka;
+                    _currentMektup.mektupTuru = mektupTuru;
+                    _currentMektup.vadeTarihi = vadeTarihi;
+                    _currentMektup.iadeTarihi = dtIadeTarihi.Value;
+                    _currentMektup.komisyonTutari = toplamKomisyonTutari;
+                    _currentMektup.komisyonOrani = komisyonOrani;
+                    _currentMektup.komisyonVadesi = komisyonVadesi;
+                    if (_projeId.HasValue)
+                    {
+                        _currentMektup.projeId = _projeId.Value;
+                    }
+                    _currentMektup.projeNo = _projeNo;
+
+                    _teminatMektuplariService.MektupGuncelle(_originalMektupNoForUpdate, _currentMektup);
+                    MessageBox.Show("Teminat Mektubu başarıyla güncellendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.DialogResult = DialogResult.OK;
+                    this.Close();
+                }
+                else
+                {
+                    if (_altProjeler != null && _altProjeler.Any())
+                    {
+                        foreach (DataGridViewRow row in dgvMektupDagitim.Rows)
+                        {
+                            string altProjeNo = row.Cells["ProjeNo"].Value.ToString();
+
+                            bool mevcutMektupVar = _mevcutAltProjeMektuplari.ContainsKey(altProjeNo);
+
+                            decimal altProjeTutar = 0;
+                            if (row.Cells["Tutar"].Value != null)
+                            {
+                                string tutarText = row.Cells["Tutar"].Value.ToString();
+                                if (!decimal.TryParse(tutarText, NumberStyles.Any, trCulture, out altProjeTutar))
+                                {
+                                    MessageBox.Show($"Alt proje '{altProjeNo}' için geçerli bir tutar girilemedi. Dağıtılan Tutar: {tutarText}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                    return;
+                                }
+                            }
+                            else
+                            {
+                                MessageBox.Show($"Alt proje '{altProjeNo}' için dağıtım tutarı bulunamadı. Lütfen Dağılım sekmesini kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
+
+                            decimal altKomisyonTutari = altProjeTutar * komisyonOrani / 100m;
+
+                            int? altProjeId = _finansProjelerService.GetProjeIdByNo(altProjeNo);
+                            if (!altProjeId.HasValue)
+                            {
+                                MessageBox.Show($"Alt proje '{altProjeNo}' için proje ID bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                                return;
+                            }
+
+                            string altProjeMektupNo;
+                            TeminatMektuplari mektupToSave;
+
+                            if (mevcutMektupVar)
+                            {
+                                mektupToSave = _mevcutAltProjeMektuplari[altProjeNo];
+                                altProjeMektupNo = mektupToSave.mektupNo;
+                            }
+                            else
+                            {
+                                string altProjeSuffix = altProjeNo.Contains(".") ? altProjeNo.Split('.').Last() : altProjeNo.Substring(altProjeNo.Length - 2);
+                                altProjeMektupNo = $"{mektupNo}-{altProjeSuffix}";
+
+                                if (_teminatMektuplariService.MektupNoVarMi(altProjeMektupNo))
+                                {
+                                    MessageBox.Show($"'{altProjeMektupNo}' mektup numarası zaten mevcut. Lütfen farklı bir numara girin.", "Mevcut Kayıt", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                                    return;
+                                }
+                                mektupToSave = new TeminatMektuplari();
+                            }
+
+                            mektupToSave.mektupNo = altProjeMektupNo;
+                            mektupToSave.musteriNo = musteriNo;
+                            mektupToSave.musteriAdi = musteriAdi;
+                            mektupToSave.paraBirimi = paraBirimi;
+                            mektupToSave.tutar = altProjeTutar;
+                            mektupToSave.banka = banka;
+                            mektupToSave.mektupTuru = mektupTuru;
+                            mektupToSave.vadeTarihi = vadeTarihi;
+                            mektupToSave.iadeTarihi = dtIadeTarihi.Value;
+                            mektupToSave.komisyonTutari = altKomisyonTutari;
+                            mektupToSave.komisyonOrani = komisyonOrani;
+                            mektupToSave.komisyonVadesi = komisyonVadesi;
+                            mektupToSave.projeId = altProjeId.Value;
+                            mektupToSave.projeNo = altProjeNo;
+                            mektupToSave.kilometreTasiId = _kilometreTasiId;
+
+                            if (mevcutMektupVar)
+                            {
+                                _teminatMektuplariService.MektupGuncelle(altProjeMektupNo, mektupToSave);
+                            }
+                            else
+                            {
+                                _teminatMektuplariService.TeminatMektubuKaydet(mektupToSave);
+                            }
+                        }
+
+                        MessageBox.Show("Tüm alt projeler için teminat mektupları başarıyla kaydedildi/güncellendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClearFormFields();
+                    }
+                    else
+                    {
+                        if (_teminatMektuplariService.MektupNoVarMi(mektupNo))
+                        {
+                            MessageBox.Show($"'{mektupNo}' mektup numarası zaten mevcut. Lütfen farklı bir numara girin.", "Mevcut Kayıt", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            return;
+                        }
+
+                        _currentMektup.mektupNo = mektupNo;
+                        _currentMektup.musteriNo = musteriNo;
+                        _currentMektup.musteriAdi = musteriAdi;
+                        _currentMektup.paraBirimi = paraBirimi;
+                        _currentMektup.tutar = anaTutar;
+                        _currentMektup.banka = banka;
+                        _currentMektup.mektupTuru = mektupTuru;
+                        _currentMektup.vadeTarihi = vadeTarihi;
+                        _currentMektup.iadeTarihi = dtIadeTarihi.Value;
+                        _currentMektup.komisyonTutari = toplamKomisyonTutari;
+                        _currentMektup.komisyonOrani = komisyonOrani;
+                        _currentMektup.komisyonVadesi = komisyonVadesi;
+                        _currentMektup.kilometreTasiId = _kilometreTasiId;
+                        _currentMektup.projeNo = _projeNo;
+                        if (_projeId.HasValue)
+                        {
+                            _currentMektup.projeId = _projeId.Value;
+                        }
+
+                        _teminatMektuplariService.TeminatMektubuKaydet(_currentMektup);
+                        MessageBox.Show("Teminat Mektubu başarıyla kaydedildi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                        ClearFormFields();
+                        this.DialogResult = DialogResult.OK;
+                        this.Close();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private void cmbMektupNoSec_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string secilenMektupNo = cmbMektupNoSec.SelectedItem?.ToString();
+            if (!string.IsNullOrEmpty(secilenMektupNo) && _mevcutMektuplarDict.ContainsKey(secilenMektupNo))
+            {
+                _currentMektup = _mevcutMektuplarDict[secilenMektupNo];
+                _originalMektupNoForUpdate = secilenMektupNo;
+
+                _projeNo = _currentMektup.projeNo;
+                _projeId = _currentMektup.projeId;
+
+                LoadMektupDataToForm();
+                HesaplaKomisyonTutari();
+            }
+        }
+        private void LoadAltProjelerToDataGridView()
+        {
+            dgvMektupDagitim.Rows.Clear();
+            CultureInfo trCulture = new CultureInfo("tr-TR");
+
+            if (_altProjeler != null && _altProjeler.Any())
+            {
+                foreach (var altProje in _altProjeler)
+                {
+                    TeminatMektuplari altMektup = _teminatMektuplariService.GetTeminatMektubuByProjeNo(altProje);
+                    string tutarText = "0,00";
+
+                    if (altMektup != null)
+                    {
+                        tutarText = altMektup.tutar.ToString("N2", trCulture);
+                    }
+                    else if (!_isUpdateMode && !cmbMektupNoSec.Visible)
+                    {
+                        decimal anaTutar = 0m;
+                        decimal.TryParse(txtTutar.Text, NumberStyles.Any, trCulture, out anaTutar);
+                        int altProjeSayisi = _altProjeler.Count;
+                        decimal paylasilanTutar = altProjeSayisi > 0 ? anaTutar / altProjeSayisi : 0m;
+                        tutarText = paylasilanTutar.ToString("N2", trCulture);
+                    }
+
+                    dgvMektupDagitim.Rows.Add(altProje, tutarText);
+                }
+            }
+
+            RecalculateSummary();
+        }
+        private void RecalculateSummary()
+        {
+            CultureInfo trCulture = new CultureInfo("tr-TR");
+
+            decimal anaTutar = 0;
+            decimal.TryParse(txtTutar.Text, NumberStyles.Any, trCulture, out anaTutar);
+
+            decimal toplamDagitilan = 0;
+
+            foreach (DataGridViewRow row in dgvMektupDagitim.Rows)
+            {
+                if (row.Cells["Tutar"].Value != null)
+                {
+                    string tutarText = row.Cells["Tutar"].Value.ToString();
+                    if (decimal.TryParse(tutarText, NumberStyles.Any, trCulture, out decimal dagitilanTutar))
+                    {
+                        toplamDagitilan += dagitilanTutar;
+                    }
+                }
+            }
+
+            decimal fark = anaTutar - toplamDagitilan;
+
+            txtAnaTutar.Text = anaTutar.ToString("N2", trCulture);
+            txtToplamDagitilan.Text = toplamDagitilan.ToString("N2", trCulture);
+            txtFark.Text = fark.ToString("N2", trCulture);
+
+            if (Math.Abs(fark) < 0.01m)
+            {
+                txtFark.BackColor = Color.PaleGreen;
+            }
+            else
+            {
+                txtFark.BackColor = Color.LightCoral;
+            }
+        }
+
+        private void HesaplaKomisyonTutari()
+        {
+            try
+            {
+                CultureInfo trCulture = new CultureInfo("tr-TR");
+
+                string tutarText = txtTutar.Text.Trim();
+                string oranText = txtKomisyonOrani.Text.Trim();
+
+                bool tutarOk = decimal.TryParse(tutarText, NumberStyles.Any, trCulture, out decimal tutar);
+                bool oranOk = decimal.TryParse(oranText, NumberStyles.Any, trCulture, out decimal oran);
+
+                if (tutarOk && oranOk)
+                {
+                    decimal komisyonTutari = tutar * oran / 100m;
+                    txtKomisyonTutari.Text = komisyonTutari.ToString("N2", trCulture);
+                }
+                else
+                {
+                    txtKomisyonTutari.Text = "0,00";
+                }
+            }
+            catch
+            {
+                txtKomisyonTutari.Text = "0,00";
+            }
+        }
+
+        private void ClearFormFields()
+        {
+            txtMektupNo.Clear();
+            txtMusteriNo.Clear();
+            txtMusteriAdi.Clear();
+            chkTL.Checked = false;
+            chkDolar.Checked = false;
+            chkEuro.Checked = false;
+            txtTutar.Clear();
+            cmbBankalar.SelectedIndex = -1;
+            cmbMektupTuru.SelectedIndex = -1;
+            dtVadeTarihi.Value = DateTime.Now;
+            dtIadeTarihi.Value = DateTime.Now;
+            txtKomisyonTutari.Clear();
+            txtKomisyonOrani.Clear();
+            cmbKomisyonVadesi.SelectedIndex = -1;
+
+            if (tpTeminatMektubu.TabPages.ContainsKey("tpMektupDagit"))
+            {
+                dgvMektupDagitim.Rows.Clear();
+                txtAnaTutar.Text = "0,00";
+                txtToplamDagitilan.Text = "0,00";
+                txtFark.Text = "0,00";
+                txtFark.BackColor = System.Drawing.Color.LightCoral;
+            }
         }
 
         private void TxtTutar_TextChanged(object sender, EventArgs e)
@@ -198,6 +941,7 @@ namespace CEKA_APP.Forms
                 txtMusteriAdi.Text = "";
             }
         }
+
         private void chkEuro_CheckedChanged(object sender, EventArgs e)
         {
             if (chkEuro.Checked)
@@ -206,6 +950,7 @@ namespace CEKA_APP.Forms
                 chkDolar.Checked = false;
             }
         }
+
         private void chkDolar_CheckedChanged(object sender, EventArgs e)
         {
             if (chkDolar.Checked)
@@ -214,6 +959,7 @@ namespace CEKA_APP.Forms
                 chkEuro.Checked = false;
             }
         }
+
         private void chkTL_CheckedChanged(object sender, EventArgs e)
         {
             if (chkTL.Checked)
@@ -222,11 +968,16 @@ namespace CEKA_APP.Forms
                 chkEuro.Checked = false;
             }
         }
+
         private void TpTeminatMektubu_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (tpTeminatMektubu.SelectedTab == tpTeminatMektubu.TabPages["tpMektupDagit"] && _altProjeler != null && _altProjeler.Any())
             {
-                LoadAltProjelerToDataGridView();
+                if (_isFirstMektupDagitLoad)
+                {
+                    LoadAltProjelerToDataGridView(); 
+                    _isFirstMektupDagitLoad = false; 
+                }
             }
         }
 
@@ -235,256 +986,28 @@ namespace CEKA_APP.Forms
             if (cmbMektupTuru.Text == "Kesin" || cmbMektupTuru.Text == "Kati")
             {
                 dtVadeTarihi.Enabled = false;
-                dtVadeTarihi.Value = DateTime.Now; 
+                dtVadeTarihi.Value = DateTime.Now;
             }
             else
             {
                 dtVadeTarihi.Enabled = true;
             }
-            UpdateIadeTarihi();
         }
 
         private void dtVadeTarihi_ValueChanged(object sender, EventArgs e)
         {
-            UpdateIadeTarihi();
+            dtIadeTarihi.Value = dtVadeTarihi.Value;
         }
 
-        private void cmbKomisyonVadesi_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            UpdateIadeTarihi();
-        }
-
-        private void btnKaydet_Click(object sender, EventArgs e)
-        {
-            string mektupNo = txtMektupNo.Text.Trim();
-            string musteriNo = txtMusteriNo.Text.Trim();
-            string musteriAdi = txtMusteriAdi.Text.Trim();
-            string paraBirimi = "";
-
-            if (string.IsNullOrWhiteSpace(mektupNo) || string.IsNullOrWhiteSpace(musteriNo) || string.IsNullOrWhiteSpace(musteriAdi))
-            {
-                MessageBox.Show("Mektup No, Müşteri No ve Müşteri Adı boş bırakılamaz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (chkTL.Checked)
-                paraBirimi = "TL";
-            else if (chkDolar.Checked)
-                paraBirimi = "USD";
-            else if (chkEuro.Checked)
-                paraBirimi = "EUR";
-            else
-            {
-                MessageBox.Show("Lütfen para birimi seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            CultureInfo trCulture = new CultureInfo("tr-TR");
-            if (!decimal.TryParse(txtTutar.Text, NumberStyles.Any, trCulture, out decimal anaTutar))
-            {
-                MessageBox.Show("Lütfen geçerli bir ana tutar giriniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            string banka = cmbBankalar.Text.Trim();
-            string mektupTuru = cmbMektupTuru.Text.Trim();
-            DateTime? vadeTarihi = (mektupTuru == "Kesin" || mektupTuru == "Kati") ? null : (DateTime?)dtVadeTarihi.Value;
-
-            if (!decimal.TryParse(txtKomisyonTutari.Text, NumberStyles.Any, trCulture, out decimal komisyonTutari))
-            {
-                MessageBox.Show("Lütfen geçerli bir komisyon tutarı giriniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            if (!decimal.TryParse(txtKomisyonOrani.Text, NumberStyles.Any, trCulture, out decimal komisyonOrani))
-            {
-                MessageBox.Show("Lütfen geçerli bir komisyon oranı giriniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            int komisyonVadesi = 0;
-            string komisyonVadesiText = cmbKomisyonVadesi.Text.Trim();
-            if (!string.IsNullOrWhiteSpace(komisyonVadesiText))
-            {
-                string numericPart = System.Text.RegularExpressions.Regex.Match(komisyonVadesiText, @"\d+").Value;
-                if (!int.TryParse(numericPart, out komisyonVadesi))
-                {
-                    MessageBox.Show("Lütfen geçerli bir komisyon vadesi seçiniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    return;
-                }
-            }
-            else
-            {
-                MessageBox.Show("Lütfen komisyon vadesi seçiniz.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            if (_altProjeler != null && _altProjeler.Any() && !ValidateAltProjeTutarlari())
-            {
-                return;
-            }
-
-            try
-            {
-                if (_isUpdateMode)
-                {
-                    _currentMektup.mektupNo = mektupNo;
-                    _currentMektup.musteriNo = musteriNo;
-                    _currentMektup.musteriAdi = musteriAdi;
-                    _currentMektup.paraBirimi = paraBirimi;
-                    _currentMektup.tutar = anaTutar;
-                    _currentMektup.banka = banka;
-                    _currentMektup.mektupTuru = mektupTuru;
-                    _currentMektup.vadeTarihi = vadeTarihi;
-                    _currentMektup.iadeTarihi = dtIadeTarihi.Value;
-                    _currentMektup.komisyonTutari = komisyonTutari;
-                    _currentMektup.komisyonOrani = komisyonOrani;
-                    _currentMektup.komisyonVadesi = komisyonVadesi;
-                    if (_projeId.HasValue)
-                    {
-                        _currentMektup.projeId = _projeId.Value;
-                    }
-                    _currentMektup.projeNo = _projeNo;
-
-                    _teminatMektuplariService.MektupGuncelle(_originalMektupNoForUpdate, _currentMektup);
-                    MessageBox.Show("Teminat Mektubu başarıyla güncellendi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                    this.DialogResult = DialogResult.OK;
-                    this.Close();
-                }
-                else
-                {
-                    if (_altProjeler != null && _altProjeler.Any())
-                    {
-                        foreach (DataGridViewRow row in dgvMektupDagitim.Rows)
-                        {
-                            string altProjeNo = row.Cells["ProjeNo"].Value.ToString();
-
-                            int? altProjeId = _finansProjelerService.GetProjeIdByNo(altProjeNo);
-                            if (!altProjeId.HasValue)
-                            {
-                                MessageBox.Show($"Alt proje '{altProjeNo}' için proje ID bulunamadı.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                return;
-                            }
-
-                            string altProjeSuffix = altProjeNo.Contains(".") ? altProjeNo.Split('.').Last() : altProjeNo.Substring(altProjeNo.Length - 2);
-                            string altProjeMektupNo = $"{mektupNo}-{altProjeSuffix}";
-
-                            if (_teminatMektuplariService.MektupNoVarMi(altProjeMektupNo))
-                            {
-                                MessageBox.Show($"'{altProjeMektupNo}' mektup numarası zaten mevcut. Lütfen farklı bir numara girin.", "Mevcut Kayıt", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                                return;
-                            }
-
-                            decimal altProjeTutar = 0;
-                            if (row.Cells["Tutar"].Value != null)
-                            {
-                                string tutarText = row.Cells["Tutar"].Value.ToString();
-                                if (!decimal.TryParse(tutarText, NumberStyles.Any, trCulture, out altProjeTutar))
-                                {
-                                    MessageBox.Show($"Alt proje '{altProjeNo}' için geçerli bir tutar girilemedi. Dağıtılan Tutar: {tutarText}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                    return;
-                                }
-                            }
-                            else
-                            {
-                                MessageBox.Show($"Alt proje '{altProjeNo}' için dağıtım tutarı bulunamadı. Lütfen Dağılım sekmesini kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                                return;
-                            }
-
-                            var altProjeMektup = new TeminatMektuplari
-                            {
-                                mektupNo = altProjeMektupNo,
-                                musteriNo = musteriNo,
-                                musteriAdi = musteriAdi,
-                                paraBirimi = paraBirimi,
-                                tutar = altProjeTutar,
-                                banka = banka,
-                                mektupTuru = mektupTuru,
-                                vadeTarihi = vadeTarihi,
-                                iadeTarihi = dtIadeTarihi.Value,
-                                komisyonTutari = komisyonTutari,
-                                komisyonOrani = komisyonOrani,
-                                komisyonVadesi = komisyonVadesi,
-                                projeId = altProjeId.Value,
-                                projeNo = altProjeNo,
-                                kilometreTasiId = _kilometreTasiId
-                            };
-
-                            _teminatMektuplariService.TeminatMektubuKaydet(altProjeMektup);
-                        }
-
-                        MessageBox.Show("Tüm alt projeler için teminat mektupları başarıyla kaydedildi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        ClearFormFields();
-                        this.DialogResult = DialogResult.OK;
-                        this.Close();
-                    }
-                    else
-                    {
-                        if (_teminatMektuplariService.MektupNoVarMi(mektupNo))
-                        {
-                            MessageBox.Show($"'{mektupNo}' mektup numarası zaten mevcut. Lütfen farklı bir numara girin.", "Mevcut Kayıt", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                            return;
-                        }
-
-                        _currentMektup.mektupNo = mektupNo;
-                        _currentMektup.musteriNo = musteriNo;
-                        _currentMektup.musteriAdi = musteriAdi;
-                        _currentMektup.paraBirimi = paraBirimi;
-                        _currentMektup.tutar = anaTutar;
-                        _currentMektup.banka = banka;
-                        _currentMektup.mektupTuru = mektupTuru;
-                        _currentMektup.vadeTarihi = vadeTarihi;
-                        _currentMektup.iadeTarihi = dtIadeTarihi.Value;
-                        _currentMektup.komisyonTutari = komisyonTutari;
-                        _currentMektup.komisyonOrani = komisyonOrani;
-                        _currentMektup.komisyonVadesi = komisyonVadesi;
-                        _currentMektup.kilometreTasiId = _kilometreTasiId;
-                        _currentMektup.projeNo = _projeNo;
-                        if (_projeId.HasValue)
-                        {
-                            _currentMektup.projeId = _projeId.Value;
-                        }
-
-                        _teminatMektuplariService.TeminatMektubuKaydet(_currentMektup);
-                        MessageBox.Show("Teminat Mektubu başarıyla kaydedildi!", "Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                        ClearFormFields();
-                        this.DialogResult = DialogResult.OK;
-                        this.Close();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-        private void LoadAltProjelerToDataGridView()
-        {
-            dgvMektupDagitim.Rows.Clear();
-            CultureInfo trCulture = new CultureInfo("tr-TR");
-
-            decimal anaTutar = 0;
-            decimal.TryParse(txtTutar.Text, NumberStyles.Any, trCulture, out anaTutar);
-
-            int altProjeSayisi = _altProjeler != null ? _altProjeler.Count : 0;
-            decimal paylasilanTutar = altProjeSayisi > 0 ? anaTutar / altProjeSayisi : 0;
-
-            if (_altProjeler != null && _altProjeler.Any())
-            {
-                foreach (var altProje in _altProjeler)
-                {
-                    dgvMektupDagitim.Rows.Add(altProje, paylasilanTutar.ToString("N2", trCulture));
-                }
-            }
-            RecalculateSummary();
-        }
         private void DgvMektupDagitim_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             if (e.RowIndex >= 0 && dgvMektupDagitim.Columns[e.ColumnIndex].Name == "Tutar")
             {
                 RecalculateSummary();
+                HesaplaKomisyonTutari(); 
             }
         }
+
         private void DgvMektupDagitim_CellValidating(object sender, DataGridViewCellValidatingEventArgs e)
         {
             if (dgvMektupDagitim.Columns[e.ColumnIndex].Name == "Tutar")
@@ -495,7 +1018,6 @@ namespace CEKA_APP.Forms
                 {
                     if (decimal.TryParse(e.FormattedValue.ToString(), NumberStyles.Any, trCulture, out decimal tutar))
                     {
-                        dgvMektupDagitim.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = tutar.ToString("N2", trCulture);
                         dgvMektupDagitim.Rows[e.RowIndex].ErrorText = string.Empty;
                     }
                     else
@@ -510,268 +1032,6 @@ namespace CEKA_APP.Forms
                     dgvMektupDagitim.Rows[e.RowIndex].ErrorText = string.Empty;
                 }
             }
-        }
-
-        private void RecalculateSummary()
-        {
-            CultureInfo trCulture = new CultureInfo("tr-TR");
-
-            decimal anaTutar = 0;
-            decimal.TryParse(txtTutar.Text, NumberStyles.Any, trCulture, out anaTutar);
-
-            decimal toplamDagitilan = 0;
-
-            foreach (DataGridViewRow row in dgvMektupDagitim.Rows)
-            {
-                if (row.Cells["Tutar"].Value != null)
-                {
-                    string tutarText = row.Cells["Tutar"].Value.ToString();
-                    if (decimal.TryParse(tutarText, NumberStyles.Any, trCulture, out decimal dagitilanTutar))
-                    {
-                        toplamDagitilan += dagitilanTutar;
-                    }
-                }
-            }
-
-            decimal fark = anaTutar - toplamDagitilan;
-
-            txtAnaTutar.Text = anaTutar.ToString("N2", trCulture);
-            txtToplamDagitilan.Text = toplamDagitilan.ToString("N2", trCulture);
-            txtFark.Text = fark.ToString("N2", trCulture);
-
-            if (Math.Abs(fark) < 0.01m) 
-            {
-                txtFark.BackColor = Color.PaleGreen;
-            }
-            else
-            {
-                txtFark.BackColor = Color.LightCoral; 
-            }
-        }
-        private void HesaplaKomisyonTutari()
-        {
-            try
-            {
-                CultureInfo trCulture = new CultureInfo("tr-TR");
-
-                string tutarText = txtTutar.Text.Trim();
-                string oranText = txtKomisyonOrani.Text.Trim();
-
-                bool tutarOk = decimal.TryParse(tutarText, NumberStyles.Any, trCulture, out decimal tutar);
-                bool oranOk = decimal.TryParse(oranText, NumberStyles.Any, trCulture, out decimal oran);
-
-                if (tutarOk && oranOk)
-                {
-                    decimal komisyonTutari = tutar * oran / 100m;
-                    txtKomisyonTutari.Text = komisyonTutari.ToString("N2", trCulture);
-                }
-                else
-                {
-                    txtKomisyonTutari.Text = "0,00";
-                }
-            }
-            catch
-            {
-                txtKomisyonTutari.Text = "0,00";
-            }
-        }
-
-        private bool ValidateAltProjeTutarlari()
-        {
-            if (_altProjeler == null || !_altProjeler.Any()) return true;
-
-            CultureInfo trCulture = new CultureInfo("tr-TR");
-            decimal toplam = 0;
-
-            foreach (DataGridViewRow row in dgvMektupDagitim.Rows)
-            {
-                if (row.Cells["Tutar"].Value != null)
-                {
-                    string tutarText = row.Cells["Tutar"].Value.ToString();
-                    if (!decimal.TryParse(tutarText, NumberStyles.Any, trCulture, out decimal tutar))
-                    {
-                        MessageBox.Show($"Alt proje '{row.Cells["ProjeNo"].Value}' için geçerli tutar giriniz. Lütfen Dağılım sekmesini kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                        tpTeminatMektubu.SelectedTab = tpMektupDagit;
-                        return false;
-                    }
-                    toplam += tutar;
-                }
-            }
-
-            if (decimal.TryParse(txtTutar.Text, NumberStyles.Any, trCulture, out decimal anaTutar))
-            {
-                if (Math.Abs(toplam - anaTutar) > 0.01m)
-                {
-                    MessageBox.Show("Alt projeler için girilen tutarların toplamı ana tutar ile uyuşmuyor. Lütfen Dağılım sekmesini kontrol edin.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    tpTeminatMektubu.SelectedTab = tpMektupDagit;
-                    return false;
-                }
-            }
-            else
-            {
-                MessageBox.Show("Lütfen geçerli bir ana tutar giriniz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return false;
-            }
-            return true;
-        }
-
-        private void LoadKomisyonVadesi()
-        {
-            cmbKomisyonVadesi.Items.Clear();
-            for (int i = 1; i <= 12; i++)
-            {
-                cmbKomisyonVadesi.Items.Add(i + " Ay");
-            }
-            cmbKomisyonVadesi.SelectedIndex = 0; 
-        }
-
-        private void LoadMektupTurleri()
-        {
-            cmbMektupTuru.Items.Clear();
-            cmbMektupTuru.Items.AddRange(new object[] { "Geçici", "Kesin", "Avans", "Kati" });
-        }
-
-        private void ClearFormFields()
-        {
-            txtMektupNo.Clear();
-            txtMusteriNo.Clear();
-            txtMusteriAdi.Clear();
-            chkTL.Checked = false;
-            chkDolar.Checked = false;
-            chkEuro.Checked = false;
-            txtTutar.Clear();
-            cmbBankalar.SelectedIndex = -1;
-            cmbMektupTuru.SelectedIndex = -1;
-            dtVadeTarihi.Value = DateTime.Now;
-            dtIadeTarihi.Value = DateTime.Now;
-            txtKomisyonTutari.Clear();
-            txtKomisyonOrani.Clear();
-            cmbKomisyonVadesi.SelectedIndex = -1;
-
-            if (tpTeminatMektubu.TabPages.ContainsKey("tpMektupDagit"))
-            {
-                dgvMektupDagitim.Rows.Clear();
-                txtAnaTutar.Text = "0,00";
-                txtToplamDagitilan.Text = "0,00";
-                txtFark.Text = "0,00";
-                txtFark.BackColor = System.Drawing.Color.LightCoral;
-            }
-        }
-
-        private void LoadMektupDataToForm()
-        {
-            if (_currentMektup == null) return;
-
-            txtMektupNo.Text = _currentMektup.mektupNo;
-            txtMusteriNo.Text = _currentMektup.musteriNo;
-            txtMusteriAdi.Text = _currentMektup.musteriAdi;
-
-            chkTL.Checked = _currentMektup.paraBirimi == "TL" || _currentMektup.paraBirimi == "TRY";
-            chkDolar.Checked = _currentMektup.paraBirimi == "USD";
-            chkEuro.Checked = _currentMektup.paraBirimi == "EUR";
-
-            CultureInfo trCulture = new CultureInfo("tr-TR");
-            txtTutar.Text = _currentMektup.tutar.ToString("N2", trCulture);
-
-            if (!string.IsNullOrEmpty(_currentMektup.banka))
-            {
-                int bankaIndex = cmbBankalar.FindStringExact(_currentMektup.banka.Trim());
-                if (bankaIndex >= 0) cmbBankalar.SelectedIndex = bankaIndex;
-                else cmbBankalar.Text = _currentMektup.banka;
-            }
-            if (!string.IsNullOrEmpty(_currentMektup.mektupTuru))
-            {
-                int turIndex = cmbMektupTuru.FindStringExact(_currentMektup.mektupTuru.Trim());
-                if (turIndex >= 0) cmbMektupTuru.SelectedIndex = turIndex;
-                else cmbMektupTuru.Text = _currentMektup.mektupTuru;
-            }
-
-            dtVadeTarihi.Value = _currentMektup.vadeTarihi ?? DateTime.Now;
-
-            txtKomisyonTutari.Text = _currentMektup.komisyonTutari.ToString("N2", trCulture);
-            txtKomisyonOrani.Text = _currentMektup.komisyonOrani.ToString("N2", trCulture);
-
-            if (_currentMektup.komisyonVadesi > 0)
-            {
-                string vadeText = _currentMektup.komisyonVadesi.ToString() + " Ay";
-                int vadeIndex = cmbKomisyonVadesi.FindStringExact(vadeText);
-                if (vadeIndex >= 0) cmbKomisyonVadesi.SelectedIndex = vadeIndex;
-                else cmbKomisyonVadesi.Text = vadeText;
-            }
-            if (_altProjeler != null && _altProjeler.Any())
-            {
-                LoadAltProjelerToDataGridView();
-            }
-
-            HesaplaKomisyonTutari();
-            UpdateIadeTarihi();
-        }
-
-        private void ApplyCharacterLimits()
-        {
-            if (txtMektupNo != null)
-                txtMektupNo.MaxLength = 50;
-            if (txtMusteriNo != null)
-                txtMusteriNo.MaxLength = 50;
-            if (txtMusteriAdi != null)
-                txtMusteriAdi.MaxLength = 250;
-            if (cmbBankalar != null)
-                cmbBankalar.MaxLength = 250;
-            if (cmbMektupTuru != null)
-                cmbMektupTuru.MaxLength = 250;
-        }
-
-        private void LoadBankalar()
-        {
-            string filePath = ConfigurationManager.AppSettings["ConfigYolu"];
-            if (string.IsNullOrEmpty(filePath) || !File.Exists(filePath))
-            {
-                cmbBankalar.Items.AddRange(new object[] { "Garanti BBVA", "İş Bankası", "Akbank", "Yapı Kredi", "Halkbank", "Vakıfbank" });
-                return;
-            }
-
-            try
-            {
-                string[] satirlar = File.ReadAllLines(filePath);
-                string bankalarSatiri = satirlar.FirstOrDefault(s => s.Trim().StartsWith("Bankalar", StringComparison.OrdinalIgnoreCase));
-
-                if (bankalarSatiri != null)
-                {
-                    string bankalarString = bankalarSatiri.Substring(bankalarSatiri.IndexOf('=') + 1).Trim();
-                    string[] bankalar = bankalarString.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-
-                    cmbBankalar.Items.Clear();
-                    foreach (string banka in bankalar)
-                    {
-                        string trimmedBanka = banka.Trim();
-                        cmbBankalar.Items.Add(trimmedBanka);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Banka listesi yüklenirken bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
-        }
-
-        private void UpdateIadeTarihi()
-        {
-            DateTime vadeTarihi = dtVadeTarihi.Value;
-            int komisyonVadesiAy = 0;
-            string komisyonVadesiText = cmbKomisyonVadesi.Text.Trim();
-
-            if (!string.IsNullOrWhiteSpace(komisyonVadesiText))
-            {
-                string numericPart = System.Text.RegularExpressions.Regex.Match(komisyonVadesiText, @"\d+").Value;
-
-                if (int.TryParse(numericPart, out komisyonVadesiAy))
-                {
-                    dtIadeTarihi.Value = vadeTarihi.AddMonths(komisyonVadesiAy);
-                    return;
-                }
-            }
-
-            dtIadeTarihi.Value = vadeTarihi;
         }
     }
 }

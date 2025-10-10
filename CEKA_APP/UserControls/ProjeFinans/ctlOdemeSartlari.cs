@@ -303,7 +303,7 @@ namespace CEKA_APP.UsrControl
 
                     var btnTeminatSec = new Button
                     {
-                        Text = "Seç",
+                        Text = "Bağla",
                         Dock = DockStyle.Fill,
                         Margin = new Padding(2),
                         AutoSize = false,
@@ -343,14 +343,16 @@ namespace CEKA_APP.UsrControl
                         var button = s as Button;
                         int rowIdx = tableLayoutPanel1.GetRow(button);
                         var geriAlLblTeminatDurum = tableLayoutPanel1.GetControlFromPosition(9, rowIdx) as Label;
+                        var geriAlLblTeminatMektubu = tableLayoutPanel1.GetControlFromPosition(8, rowIdx) as Label;
+                        var geriAlOdemeBilgi = tableLayoutPanel1.GetControlFromPosition(0, rowIdx)?.Tag as OdemeSartlari;
 
-                        if (geriAlLblTeminatDurum != null && lblTeminatMektubu != null)
+                        if (geriAlLblTeminatDurum != null && geriAlLblTeminatMektubu != null && geriAlOdemeBilgi != null)
                         {
                             geriAlLblTeminatDurum.Text = "Pasif";
                             geriAlLblTeminatDurum.ForeColor = Color.Red;
                             button.Enabled = false;
 
-                            var existingMilestone = _newlyAddedMilestones.FirstOrDefault(m => m.projeId == projeId.Value && m.kilometreTasiId == odemeBilgi.kilometreTasiId);
+                            var existingMilestone = _newlyAddedMilestones.FirstOrDefault(m => m.projeId == projeId.Value && m.kilometreTasiId == geriAlOdemeBilgi.kilometreTasiId);
                             if (existingMilestone != null)
                             {
                                 existingMilestone.teminatDurumu = "Pasif";
@@ -360,16 +362,15 @@ namespace CEKA_APP.UsrControl
                                 _newlyAddedMilestones.Add(new OdemeSartlari
                                 {
                                     projeId = projeId.Value,
-                                    kilometreTasiId = odemeBilgi.kilometreTasiId,
+                                    kilometreTasiId = geriAlOdemeBilgi.kilometreTasiId,
                                     teminatDurumu = "Pasif",
-                                    teminatMektubu = lblTeminatMektubu.Text
+                                    teminatMektubu = geriAlLblTeminatMektubu.Text
                                 });
                             }
 
                             MessageBox.Show("Teminat durumu pasife çekildi. Kaydetmek için 'Kaydet' butonuna basın.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                     };
-
                     var lblDurum = new Label
                     {
                         Text = odemeBilgi.durum,
@@ -530,7 +531,7 @@ namespace CEKA_APP.UsrControl
                                 });
                             }
 
-                            MessageBox.Show("Teminat mektubu seçildi. Kaydetmek için 'Kaydet' butonuna basın.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                            MessageBox.Show("Teminat mektubu seçildi ve durumu 'Aktif' olarak güncellendi. Kaydetmek için 'Kaydet' butonuna basın.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                         }
                         frm.Close();
                     }
@@ -1282,6 +1283,11 @@ namespace CEKA_APP.UsrControl
                     try
                     {
                         _odemeSartlariService.SaveOrUpdateOdemeBilgi(odemeSartlari);
+
+                        if (!string.IsNullOrEmpty(odemeSartlari.teminatMektubu))
+                        {
+                            _teminatMektuplariService.UpdateTeminatDurum(odemeSartlari.teminatMektubu, odemeSartlari.teminatDurumu);
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -1300,6 +1306,8 @@ namespace CEKA_APP.UsrControl
                                 milestone.teminatMektubu,
                                 milestone.kilometreTasiId
                             );
+
+                            _teminatMektuplariService.UpdateTeminatDurum(milestone.teminatMektubu, milestone.teminatDurumu);
                         }
                         else
                         {

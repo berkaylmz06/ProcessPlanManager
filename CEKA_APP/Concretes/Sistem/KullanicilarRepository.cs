@@ -225,5 +225,19 @@ namespace CEKA_APP.Concretes.Sistem
                 return affectedRows > 0;
             }
         }
+        public DataTable GetKullaniciOperatorListesi(SqlConnection connection)
+        {
+            string query = @"
+        SELECT id, adSoyad, kullaniciAdi, sifre, kullaniciRol, email 
+        FROM Kullanicilar 
+        ORDER BY adSoyad";
+
+            using (var adapter = new SqlDataAdapter(query, connection))
+            {
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+                return dt;
+            }
+        }
     }
 }

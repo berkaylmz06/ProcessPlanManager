@@ -1,6 +1,7 @@
 ﻿using CEKA_APP.Entitys.ProjeFinans;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Windows.Forms;
 
 namespace CEKA_APP.Interfaces.ProjeFinans
@@ -14,5 +15,7 @@ namespace CEKA_APP.Interfaces.ProjeFinans
         List<TeminatMektuplari> GetTeminatMektuplari();
         string GetTeminatMektuplariQuery();
         void UpdateKilometreTasiAdi(string mektupNo, int kilometreTasiId);
+        TeminatMektuplari GetTeminatMektubuByProjeNo(string projeNo);
+        void UpdateTeminatDurum(string mektupNo, string durum);
     }
 }

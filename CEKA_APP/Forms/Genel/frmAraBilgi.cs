@@ -68,8 +68,7 @@ namespace CEKA_APP.Forms
                 _tabloFiltreleService,
                 (dt) => { dataGridBilgi.DataSource = dt; },
                 baseSql,
-                _serviceProvider,
-                detayEkle: true
+                _serviceProvider
             );
 
             frm.ShowDialog();

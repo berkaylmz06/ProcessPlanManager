@@ -59,7 +59,7 @@ namespace CEKA_APP.Concretes.KesimTakip
         {
             return @"SELECT olusturan, kesimId, kesilecekPlanSayisi, kesilmisPlanSayisi, toplamPlanTekrari, eklemeTarihi FROM KesimListesiPaket";
         }
-
+      
         public DataTable GetKesimListesiPaket(SqlConnection connection)
         {
             if (connection == null)
@@ -75,7 +75,25 @@ namespace CEKA_APP.Concretes.KesimTakip
                 }
             }
         }
+        public string GetKesimListesiPaketSureQuery()
+        {
+            return @"SELECT kesimId, eklemeTarihi FROM KesimListesiPaket where kesilecekPlanSayisi = '1'";
+        }
+        public DataTable GetKesimListesiPaketSure(SqlConnection connection)
+        {
+            if (connection == null)
+                throw new ArgumentNullException(nameof(connection));
 
+            using (var cmd = new SqlCommand(GetKesimListesiPaketSureQuery(), connection))
+            {
+                using (var adapter = new SqlDataAdapter(cmd))
+                {
+                    DataTable dt = new DataTable();
+                    adapter.Fill(dt);
+                    return dt;
+                }
+            }
+        }
         public bool KesimListesiPaketKontrolluDusme(SqlConnection connection, SqlTransaction transaction, string kesimId, int kesilenMiktar, out string hataMesaji)
         {
             if (connection == null)
@@ -169,6 +187,25 @@ namespace CEKA_APP.Concretes.KesimTakip
 
                 int count = (int)command.ExecuteScalar();
                 return count > 0;
+            }
+        }
+        public bool KesimListesiPaketIptalEt(SqlConnection connection, SqlTransaction transaction, string kesimId, string iptalNedeni)
+        {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+     
+            string query = @"
+                UPDATE KesimListesiPaket
+                SET iptalMi = 1,
+                    iptalNedeni = @iptalNedeni
+                WHERE kesimId = @kesimId";
+
+            using (var cmd = new SqlCommand(query, connection, transaction))
+            {
+                cmd.Parameters.AddWithValue("@kesimId", kesimId ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@iptalNedeni", string.IsNullOrEmpty(iptalNedeni) ? (object)DBNull.Value : iptalNedeni);
+                int rowsAffected = cmd.ExecuteNonQuery();
+                return rowsAffected > 0;
             }
         }
     }

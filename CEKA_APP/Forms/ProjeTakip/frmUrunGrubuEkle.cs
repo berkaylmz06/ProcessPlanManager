@@ -212,7 +212,7 @@ namespace CEKA_APP.Forms.ProjeTakip
                 return;
             }
 
-            if (MessageBox.Show("Seçilen ürün gruplarını silmek istediğinizden emin misiniz?", "Silme Onayı", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show(this, "Seçilen ürün gruplarını silmek istediğinizden emin misiniz?", "Silme Onayı", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 try
                 {

@@ -67,9 +67,25 @@ namespace CEKA_APP.UsrControl
 
         private void ConfigureDataGridViewColumns()
         {
+            var varsayilanSutunlar = VarsayilanSutunSirasiniAl();
+
             var sutunSirasi = Settings.Default.SutunSirasiTeminatMektuplari != null
                 ? StringCollectionToList(Settings.Default.SutunSirasiTeminatMektuplari)
-                : VarsayilanSutunSirasiniAl();
+                : varsayilanSutunlar.ToList();
+
+            foreach (var sutun in varsayilanSutunlar)
+            {
+                if (!sutunSirasi.Contains(sutun))
+                {
+                    sutunSirasi.Add(sutun); 
+                }
+            }
+
+            sutunSirasi.RemoveAll(sutun => !varsayilanSutunlar.Contains(sutun));
+
+            Settings.Default.SutunSirasiTeminatMektuplari = new System.Collections.Specialized.StringCollection();
+            Settings.Default.SutunSirasiTeminatMektuplari.AddRange(sutunSirasi.ToArray());
+            Settings.Default.Save();
 
             dataGridTeminatMektuplari.SuspendLayout();
             try
@@ -120,6 +136,9 @@ namespace CEKA_APP.UsrControl
                         case "komisyonOrani": col.HeaderText = "Komisyon Oranı"; break;
                         case "komisyonVadesi": col.HeaderText = "Komisyon Vadesi"; break;
                         case "projeNo": col.HeaderText = "Proje No"; break;
+                        case "durum":
+                            col.HeaderText = "Teminat Bilgi";
+                            break;
                         case "kilometreTasiId":
                         case "projeId":
                             col.Visible = false; break;
@@ -141,7 +160,6 @@ namespace CEKA_APP.UsrControl
 
             DataGridViewSettingsManager.LoadColumnWidths(dataGridTeminatMektuplari, "SutunGenislikTeminatMektuplari");
         }
-
         private void dataGridTeminatMektuplari_CellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
         {
             if (e.Button == MouseButtons.Right && e.RowIndex >= 0)
@@ -257,8 +275,7 @@ namespace CEKA_APP.UsrControl
                     DataGridViewSettingsManager.LoadColumnWidths(dataGridTeminatMektuplari, "SutunGenislikTeminatMektuplari");
                 },
                 baseSql,
-                _serviceProvider,
-                detayEkle: false
+                _serviceProvider
             );
 
             frm.ShowDialog();
@@ -306,7 +323,7 @@ namespace CEKA_APP.UsrControl
             {
                 "mektupNo", "musteriNo", "musteriAdi", "kilometreTasiAdi", "paraBirimi", "banka",
                 "mektupTuru", "tutar", "vadeTarihi", "iadeTarihi", "komisyonTutari",
-                "komisyonOrani", "komisyonVadesi", "kilometreTasiId", "projeId", "projeNo"
+                "komisyonOrani", "komisyonVadesi", "kilometreTasiId", "projeId", "projeNo", "durum"
             };
         }
 

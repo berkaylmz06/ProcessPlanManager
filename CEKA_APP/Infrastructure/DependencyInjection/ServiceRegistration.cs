@@ -2,27 +2,32 @@
 using CEKA_APP.Abstracts.ERP;
 using CEKA_APP.Abstracts.Genel;
 using CEKA_APP.Abstracts.KesimTakip;
+using CEKA_APP.Abstracts.Muhasebe;
 using CEKA_APP.Abstracts.ProjeFinans;
 using CEKA_APP.Abstracts.ProjeTakip;
 using CEKA_APP.Abstracts.Sistem;
 using CEKA_APP.Concretes.ERP;
 using CEKA_APP.Concretes.Genel;
 using CEKA_APP.Concretes.KesimTakip;
+using CEKA_APP.Concretes.Muhasebe;
 using CEKA_APP.Concretes.ProjeFinans;
 using CEKA_APP.Concretes.ProjeTakip;
 using CEKA_APP.Concretes.Sistem;
 using CEKA_APP.DataBase.ProjeFinans;
+using CEKA_APP.Forms.KesimTakip;
 using CEKA_APP.Forms.ProjeTakip;
 using CEKA_APP.Interfaces;
 using CEKA_APP.Interfaces.ERP;
 using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.KesimTakip;
+using CEKA_APP.Interfaces.Muhasebe;
 using CEKA_APP.Interfaces.ProjeFinans;
 using CEKA_APP.Interfaces.ProjeTakip;
 using CEKA_APP.Interfaces.Sistem;
 using CEKA_APP.Services.ERP;
 using CEKA_APP.Services.Genel;
 using CEKA_APP.Services.KesimTakip;
+using CEKA_APP.Services.Muhasebe;
 using CEKA_APP.Services.ProjeFinans;
 using CEKA_APP.Services.ProjeTakip;
 using CEKA_APP.Services.Sistem;
@@ -72,8 +77,8 @@ namespace CEKA_APP.Infrastructure.DependencyInjection
             services.AddScoped<IKesimListesiPaketService, KesimListesiPaketService>();
             services.AddScoped<IKesimTamamlanmisRepository, KesimTamamlanmisRepository>();
             services.AddScoped<IKesimTamamlanmisService, KesimTamamlanmisService>();
-            services.AddScoped<IKesimTamamlanmisHareketRepository, KesimTamamlanmisHareketRepository>();
-            services.AddScoped<IKesimTamamlanmisHareketService, KesimTamamlanmisHareketService>();
+            services.AddScoped<IKesimSureRepository, KesimSureRepository>();
+            services.AddScoped<IKesimSureService, KesimSureService>();
 
 
             services.AddScoped<IAutoCadAktarimRepository, AutoCadAktarimRepository>();
@@ -102,11 +107,16 @@ namespace CEKA_APP.Infrastructure.DependencyInjection
             services.AddSingleton<ITabloFiltreleService, TabloFiltreleService>();
 
 
+            services.AddScoped<IPersonellerRepository, PersonellerRepository>();
+            services.AddScoped<IPersonellerService, PersonellerService>();
+
+
 
             services.AddScoped<frmAnaSayfa>();
             services.AddScoped<frmKullaniciGirisi>();
             services.AddScoped<frmKullaniciAyarlari>();
             services.AddScoped<frmUrunGrubuEkle>();
+            services.AddScoped<frmKesimPlaniSec>();
             return services;
         }
     }

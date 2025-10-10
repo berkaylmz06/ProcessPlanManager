@@ -13,7 +13,6 @@ namespace CEKA_APP
     public partial class frmAra : Form
     {
         private readonly Action<DataTable> _aramaSonucuCallback;
-        private readonly bool _detayEklenecekMi;
         private static Dictionary<string, string> _sonFiltreKriterleri = new Dictionary<string, string>();
         private Dictionary<string, Control> _filtreKutulari = new Dictionary<string, Control>();
         private readonly string _sourceSql;
@@ -24,12 +23,11 @@ namespace CEKA_APP
         private readonly IServiceProvider _serviceProvider;
 
 
-        public frmAra(DataGridView dataGrid, ITabloFiltreleService tabloFiltreleService, Action<DataTable> callback, string sourceSql, IServiceProvider serviceProvider, bool detayEkle = false)
+        public frmAra(DataGridView dataGrid, ITabloFiltreleService tabloFiltreleService, Action<DataTable> callback, string sourceSql, IServiceProvider serviceProvider)
         {
             InitializeComponent();
             _tabloFiltreleService = tabloFiltreleService;
             _aramaSonucuCallback = callback;
-            _detayEklenecekMi = detayEkle;
             _sourceSql = sourceSql;
             _serviceProvider = serviceProvider;
 
@@ -300,7 +298,7 @@ namespace CEKA_APP
                 string msg = "Aşağıdaki filtre değerleri sütun tipine uymuyor:\n\n" +
                              string.Join("\n", invalidFilters) +
                              "\n\nLütfen düzeltip tekrar deneyin.";
-                MessageBox.Show(msg, "Filtre Hatası", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show(this, msg, "Filtre Hatası", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -310,13 +308,6 @@ namespace CEKA_APP
             {
                 MessageBox.Show("Arama sonucu bulunamadı.", "Bilgi", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
-            }
-
-            if (_detayEklenecekMi && !sonucTablo.Columns.Contains("Detay"))
-            {
-                sonucTablo.Columns.Add("Detay", typeof(string));
-                foreach (DataRow row in sonucTablo.Rows)
-                    row["Detay"] = "Detay Görmek İçin Tıklayınız.";
             }
 
             _aramaSonucuCallback?.Invoke(sonucTablo);

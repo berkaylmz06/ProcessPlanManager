@@ -3,6 +3,7 @@ using CEKA_APP.Concretes;
 using CEKA_APP.Entitys;
 using CEKA_APP.Helper;
 using CEKA_APP.Interfaces.Sistem;
+using CEKA_APP.UserControls.KesimTakip;
 using CEKA_APP.UsrControl;
 using CEKA_APP.UsrControl.Interfaces;
 using ClosedXML.Excel;
@@ -110,7 +111,8 @@ namespace CEKA_APP
                         ("Kesim Yap", () => btnKesimYap_Click(null, null), false),
                         ("Yapılan Kesimleri Gör", () => btnYapilanKesimleriGor_Click(null, null), false),
                         ("Kesim Detayları", () => btnKesimDetaylari_Click(null, null), false),
-                        ("Yerleşim Planı Bilgileri", () => btnYerlesimPlaniBilgileri_Click(null, null), false)
+                        ("Yerleşim Planı Bilgileri", () => btnYerlesimPlaniBilgileri_Click(null, null), false),
+                        ("Kesim Yönetimi", () => btnKesimYonetimi_Click(null, null), false)
                     }
                 },
                 {
@@ -503,7 +505,7 @@ namespace CEKA_APP
                 return;
             }
 
-            if (MessageBox.Show("Bildiriyi göndermek istiyor musunuz?", "Onayla", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show(this, "Bildiriyi göndermek istiyor musunuz?", "Onayla", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 string olusturan = lblSistemKullanici.Text;
                 string sorun = txtSorun.Text;
@@ -525,6 +527,23 @@ namespace CEKA_APP
 
         private void UserControlEkle(UserControl uc)
         {
+            var kesimYonetimi = panelAnaSayfaContainer.Controls.OfType<ctlKesimYonetimi>().FirstOrDefault();
+            if (kesimYonetimi != null)
+            {
+                foreach (var page in kesimYonetimi.PagePanels) 
+                {
+                    foreach (var panel in page.Value)
+                    {
+                        var kesimControl = panel.Controls.OfType<ctlKesimPaneli>().FirstOrDefault();
+                        if (kesimControl != null && kesimControl.IsTimerRunning)
+                        {
+                            MessageBox.Show("Aktif bir kesim işlemi devam ediyor. Lütfen kesimi durdurun veya tamamlayın.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                            return; 
+                        }
+                    }
+                }
+            }
+
             if (panelAnaSayfaContainer.Controls.Count > 0)
             {
                 var mevcut = panelAnaSayfaContainer.Controls[0] as UserControl;
@@ -542,7 +561,6 @@ namespace CEKA_APP
             {
                 panelAnaSayfaContainer.Controls.Remove(uc);
             }
-
 
             panelAnaSayfaContainer.Controls.Clear();
             uc.Dock = DockStyle.Fill;
@@ -741,7 +759,7 @@ namespace CEKA_APP
                 return;
             }
 
-            if (MessageBox.Show("Duyuruyu yayınlamak istiyor musunuz?", "Onayla", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            if (MessageBox.Show(this, "Duyuruyu yayınlamak istiyor musunuz?", "Onayla", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
             {
                 string olusturan = lblSistemKullanici.Text;
                 string duyuru = richTextDuyuru.Text;
@@ -814,7 +832,12 @@ namespace CEKA_APP
             var takipTakvimControl = _userControlFactory.CreateTakipTakvimiControl();
             UserControlEkle(takipTakvimControl);
         }
-
+        private void btnKesimYonetimi_Click(object sender, EventArgs e)
+        {
+            var kesimYonetimiControl = _userControlFactory.CreateKesimYonetimiControl();
+            kesimYonetimiControl.FormKullaniciAdiGetir(KullaniciAdiInterface);
+            UserControlEkle(kesimYonetimiControl);
+        }
         private void btnProjeKarti_Click(object sender, EventArgs e)
         {
             var projeKartiControl = _userControlFactory.CreateProjeKartiControl();
@@ -825,33 +848,46 @@ namespace CEKA_APP
         {
             if (e.CloseReason == CloseReason.UserClosing)
             {
-                if (Application.OpenForms.OfType<frmAnaSayfa>().Count() <= 1)
+                var kesimYonetimi = panelAnaSayfaContainer.Controls.OfType<ctlKesimYonetimi>().FirstOrDefault();
+                if (kesimYonetimi != null)
                 {
-                    var result = MessageBox.Show(
-                        "Bu sayfa son uygulama penceresidir. Kapatmak istiyor musunuz?",
-                        "Son Uygulama Penceresi",
-                        MessageBoxButtons.YesNo,
-                        MessageBoxIcon.Warning);
-
-                    if (result == DialogResult.Yes)
+                    foreach (var page in kesimYonetimi.PagePanels)
                     {
-                        e.Cancel = false;
-                        Application.Exit(); 
-                    }
-                    else
-                    {
-                        e.Cancel = true;
+                        foreach (var panel in page.Value)
+                        {
+                            var kesimControl = panel.Controls.OfType<ctlKesimPaneli>().FirstOrDefault();
+                            if (kesimControl != null && kesimControl.IsTimerRunning)
+                            {
+                                MessageBox.Show("Aktif bir kesim işlemi devam ediyor. Lütfen kesimi durdurun veya tamamlayın.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                                e.Cancel = true;
+                                return;
+                            }
+                        }
                     }
                 }
-                else
+
+                if (Application.OpenForms.OfType<frmAnaSayfa>().Count() > 1)
                 {
                     e.Cancel = true;
                     this.Hide();
                     this.Dispose();
                 }
+                else
+                {
+                    var result = MessageBox.Show(
+                        this,
+                        "Bu sayfa son uygulama penceresidir. Kapatmak istiyor musunuz?",
+                        "Son Uygulama Penceresi",
+                        MessageBoxButtons.YesNo,
+                        MessageBoxIcon.Warning);
+
+                    if (result == DialogResult.No)
+                    {
+                        e.Cancel = true;
+                    }
+                }
             }
         }
-
         private void pictureBoxExcel_Click(object sender, EventArgs e)
         {
             if (panelAnaSayfaContainer.Controls.Count == 0 || !(panelAnaSayfaContainer.Controls[0] is UserControl userControl))

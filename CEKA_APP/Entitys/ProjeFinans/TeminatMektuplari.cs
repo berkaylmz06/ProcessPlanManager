@@ -24,5 +24,6 @@ namespace CEKA_APP.Entitys.ProjeFinans
         public decimal komisyonOrani { get; set; }
         public int komisyonVadesi { get; set; }
         public string projeNo { get; set; }
+        public string durum { get; set; }
     }
 }

@@ -15,5 +15,8 @@ namespace CEKA_APP.Abstracts.KesimTakip
         bool KesimListesiPaketKontrolluDusme(SqlConnection connection, SqlTransaction transaction, string kesimId, int kesilenMiktar, out string hataMesaji);
         void VerileriYenile(SqlConnection connection, DataGridView data);
         bool KesimIdVarMi(SqlConnection connection, string kesimId);
+        string GetKesimListesiPaketSureQuery();
+        DataTable GetKesimListesiPaketSure(SqlConnection connection);
+        bool KesimListesiPaketIptalEt(SqlConnection connection, SqlTransaction transaction, string kesimId, string iptalNedeni);
     }
 }

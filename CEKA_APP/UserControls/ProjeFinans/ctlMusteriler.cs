@@ -242,8 +242,7 @@ namespace CEKA_APP.UsrControl
                     ConfigureDataGridViewColumns(); 
                 },
                 baseSql,
-                _serviceProvider,
-                detayEkle: false
+                _serviceProvider
             );
 
             frm.ShowDialog();

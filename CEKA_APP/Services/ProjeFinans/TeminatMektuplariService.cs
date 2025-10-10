@@ -20,6 +20,22 @@ namespace CEKA_APP.Services.ProjeFinans
             _dataBaseService = dataBaseService ?? throw new ArgumentNullException(nameof(dataBaseService));
         }
 
+        public TeminatMektuplari GetTeminatMektubuByProjeNo(string projeNo)
+        {
+            try
+            {
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _teminatMektuplariRepository.GetTeminatMektubuByProjeNo(connection, projeNo);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Teminat mektupları alınırken hata oluştu.", ex);
+            }
+        }
+
         public List<TeminatMektuplari> GetTeminatMektuplari()
         {
             try
@@ -137,6 +153,27 @@ namespace CEKA_APP.Services.ProjeFinans
                     {
                         transaction.Rollback();
                         throw new ApplicationException("Mektup kilometre taşı güncelenirken hata oluştu.", ex);
+                    }
+                }
+            }
+        }
+
+        public void UpdateTeminatDurum(string mektupNo, string durum)
+        {
+            using (var connection = _dataBaseService.GetConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        _teminatMektuplariRepository.UpdateTeminatDurum(connection, transaction, mektupNo, durum);
+                        transaction.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new ApplicationException("Mektup durum güncelenirken hata oluştu.", ex);
                     }
                 }
             }

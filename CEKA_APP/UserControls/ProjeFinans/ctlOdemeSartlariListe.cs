@@ -79,9 +79,25 @@ namespace CEKA_APP.UsrControl.ProjeFinans
 
         private void ConfigureDataGridColumns()
         {
+            var varsayilanSutunlar = VarsayilanSutunSirasiniAl();
+
             var sutunSirasi = Settings.Default.SutunSirasiOdemeSartlari != null
                 ? StringCollectionToList(Settings.Default.SutunSirasiOdemeSartlari)
-                : VarsayilanSutunSirasiniAl();
+                : varsayilanSutunlar.ToList();
+
+            foreach (var sutun in varsayilanSutunlar)
+            {
+                if (!sutunSirasi.Contains(sutun))
+                {
+                    sutunSirasi.Add(sutun); 
+                }
+            }
+
+            sutunSirasi.RemoveAll(sutun => !varsayilanSutunlar.Contains(sutun));
+
+            Settings.Default.SutunSirasiOdemeSartlari = new System.Collections.Specialized.StringCollection();
+            Settings.Default.SutunSirasiOdemeSartlari.AddRange(sutunSirasi.ToArray());
+            Settings.Default.Save();
 
             dataGridOdemeSartlari.SuspendLayout();
             try
@@ -138,9 +154,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                             col.HeaderText = "Ödeme Tarihi";
                             col.DefaultCellStyle.Format = "dd.MM.yyyy";
                             break;
-                        case "odemeSapmasi":
-                            col.HeaderText = "Ödeme Sapması";
-                            break;
+                        case "odemeSapmasi": col.HeaderText = "Ödeme Sapması"; break;
                         case "faturaNo": col.HeaderText = "Fatura No"; break;
                         case "projeId":
                         case "odemeId":
@@ -182,8 +196,7 @@ namespace CEKA_APP.UsrControl.ProjeFinans
                     DataGridViewSettingsManager.LoadColumnWidths(dataGridOdemeSartlari, "SutunGenislikOdemeSartlariListe");
                 },
                 baseSql,
-                _serviceProvider,
-                detayEkle: false
+                _serviceProvider
             );
 
             frm.ShowDialog();

@@ -4,8 +4,6 @@ using CEKA_APP.Interfaces.ERP;
 using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.KesimTakip;
 using CEKA_APP.Interfaces.Sistem;
-using CEKA_APP.Services.ERP;
-using CEKA_APP.Services.KesimTakip;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
@@ -27,7 +25,6 @@ namespace CEKA_APP.UsrControl
         private IKesimListesiService _kesimListesiService => _serviceProvider.GetRequiredService<IKesimListesiService>();
         private IKesimListesiPaketService _kesimListesiPaketService => _serviceProvider.GetRequiredService<IKesimListesiPaketService>();
         private IKesimTamamlanmisService _kesimTamamlanmisService => _serviceProvider.GetRequiredService<IKesimTamamlanmisService>();
-        private IKesimTamamlanmisHareketService _kesimTamamlanmisHareketService => _serviceProvider.GetRequiredService<IKesimTamamlanmisHareketService>();
         private IKarsilastirmaTablosuService _karsilastirmaTablosuService => _serviceProvider.GetRequiredService<IKarsilastirmaTablosuService>();
         private IKullanicilarService _kullaniciService => _serviceProvider.GetRequiredService<IKullanicilarService>();
         private IKullaniciHareketLogService _kullaniciHareketleriService => _serviceProvider.GetRequiredService<IKullaniciHareketLogService>();
@@ -108,14 +105,6 @@ namespace CEKA_APP.UsrControl
         public void VerileriYukle()
         {
             DataTable dt = _kesimListesiPaketService.GetKesimListesiPaket();
-
-            dt.Columns.Add("Detay", typeof(string));
-
-            foreach (DataRow row in dt.Rows)
-            {
-                row["Detay"] = "Detay Görmek İçin Tıklayınız.";
-            }
-
             dataGridKesimListesi.DataSource = dt;
         }
 
@@ -152,8 +141,7 @@ namespace CEKA_APP.UsrControl
                 _tabloFiltreleService,
                 (dt) => { dataGridKesimListesi.DataSource = dt; },
                 baseSql,
-                _serviceProvider,
-                detayEkle: true
+                _serviceProvider
             );
 
             frm.ShowDialog();
@@ -204,7 +192,6 @@ namespace CEKA_APP.UsrControl
                 StringBuilder hataAyrintilari = new StringBuilder();
                 List<string> hataMesajlari = new List<string>();
 
-                // 🔹 TransactionScope başlatıyoruz
                 using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
                 {
                     IsolationLevel = System.Transactions.IsolationLevel.ReadCommitted,
@@ -286,16 +273,14 @@ namespace CEKA_APP.UsrControl
                     }
 
                     bool sonuc1 = _kesimTamamlanmisService.TablodanKesimTamamlanmisEkleme(olusturan, kesimId, carpan, tarih, saat, kesilenLot);
-                    bool sonuc2 = _kesimTamamlanmisHareketService.TablodanKesimTamamlanmisHareketEkleme(olusturan, kesimId, carpan, tarih, saat);
 
-                    if (!sonuc1 || !sonuc2)
+                    if (!sonuc1)
                         throw new Exception("Kayıt işlemi sırasında hata oluştu.");
 
                     int kullaniciId = _kullaniciService.GetKullaniciIdByKullaniciAdi(_kullaniciAdi.lblSistemKullaniciMetinAl());
                     _kullaniciHareketleriService.LogEkle(kullaniciId, "KesimPlaniKesildi", "Kesim Yap",
                         $"Kullanıcı {kesimId} numaralı kesim planının kesimini tamamladı. Kesilen Lot: {kesilenLot}");
 
-                    // 🔹 Tüm işlemler başarılıysa commit
                     scope.Complete();
                 }
 

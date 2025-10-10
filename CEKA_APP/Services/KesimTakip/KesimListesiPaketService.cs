@@ -39,6 +39,27 @@ namespace CEKA_APP.Services.KesimTakip
            return _kesimListesiPaketRepository.GetKesimListesiPaketQuery();
         }
 
+        public DataTable GetKesimListesiPaketSure()
+        {
+            try
+            {
+                using (var connection = _dataBaseService.GetConnection())
+                {
+                    connection.Open();
+                    return _kesimListesiPaketRepository.GetKesimListesiPaketSure(connection);
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new ApplicationException("Kesim listesi alınırken hata oluştu.", ex);
+            }
+        }
+
+        public string GetKesimListesiPaketSureQuery()
+        {
+            return _kesimListesiPaketRepository.GetKesimListesiPaketSureQuery();
+        }
+
         public bool KesimIdVarMi(string kesimId)
         {
             try
@@ -53,6 +74,28 @@ namespace CEKA_APP.Services.KesimTakip
             catch (Exception ex)
             {
                 throw new ApplicationException("Id alınırken hata oluştu.", ex);
+            }
+        }
+
+        public bool KesimListesiPaketIptalEt(string kesimId, string iptalNedeni)
+        {
+            using (var connection = _dataBaseService.GetConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        bool sonuc = _kesimListesiPaketRepository.KesimListesiPaketIptalEt(connection, transaction, kesimId, iptalNedeni);
+                        transaction.Commit();
+                        return sonuc;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new ApplicationException("Kesim paket iptal edilirken hata oluştu.", ex);
+                    }
+                }
             }
         }
 
