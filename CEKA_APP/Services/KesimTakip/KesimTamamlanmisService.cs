@@ -2,9 +2,7 @@
 using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.KesimTakip;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Windows.Forms;
 
 namespace CEKA_APP.Services.KesimTakip
 {
@@ -39,8 +37,7 @@ namespace CEKA_APP.Services.KesimTakip
         {
            return _kesimTamamlanmisRepository.GetKesimListesTamamlanmisQuery();
         }
-
-        public bool TablodanKesimTamamlanmisEkleme(string kesimYapan, string kesimId, int kesilmisPlanSayisi, DateTime kesimTarihi, TimeSpan kesimSaati, string kesilenLot)
+        public int TablodanKesimTamamlanmisEkleme(string kesimYapan, string kesimId, int kesilmisPlanSayisi, string kesilenLot, int kullanilanMalzemeEn, int kullanilanMalzemeBoy)
         {
             using (var connection = _dataBaseService.GetConnection())
             {
@@ -49,7 +46,29 @@ namespace CEKA_APP.Services.KesimTakip
                 {
                     try
                     {
-                        bool sonuc = _kesimTamamlanmisRepository.TablodanKesimTamamlanmisEkleme(connection, transaction, kesimYapan, kesimId, kesilmisPlanSayisi,kesimTarihi, kesimSaati,kesilenLot);
+                        int sonuc = _kesimTamamlanmisRepository.TablodanKesimTamamlanmisEkleme(connection, transaction, kesimYapan, kesimId, kesilmisPlanSayisi, kesilenLot, kullanilanMalzemeEn, kullanilanMalzemeBoy);
+                        transaction.Commit();
+                        return sonuc;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new ApplicationException("Tamamlanmış kesim eklenirken hata oluştu.", ex);
+                    }
+                }
+            }
+        }
+
+        public bool YanUrunDetayEkleme(int kesimTamamlanmisId, int yanUrunEn, int yanUrunBoy, int adet)
+        {
+            using (var connection = _dataBaseService.GetConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        bool sonuc = _kesimTamamlanmisRepository.YanUrunDetayEkleme(connection, transaction, kesimTamamlanmisId, yanUrunEn, yanUrunBoy, adet);
                         transaction.Commit();
                         return sonuc;
                     }

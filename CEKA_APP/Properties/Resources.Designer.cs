@@ -103,6 +103,16 @@ namespace CEKA_APP.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap cekalogosiyah {
+            get {
+                object obj = ResourceManager.GetObject("cekalogosiyah", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap copKutusu {
             get {
                 object obj = ResourceManager.GetObject("copKutusu", resourceCulture);

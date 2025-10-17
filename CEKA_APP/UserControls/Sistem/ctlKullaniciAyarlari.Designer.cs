@@ -202,7 +202,9 @@
             "Operatör",
             "Kullanıcı",
             "Ressam",
-            "Erp"});
+            "Erp",
+            "Proje Mühendisi 1",
+            "Proje Mühendisi 2"});
             this.cbKullaniciRol.Location = new System.Drawing.Point(121, 7);
             this.cbKullaniciRol.Name = "cbKullaniciRol";
             this.cbKullaniciRol.Size = new System.Drawing.Size(274, 24);

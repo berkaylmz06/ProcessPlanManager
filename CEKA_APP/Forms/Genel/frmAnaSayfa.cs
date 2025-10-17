@@ -26,7 +26,7 @@ namespace CEKA_APP
 
         private Kullanicilar aktifKullanici;
         public Stack<UserControl> geriYigin = new Stack<UserControl>();
-        public Stack<UserControl> ileriYigin = new Stack<UserControl>(); 
+        public Stack<UserControl> ileriYigin = new Stack<UserControl>();
 
         private ctlKesimPlaniEkle kesimPlaniEkle;
         private ctlSistemBilgisi sistemBilgisiAnaSayfa;
@@ -194,6 +194,15 @@ namespace CEKA_APP
                 case "Ressam":
                 case "Erp":
                     SetButtonVisibility("ERP", true);
+                    break;
+                case "Proje Mühendisi 1":
+                    SetButtonVisibility("ERP", true);
+                    SetButtonVisibility("Kesim İşlemleri", true);
+                    SetButtonVisibility("Proje Finans", true);
+                    break;
+                case "Proje Mühendisi 2":
+                    SetButtonVisibility("ERP", true);
+                    SetButtonVisibility("Kesim İşlemleri", true);
                     break;
             }
         }
@@ -530,7 +539,7 @@ namespace CEKA_APP
             var kesimYonetimi = panelAnaSayfaContainer.Controls.OfType<ctlKesimYonetimi>().FirstOrDefault();
             if (kesimYonetimi != null)
             {
-                foreach (var page in kesimYonetimi.PagePanels) 
+                foreach (var page in kesimYonetimi.PagePanels)
                 {
                     foreach (var panel in page.Value)
                     {
@@ -538,7 +547,7 @@ namespace CEKA_APP
                         if (kesimControl != null && kesimControl.IsTimerRunning)
                         {
                             MessageBox.Show("Aktif bir kesim işlemi devam ediyor. Lütfen kesimi durdurun veya tamamlayın.", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                            return; 
+                            return;
                         }
                     }
                 }
@@ -844,10 +853,13 @@ namespace CEKA_APP
             UserControlEkle(projeKartiControl);
         }
 
+        // frmAnaSayfa.cs dosyası içinde
+
         private void frmAnaSayfa_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (e.CloseReason == CloseReason.UserClosing)
             {
+                // 1. AKTİF KESİM KONTROLÜ
                 var kesimYonetimi = panelAnaSayfaContainer.Controls.OfType<ctlKesimYonetimi>().FirstOrDefault();
                 if (kesimYonetimi != null)
                 {
@@ -872,7 +884,7 @@ namespace CEKA_APP
                     this.Hide();
                     this.Dispose();
                 }
-                else
+                else 
                 {
                     var result = MessageBox.Show(
                         this,
@@ -883,7 +895,11 @@ namespace CEKA_APP
 
                     if (result == DialogResult.No)
                     {
-                        e.Cancel = true;
+                        e.Cancel = true; 
+                    }
+                    else 
+                    {
+                        Application.Exit();
                     }
                 }
             }

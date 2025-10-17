@@ -15,6 +15,7 @@ namespace CEKA_APP.Entitys.KesimTakip
         public DateTime? bitisTarihi { get; set; }
         public string status { get; set; }
         public string kesimYapan { get; set; }
+        public string lotNo { get; set; }
     }
 
 }

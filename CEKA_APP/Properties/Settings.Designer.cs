@@ -139,5 +139,28 @@ namespace CEKA_APP.Properties {
                 this["SutunGenislikTeminatMektuplari"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        public global::System.Collections.Specialized.StringCollection SutunSirasiYapilanKesimler {
+            get {
+                return ((global::System.Collections.Specialized.StringCollection)(this["SutunSirasiYapilanKesimler"]));
+            }
+            set {
+                this["SutunSirasiYapilanKesimler"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SutunGenislikYapilanKesimler {
+            get {
+                return ((string)(this["SutunGenislikYapilanKesimler"]));
+            }
+            set {
+                this["SutunGenislikYapilanKesimler"] = value;
+            }
+        }
     }
 }

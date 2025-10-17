@@ -8,8 +8,9 @@ namespace CEKA_APP.Interfaces.KesimTakip
 {
     public interface IKesimTamamlanmisService
     {
-        bool TablodanKesimTamamlanmisEkleme(string kesimYapan, string kesimId, int kesilmisPlanSayisi, DateTime kesimTarihi, TimeSpan kesimSaati, string kesilenLot);
+        int TablodanKesimTamamlanmisEkleme(string kesimYapan, string kesimId, int kesilmisPlanSayisi, string kesilenLot, int kullanilanMalzemeEn, int kullanilanMalzemeBoy);
         DataTable GetKesimListesTamamlanmis();
         string GetKesimListesTamamlanmisQuery();
+        bool YanUrunDetayEkleme(int kesimTamamlanmisId, int yanUrunEn, int yanUrunBoy, int adet);
     }
 }

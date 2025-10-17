@@ -143,7 +143,7 @@ namespace CEKA_APP.Services.KesimTakip
             }
         }
 
-        public bool SaveKesimDataPaket(string olusturan, string kesimId, int kesilecekPlanSayisi, int toplamPlanTekrari, DateTime eklemeTarihi)
+        public bool SaveKesimDataPaket(string olusturan, string kesimId, int kesilecekPlanSayisi, int toplamPlanTekrari, DateTime eklemeTarihi, int en, int boy)
         {
             using (var connection = _dataBaseService.GetConnection())
             {
@@ -152,7 +152,7 @@ namespace CEKA_APP.Services.KesimTakip
                 {
                     try
                     {
-                        bool sonuc = _kesimListesiPaketRepository.SaveKesimDataPaket(connection, transaction, olusturan, kesimId, kesilecekPlanSayisi, toplamPlanTekrari, eklemeTarihi);
+                        bool sonuc = _kesimListesiPaketRepository.SaveKesimDataPaket(connection, transaction, olusturan, kesimId, kesilecekPlanSayisi, toplamPlanTekrari, eklemeTarihi, en, boy);
                         transaction.Commit();
                         return sonuc;
                     }

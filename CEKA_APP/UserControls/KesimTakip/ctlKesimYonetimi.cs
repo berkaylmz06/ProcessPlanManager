@@ -1,5 +1,8 @@
 ﻿using CEKA_APP.Abstracts;
 using CEKA_APP.Forms.KesimTakip;
+using CEKA_APP.Interfaces.KesimTakip;
+using DocumentFormat.OpenXml.Office2016.Drawing.ChartDrawing;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -17,6 +20,7 @@ namespace CEKA_APP.UserControls.KesimTakip
         private const int MAX_PAGES = 10;
 
         private readonly IServiceProvider _serviceProvider;
+        private IKesimSureService _kesimSureService => _serviceProvider.GetRequiredService<IKesimSureService>();
 
         public ctlKesimYonetimi(IServiceProvider serviceProvider)
         {
@@ -35,7 +39,6 @@ namespace CEKA_APP.UserControls.KesimTakip
             AddNewPage();
 
             this.Resize += (sender, e) => UpdatePlusButtonLocations();
-            this.Load += CtlKesimYonetimi_Load;
             this.buttonAddPage.Click += ButtonAddPage_Click;
 
             this.tabControlMain.Selected += TabControlMain_Selected;
@@ -47,12 +50,60 @@ namespace CEKA_APP.UserControls.KesimTakip
         {
             _kullaniciAdi = kullaniciAdi;
         }
-        private void CtlKesimYonetimi_Load(object sender, EventArgs e)
+        private void ctlKesimYonetimi_Load(object sender, EventArgs e)
         {
-            if (this.ParentForm != null)
+            var devamEdenKesimler = _kesimSureService.GetirDevamEdenKesimler()
+                ?? new List<(string KesimId, string LotNo, int En, int Boy, int ToplamSureSaniye, string KesimYapan)>();
+
+            int kesimIndex = 0;
+
+            foreach (var kesimData in devamEdenKesimler)
             {
-                this.ParentForm.WindowState = FormWindowState.Maximized;
+                var tumPaneller = pagePanels.Values.SelectMany(list => list).ToList();
+
+                if (kesimIndex >= tumPaneller.Count)
+                {
+                    AddNewPage();
+
+                    tumPaneller = pagePanels.Values.SelectMany(list => list).ToList();
+
+                    if (kesimIndex >= tumPaneller.Count)
+                    {
+                        break;
+                    }
+                }
+
+                var targetPanel = tumPaneller[kesimIndex];
+
+                targetPanel.Controls.Clear();
+
+                LoadExistingKesimPaneli(targetPanel, kesimData);
+
+                kesimIndex++;
             }
+
+            UpdatePlusButtonLocations();
+        }
+        public List<string> GetirKullanilanKesimIds()
+        {
+            var usedKesimIds = new List<string>();
+            foreach (var page in PagePanels.Values)
+            {
+                foreach (var panel in page)
+                {
+                    var kesimControl = panel.Controls.OfType<ctlKesimPaneli>().FirstOrDefault();
+
+                    if (kesimControl != null && !string.IsNullOrEmpty(kesimControl.KesimEmriNo))
+                    {
+                        usedKesimIds.AddRange(
+                            kesimControl.KesimEmriNo.Split(new[] { "; " }, StringSplitOptions.RemoveEmptyEntries)
+                                                    .Where(id => !string.IsNullOrEmpty(id))
+                                                    .ToList()
+                        );
+                    }
+                }
+            }
+            return usedKesimIds.Distinct().ToList();
         }
         private void TabControlMain_Selected(object sender, TabControlEventArgs e)
         {
@@ -165,7 +216,7 @@ namespace CEKA_APP.UserControls.KesimTakip
 
             Color xColor = isSelected ? Color.Black : Color.DarkGray;
 
-            using (Pen pen = new Pen(xColor, 1.5f)) 
+            using (Pen pen = new Pen(xColor, 1.5f))
             {
                 e.Graphics.DrawLine(pen, closeButtonRect.X, closeButtonRect.Y, closeButtonRect.Right, closeButtonRect.Bottom);
                 e.Graphics.DrawLine(pen, closeButtonRect.Right, closeButtonRect.Y, closeButtonRect.X, closeButtonRect.Bottom);
@@ -340,6 +391,111 @@ namespace CEKA_APP.UserControls.KesimTakip
                 CreatePlusButtonForPanel(targetPanel);
                 UpdatePlusButtonLocations();
             }
+        }
+
+        private void LoadExistingKesimPaneli(Panel targetPanel, (string KesimId, string LotNo, int En, int Boy, int ToplamSureSaniye, string KesimYapan) kesimData)
+        {
+            try
+            {
+                var kesimControl = new ctlKesimPaneli(_serviceProvider);
+
+                kesimControl.Dock = DockStyle.Fill;
+                targetPanel.Controls.Clear();
+                targetPanel.Controls.Add(kesimControl);
+
+                kesimControl.LoadDevamEdenKesim(kesimData);
+
+                kesimControl.KesimTamamlandi += (s, e) =>
+                {
+                    targetPanel.Controls.Clear();
+                    CreatePlusButtonForPanel(targetPanel);
+                    UpdatePlusButtonLocations();
+                };
+
+                kesimControl.FormKullaniciAdiGetir(_kullaniciAdi);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Devam eden kontrol yüklenirken hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                targetPanel.Controls.Clear();
+                CreatePlusButtonForPanel(targetPanel);
+                UpdatePlusButtonLocations();
+            }
+        }
+        private void btnOturumuKapat_Click(object sender, EventArgs e)
+        {
+            if (AktifKesimVarMi())
+            {
+                MessageBox.Show("Devam eden aktif kesim işlemleri var. Oturumu kapatmadan önce lütfen tüm kesimleri tamamlayın veya durdurun.", "İşlem Engellendi", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return; 
+            }
+
+            if (MessageBox.Show("Oturumu kapatmak istediğinizden emin misiniz?", "Onay", MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+            {
+                var loginForm = _serviceProvider.GetService<frmKullaniciGirisi>();
+
+                if (loginForm == null)
+                {
+                    loginForm = ActivatorUtilities.CreateInstance<frmKullaniciGirisi>(_serviceProvider);
+                }
+
+                Form hostForm = this.FindForm();
+                if (hostForm != null)
+                {
+                    hostForm.Hide();
+                }
+
+                loginForm.Show();
+
+                if (hostForm != null)
+                {
+                    hostForm.Dispose();
+                }
+            }
+        }
+        private void btnUygulamayiKapat_Click(object sender, EventArgs e)
+        {
+            if (AktifKesimVarMi())
+            {
+                MessageBox.Show("Devam eden aktif kesim işlemleri var. Bilgisayarı kapatmadan önce lütfen tüm kesimleri tamamlayın veya durdurun.", "Kritik İşlem Engellendi", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return; 
+            }
+
+            var result = MessageBox.Show(
+                "Bilgisayarı şimdi kapatmak istediğinizden emin misiniz? Kaydedilmemiş veriler kaybolabilir.",
+                "Kritik Uyarı: Bilgisayarı Kapat",
+                MessageBoxButtons.YesNo,
+                MessageBoxIcon.Stop,
+                MessageBoxDefaultButton.Button2);
+
+            if (result == DialogResult.Yes)
+            {
+                try
+                {
+                    System.Diagnostics.Process.Start("shutdown", "/s /t 0");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show($"Bilgisayarı kapatma komutu çalıştırılamadı. Hata: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
+        }
+        private bool AktifKesimVarMi()
+        {
+            foreach (var page in this.PagePanels)
+            {
+                foreach (var panel in page.Value)
+                {
+                    var kesimControl = panel.Controls.OfType<ctlKesimPaneli>().FirstOrDefault();
+
+                    if (kesimControl != null && kesimControl.IsTimerRunning)
+                    {
+                        return true; 
+                    }
+                }
+            }
+            return false; 
         }
     }
 }

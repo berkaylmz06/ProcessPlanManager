@@ -4,7 +4,9 @@ using CEKA_APP.Entitys.KesimTakip;
 using CEKA_APP.Interfaces.Genel;
 using CEKA_APP.Interfaces.KesimTakip;
 using System;
+using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 
 namespace CEKA_APP.Services.KesimTakip
 {
@@ -18,7 +20,7 @@ namespace CEKA_APP.Services.KesimTakip
             _kesimSureRepository = kesimSureRepository ?? throw new ArgumentNullException(nameof(kesimSureRepository));
             _dataBaseService = dataBaseService ?? throw new ArgumentNullException(nameof(dataBaseService));
         }
-        public int Baslat(string kesimId, string kesimYapan)
+        public int Baslat(string kesimId, string kesimYapan, string lotNo)
         {
             using (var connection = _dataBaseService.GetConnection())
             {
@@ -27,7 +29,7 @@ namespace CEKA_APP.Services.KesimTakip
                 {
                     try
                     {
-                        int sonuc = _kesimSureRepository.Baslat(connection, transaction, kesimId, kesimYapan);
+                        int sonuc = _kesimSureRepository.Baslat(connection, transaction, kesimId, kesimYapan, lotNo);
                         transaction.Commit();
                         return sonuc;
                     }
@@ -124,6 +126,27 @@ namespace CEKA_APP.Services.KesimTakip
             }
         }
 
+        public List<(string KesimId, string LotNo, int En, int Boy, int ToplamSureSaniye, string KesimYapan)> GetirDevamEdenKesimler()
+        {
+            using (var connection = _dataBaseService.GetConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        transaction.Commit();
+                        return _kesimSureRepository.GetirDevamEdenKesimler(connection, transaction);
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new ApplicationException("Kesim süresi alınırken hata oluştu.", ex);
+                    }
+                }
+            }
+        }
+
         public DataTable GetirKesimHareketVeSure(string kesimId)
         {
             try
@@ -137,6 +160,28 @@ namespace CEKA_APP.Services.KesimTakip
             catch (Exception ex)
             {
                 throw new ApplicationException("Kesim süresi alınırken hata oluştu.", ex);
+            }
+        }
+
+        public int GetirSureId(string kesimId)
+        {
+            using (var connection = _dataBaseService.GetConnection())
+            {
+                connection.Open();
+                using (var transaction = connection.BeginTransaction())
+                {
+                    try
+                    {
+                        int sonuc = _kesimSureRepository.GetirSureId(connection, transaction, kesimId);
+                        transaction.Commit();
+                        return sonuc;
+                    }
+                    catch (Exception ex)
+                    {
+                        transaction.Rollback();
+                        throw new ApplicationException("Kesim süresi alınırken hata oluştu.", ex);
+                    }
+                }
             }
         }
 

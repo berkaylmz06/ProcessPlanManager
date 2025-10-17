@@ -30,6 +30,8 @@
         {
             this.panelVeriYonetim = new System.Windows.Forms.Panel();
             this.groupBoxVeriYonetim = new System.Windows.Forms.GroupBox();
+            this.lblHurda = new System.Windows.Forms.Label();
+            this.txtHurda = new System.Windows.Forms.TextBox();
             this.lblDurum = new System.Windows.Forms.Label();
             this.btnYazdir = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
@@ -71,15 +73,14 @@
             this.Column6 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
-            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.button3 = new System.Windows.Forms.Button();
             this.btnSec = new System.Windows.Forms.Button();
             this.pdfViewer1 = new PdfiumViewer.PdfViewer();
-            this.lblHurda = new System.Windows.Forms.Label();
-            this.txtHurda = new System.Windows.Forms.TextBox();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
+            this.dataGridViewTextBoxColumn1 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panelVeriYonetim.SuspendLayout();
             this.groupBoxVeriYonetim.SuspendLayout();
             this.tabControl1.SuspendLayout();
@@ -136,6 +137,25 @@
             this.groupBoxVeriYonetim.Size = new System.Drawing.Size(700, 780);
             this.groupBoxVeriYonetim.TabIndex = 325;
             this.groupBoxVeriYonetim.TabStop = false;
+            // 
+            // lblHurda
+            // 
+            this.lblHurda.AutoSize = true;
+            this.lblHurda.Location = new System.Drawing.Point(183, 328);
+            this.lblHurda.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
+            this.lblHurda.Name = "lblHurda";
+            this.lblHurda.Size = new System.Drawing.Size(47, 16);
+            this.lblHurda.TabIndex = 330;
+            this.lblHurda.Text = "Hurda:";
+            // 
+            // txtHurda
+            // 
+            this.txtHurda.Enabled = false;
+            this.txtHurda.Location = new System.Drawing.Point(296, 324);
+            this.txtHurda.Margin = new System.Windows.Forms.Padding(2);
+            this.txtHurda.Name = "txtHurda";
+            this.txtHurda.Size = new System.Drawing.Size(212, 22);
+            this.txtHurda.TabIndex = 329;
             // 
             // lblDurum
             // 
@@ -542,7 +562,8 @@
             this.dataGridView3.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn1,
             this.dataGridViewTextBoxColumn2,
-            this.dataGridViewTextBoxColumn3});
+            this.dataGridViewTextBoxColumn3,
+            this.dataGridViewTextBoxColumn4});
             this.dataGridView3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.dataGridView3.GridColor = System.Drawing.SystemColors.ButtonHighlight;
             this.dataGridView3.Location = new System.Drawing.Point(4, 4);
@@ -554,24 +575,6 @@
             this.dataGridView3.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.dataGridView3.Size = new System.Drawing.Size(672, 250);
             this.dataGridView3.TabIndex = 280;
-            // 
-            // dataGridViewTextBoxColumn1
-            // 
-            this.dataGridViewTextBoxColumn1.HeaderText = "ID";
-            this.dataGridViewTextBoxColumn1.MinimumWidth = 6;
-            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
-            // 
-            // dataGridViewTextBoxColumn2
-            // 
-            this.dataGridViewTextBoxColumn2.HeaderText = "Yerleşim Planı Sayfa Numarası";
-            this.dataGridViewTextBoxColumn2.MinimumWidth = 6;
-            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.HeaderText = "Yerleşim Planı Tekrar Sayısı";
-            this.dataGridViewTextBoxColumn3.MinimumWidth = 6;
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
             // 
             // button3
             // 
@@ -605,25 +608,6 @@
             this.pdfViewer1.Size = new System.Drawing.Size(882, 899);
             this.pdfViewer1.TabIndex = 328;
             // 
-            // lblHurda
-            // 
-            this.lblHurda.AutoSize = true;
-            this.lblHurda.Location = new System.Drawing.Point(183, 328);
-            this.lblHurda.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
-            this.lblHurda.Name = "lblHurda";
-            this.lblHurda.Size = new System.Drawing.Size(47, 16);
-            this.lblHurda.TabIndex = 330;
-            this.lblHurda.Text = "Hurda:";
-            // 
-            // txtHurda
-            // 
-            this.txtHurda.Enabled = false;
-            this.txtHurda.Location = new System.Drawing.Point(296, 324);
-            this.txtHurda.Margin = new System.Windows.Forms.Padding(2);
-            this.txtHurda.Name = "txtHurda";
-            this.txtHurda.Size = new System.Drawing.Size(212, 22);
-            this.txtHurda.TabIndex = 329;
-            // 
             // ctlBaslik1
             // 
             this.ctlBaslik1.Baslik = "Başlık";
@@ -632,6 +616,30 @@
             this.ctlBaslik1.Name = "ctlBaslik1";
             this.ctlBaslik1.Size = new System.Drawing.Size(1612, 48);
             this.ctlBaslik1.TabIndex = 327;
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            this.dataGridViewTextBoxColumn1.HeaderText = "ID";
+            this.dataGridViewTextBoxColumn1.MinimumWidth = 6;
+            this.dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            // 
+            // dataGridViewTextBoxColumn2
+            // 
+            this.dataGridViewTextBoxColumn2.HeaderText = "Yerleşim Planı Sayfa Numarası";
+            this.dataGridViewTextBoxColumn2.MinimumWidth = 6;
+            this.dataGridViewTextBoxColumn2.Name = "dataGridViewTextBoxColumn2";
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.HeaderText = "Yerleşim Planı Tekrar Sayısı";
+            this.dataGridViewTextBoxColumn3.MinimumWidth = 6;
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            // 
+            // dataGridViewTextBoxColumn4
+            // 
+            this.dataGridViewTextBoxColumn4.HeaderText = "Malzeme Boyu";
+            this.dataGridViewTextBoxColumn4.MinimumWidth = 6;
+            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
             // 
             // ctlKesimPlaniEkle
             // 
@@ -689,9 +697,6 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn Column6;
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.DataGridView dataGridView3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
         private System.Windows.Forms.Button btnSec;
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Button button1;
@@ -711,5 +716,9 @@
         private System.Windows.Forms.DataGridViewTextBoxColumn gridEkBilgi;
         private System.Windows.Forms.Label lblHurda;
         private System.Windows.Forms.TextBox txtHurda;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn2;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
     }
 }

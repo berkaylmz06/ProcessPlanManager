@@ -1149,7 +1149,7 @@ namespace CEKA_APP.UsrControl
 
                     HashSet<string> islenmisPaketIdSet = new HashSet<string>();
                     List<string> hataMesajlari = new List<string>();
-                    List<Tuple<string, string, string, string, string, int, int>> geciciKayitlar = new List<Tuple<string, string, string, string, string, int, int>>();
+                    List<(string pageId, string proje, string kalip, string poz, string adetStr, int adet, int paketAdet, int en, int boy)> geciciKayitlar = new List<(string, string, string, string, string, int, int, int, int)>();
                     Dictionary<string, decimal> kesimIdToplamOran = new Dictionary<string, decimal>();
                     Dictionary<string, string> kesimIdAnaPozKeyMap = new Dictionary<string, string>();
 
@@ -1181,12 +1181,29 @@ namespace CEKA_APP.UsrControl
                     }
 
                     Dictionary<string, int> pageRepetitions = new Dictionary<string, int>();
-                    Dictionary<string, List<(string pageId, int paketAdet)>> pageIdMap = new Dictionary<string, List<(string, int)>>();
+                    Dictionary<string, List<(string pageId, int paketAdet, int en, int boy)>> pageIdMap = new Dictionary<string, List<(string, int, int, int)>>();
                     foreach (DataGridViewRow d3Row in dataGridView3.Rows)
                     {
-                        if (!d3Row.IsNewRow && d3Row.Cells.Count > 2 && d3Row.Cells[0].Value != null)
+                        if (!d3Row.IsNewRow && d3Row.Cells.Count > 3 && d3Row.Cells[0].Value != null)
                         {
                             string pageId = d3Row.Cells[0].Value.ToString().Trim();
+                            string malzemeBoyu = d3Row.Cells[3].Value?.ToString()?.Trim() ?? "0x0";
+                            int en = 0;
+                            int boy = 0;
+
+                            if (!string.IsNullOrEmpty(malzemeBoyu) && malzemeBoyu.Contains("X"))
+                            {
+                                var boyutlar = malzemeBoyu.Split('X');
+                                if (boyutlar.Length == 2)
+                                {
+                                    string boyStr = boyutlar[0].Replace("mm", "").Trim();
+                                    string enStr = boyutlar[1].Replace("mm", "").Trim();
+
+                                    int.TryParse(enStr, out en);
+                                    int.TryParse(boyStr, out boy);
+                                }
+                            }
+
                             string[] parts = pageId.Split('-');
                             if (parts.Length >= 2)
                             {
@@ -1198,14 +1215,13 @@ namespace CEKA_APP.UsrControl
                                 }
                                 if (!pageIdMap.ContainsKey(basePageId))
                                 {
-                                    pageIdMap[basePageId] = new List<(string, int)>();
+                                    pageIdMap[basePageId] = new List<(string, int, int, int)>();
                                 }
-                                pageIdMap[basePageId].Add((pageId, paketAdet));
+                                pageIdMap[basePageId].Add((pageId, paketAdet, en, boy));
                                 pageRepetitions[basePageId] = pageRepetitions.ContainsKey(basePageId) ? pageRepetitions[basePageId] + 1 : 1;
                             }
                         }
                     }
-
                     Regex regex = new Regex(@"-EK(\d*)$", RegexOptions.IgnoreCase);
 
                     Dictionary<string, decimal> anaPozToplamOran = new Dictionary<string, decimal>();
@@ -1298,7 +1314,7 @@ namespace CEKA_APP.UsrControl
 
                             if (pageIdMap.ContainsKey(dKesimId))
                             {
-                                foreach (var (pageId, paketAdet) in pageIdMap[dKesimId])
+                                foreach (var (pageId, paketAdet, en, boy) in pageIdMap[dKesimId])
                                 {
                                     var keyTuple = (pageId, poz);
                                     ekOranMap[keyTuple] = oran;
@@ -1356,16 +1372,18 @@ namespace CEKA_APP.UsrControl
 
                         if (pageIdMap.ContainsKey(dKesimId))
                         {
-                            foreach (var (pageId, paketAdet) in pageIdMap[dKesimId])
+                            foreach (var (pageId, paketAdet, en, boy) in pageIdMap[dKesimId])
                             {
-                                geciciKayitlar.Add(Tuple.Create(pageId, proje, kalip, poz, adetStr, adet, paketAdet));
+                                geciciKayitlar.Add((pageId, proje, kalip, poz, adetStr, adet, paketAdet, en, boy));
                                 islenmisPaketIdSet.Add(pageId);
                             }
                         }
                         else
                         {
                             int paketAdet = 1;
-                            geciciKayitlar.Add(Tuple.Create(dKesimId, proje, kalip, poz, adetStr, adet, paketAdet));
+                            int en = 0;
+                            int boy = 0;
+                            geciciKayitlar.Add((dKesimId, proje, kalip, poz, adetStr, adet, paketAdet, en, boy));
                             islenmisPaketIdSet.Add(dKesimId);
                         }
                     }
@@ -1425,10 +1443,10 @@ namespace CEKA_APP.UsrControl
                             else if (hesaplananAdet > toplamAdetIfs)
                             {
                                 hataMesajlari.Add(
-                                      $"EK Hesaplama Hatası (EK'li Poz): [{kalite} - {malzeme} - {kalip} - {basePoz} - {detayProje}]\n" +
-                                      $"Stok Adet: {toplamAdetIfs}, Hesaplanan Adet: {hesaplananAdet:F2}\n" +
-                                      $"❗ Hesaplanan adet stok adedini aşıyor (toplam oran: {toplamOran:F2}).\n"
-                                  );
+                                    $"EK Hesaplama Hatası (EK'li Poz): [{kalite} - {malzeme} - {kalip} - {basePoz} - {detayProje}]\n" +
+                                    $"Stok Adet: {toplamAdetIfs}, Hesaplanan Adet: {hesaplananAdet:F2}\n" +
+                                    $"❗ Hesaplanan adet stok adedini aşıyor (toplam oran: {toplamOran:F2}).\n"
+                                );
                             }
                         }
                     }
@@ -1527,13 +1545,15 @@ namespace CEKA_APP.UsrControl
 
                     foreach (var kayit in geciciKayitlar)
                     {
-                        string pageId = kayit.Item1;
-                        string proje = kayit.Item2;
-                        string kalip = kayit.Item3;
-                        string poz = kayit.Item4;
-                        string adetStr = kayit.Item5;
-                        int adet = kayit.Item6;
-                        int paketAdet = kayit.Item7;
+                        string pageId = kayit.pageId;
+                        string proje = kayit.proje;
+                        string kalip = kayit.kalip;
+                        string poz = kayit.poz;
+                        string adetStr = kayit.adetStr;
+                        int adet = kayit.adet;
+                        int paketAdet = kayit.paketAdet;
+                        int en = kayit.en;
+                        int boy = kayit.boy;
 
                         decimal kesimHesaplananAdet = adet;
 
@@ -1565,20 +1585,16 @@ namespace CEKA_APP.UsrControl
                                     var (stokYeterli, toplamAdetIfs) = _autoCadAktarimService.AdetGetir(detayIfsKalite, detayIfsMalzeme, kalipPozForValidation, detayProje, 0);
 
                                     decimal anaToplamAgirlik = toplamAdetIfs * netAgirlik;
-
                                     decimal ekOran = ekOranMap[keyTuple];
-
                                     decimal hesaplananAgirlik = anaToplamAgirlik * ekOran;
                                     kesimHesaplananAdet = netAgirlik > 0 ? hesaplananAgirlik / netAgirlik : 0;
-
                                     kesimHesaplananAdet = Math.Round(kesimHesaplananAdet, 2, MidpointRounding.AwayFromZero);
-
                                     adetStr = kesimHesaplananAdet.ToString("F2");
                                 }
                             }
                         }
 
-                        _kesimListesiPaketService.SaveKesimDataPaket(olusturan, pageId, paketAdet, paketAdet, eklemeTarihi);
+                        _kesimListesiPaketService.SaveKesimDataPaket(olusturan, pageId, paketAdet, paketAdet, eklemeTarihi, en, boy);
                         _kesimListesiService.SaveKesimData(olusturan, pageId, proje, malzeme, kalite,
                             new string[] { kalip }, new string[] { poz }, new decimal[] { kesimHesaplananAdet }, eklemeTarihi);
                     }
@@ -1612,7 +1628,6 @@ namespace CEKA_APP.UsrControl
                 MessageBox.Show("İşlem sırasında hata oluştu: " + ex.Message, "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void Temizle()
         {
             lblDurum.Text = "";
@@ -1646,6 +1661,7 @@ namespace CEKA_APP.UsrControl
             bool isFirmaAdiSection = false;
             int currentPageNumber = 1;
             int firmaSayac = 0;
+            string malzemeBoyu = "";
 
             foreach (string satir in satirlar)
             {
@@ -1688,7 +1704,19 @@ namespace CEKA_APP.UsrControl
                     firmaSayac++;
                     continue;
                 }
-
+                if (temizSatir.StartsWith("LevhaÖlçüleri"))
+                {
+                    Match olcuMatch = Regex.Match(temizSatir, @"\d+X\d+mm");
+                    if (olcuMatch.Success)
+                    {
+                        malzemeBoyu = olcuMatch.Value; 
+                    }
+                    else
+                    {
+                        malzemeBoyu = ""; 
+                    }
+                    continue;
+                }
                 if (!isFirmaAdiSection)
                     continue;
                 Match match = Regex.Match(temizSatir, @"(ST\d+\s*-(?:\s*[^\s-]*\s*(?:-+\s*[^\s-]*\s*)*-+\s*)\S+)");
@@ -1696,7 +1724,7 @@ namespace CEKA_APP.UsrControl
                 if (match.Success)
                 {
                     string parcaVeri = match.Groups[1].Value.Trim();
-                    string birlesikVeri = $"{parcaVeri} (Yerleşim: {firmaSayac})(Sayfa: {currentPageNumber})";
+                    string birlesikVeri = $"{parcaVeri} (Yerleşim: {firmaSayac})(Sayfa: {currentPageNumber})(Malzeme Boyu:{malzemeBoyu})";
                     sonucBuilder.AppendLine(birlesikVeri);
                 }
             }
@@ -1718,7 +1746,10 @@ namespace CEKA_APP.UsrControl
             int currentSayfa = 1;
             Regex yerlesimRegex = new Regex(@"Yerleşim:\s*(\d+)\s*/\s*\d+", RegexOptions.IgnoreCase);
             Regex sayfaRegex = new Regex(@"--------\s*Sayfa\s*(\d+)\s*--------", RegexOptions.IgnoreCase);
+            Regex malzemeBoyuRegex = new Regex(@"Plaka boyutu:\s*(\d{1,4}[.,]?\d*)\s*x\s*(\d{1,4}[.,]?\d*)\s*mm", RegexOptions.IgnoreCase);
             string pattern = @"^(?:(?:\d+\s*-\s*\d+\s*)|\d+\s*)?(ST\d+\s*-(?:\s*[^\s-]*\s*(?:-+\s*[^\s-]*\s*)*-+\s*)\S+)";
+
+            string currentMalzemeBoyu = "-";
 
             foreach (string satir in satirlar)
             {
@@ -1730,6 +1761,7 @@ namespace CEKA_APP.UsrControl
                     currentYerlesim = yerlesimFromLayout;
                     continue;
                 }
+
                 Match sayfaMatch = sayfaRegex.Match(trimmedSatir);
                 if (sayfaMatch.Success && int.TryParse(sayfaMatch.Groups[1].Value, out int sayfaFromLayout))
                 {
@@ -1737,13 +1769,23 @@ namespace CEKA_APP.UsrControl
                     continue;
                 }
 
+                Match malzemeMatch = malzemeBoyuRegex.Match(trimmedSatir);
+                if (malzemeMatch.Success)
+                {
+                    string genislik = Regex.Match(malzemeMatch.Groups[1].Value, @"\d+").Value;
+                    string yukseklik = Regex.Match(malzemeMatch.Groups[2].Value, @"\d+").Value;
+
+                    currentMalzemeBoyu = $"{genislik}X{yukseklik}mm";
+                }
+
+
                 if (trimmedSatir.IndexOf("ST", StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     Match match = Regex.Match(trimmedSatir, pattern);
                     if (match.Success)
                     {
                         string parcaAdi = match.Groups[1].Value.Trim();
-                        sonucBuilder.AppendLine($"{parcaAdi} (Yerleşim: {currentYerlesim})(Sayfa: {currentSayfa})");
+                        sonucBuilder.AppendLine($"{parcaAdi} (Yerleşim: {currentYerlesim})(Sayfa: {currentSayfa})(Malzeme Boyu: {currentMalzemeBoyu})");
                     }
                 }
             }
@@ -1764,8 +1806,9 @@ namespace CEKA_APP.UsrControl
             string currentProgram = "";
             string currentProgramTekrari = "";
             string currentMalzeme = "";
+            string currentMalzemeBoyu = "";
             Dictionary<string, int> parcaToplamAdet = new Dictionary<string, int>();
-            List<(string Parca, string Miktar, int PageNumber, string Program, string ProgramTekrari)> parcaListesi = new List<(string, string, int, string, string)>();
+            List<(string Parca, string Miktar, int PageNumber, string Program, string ProgramTekrari, string MalzemeBoyu)> parcaListesi = new List<(string, string, int, string, string, string)>();
 
             string malzemeRegex = @"^ST\d+-[A-Za-z0-9-]+$";
             string programRegex = @"^\s*(\d+)\s+(\d+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)";
@@ -1818,6 +1861,14 @@ namespace CEKA_APP.UsrControl
                     {
                         currentProgram = programSutun[0];
                         currentProgramTekrari = programSutun[1];
+                        if (decimal.TryParse(programSutun[2].Replace(',', '.'), System.Globalization.NumberStyles.Any, System.Globalization.CultureInfo.InvariantCulture, out decimal malzemeBoyuMetre))
+                        {
+                            currentMalzemeBoyu = (malzemeBoyuMetre * 1000).ToString("0");
+                        }
+                        else
+                        {
+                            currentMalzemeBoyu = programSutun[2]; 
+                        }
                     }
                     continue;
                 }
@@ -1852,13 +1903,13 @@ namespace CEKA_APP.UsrControl
                             }
                             parcaToplamAdet[parcaKey] += adet;
 
-                            parcaListesi.Add((parca, miktar, currentPageNumber, currentProgram, currentProgramTekrari));
+                            parcaListesi.Add((parca, miktar, currentPageNumber, currentProgram, currentProgramTekrari, currentMalzemeBoyu));
                         }
                     }
                 }
             }
 
-            foreach (var (parca, miktar, pageNumber, program, programTekrari) in parcaListesi)
+            foreach (var (parca, miktar, pageNumber, program, programTekrari, malzemeBoyu) in parcaListesi)
             {
                 string[] parcaParts = parca.Split('-');
                 string proje = parcaParts[0];
@@ -1869,7 +1920,7 @@ namespace CEKA_APP.UsrControl
 
                 string parcaKey = $"{proje}-{kalip}-{pozKey}";
                 string sonuc1 = $"{currentMalzeme}{(string.IsNullOrEmpty(kalip) ? "" : "-")}{kalip}{(string.IsNullOrEmpty(kalip) ? "" : "-")}{pozKey}-{parcaToplamAdet[parcaKey]}AD-{proje}";
-                sonucBuilder.AppendLine($"{sonuc1} (Sayfa: {pageNumber}, Miktar: {miktar}, Program: {program}, Program Tekrarı: {programTekrari})");
+                sonucBuilder.AppendLine($"{sonuc1} (Sayfa: {pageNumber}, Miktar: {miktar}, Program: {program}, Program Tekrarı: {programTekrari}, Malzeme Boyu: 1X{malzemeBoyu}mm)");
             }
 
             string sonuc = sonucBuilder.ToString();
@@ -2138,7 +2189,6 @@ namespace CEKA_APP.UsrControl
         };
 
                 Regex pozRegex = new Regex(@"ST[A-Z0-9]{2,}\s*-\s*[A-Z0-9]{2,}\s*-\s*(\d{1,3}\s*-\s*\d{1,3}\s*-\s*P\d+\s*-\s*\d+AD\s*-\s*\d{5,6}\.\d{2,}(?:\s*-\s*EK[A-Za-z0-9]*)?)", RegexOptions.IgnoreCase);
-                //Regex pozRegex = new Regex(@"^ST[A-Z0-9]{2,}\s*-\s*[A-Z0-9]{2,}\s*-\s*([A-Z0-9]+(?:-[A-Z0-9]+)*\s*-\s*P\d+\s*-\s*\d+AD\s*-\s*\d{5,6}\.\d{2,}(?:\s*-\s*EK[A-Za-z0-9]*)?)", RegexOptions.IgnoreCase);
 
                 Regex suffixRegex = new Regex(@"-(?!EK[A-Za-z0-9]*$)[A-Za-z0-9]+$", RegexOptions.IgnoreCase);
                 Regex sayfaSimpleRegex = new Regex(@"Sayfa:\s*(\d+)", RegexOptions.IgnoreCase);
@@ -2151,34 +2201,21 @@ namespace CEKA_APP.UsrControl
                 {
                     if (string.IsNullOrWhiteSpace(line)) continue;
 
-                    int sayfaStart = line.IndexOf("(Sayfa:");
-                    int sayfaEnd = sayfaStart >= 0 ? line.IndexOf(')', sayfaStart) : -1;
+                    string yerlesimNo = Regex.Match(line, @"\(Yerleşim:\s*(\d+)\)").Groups[1].Value;
+                    if (string.IsNullOrEmpty(yerlesimNo)) yerlesimNo = "00";
 
-                    string parcaAdiFull = (sayfaStart >= 0 && sayfaEnd > sayfaStart)
-                        ? line.Substring(0, sayfaEnd + 1).Trim()
-                        : line.Trim();
-
-                    var parts = line.Split(new[] { "(Sayfa: " }, StringSplitOptions.None);
-                    if (parts.Length < 2) continue;
-
-                    string sayfaNo = parts[1].Replace(")", "").Trim();
+                    string sayfaNo = Regex.Match(line, @"\(Sayfa:\s*(\d+)\)").Groups[1].Value;
+                    if (string.IsNullOrEmpty(sayfaNo)) continue; 
                     validSayfaNos.Add(sayfaNo);
 
-                    string yerlesimNo = "00";
-                    var yerlesimParts = line.Split(new[] { "(Yerleşim: " }, StringSplitOptions.None);
-                    if (yerlesimParts.Length >= 2)
-                    {
-                        yerlesimNo = yerlesimParts[1].Split(')')[0].Trim();
-                    }
+                    string malzemeBoyu = Regex.Match(line, @"\(Malzeme Boyu:\s*([^)]+)\)").Groups[1].Value.Trim();
 
                     if (!sayfaSayaclari.ContainsKey(sayfaNo))
-                    {
                         sayfaSayaclari[sayfaNo] = 1;
-                    }
                     else
-                    {
                         sayfaSayaclari[sayfaNo]++;
-                    }
+
+                    string parcaAdiFull = Regex.Replace(line, @"\(.*?\)", "").Trim(); 
 
                     Match pozMatch = pozRegex.Match(parcaAdiFull);
                     string poz = pozMatch.Success ? pozMatch.Groups[1].Value : "Poz Yok";
@@ -2189,8 +2226,9 @@ namespace CEKA_APP.UsrControl
                     string sayfaID = $"{id}-{sayfaNo.PadLeft(2, '0')}";
                     string parcaIDFinal = $"{sayfaID}-{sayfaSayaclari[sayfaNo].ToString("D2")}";
 
-                    logLines.Add($"{parcaAdiFull} => Poz: {poz}, Parça ID: {parcaIDFinal}, Yerleşim ID: {yerlesimID}, Sayfa ID: {sayfaID}");
+                    logLines.Add($"{parcaAdiFull} => Poz: {poz}, Parça ID: {parcaIDFinal}, Yerleşim ID: {yerlesimID}, Sayfa ID: {sayfaID}, Malzeme Boyu: {malzemeBoyu}");
                 }
+
 
 
                 logLines.Add("\nRichTextBox1 Verileri:");
@@ -2333,6 +2371,7 @@ namespace CEKA_APP.UsrControl
         $"İşlem Tarihi: {DateTime.Now}",
         $"BaseId: {baseId}"
     };
+
             string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "CEKA_APP");
             string logPath = Path.Combine(appPath, "ProNest_Log.txt");
 
@@ -2365,12 +2404,14 @@ namespace CEKA_APP.UsrControl
                 Regex partRegex = new Regex(@"(\d+)(?:\s*-\s*(\d+))?\s+.*?(\d+-\d+-P\d+(?:-[\w\.\s]+)*)\s.*?(\d{1,3}(?:,\d{1,2})?)\s*kg", RegexOptions.IgnoreCase);
                 Regex richTextBox4SayfaRegex = new Regex(@"\(Sayfa:\s*(\d+)\)", RegexOptions.IgnoreCase);
                 Regex richTextBox4YerlesimRegex = new Regex(@"\(Yerleşim:\s*(\d+)\)", RegexOptions.IgnoreCase);
+                Regex richTextBox4MalzemeBoyuRegex = new Regex(@"\(Malzeme Boyu:\s*(\d+X\d+)mm\)", RegexOptions.IgnoreCase);
 
                 var lines1 = text1.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
                 var lines4 = text4.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
 
                 var richTextBox1Matches = new Dictionary<string, (int Adet, double Agirlik)>();
-                var partInfoDict = new Dictionary<string, (string Poz, string SayfaID, int Adet, double Agirlik)>();
+                var partInfoDict = new Dictionary<string, (string Poz, string YerlesimID, int Adet, double Agirlik, string MalzemeBoyu)>();
+
                 string currentSayfa = "";
                 Dictionary<string, int> sayfaSiraSayaclari = new Dictionary<string, int>();
 
@@ -2386,14 +2427,13 @@ namespace CEKA_APP.UsrControl
                         sayfaSiraSayaclari[currentSayfa] = 1;
                         continue;
                     }
-
                     var partMatch = partRegex.Match(line);
                     if (partMatch.Success)
                     {
                         if (!sayfaSiraSayaclari.ContainsKey(currentSayfa))
                             sayfaSiraSayaclari[currentSayfa] = 1;
 
-                        string id = $"{baseId}-{currentSayfa}-{sayfaSiraSayaclari[currentSayfa].ToString("D2")}";
+                        string id = $"{baseId}-{currentSayfa}-{sayfaSiraSayaclari[currentSayfa]:D2}";
                         string startNum = partMatch.Groups[1].Value;
                         string endNum = partMatch.Groups[2].Value;
                         string agirlikStr = partMatch.Groups[4].Value.Trim();
@@ -2404,10 +2444,11 @@ namespace CEKA_APP.UsrControl
                             MessageBox.Show($"Ağırlık değeri parse edilemedi: {agirlikStr}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
                             return;
                         }
+
                         int count = string.IsNullOrEmpty(endNum) ? 1 : int.Parse(endNum) - int.Parse(startNum) + 1;
 
                         richTextBox1Matches[id] = (count, agirlik);
-                        logLines.Add($"{id}: {line}, Adet: {count}, Ağırlık: {agirlik.ToString("F2", CultureInfo.InvariantCulture)} (Sayfa: {currentSayfa})");
+                        logLines.Add($"{id}: {line}, Adet: {count}, Ağırlık: {agirlik:F2} (Sayfa: {currentSayfa})");
                         sayfaSiraSayaclari[currentSayfa]++;
                     }
                 }
@@ -2423,6 +2464,7 @@ namespace CEKA_APP.UsrControl
 
                     var sayfaMatch = richTextBox4SayfaRegex.Match(line);
                     var yerlesimMatch = richTextBox4YerlesimRegex.Match(line);
+                    var malzemeBoyuMatch = richTextBox4MalzemeBoyuRegex.Match(line);
 
                     if (sayfaMatch.Success)
                     {
@@ -2437,10 +2479,12 @@ namespace CEKA_APP.UsrControl
                     }
 
                     currentYerlesim = yerlesimMatch.Success ? yerlesimMatch.Groups[1].Value.PadLeft(2, '0') : "00";
-                    string id = $"{baseId}-{currentSayfa}-{sayfaSiraSayaclari[currentSayfa].ToString("D2")}";
+                    string id = $"{baseId}-{currentSayfa}-{sayfaSiraSayaclari[currentSayfa]:D2}";
                     string yerlesimId = $"{baseId}-{currentYerlesim}";
-                    var parcaKoduMatch = Regex.Match(line, @"^(ST\d{2}-\d+(?:MM|mm)-)(.+)(?=\(Yerleşim:)");
 
+                    string malzemeBoyu = malzemeBoyuMatch.Success ? malzemeBoyuMatch.Groups[1].Value : "YOK";
+
+                    var parcaKoduMatch = Regex.Match(line, @"^(ST\d{2}-\d+(?:MM|mm)-)(.+)(?=\(Yerleşim:)");
                     if (!parcaKoduMatch.Success)
                     {
                         logLines.Add($"[Atlandı] {id}: Parça kodu bulunamadı -> {line}");
@@ -2452,8 +2496,9 @@ namespace CEKA_APP.UsrControl
 
                     if (richTextBox1Matches.TryGetValue(id, out var info))
                     {
-                        partInfoDict[id] = (poz, yerlesimId, info.Adet, info.Agirlik);
-                        logLines.Add($"{id} => {poz}, {sayfaMatch}, {yerlesimMatch}, Yerleşim ID: {yerlesimId}");
+                        logLines.Add($"{id} => {poz}, Sayfa: {currentSayfa}, Yerleşim: {currentYerlesim}, Yerleşim ID: {yerlesimId}, Malzeme Boyu: {malzemeBoyu}");
+
+                        partInfoDict[id] = (poz, yerlesimId, info.Adet, info.Agirlik, malzemeBoyu);
                     }
                     else
                     {
@@ -2467,8 +2512,10 @@ namespace CEKA_APP.UsrControl
                 foreach (var kvp in partInfoDict)
                 {
                     string parcaID = kvp.Key;
-                    var (poz, yerlesimID, count, agirlik) = kvp.Value;
-                    logLines.Add($"Parça ID: {parcaID} => Poz: {poz}, Yerleşim ID: {yerlesimID}, Adet: {count}, Ağırlık: {agirlik.ToString("F2", CultureInfo.InvariantCulture)}");
+                    var (poz, yerlesimID, count, agirlik, malzemeBoyu) = kvp.Value;
+
+                    logLines.Add($"Parça ID: {parcaID} => Poz: {poz}, Yerleşim ID: {yerlesimID}, Adet: {count}, Ağırlık: {agirlik:F2}, Malzeme Boyu: {malzemeBoyu}");
+
                     dataGridView2.Rows.Add(poz, yerlesimID, count, agirlik.ToString("F2", CultureInfo.InvariantCulture));
                 }
 
@@ -2488,7 +2535,7 @@ namespace CEKA_APP.UsrControl
             catch (Exception ex)
             {
                 logLines.Add($"Hata oluştu: {ex.Message}");
-                MessageBox.Show($"Bir hata oluştu, lütfen veri formatını kontrol edin veya destek ekibiyle iletişime geçin: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
             finally
             {
@@ -2604,17 +2651,14 @@ namespace CEKA_APP.UsrControl
                     var match = rich4Regex.Match(cleanedLine);
                     if (match.Success)
                     {
-                        // ANAHTAR BİLGİLERİ YAKALA
-                        string materialType = match.Groups[1].Value; // ST37
-                        string pNumber = match.Groups[2].Value; // P10
-                        string adType = match.Groups[3].Value; // 2AD
-                        string pozPrefix = match.Groups[4].Value; // 25166.01
+                        string materialType = match.Groups[1].Value;
+                        string pNumber = match.Groups[2].Value;
+                        string adType = match.Groups[3].Value;
+                        string pozPrefix = match.Groups[4].Value;
 
-                        // POZ SIMPLE'I MANUEL OLARAK ÇIKAR
                         string pozBeforeP = Regex.Match(cleanedLine, $@"{Regex.Escape(materialType)}.*?-(.*?)-{Regex.Escape(pNumber)}").Groups[1].Value;
                         string[] pozParts = pozBeforeP.Split('-');
 
-                        // ESNEK POZ SIMPLE - Son iki parçayı al
                         string pozSimple;
                         if (pozParts.Length >= 2)
                         {
@@ -2629,7 +2673,7 @@ namespace CEKA_APP.UsrControl
                             pozSimple = "";
                         }
 
-                        string fullPozSimple = $"{pozSimple}-{pNumber}"; // 211-00-P10
+                        string fullPozSimple = $"{pozSimple}-{pNumber}";
                         string programNo = Regex.Match(cleanedLine, @"Program\s*[:\s]\s*(\d+)").Groups[1].Value;
                         string adetStr = Regex.Match(cleanedLine, @"Miktar\s*[:\s]\s*(\d+)").Groups[1].Value;
                         string tekrarStr = Regex.Match(cleanedLine, @"Program Tekrarı\s*[:\s]\s*(\d+)").Groups[1].Value;
@@ -2639,10 +2683,9 @@ namespace CEKA_APP.UsrControl
                         int sequence = programSequenceDict.ContainsKey(programNo) ? programSequenceDict[programNo] + 1 : 1;
                         programSequenceDict[programNo] = sequence;
                         string sequenceStr = sequence.ToString("D2");
-                        string parcaId = $"{pozPrefix}-{fullPozSimple}"; // 25166.01-211-00-P10
+                        string parcaId = $"{pozPrefix}-{fullPozSimple}";
 
-                        // DİNAMİK formattedPoz - AD tipini kullan
-                        string formattedPoz = $"{fullPozSimple}-{adType}-{pozPrefix}"; // 211-00-P10-2AD-25166.01
+                        string formattedPoz = $"{fullPozSimple}-{adType}-{pozPrefix}";
 
                         if (int.TryParse(adetStr, out int miktar) && int.TryParse(tekrarStr, out int tekrar))
                         {
@@ -2712,197 +2755,6 @@ namespace CEKA_APP.UsrControl
             }
         }
 
-        //private void AdmSayfaPozDagitimi()
-        //{
-        //    try
-        //    {
-        //        string baseId = txtId.Text.Trim();
-        //        if (string.IsNullOrEmpty(baseId))
-        //        {
-        //            MessageBox.Show("Lütfen txtId alanını doldurun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //            return;
-        //        }
-
-        //        string text1 = _formArayuzu.RichTextBox1MetniAl().Trim();
-        //        if (string.IsNullOrEmpty(text1))
-        //        {
-        //            MessageBox.Show("Lütfen richTextBox1 alanını doldurun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //            return;
-        //        }
-
-        //        string text4 = _formArayuzu.RichTextBox4MetniAl().Trim();
-        //        if (string.IsNullOrEmpty(text4))
-        //        {
-        //            MessageBox.Show("Lütfen richTextBox4 alanını doldurun!", "Uyarı", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-        //            return;
-        //        }
-
-        //        var logLines = new List<string>
-        //{
-        //    "=== ADM_Log.txt ===",
-        //    $"İşlem Tarihi: {DateTime.Now:dd.MM.yyyy HH:mm:ss}",
-        //    $"BaseId: {baseId}"
-        //};
-
-        //        Regex partRegex = new Regex(@"(\d{5}\.\d{2,3}-\d{3}-00-P\d+)\s+(\d+)\s+([\d,.]+)\s+([\d,]+\.?\d*)\s+(-?[\d,]+\.?\d*)\s+(-?[\d,]+\.?\d*)", RegexOptions.IgnoreCase);
-        //        Regex cncRegex = new Regex(@"^\s*(\d+)\s+(\d+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)\s+([\d.,]+)", RegexOptions.IgnoreCase);
-        //        Regex rich4Regex = new Regex(@"ST\d+-[A-Za-z0-9]+-(?<poz>\d+-\d+-P\d+)-\d*AD-(?<pozPrefix>[\d.]+).*\(Sayfa\s*[:]\s*(?<sayfa>\d+).*M[iı]ktar\s*[:\s]\s*(?<adet>\d+).*Program\s*[:\s]\s*(?<program>\d+)\s*,\s*Program Tekrarı\s*[:\s]\s*(?<tekrar>\d+)\)", RegexOptions.IgnoreCase);
-
-        //        var lines1 = text1.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-        //        var lines4 = text4.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
-
-        //        var partInfoDict = new Dictionary<string, (string Poz, string YerlesimID, int Adet, double Agirlik, string Id)>();
-        //        var programSequenceDict = new Dictionary<string, int>();
-        //        var programIdMap = new Dictionary<string, string>();
-        //        var finalOutputList = new List<(string ParcaId, string Poz, string YerlesimId, int Adet, double Agirlik)>();
-        //        int programCounter = 1;
-
-        //        logLines.Add("\nRichTextBox1 Verileri:");
-        //        string currentCncProgram = "";
-
-        //        foreach (var line in lines1)
-        //        {
-        //            if (string.IsNullOrWhiteSpace(line) || line.Contains("Part Quantity Length Weight") ||
-        //                line.Contains("Sayfa") || line.Contains("Nestings list") || line.Contains("Akyapak") ||
-        //                line.StartsWith("ID CNC") || line.Contains("Toplam sayfa sayısı") || line.Contains("%")) continue;
-
-        //            var cncMatch = cncRegex.Match(line);
-        //            if (cncMatch.Success)
-        //            {
-        //                currentCncProgram = cncMatch.Groups[1].Value;
-        //                if (!programIdMap.ContainsKey(currentCncProgram))
-        //                {
-        //                    programIdMap[currentCncProgram] = programCounter.ToString("D2");
-        //                    programCounter++;
-        //                }
-        //                programSequenceDict[currentCncProgram] = 0;
-        //                logLines.Add($"CNC Program Bulundu: {currentCncProgram}");
-        //                continue;
-        //            }
-
-        //            var partMatch = partRegex.Match(line.Trim());
-        //            if (partMatch.Success)
-        //            {
-        //                string poz = partMatch.Groups[1].Value;
-        //                string adetStr = partMatch.Groups[2].Value;
-        //                string agirlikStr = partMatch.Groups[4].Value;
-
-        //                if (int.TryParse(adetStr, out int adet) &&
-        //                    double.TryParse(agirlikStr.Replace(",", "."), NumberStyles.Any, CultureInfo.InvariantCulture, out double agirlik))
-        //                {
-        //                    string programId = programIdMap[currentCncProgram];
-        //                    int sequence = programSequenceDict.ContainsKey(currentCncProgram) ? programSequenceDict[currentCncProgram] + 1 : 1;
-        //                    programSequenceDict[currentCncProgram] = sequence;
-        //                    string sequenceStr = sequence.ToString("D2");
-        //                    string parcaId = poz;
-        //                    string uniqueId = $"{baseId}-{programId}-{sequenceStr}";
-        //                    string dictKey = $"{parcaId}|{currentCncProgram}";
-
-        //                    partInfoDict[dictKey] = (poz, $"{baseId}-{programId}", adet, agirlik, uniqueId);
-        //                    logLines.Add($"Parça Bulundu: {parcaId} => Poz: {poz}, Program: {currentCncProgram}, Adet: {adet}, Ağırlık: {agirlik:F2}, Id: {uniqueId}");
-        //                }
-        //            }
-        //        }
-
-        //        logLines.Add($"partInfoDict: {string.Join(", ", partInfoDict.Select(kvp => $"{kvp.Key}:{kvp.Value.Id}"))}");
-
-        //        logLines.Add("\nRichTextBox4 Verileri:");
-        //        programSequenceDict.Clear();
-
-        //        logLines.Add($"programIdMap: {string.Join(", ", programIdMap.Select(kvp => $"{kvp.Key}:{kvp.Value}"))}");
-
-        //        foreach (var line in lines4)
-        //        {
-        //            if (string.IsNullOrWhiteSpace(line)) continue;
-
-        //            string cleanedLine = Regex.Replace(line.Trim(), @"\s+", " ").Replace("\r", "").Replace("\n", "");
-        //            cleanedLine = Regex.Replace(cleanedLine, @"\p{C}", "");
-
-        //            var match = rich4Regex.Match(cleanedLine);
-        //            if (match.Success)
-        //            {
-        //                string pozSimple = match.Groups["poz"].Value;
-        //                string pozPrefix = match.Groups["pozPrefix"].Value;
-        //                string programNo = match.Groups["program"].Value;
-        //                string adetStr = match.Groups["adet"].Value;
-        //                string tekrarStr = match.Groups["tekrar"].Value;
-
-        //                string programId = programIdMap.ContainsKey(programNo) ? programIdMap[programNo] : "00";
-
-        //                int sequence = programSequenceDict.ContainsKey(programNo) ? programSequenceDict[programNo] + 1 : 1;
-        //                programSequenceDict[programNo] = sequence;
-        //                string sequenceStr = sequence.ToString("D2");
-        //                string parcaId = $"{pozPrefix}-{pozSimple}";
-
-        //                string formattedPoz = $"{pozSimple}-2AD-{pozPrefix}";
-
-        //                if (int.TryParse(adetStr, out int miktar) && int.TryParse(tekrarStr, out int tekrar))
-        //                {
-        //                    string dictKey = $"{parcaId}|{programNo}";
-        //                    if (partInfoDict.TryGetValue(dictKey, out var partInfo))
-        //                    {
-        //                        logLines.Add($"Eşleşme Bulundu: {cleanedLine}, Id: {partInfo.Id}");
-        //                        finalOutputList.Add((partInfo.Id, formattedPoz, $"{baseId}-{programId}", miktar, partInfo.Agirlik));
-        //                    }
-        //                    else
-        //                    {
-        //                        logLines.Add($"Eşleşme Bulunamadı: {cleanedLine}");
-        //                        logLines.Add($"Hata Detayı: dictKey={dictKey}, parcaId={parcaId}, programId={programId}, programNo={programNo}");
-        //                        var relatedParts = partInfoDict.Keys.Where(k => k.StartsWith(parcaId + "|")).Select(k => $"{k}:{partInfoDict[k].Id}");
-        //                        logLines.Add($"partInfoDict'teki ilgili pozlar: {string.Join(", ", relatedParts)}");
-        //                    }
-        //                }
-        //                else
-        //                {
-        //                    logLines.Add($"Hata: Adet veya Tekrar parse edilemedi: {cleanedLine}");
-        //                }
-        //            }
-        //            else
-        //            {
-        //                logLines.Add($"Eşleşme Bulunamadı: {cleanedLine}");
-        //                string possibleProgram = Regex.Match(cleanedLine, @"Program\s*[:\s]\s*(\d+)").Groups[1].Value;
-        //                if (!string.IsNullOrEmpty(possibleProgram))
-        //                {
-        //                    int sequence = programSequenceDict.ContainsKey(possibleProgram) ? programSequenceDict[possibleProgram] + 1 : 1;
-        //                    programSequenceDict[possibleProgram] = sequence;
-        //                }
-        //            }
-        //        }
-
-        //        dataGridView2.Rows.Clear();
-        //        foreach (var output in finalOutputList)
-        //        {
-        //            dataGridView2.Rows.Add(
-        //                output.Poz,
-        //                output.YerlesimId,
-        //                output.Adet,
-        //                output.Agirlik.ToString("F2", CultureInfo.InvariantCulture)
-        //            );
-        //        }
-
-        //        logLines.Add("\nSon Çıktı Verileri:");
-        //        if (finalOutputList.Count == 0)
-        //        {
-        //            logLines.Add("Uyarı: Son Çıktı Verileri boş! Eşleşme bulunamadı veya veri işlenemedi.");
-        //        }
-        //        else
-        //        {
-        //            logLines.AddRange(finalOutputList.Select(output =>
-        //                $"Parça ID: {output.ParcaId} => Poz: {output.Poz}, Yerleşim ID: {output.YerlesimId}, Adet: {output.Adet}, Ağırlık: {output.Agirlik:F2}"));
-        //        }
-
-        //        string appPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.StartMenu), "Programs", "CEKA_APP");
-        //        string logPath = Path.Combine(appPath, "ADM_Log.txt");
-        //        File.WriteAllLines(logPath, logLines, Encoding.UTF8);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        string errorPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "ADM_Hata.txt");
-        //        File.WriteAllText(errorPath, $"Hata: {DateTime.Now:dd.MM.yyyy HH:mm:ss}\n{ex.ToString()}", Encoding.UTF8);
-        //        MessageBox.Show($"Bir hata oluştu:\n{ex.Message}\nDetaylar masaüstündeki ADM_Hata.txt dosyasına kaydedildi.",
-        //                       "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        //    }
-        //}
 
         private void SayfaIDTabloVerileri()
         {
@@ -2939,14 +2791,16 @@ namespace CEKA_APP.UsrControl
 
                 Dictionary<string, string> yerlesimSayfa = new Dictionary<string, string>();
                 Dictionary<string, string> yerlesimTekrar = new Dictionary<string, string>();
+                Dictionary<string, string> yerlesimMalzemeBoyu = new Dictionary<string, string>();
 
                 if (_seciliButon == btnAdm)
                 {
                     log.WriteLine($"[{DateTime.Now}] btnAdm dalına girildi");
 
                     Regex rich4Regex = new Regex(
-        @"\(Sayfa\s*[:]\s*(?<sayfa>\d+)\s*,\s*M[iı]ktar\s*[:]\s*(?<adet>\d+)\s*,\s*Program\s*[:]\s*(?<program>\d+)\s*,\s*Program Tekrarı\s*[:]\s*(?<tekrar>\d+)\)",
-        RegexOptions.IgnoreCase);
+@"\(Sayfa\s*[:]\s*(?<sayfa>\d+)\s*,\s*M[iı]ktar\s*[:]\s*(?<adet>\d+)\s*,\s*Program\s*[:]\s*(?<program>\d+)\s*,\s*Program Tekrarı\s*[:]\s*(?<tekrar>\d+)\s*,?\s*Malzeme Boyu\s*[:]\s*(?<malzeme>[^)]+)\)?",
+RegexOptions.IgnoreCase);
+
 
                     var lines4 = metin4.Split(new[] { "\r\n", "\n" }, StringSplitOptions.None);
                     Dictionary<string, int> programSequence = new Dictionary<string, int>();
@@ -2988,6 +2842,7 @@ namespace CEKA_APP.UsrControl
                             string sayfaNo4 = match4.Groups["sayfa"].Value;
                             string adet = match4.Groups["tekrar"].Value;
                             string programNo = match4.Groups["program"].Value;
+                            string malzemeBoyu = match4.Groups["malzeme"].Value;
 
                             string programId = programIdMap.ContainsKey(programNo) ? programIdMap[programNo] : programNo.PadLeft(2, '0');
                             string birlesikIDAdm = $"{idValue}-{programId}";
@@ -2999,6 +2854,7 @@ namespace CEKA_APP.UsrControl
                             {
                                 yerlesimSayfa[programNo] = sayfaNo4;
                                 yerlesimTekrar[programNo] = adet;
+                                yerlesimMalzemeBoyu[programNo] = malzemeBoyu;
 
                                 int tekrarSayisi = int.Parse(adet);
                                 for (int t = 1; t <= tekrarSayisi; t++)
@@ -3008,7 +2864,8 @@ namespace CEKA_APP.UsrControl
                                     dataGridView3.Rows[newRowIndex].Cells[0].Value = tekrarID;
                                     dataGridView3.Rows[newRowIndex].Cells[1].Value = sayfaNo4;
                                     dataGridView3.Rows[newRowIndex].Cells[2].Value = "1";
-                                    log.WriteLine($"[{DateTime.Now}] Tekrar satırı eklendi: {tekrarID}, Sayfa: {sayfaNo4}, Miktar: 1");
+                                    dataGridView3.Rows[newRowIndex].Cells[3].Value = malzemeBoyu;
+                                    log.WriteLine($"[{DateTime.Now}] Tekrar satırı eklendi: {tekrarID}, Sayfa: {sayfaNo4}, Miktar: 1, Malzeme Boyu: {malzemeBoyu}");
                                 }
                             }
                             else
@@ -3024,11 +2881,12 @@ namespace CEKA_APP.UsrControl
                 }
                 else
                 {
-                    MatchCollection matches = Regex.Matches(metin4, @"\(Yerleşim:\s*(\d+)\)\(Sayfa:\s*(\d+)\)");
+                    MatchCollection matches = Regex.Matches(metin4, @"\(Yerleşim:\s*(\d+)\)\(Sayfa:\s*(\d+)\)\(Malzeme Boyu:\s*([^)]+)\)");
                     foreach (Match match in matches)
                     {
                         string yerlesimNo = match.Groups[1].Value;
                         string sayfaNo = match.Groups[2].Value;
+                        string malzemeBoyu = match.Groups[3].Value;
 
                         if (!yerlesimSayfa.ContainsKey(yerlesimNo))
                         {
@@ -3091,6 +2949,7 @@ namespace CEKA_APP.UsrControl
                                     dataGridView3.Rows[newRowIndex].Cells[0].Value = tekrarID;
                                     dataGridView3.Rows[newRowIndex].Cells[1].Value = sayfaNo;
                                     dataGridView3.Rows[newRowIndex].Cells[2].Value = "1";
+                                    dataGridView3.Rows[newRowIndex].Cells[3].Value = malzemeBoyu;
                                     log.WriteLine($"[{DateTime.Now}] Tekrar satırı eklendi: {tekrarID}, Sayfa: {sayfaNo}, Miktar: 1");
                                 }
                             }

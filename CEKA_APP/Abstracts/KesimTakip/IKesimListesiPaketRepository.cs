@@ -8,7 +8,7 @@ namespace CEKA_APP.Abstracts.KesimTakip
 {
     public interface IKesimListesiPaketRepository
     {
-        bool SaveKesimDataPaket(SqlConnection connection, SqlTransaction transaction, string olusturan, string kesimId, int kesilecekPlanSayisi, int toplamPlanTekrari, DateTime eklemeTarihi);
+        bool SaveKesimDataPaket(SqlConnection connection, SqlTransaction transaction, string olusturan, string kesimId, int kesilecekPlanSayisi, int toplamPlanTekrari, DateTime eklemeTarihi, int en, int boy);
         bool KesimListesiPaketSil(SqlConnection connection, SqlTransaction transaction, string kesimId);
         DataTable GetKesimListesiPaket(SqlConnection connection);
         string GetKesimListesiPaketQuery();

@@ -46,7 +46,7 @@
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(3, 2, 3, 2);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(748, 80);
+            this.panel1.Size = new System.Drawing.Size(915, 80);
             this.panel1.TabIndex = 1;
             // 
             // label1
@@ -62,16 +62,17 @@
             // dataGridKesimPaket
             // 
             this.dataGridKesimPaket.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridKesimPaket.Location = new System.Drawing.Point(12, 94);
+            this.dataGridKesimPaket.Location = new System.Drawing.Point(12, 95);
             this.dataGridKesimPaket.Name = "dataGridKesimPaket";
             this.dataGridKesimPaket.RowHeadersWidth = 51;
             this.dataGridKesimPaket.RowTemplate.Height = 24;
-            this.dataGridKesimPaket.Size = new System.Drawing.Size(604, 570);
+            this.dataGridKesimPaket.Size = new System.Drawing.Size(775, 618);
             this.dataGridKesimPaket.TabIndex = 2;
+            this.dataGridKesimPaket.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridKesimPaket_CellClick);
             // 
             // btnAra
             // 
-            this.btnAra.Location = new System.Drawing.Point(626, 184);
+            this.btnAra.Location = new System.Drawing.Point(793, 185);
             this.btnAra.Name = "btnAra";
             this.btnAra.Size = new System.Drawing.Size(110, 35);
             this.btnAra.TabIndex = 7;
@@ -81,7 +82,7 @@
             // 
             // btnIptal
             // 
-            this.btnIptal.Location = new System.Drawing.Point(626, 139);
+            this.btnIptal.Location = new System.Drawing.Point(793, 140);
             this.btnIptal.Name = "btnIptal";
             this.btnIptal.Size = new System.Drawing.Size(110, 35);
             this.btnIptal.TabIndex = 6;
@@ -91,7 +92,7 @@
             // 
             // btnTamam
             // 
-            this.btnTamam.Location = new System.Drawing.Point(626, 94);
+            this.btnTamam.Location = new System.Drawing.Point(793, 95);
             this.btnTamam.Name = "btnTamam";
             this.btnTamam.Size = new System.Drawing.Size(110, 35);
             this.btnTamam.TabIndex = 5;
@@ -103,7 +104,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(748, 676);
+            this.ClientSize = new System.Drawing.Size(915, 725);
             this.Controls.Add(this.btnAra);
             this.Controls.Add(this.btnIptal);
             this.Controls.Add(this.btnTamam);

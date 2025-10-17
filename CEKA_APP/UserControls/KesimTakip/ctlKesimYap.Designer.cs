@@ -24,12 +24,14 @@
             this.label4 = new System.Windows.Forms.Label();
             this.dataGridKesimListesi = new System.Windows.Forms.DataGridView();
             this.rightPanel = new System.Windows.Forms.Panel();
+            this.grpKesimIslemleri = new System.Windows.Forms.GroupBox();
             this.lblKesilecekLot = new System.Windows.Forms.Label();
             this.txtKesilecekLot = new System.Windows.Forms.TextBox();
-            this.lblAramaYap = new System.Windows.Forms.Label();
-            this.btnAra = new System.Windows.Forms.Button();
             this.lblKesimYap = new System.Windows.Forms.Label();
             this.btnPaketKes = new System.Windows.Forms.Button();
+            this.grpArama = new System.Windows.Forms.GroupBox();
+            this.lblAramaYap = new System.Windows.Forms.Label();
+            this.btnAra = new System.Windows.Forms.Button();
             this.mainLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.ctlBaslik1 = new CEKA_APP.UsrControl.ctlBaslik();
             this.bottomLayoutPanel.SuspendLayout();
@@ -37,6 +39,8 @@
             this.topLayoutPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridKesimListesi)).BeginInit();
             this.rightPanel.SuspendLayout();
+            this.grpKesimIslemleri.SuspendLayout();
+            this.grpArama.SuspendLayout();
             this.mainLayoutPanel.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -131,38 +135,84 @@
             // 
             // rightPanel
             // 
-            this.rightPanel.Controls.Add(this.lblKesilecekLot);
-            this.rightPanel.Controls.Add(this.txtKesilecekLot);
-            this.rightPanel.Controls.Add(this.lblAramaYap);
-            this.rightPanel.Controls.Add(this.btnAra);
-            this.rightPanel.Controls.Add(this.lblKesimYap);
-            this.rightPanel.Controls.Add(this.btnPaketKes);
+            this.rightPanel.Controls.Add(this.grpKesimIslemleri);
+            this.rightPanel.Controls.Add(this.grpArama);
             this.rightPanel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.rightPanel.Location = new System.Drawing.Point(1441, 33);
             this.rightPanel.Name = "rightPanel";
             this.rightPanel.Size = new System.Drawing.Size(370, 325);
             this.rightPanel.TabIndex = 2;
             // 
+            // grpKesimIslemleri
+            // 
+            this.grpKesimIslemleri.Controls.Add(this.lblKesilecekLot);
+            this.grpKesimIslemleri.Controls.Add(this.txtKesilecekLot);
+            this.grpKesimIslemleri.Controls.Add(this.lblKesimYap);
+            this.grpKesimIslemleri.Controls.Add(this.btnPaketKes);
+            this.grpKesimIslemleri.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.grpKesimIslemleri.Location = new System.Drawing.Point(12, 107);
+            this.grpKesimIslemleri.Name = "grpKesimIslemleri";
+            this.grpKesimIslemleri.Size = new System.Drawing.Size(347, 125);
+            this.grpKesimIslemleri.TabIndex = 1;
+            this.grpKesimIslemleri.TabStop = false;
+            this.grpKesimIslemleri.Text = "Kesim İşlemleri";
+            // 
             // lblKesilecekLot
             // 
             this.lblKesilecekLot.AutoSize = true;
-            this.lblKesilecekLot.Location = new System.Drawing.Point(28, 131);
+            this.lblKesilecekLot.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblKesilecekLot.Location = new System.Drawing.Point(15, 39);
             this.lblKesilecekLot.Name = "lblKesilecekLot";
             this.lblKesilecekLot.Size = new System.Drawing.Size(98, 16);
-            this.lblKesilecekLot.TabIndex = 6;
+            this.lblKesilecekLot.TabIndex = 0;
             this.lblKesilecekLot.Text = "Kesilecek LOT:";
             // 
             // txtKesilecekLot
             // 
-            this.txtKesilecekLot.Location = new System.Drawing.Point(188, 128);
+            this.txtKesilecekLot.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.txtKesilecekLot.Location = new System.Drawing.Point(175, 36);
             this.txtKesilecekLot.Name = "txtKesilecekLot";
             this.txtKesilecekLot.Size = new System.Drawing.Size(158, 22);
-            this.txtKesilecekLot.TabIndex = 7;
+            this.txtKesilecekLot.TabIndex = 1;
+            // 
+            // lblKesimYap
+            // 
+            this.lblKesimYap.AutoSize = true;
+            this.lblKesimYap.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblKesimYap.Location = new System.Drawing.Point(16, 83);
+            this.lblKesimYap.Name = "lblKesimYap";
+            this.lblKesimYap.Size = new System.Drawing.Size(75, 16);
+            this.lblKesimYap.TabIndex = 2;
+            this.lblKesimYap.Text = "Kesim Yap:";
+            // 
+            // btnPaketKes
+            // 
+            this.btnPaketKes.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.btnPaketKes.Location = new System.Drawing.Point(176, 73);
+            this.btnPaketKes.Name = "btnPaketKes";
+            this.btnPaketKes.Size = new System.Drawing.Size(157, 36);
+            this.btnPaketKes.TabIndex = 3;
+            this.btnPaketKes.Text = "Seçili Paketi Kes";
+            this.btnPaketKes.UseVisualStyleBackColor = true;
+            this.btnPaketKes.Click += new System.EventHandler(this.btnPaketKes_Click);
+            // 
+            // grpArama
+            // 
+            this.grpArama.Controls.Add(this.lblAramaYap);
+            this.grpArama.Controls.Add(this.btnAra);
+            this.grpArama.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.grpArama.Location = new System.Drawing.Point(12, 12);
+            this.grpArama.Name = "grpArama";
+            this.grpArama.Size = new System.Drawing.Size(347, 89);
+            this.grpArama.TabIndex = 0;
+            this.grpArama.TabStop = false;
+            this.grpArama.Text = "Filtreleme İşlemleri";
             // 
             // lblAramaYap
             // 
             this.lblAramaYap.AutoSize = true;
-            this.lblAramaYap.Location = new System.Drawing.Point(29, 79);
+            this.lblAramaYap.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblAramaYap.Location = new System.Drawing.Point(16, 40);
             this.lblAramaYap.Name = "lblAramaYap";
             this.lblAramaYap.Size = new System.Drawing.Size(78, 16);
             this.lblAramaYap.TabIndex = 0;
@@ -170,32 +220,14 @@
             // 
             // btnAra
             // 
-            this.btnAra.Location = new System.Drawing.Point(189, 69);
+            this.btnAra.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.btnAra.Location = new System.Drawing.Point(176, 30);
             this.btnAra.Name = "btnAra";
             this.btnAra.Size = new System.Drawing.Size(157, 36);
             this.btnAra.TabIndex = 1;
             this.btnAra.Text = "Ara";
             this.btnAra.UseVisualStyleBackColor = true;
             this.btnAra.Click += new System.EventHandler(this.btnAra_Click);
-            // 
-            // lblKesimYap
-            // 
-            this.lblKesimYap.AutoSize = true;
-            this.lblKesimYap.Location = new System.Drawing.Point(29, 180);
-            this.lblKesimYap.Name = "lblKesimYap";
-            this.lblKesimYap.Size = new System.Drawing.Size(75, 16);
-            this.lblKesimYap.TabIndex = 4;
-            this.lblKesimYap.Text = "Kesim Yap:";
-            // 
-            // btnPaketKes
-            // 
-            this.btnPaketKes.Location = new System.Drawing.Point(189, 170);
-            this.btnPaketKes.Name = "btnPaketKes";
-            this.btnPaketKes.Size = new System.Drawing.Size(157, 36);
-            this.btnPaketKes.TabIndex = 5;
-            this.btnPaketKes.Text = "Seçili Paketi Kes";
-            this.btnPaketKes.UseVisualStyleBackColor = true;
-            this.btnPaketKes.Click += new System.EventHandler(this.btnPaketKes_Click);
             // 
             // mainLayoutPanel
             // 
@@ -236,7 +268,10 @@
             this.topLayoutPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.dataGridKesimListesi)).EndInit();
             this.rightPanel.ResumeLayout(false);
-            this.rightPanel.PerformLayout();
+            this.grpKesimIslemleri.ResumeLayout(false);
+            this.grpKesimIslemleri.PerformLayout();
+            this.grpArama.ResumeLayout(false);
+            this.grpArama.PerformLayout();
             this.mainLayoutPanel.ResumeLayout(false);
             this.ResumeLayout(false);
 
@@ -251,13 +286,15 @@
         private System.Windows.Forms.Label label4;
         public System.Windows.Forms.DataGridView dataGridKesimListesi;
         private System.Windows.Forms.Panel rightPanel;
-        private System.Windows.Forms.Label lblAramaYap;
-        private System.Windows.Forms.Button btnAra;
-        private System.Windows.Forms.Label lblKesimYap;
-        private System.Windows.Forms.Button btnPaketKes;
         private System.Windows.Forms.TableLayoutPanel mainLayoutPanel;
         private ctlBaslik ctlBaslik1;
+        private System.Windows.Forms.GroupBox grpKesimIslemleri;
+        private System.Windows.Forms.GroupBox grpArama;
         private System.Windows.Forms.Label lblKesilecekLot;
         private System.Windows.Forms.TextBox txtKesilecekLot;
+        private System.Windows.Forms.Label lblKesimYap;
+        private System.Windows.Forms.Button btnPaketKes;
+        private System.Windows.Forms.Label lblAramaYap;
+        private System.Windows.Forms.Button btnAra;
     }
 }

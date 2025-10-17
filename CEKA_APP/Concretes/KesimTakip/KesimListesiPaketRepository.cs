@@ -8,7 +8,7 @@ namespace CEKA_APP.Concretes.KesimTakip
 {
     public class KesimListesiPaketRepository :IKesimListesiPaketRepository
     {
-        public bool SaveKesimDataPaket(SqlConnection connection, SqlTransaction transaction, string olusturan, string kesimId, int kesilecekPlanSayisi, int toplamPlanTekrari, DateTime eklemeTarihi)
+        public bool SaveKesimDataPaket(SqlConnection connection, SqlTransaction transaction, string olusturan, string kesimId, int kesilecekPlanSayisi, int toplamPlanTekrari, DateTime eklemeTarihi, int en, int boy)
         {
             if (connection == null)
                 throw new ArgumentNullException(nameof(connection));
@@ -17,8 +17,8 @@ namespace CEKA_APP.Concretes.KesimTakip
 
             string query = @"
         IF NOT EXISTS (SELECT 1 FROM KesimListesiPaket WHERE kesimId = @kesimId)
-        INSERT INTO KesimListesiPaket ([olusturan], [kesimId], [kesilecekPlanSayisi], [toplamPlanTekrari], [eklemeTarihi])
-        VALUES (@olusturan, @kesimId, @kesilecekPlanSayisi, @toplamPlanTekrari, @eklemeTarihi)";
+        INSERT INTO KesimListesiPaket ([olusturan], [kesimId], [kesilecekPlanSayisi], [toplamPlanTekrari], [eklemeTarihi], [en], [boy])
+        VALUES (@olusturan, @kesimId, @kesilecekPlanSayisi, @toplamPlanTekrari, @eklemeTarihi, @en, @boy)";
 
             using (var cmd = new SqlCommand(query, connection, transaction))
             {
@@ -27,6 +27,8 @@ namespace CEKA_APP.Concretes.KesimTakip
                 cmd.Parameters.AddWithValue("@kesilecekPlanSayisi", kesilecekPlanSayisi);
                 cmd.Parameters.AddWithValue("@toplamPlanTekrari", toplamPlanTekrari);
                 cmd.Parameters.AddWithValue("@eklemeTarihi", eklemeTarihi);
+                cmd.Parameters.AddWithValue("@en", en);
+                cmd.Parameters.AddWithValue("@boy", boy);
 
                 int rowsAffected = cmd.ExecuteNonQuery();
                 return rowsAffected > 0;
@@ -57,7 +59,7 @@ namespace CEKA_APP.Concretes.KesimTakip
         }
         public string GetKesimListesiPaketQuery()
         {
-            return @"SELECT olusturan, kesimId, kesilecekPlanSayisi, kesilmisPlanSayisi, toplamPlanTekrari, eklemeTarihi FROM KesimListesiPaket";
+            return @"SELECT olusturan, kesimId, kesilecekPlanSayisi, kesilmisPlanSayisi, toplamPlanTekrari, en, boy, eklemeTarihi FROM KesimListesiPaket";
         }
       
         public DataTable GetKesimListesiPaket(SqlConnection connection)
@@ -77,7 +79,7 @@ namespace CEKA_APP.Concretes.KesimTakip
         }
         public string GetKesimListesiPaketSureQuery()
         {
-            return @"SELECT kesimId, eklemeTarihi FROM KesimListesiPaket where kesilecekPlanSayisi = '1'";
+            return @"SELECT kesimId, en, boy, eklemeTarihi FROM KesimListesiPaket where kesilecekPlanSayisi = '1' AND iptalMi = '0'";
         }
         public DataTable GetKesimListesiPaketSure(SqlConnection connection)
         {

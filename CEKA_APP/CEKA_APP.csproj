@@ -26,7 +26,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>74</ApplicationRevision>
+    <ApplicationRevision>77</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -387,6 +387,12 @@
     <Compile Include="Forms\KesimTakip\frmKesimPlaniSec.Designer.cs">
       <DependentUpon>frmKesimPlaniSec.cs</DependentUpon>
     </Compile>
+    <Compile Include="Forms\KesimTakip\frmYanUrunGiris.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\KesimTakip\frmYanUrunGiris.Designer.cs">
+      <DependentUpon>frmYanUrunGiris.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\ProjeFinans\frmFaturaOlustur.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -724,6 +730,9 @@
     <EmbeddedResource Include="Forms\KesimTakip\frmKesimPlaniSec.resx">
       <DependentUpon>frmKesimPlaniSec.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Forms\KesimTakip\frmYanUrunGiris.resx">
+      <DependentUpon>frmYanUrunGiris.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Forms\ProjeFinans\frmFaturaOlustur.resx">
       <DependentUpon>frmFaturaOlustur.cs</DependentUpon>
     </EmbeddedResource>
@@ -902,7 +911,9 @@
   <ItemGroup>
     <None Include="Resources\excel.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Resources\cekalogosiyah.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

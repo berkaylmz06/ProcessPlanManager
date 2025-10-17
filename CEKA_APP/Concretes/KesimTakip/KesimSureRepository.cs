@@ -1,6 +1,7 @@
 ﻿using CEKA_APP.Abstracts.KesimTakip;
 using CEKA_APP.Entitys.KesimTakip;
 using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.SqlClient;
 
@@ -8,18 +9,21 @@ namespace CEKA_APP.Concretes.KesimTakip
 {
     public class KesimSureRepository : IKesimSureRepository
     {
-        public int Baslat(SqlConnection connection, SqlTransaction transaction, string kesimId, string kesimYapan)
+        public int Baslat(SqlConnection connection, SqlTransaction transaction, string kesimId, string kesimYapan, string lotNo)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
             if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+            if (string.IsNullOrEmpty(kesimId)) throw new ArgumentNullException(nameof(kesimId));
+            if (string.IsNullOrEmpty(lotNo)) throw new ArgumentNullException(nameof(lotNo));
 
             string selectSql = @"SELECT sureId, baslamaTarihi, toplamSureSaniye
-                                 FROM KesimSure
-                                 WHERE kesimId = @kesimId";
+                         FROM KesimSure
+                         WHERE kesimId = @kesimId";
 
             using (SqlCommand cmd = new SqlCommand(selectSql, connection, transaction))
             {
                 cmd.Parameters.AddWithValue("@kesimId", kesimId);
+
                 using (var reader = cmd.ExecuteReader())
                 {
                     if (reader.Read())
@@ -28,12 +32,15 @@ namespace CEKA_APP.Concretes.KesimTakip
                         reader.Close();
 
                         string updateSql = @"UPDATE KesimSure
-                                             SET status = 'Devam Ediyor',
-                                                 baslamaTarihi = GETDATE()
-                                             WHERE sureId = @sureId";
+                                     SET status = 'Devam Ediyor',
+                                         baslamaTarihi = GETDATE(),
+                                         lotNo = @lotNo
+                                     WHERE sureId = @sureId";
+
                         using (SqlCommand updateCmd = new SqlCommand(updateSql, connection, transaction))
                         {
                             updateCmd.Parameters.AddWithValue("@sureId", existingId);
+                            updateCmd.Parameters.AddWithValue("@lotNo", lotNo);
                             updateCmd.ExecuteNonQuery();
                         }
 
@@ -43,14 +50,15 @@ namespace CEKA_APP.Concretes.KesimTakip
             }
 
             string insertSql = @"INSERT INTO KesimSure 
-                                 (kesimId, toplamSureSaniye, baslamaTarihi, status, kesimYapan)
-                                 OUTPUT INSERTED.sureId
-                                 VALUES (@kesimId, 0, GETDATE(), 'Devam Ediyor', @kesimYapan)";
+                         (kesimId, toplamSureSaniye, baslamaTarihi, status, kesimYapan, lotNo)
+                         OUTPUT INSERTED.sureId
+                         VALUES (@kesimId, 0, GETDATE(), 'Devam Ediyor', @kesimYapan, @lotNo)";
 
             using (SqlCommand cmd = new SqlCommand(insertSql, connection, transaction))
             {
                 cmd.Parameters.AddWithValue("@kesimId", kesimId);
                 cmd.Parameters.AddWithValue("@kesimYapan", kesimYapan ?? (object)DBNull.Value);
+                cmd.Parameters.AddWithValue("@lotNo", lotNo);
                 int newId = (int)cmd.ExecuteScalar();
                 return newId;
             }
@@ -128,14 +136,38 @@ namespace CEKA_APP.Concretes.KesimTakip
                             baslamaTarihi = (DateTime)reader["baslamaTarihi"],
                             bitisTarihi = reader["bitisTarihi"] as DateTime?,
                             status = (string)reader["status"],
-                            kesimYapan = reader["kesimYapan"] as string
+                            kesimYapan = reader["kesimYapan"] as string,
+                            lotNo = reader["lotNo"] as string
                         };
                     }
                 }
             }
             return null;
         }
+        public int GetirSureId(SqlConnection connection, SqlTransaction transaction, string kesimId)
+        {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
 
+            string sql = @"
+                SELECT TOP 1 sureId 
+                FROM KesimSure 
+                WHERE kesimId = @kesimId 
+                  AND status IN ('Devam Ediyor')";
+
+            using (SqlCommand cmd = new SqlCommand(sql, connection, transaction))
+            {
+                cmd.Parameters.AddWithValue("@kesimId", kesimId);
+                object result = cmd.ExecuteScalar();
+
+                if (result != null && result != DBNull.Value)
+                {
+                    return (int)result;
+                }
+            }
+
+            return 0;
+        }
         public void GuncelleToplamSure(SqlConnection connection, SqlTransaction transaction, int sureId, int toplamSaniye)
         {
             if (connection == null) throw new ArgumentNullException(nameof(connection));
@@ -171,7 +203,7 @@ namespace CEKA_APP.Concretes.KesimTakip
 
             DataTable dt = new DataTable();
 
-            string query = "Select kesimYapan, kesimId, toplamSureSaniye, baslamaTarihi, bitisTarihi, status from KesimSure where kesimId = @kesimId";
+            string query = "Select kesimYapan, kesimId, toplamSureSaniye, baslamaTarihi, bitisTarihi, lotNo, status from KesimSure where kesimId = @kesimId";
             using (var da = new SqlDataAdapter(query, connection))
             {
                 da.SelectCommand.Parameters.AddWithValue("@kesimId", kesimId);
@@ -179,6 +211,44 @@ namespace CEKA_APP.Concretes.KesimTakip
             }
 
             return dt;
+        }
+        public List<(string KesimId, string LotNo, int En, int Boy, int ToplamSureSaniye, string KesimYapan)> GetirDevamEdenKesimler(SqlConnection connection, SqlTransaction transaction)
+        {
+            if (connection == null) throw new ArgumentNullException(nameof(connection));
+            if (transaction == null) throw new ArgumentNullException(nameof(transaction));
+
+            var devamEdenKesimler = new List<(string KesimId, string LotNo, int En, int Boy, int ToplamSureSaniye, string KesimYapan)>();
+
+            string sql = @"
+    SELECT
+        kp.kesimId,
+        ks.lotNo,
+        kp.En,
+        kp.Boy,
+        ks.toplamSureSaniye,
+        ks.kesimYapan
+    FROM KesimSure ks
+    INNER JOIN KesimListesiPaket kp ON ks.kesimId = kp.kesimId
+    WHERE ks.Status IN ('Devam Ediyor')";
+
+            using (SqlCommand cmd = new SqlCommand(sql, connection, transaction))
+            {
+                using (var reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        string kesimId = reader["kesimId"].ToString();
+                        string lotNo = reader["lotNo"].ToString();
+                        int en = reader["En"] != DBNull.Value ? Convert.ToInt32(reader["En"]) : 0;
+                        int boy = reader["Boy"] != DBNull.Value ? Convert.ToInt32(reader["Boy"]) : 0;
+                        int toplamSureSaniye = reader["toplamSureSaniye"] != DBNull.Value ? Convert.ToInt32(reader["toplamSureSaniye"]) : 0;
+                        string kesimYapan = reader["kesimYapan"].ToString();
+
+                        devamEdenKesimler.Add((kesimId, lotNo, en, boy, toplamSureSaniye, kesimYapan));
+                    }
+                }
+            }
+            return devamEdenKesimler;
         }
     }
 }

@@ -37,6 +37,10 @@
             this.txtLotNo = new System.Windows.Forms.TextBox();
             this.lblKesimEmriNo = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.lblMalzemeBoy = new System.Windows.Forms.Label();
+            this.txtMalzemeBoy = new System.Windows.Forms.TextBox();
+            this.lblMalzemeEn = new System.Windows.Forms.Label();
+            this.txtMalzemeEn = new System.Windows.Forms.TextBox();
             this.lblElapsedTime = new System.Windows.Forms.Label();
             this.lblOperatorAd = new System.Windows.Forms.Label();
             this.txtOperatorAd = new System.Windows.Forms.TextBox();
@@ -51,9 +55,10 @@
             this.btnKesimBaslat.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnKesimBaslat.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.btnKesimBaslat.ForeColor = System.Drawing.Color.White;
-            this.btnKesimBaslat.Location = new System.Drawing.Point(85, 250);
+            this.btnKesimBaslat.Location = new System.Drawing.Point(113, 308);
+            this.btnKesimBaslat.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnKesimBaslat.Name = "btnKesimBaslat";
-            this.btnKesimBaslat.Size = new System.Drawing.Size(248, 202);
+            this.btnKesimBaslat.Size = new System.Drawing.Size(331, 249);
             this.btnKesimBaslat.TabIndex = 0;
             this.btnKesimBaslat.Text = "KESİM\r\nBAŞLAT";
             this.btnKesimBaslat.UseVisualStyleBackColor = false;
@@ -67,9 +72,10 @@
             this.btnKesimDurdur.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnKesimDurdur.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.btnKesimDurdur.ForeColor = System.Drawing.Color.White;
-            this.btnKesimDurdur.Location = new System.Drawing.Point(409, 250);
+            this.btnKesimDurdur.Location = new System.Drawing.Point(545, 308);
+            this.btnKesimDurdur.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnKesimDurdur.Name = "btnKesimDurdur";
-            this.btnKesimDurdur.Size = new System.Drawing.Size(248, 202);
+            this.btnKesimDurdur.Size = new System.Drawing.Size(331, 249);
             this.btnKesimDurdur.TabIndex = 1;
             this.btnKesimDurdur.Text = "KESİM\r\nDURDUR";
             this.btnKesimDurdur.UseVisualStyleBackColor = false;
@@ -83,9 +89,10 @@
             this.btnKesimBitir.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnKesimBitir.Font = new System.Drawing.Font("Segoe UI", 18F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.btnKesimBitir.ForeColor = System.Drawing.Color.White;
-            this.btnKesimBitir.Location = new System.Drawing.Point(723, 250);
+            this.btnKesimBitir.Location = new System.Drawing.Point(964, 308);
+            this.btnKesimBitir.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnKesimBitir.Name = "btnKesimBitir";
-            this.btnKesimBitir.Size = new System.Drawing.Size(248, 202);
+            this.btnKesimBitir.Size = new System.Drawing.Size(331, 249);
             this.btnKesimBitir.TabIndex = 2;
             this.btnKesimBitir.Text = "KESİM\r\nBİTİR";
             this.btnKesimBitir.UseVisualStyleBackColor = false;
@@ -94,9 +101,10 @@
             // btnKesimPlaniSec
             // 
             this.btnKesimPlaniSec.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.btnKesimPlaniSec.Location = new System.Drawing.Point(12, 34);
+            this.btnKesimPlaniSec.Location = new System.Drawing.Point(16, 42);
+            this.btnKesimPlaniSec.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.btnKesimPlaniSec.Name = "btnKesimPlaniSec";
-            this.btnKesimPlaniSec.Size = new System.Drawing.Size(158, 56);
+            this.btnKesimPlaniSec.Size = new System.Drawing.Size(211, 69);
             this.btnKesimPlaniSec.TabIndex = 3;
             this.btnKesimPlaniSec.Text = "Kesim Planı Seç";
             this.btnKesimPlaniSec.UseVisualStyleBackColor = true;
@@ -105,37 +113,42 @@
             // txtKesimPlaniNo
             // 
             this.txtKesimPlaniNo.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.txtKesimPlaniNo.Location = new System.Drawing.Point(349, 34);
+            this.txtKesimPlaniNo.Location = new System.Drawing.Point(465, 42);
+            this.txtKesimPlaniNo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtKesimPlaniNo.Name = "txtKesimPlaniNo";
             this.txtKesimPlaniNo.ReadOnly = true;
-            this.txtKesimPlaniNo.Size = new System.Drawing.Size(253, 26);
+            this.txtKesimPlaniNo.Size = new System.Drawing.Size(336, 30);
             this.txtKesimPlaniNo.TabIndex = 4;
             // 
             // lblLotNo
             // 
             this.lblLotNo.AutoSize = true;
             this.lblLotNo.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblLotNo.Location = new System.Drawing.Point(206, 72);
+            this.lblLotNo.Location = new System.Drawing.Point(275, 84);
+            this.lblLotNo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblLotNo.Name = "lblLotNo";
-            this.lblLotNo.Size = new System.Drawing.Size(94, 19);
+            this.lblLotNo.Size = new System.Drawing.Size(116, 23);
             this.lblLotNo.TabIndex = 5;
             this.lblLotNo.Text = "Lot Numarası:";
             // 
             // txtLotNo
             // 
             this.txtLotNo.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.txtLotNo.Location = new System.Drawing.Point(349, 69);
+            this.txtLotNo.Location = new System.Drawing.Point(465, 80);
+            this.txtLotNo.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtLotNo.Name = "txtLotNo";
-            this.txtLotNo.Size = new System.Drawing.Size(253, 26);
+            this.txtLotNo.ReadOnly = true;
+            this.txtLotNo.Size = new System.Drawing.Size(336, 30);
             this.txtLotNo.TabIndex = 6;
             // 
             // lblKesimEmriNo
             // 
             this.lblKesimEmriNo.AutoSize = true;
             this.lblKesimEmriNo.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblKesimEmriNo.Location = new System.Drawing.Point(206, 37);
+            this.lblKesimEmriNo.Location = new System.Drawing.Point(275, 46);
+            this.lblKesimEmriNo.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblKesimEmriNo.Name = "lblKesimEmriNo";
-            this.lblKesimEmriNo.Size = new System.Drawing.Size(103, 19);
+            this.lblKesimEmriNo.Size = new System.Drawing.Size(129, 23);
             this.lblKesimEmriNo.TabIndex = 7;
             this.lblKesimEmriNo.Text = "Kesim Planı No:";
             // 
@@ -143,6 +156,10 @@
             // 
             this.groupBox1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.groupBox1.Controls.Add(this.lblMalzemeBoy);
+            this.groupBox1.Controls.Add(this.txtMalzemeBoy);
+            this.groupBox1.Controls.Add(this.lblMalzemeEn);
+            this.groupBox1.Controls.Add(this.txtMalzemeEn);
             this.groupBox1.Controls.Add(this.lblElapsedTime);
             this.groupBox1.Controls.Add(this.lblOperatorAd);
             this.groupBox1.Controls.Add(this.txtOperatorAd);
@@ -152,29 +169,75 @@
             this.groupBox1.Controls.Add(this.lblLotNo);
             this.groupBox1.Controls.Add(this.txtKesimPlaniNo);
             this.groupBox1.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.groupBox1.Location = new System.Drawing.Point(180, 20);
+            this.groupBox1.Location = new System.Drawing.Point(240, 25);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(711, 155);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.groupBox1.Size = new System.Drawing.Size(948, 246);
             this.groupBox1.TabIndex = 8;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Aktif Kesim Bilgileri";
+            // 
+            // lblMalzemeBoy
+            // 
+            this.lblMalzemeBoy.AutoSize = true;
+            this.lblMalzemeBoy.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblMalzemeBoy.Location = new System.Drawing.Point(275, 165);
+            this.lblMalzemeBoy.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblMalzemeBoy.Name = "lblMalzemeBoy";
+            this.lblMalzemeBoy.Size = new System.Drawing.Size(116, 23);
+            this.lblMalzemeBoy.TabIndex = 13;
+            this.lblMalzemeBoy.Text = "Malzeme Boy:";
+            // 
+            // txtMalzemeBoy
+            // 
+            this.txtMalzemeBoy.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.txtMalzemeBoy.Location = new System.Drawing.Point(465, 161);
+            this.txtMalzemeBoy.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtMalzemeBoy.Name = "txtMalzemeBoy";
+            this.txtMalzemeBoy.ReadOnly = true;
+            this.txtMalzemeBoy.Size = new System.Drawing.Size(336, 30);
+            this.txtMalzemeBoy.TabIndex = 14;
+            // 
+            // lblMalzemeEn
+            // 
+            this.lblMalzemeEn.AutoSize = true;
+            this.lblMalzemeEn.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.lblMalzemeEn.Location = new System.Drawing.Point(275, 124);
+            this.lblMalzemeEn.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.lblMalzemeEn.Name = "lblMalzemeEn";
+            this.lblMalzemeEn.Size = new System.Drawing.Size(107, 23);
+            this.lblMalzemeEn.TabIndex = 11;
+            this.lblMalzemeEn.Text = "Malzeme En:";
+            // 
+            // txtMalzemeEn
+            // 
+            this.txtMalzemeEn.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.txtMalzemeEn.Location = new System.Drawing.Point(465, 121);
+            this.txtMalzemeEn.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.txtMalzemeEn.Name = "txtMalzemeEn";
+            this.txtMalzemeEn.ReadOnly = true;
+            this.txtMalzemeEn.Size = new System.Drawing.Size(336, 30);
+            this.txtMalzemeEn.TabIndex = 12;
             // 
             // lblElapsedTime
             // 
             this.lblElapsedTime.AutoSize = true;
             this.lblElapsedTime.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblElapsedTime.Location = new System.Drawing.Point(608, 109);
+            this.lblElapsedTime.Location = new System.Drawing.Point(811, 204);
+            this.lblElapsedTime.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblElapsedTime.Name = "lblElapsedTime";
-            this.lblElapsedTime.Size = new System.Drawing.Size(0, 19);
+            this.lblElapsedTime.Size = new System.Drawing.Size(0, 23);
             this.lblElapsedTime.TabIndex = 10;
             // 
             // lblOperatorAd
             // 
             this.lblOperatorAd.AutoSize = true;
             this.lblOperatorAd.Font = new System.Drawing.Font("Segoe UI", 10.2F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
-            this.lblOperatorAd.Location = new System.Drawing.Point(206, 107);
+            this.lblOperatorAd.Location = new System.Drawing.Point(275, 204);
+            this.lblOperatorAd.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.lblOperatorAd.Name = "lblOperatorAd";
-            this.lblOperatorAd.Size = new System.Drawing.Size(68, 19);
+            this.lblOperatorAd.Size = new System.Drawing.Size(83, 23);
             this.lblOperatorAd.TabIndex = 9;
             this.lblOperatorAd.Text = "Operatör:";
             // 
@@ -183,23 +246,25 @@
             this.txtOperatorAd.BackColor = System.Drawing.Color.PaleTurquoise;
             this.txtOperatorAd.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
             this.txtOperatorAd.ForeColor = System.Drawing.Color.DarkBlue;
-            this.txtOperatorAd.Location = new System.Drawing.Point(349, 104);
+            this.txtOperatorAd.Location = new System.Drawing.Point(465, 201);
+            this.txtOperatorAd.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.txtOperatorAd.Name = "txtOperatorAd";
             this.txtOperatorAd.ReadOnly = true;
-            this.txtOperatorAd.Size = new System.Drawing.Size(253, 29);
+            this.txtOperatorAd.Size = new System.Drawing.Size(336, 34);
             this.txtOperatorAd.TabIndex = 10;
             // 
             // ctlKesimPaneli
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.btnKesimBitir);
             this.Controls.Add(this.btnKesimDurdur);
             this.Controls.Add(this.btnKesimBaslat);
             this.Font = new System.Drawing.Font("Microsoft Sans Serif", 7.8F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(162)));
+            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
             this.Name = "ctlKesimPaneli";
-            this.Size = new System.Drawing.Size(1072, 551);
+            this.Size = new System.Drawing.Size(1429, 678);
             this.Resize += new System.EventHandler(this.ctlKesimPaneli_Resize);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -221,5 +286,9 @@
         private System.Windows.Forms.Label lblOperatorAd;
         private System.Windows.Forms.TextBox txtOperatorAd;
         private System.Windows.Forms.Label lblElapsedTime;
+        private System.Windows.Forms.Label lblMalzemeBoy;
+        private System.Windows.Forms.TextBox txtMalzemeBoy;
+        private System.Windows.Forms.Label lblMalzemeEn;
+        private System.Windows.Forms.TextBox txtMalzemeEn;
     }
 }

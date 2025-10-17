@@ -1,7 +1,9 @@
 ﻿using CEKA_APP.DataBase;
+using CEKA_APP.Interfaces.KesimTakip;
 using CEKA_APP.Interfaces.Sistem;
-using CEKA_APP.UsrControl.Interfaces;
 using CEKA_APP.Security;
+using CEKA_APP.Services.Sistem;
+using CEKA_APP.UsrControl.Interfaces;
 using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Configuration;
@@ -17,7 +19,7 @@ namespace CEKA_APP
     public partial class frmKullaniciGirisi : Form
     {
         private readonly IServiceProvider _serviceProvider;
-
+        private IKullanicilarService _kullanicilarService=> _serviceProvider.GetRequiredService<IKullanicilarService>();
         public frmKullaniciGirisi(IServiceProvider serviceProvider)
         {
             InitializeComponent();
@@ -140,64 +142,72 @@ namespace CEKA_APP
 
         private void btnGiris_Click(object sender, EventArgs e)
         {
-            string kullaniciAdi = txtKullaniciAdi.Text.Trim();
-            string sifre = txtSifre.Text.Trim();
+            string kullaniciAdi = txtKullaniciAdi.Text;
+            string sifre = txtSifre.Text;
 
-            if (string.IsNullOrEmpty(kullaniciAdi) || string.IsNullOrEmpty(sifre))
+            Kullanicilar aktifKullanici = _kullanicilarService.GirisYap(kullaniciAdi, sifre);
+
+            if (aktifKullanici != null)
             {
-                MessageBox.Show("Kullanıcı adı ve şifre alanları boş olamaz.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            try
-            {
-                var kullanciciService = _serviceProvider.GetService<IKullanicilarService>();
-                Kullanicilar kullanici = kullanciciService.GirisYap(kullaniciAdi, sifre);
-
-                if (kullanici != null)
+                if (chkBeniHatirla.Checked)
                 {
-                    try
-                    {
-                        if (chkBeniHatirla.Checked)
-                        {
-                            Properties.Settings.Default.BeniHatirla = true;
-                            Properties.Settings.Default.KaydedilenKullaniciAdi = kullaniciAdi;
-                            Properties.Settings.Default.KaydedilenSifre = SecurityHelpers.ProtectString(sifre);
-                        }
-                        else
-                        {
-                            Properties.Settings.Default.BeniHatirla = false;
-                            Properties.Settings.Default.KaydedilenKullaniciAdi = string.Empty;
-                            Properties.Settings.Default.KaydedilenSifre = string.Empty;
-                        }
-
-                        Properties.Settings.Default.Save();
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.WriteLine("Ayar kaydetme hatası: " + ex.Message);
-                    }
-
-                    var scope = _serviceProvider.CreateScope();
-
-                    var userControlFactory = scope.ServiceProvider.GetRequiredService<IUserControlFactory>();
-                    var formAnaSayfa = new frmAnaSayfa(kullanici, userControlFactory, scope.ServiceProvider);
-
-                    formAnaSayfa.FormClosed += (s, args) => Application.Exit();
-                    formAnaSayfa.Show();
-                    this.Hide();
+                    Properties.Settings.Default.BeniHatirla = true;
+                    Properties.Settings.Default.KaydedilenKullaniciAdi = aktifKullanici.kullaniciAdi;
+                    Properties.Settings.Default.KaydedilenSifre = SecurityHelpers.ProtectString(sifre);
+                    Properties.Settings.Default.Save();
                 }
                 else
                 {
-                    MessageBox.Show("Geçersiz kullanıcı adı veya şifre.", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    Properties.Settings.Default.BeniHatirla = false;
+                    Properties.Settings.Default.KaydedilenKullaniciAdi = string.Empty;
+                    Properties.Settings.Default.KaydedilenSifre = string.Empty;
+                    Properties.Settings.Default.Save();
+                }
+
+                var userControlFactory = _serviceProvider.GetRequiredService<IUserControlFactory>();
+
+                if (aktifKullanici.kullaniciRol == "Operatör")
+                {
+                    var kesimYonetimiControl = userControlFactory.CreateKesimYonetimiControl();
+                    kesimYonetimiControl.Dock = DockStyle.Fill;
+
+                    Form hostForm = new Form
+                    {
+                        Text = $"Kesim Yönetimi - {aktifKullanici.kullaniciAdi}",
+                        StartPosition = FormStartPosition.CenterScreen,
+                        WindowState = FormWindowState.Maximized,
+                        Icon = this.Icon,
+
+                        ControlBox = false,
+                        FormBorderStyle = FormBorderStyle.None
+                    };
+
+                    hostForm.Controls.Add(kesimYonetimiControl);
+
+                    hostForm.FormClosed += (s, args) => Application.Exit();
+
+                    this.Hide();
+
+                    hostForm.Show();
+                }
+                else
+                {
+                    var anaSayfa = ActivatorUtilities.CreateInstance<frmAnaSayfa>(
+                        _serviceProvider,
+                        aktifKullanici,
+                        userControlFactory,
+                        _serviceProvider
+                    );
+
+                    this.Hide();
+                    anaSayfa.Show();
                 }
             }
-            catch (Exception ex)
+            else
             {
-                MessageBox.Show($"Giriş işlemi sırasında bir hata oluştu: {ex.Message}", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show("Kullanıcı adı veya şifre yanlış!", "Hata", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
-
         private void txtSifre_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)

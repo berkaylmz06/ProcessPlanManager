@@ -1,4 +1,5 @@
 ﻿using CEKA_APP.Abstracts;
+using CEKA_APP.Forms.KesimTakip;
 using CEKA_APP.Helper;
 using CEKA_APP.Interfaces.ERP;
 using CEKA_APP.Interfaces.Genel;
@@ -36,13 +37,8 @@ namespace CEKA_APP.UsrControl
 
             _serviceProvider = serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
 
-            DataTable dt = _kesimListesiPaketService.GetKesimListesiPaket();
-
-            dataGridKesimListesi.DataSource = dt;
-
             DataGridViewHelper.StilUygula(dataGridDetay);
             DataGridViewHelper.StilUygula(dataGridKesimListesi);
-            tabloDuzenle();
 
             VerileriYukle();
         }
@@ -106,6 +102,7 @@ namespace CEKA_APP.UsrControl
         {
             DataTable dt = _kesimListesiPaketService.GetKesimListesiPaket();
             dataGridKesimListesi.DataSource = dt;
+            tabloDuzenle();
         }
 
         public void tabloDuzenle()
@@ -128,6 +125,12 @@ namespace CEKA_APP.UsrControl
             if (dataGridKesimListesi.Columns.Contains("toplamPlanTekrari"))
                 dataGridKesimListesi.Columns["toplamPlanTekrari"].HeaderText = "Toplam Plan Tekrarı";
 
+            if (dataGridKesimListesi.Columns.Contains("en"))
+                dataGridKesimListesi.Columns["en"].HeaderText = "Malzeme En";
+
+            if (dataGridKesimListesi.Columns.Contains("boy"))
+                dataGridKesimListesi.Columns["boy"].HeaderText = "Malzeme Boy";
+
             if (dataGridKesimListesi.Columns.Contains("eklemeTarihi"))
                 dataGridKesimListesi.Columns["eklemeTarihi"].HeaderText = "Ekleme Tarihi";
         }
@@ -147,13 +150,8 @@ namespace CEKA_APP.UsrControl
             frm.ShowDialog();
         }
 
-
         private void btnPaketKes_Click(object sender, EventArgs e)
         {
-            DateTime currentDateTime = DateTime.Now;
-            DateTime tarih = currentDateTime.Date;
-            TimeSpan saat = currentDateTime.TimeOfDay;
-
             if (dataGridKesimListesi.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Lütfen bir satır seçin.", "Dikkat!", MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -167,6 +165,13 @@ namespace CEKA_APP.UsrControl
                 string kesimId = selectedRow.Cells["kesimId"].Value?.ToString();
                 string olusturan = selectedRow.Cells["olusturan"].Value?.ToString();
                 string kesilenLot = txtKesilecekLot.Text.Trim();
+
+
+                int malzemeEn = 0;
+                int malzemeBoy = 0;
+                int.TryParse(selectedRow.Cells["en"].Value?.ToString(), out malzemeEn);
+                int.TryParse(selectedRow.Cells["boy"].Value?.ToString(), out malzemeBoy);
+
                 int carpan = 1;
 
                 if (string.IsNullOrEmpty(olusturan))
@@ -188,9 +193,20 @@ namespace CEKA_APP.UsrControl
                     return;
                 }
 
+                List<YanUrunDetay> yanUrunDetaylari = new List<YanUrunDetay>();
+                using (var yanUrunForm = new frmYanUrunGiris(_serviceProvider, new List<string> { kesimId }))
+                {
+                    yanUrunForm.Text = $"{kesimId} için Yan Ürün Girişi";
+                    if (yanUrunForm.ShowDialog() == DialogResult.OK)
+                    {
+                        if (yanUrunForm.YanUrunVerileriByKesimId.TryGetValue(kesimId, out List<YanUrunDetay> detaylar))
+                        {
+                            yanUrunDetaylari.AddRange(detaylar);
+                        }
+                    }
+                }
+
                 StringBuilder pozVeSondurumMesaj = new StringBuilder();
-                StringBuilder hataAyrintilari = new StringBuilder();
-                List<string> hataMesajlari = new List<string>();
 
                 using (var scope = new TransactionScope(TransactionScopeOption.Required, new TransactionOptions
                 {
@@ -200,12 +216,15 @@ namespace CEKA_APP.UsrControl
                 {
                     foreach (DataRow row in dt.Rows)
                     {
-                        string kalite = row["kalite"].ToString();
-                        string malzeme = row["malzeme"].ToString();
-                        string kalipNo = row["kalipNo"].ToString();
-                        string poz = row["kesilecekPozlar"].ToString();
-                        string proje = row["projeNo"].ToString();
-                        string adetSatır = row["kpAdetSayilari"].ToString();
+                        string kalite = row["kalite"]?.ToString();
+                        string malzeme = row["malzeme"]?.ToString();
+                        string kalipNo = row["kalipNo"]?.ToString();
+                        string poz = row["kesilecekPozlar"]?.ToString();
+                        string proje = row["projeNo"]?.ToString();
+                        string adetSatır = row["kpAdetSayilari"]?.ToString();
+
+                        if (string.IsNullOrEmpty(kalite) || string.IsNullOrEmpty(malzeme) || string.IsNullOrEmpty(poz))
+                            throw new Exception("Kesim listesi verilerinde eksik bilgi var.");
 
                         string ifsKalite = _karsilastirmaTablosuService.GetIfsCodeByAutoCadCodeKalite(kalite);
                         if (string.IsNullOrEmpty(ifsKalite))
@@ -217,15 +236,15 @@ namespace CEKA_APP.UsrControl
                             throw new Exception(hataMesaji);
 
                         if (!decimal.TryParse(adetSatır, out decimal kpAdet))
-                            throw new Exception("Veritabanındaki bazı adet değerleri geçerli değil.");
+                            throw new Exception($"Veritabanındaki adet değeri geçerli değil: {adetSatır}");
 
                         decimal sondurum = kpAdet * carpan;
 
                         string[] pozParcalari = poz.Split('-');
                         string pozIlkKisim = pozParcalari.Length > 0 ? pozParcalari[0] : poz;
                         string kalipNoPoz = $"{kalipNo}-{pozIlkKisim}";
-                        string kalipNoPozForValidation = kalipNoPoz;
 
+                        string kalipNoPozForValidation = kalipNoPoz;
                         int tireSayisi = kalipNoPoz.Count(c => c == '-');
                         if (tireSayisi >= 3)
                         {
@@ -240,25 +259,28 @@ namespace CEKA_APP.UsrControl
                             throw new Exception($"Poz: {pozbilgileri} KesimDetaylari tablosunda bulunamadı.");
                     }
 
-                    string hata;
-                    bool paketSonuc = _kesimListesiPaketService.KesimListesiPaketKontrolluDusme(kesimId, carpan, out hata);
+                    string paketHata;
+                    bool paketSonuc = _kesimListesiPaketService.KesimListesiPaketKontrolluDusme(kesimId, carpan, out paketHata);
                     if (!paketSonuc)
-                        throw new Exception(hata);
+                        throw new Exception(paketHata);
 
                     foreach (DataRow row in dt.Rows)
                     {
-                        string kalite = row["kalite"].ToString();
-                        string malzeme = row["malzeme"].ToString();
-                        string kalipNo = row["kalipNo"].ToString();
-                        string poz = row["kesilecekPozlar"].ToString();
-                        string proje = row["projeNo"].ToString();
-                        string adetSatır = row["kpAdetSayilari"].ToString();
+                        string kalite = row["kalite"]?.ToString();
+                        string malzeme = row["malzeme"]?.ToString();
+                        string kalipNo = row["kalipNo"]?.ToString();
+                        string poz = row["kesilecekPozlar"]?.ToString();
+                        string proje = row["projeNo"]?.ToString();
+                        string adetSatır = row["kpAdetSayilari"]?.ToString();
+
+                        if (!decimal.TryParse(adetSatır, out decimal kpAdet))
+                            throw new Exception($"Veritabanındaki adet değeri geçerli değil: {adetSatır}");
+
+                        decimal sondurum = kpAdet * carpan;
 
                         string ifsKalite = _karsilastirmaTablosuService.GetIfsCodeByAutoCadCodeKalite(kalite);
                         string hataMesaji;
                         string ifsMalzeme = _karsilastirmaTablosuService.GetIfsCodeByAutoCadCodeKesim(malzeme, out hataMesaji);
-                        decimal kpAdet = decimal.Parse(adetSatır);
-                        decimal sondurum = kpAdet * carpan;
 
                         string[] pozParcalari = poz.Split('-');
                         string pozIlkKisim = pozParcalari.Length > 0 ? pozParcalari[0] : poz;
@@ -272,10 +294,30 @@ namespace CEKA_APP.UsrControl
                             throw new Exception($"Poz: {ifsKalite}-{ifsMalzeme}-{kalipNoPozForValidation}-{proje} için kesilmisAdet güncellenemedi.");
                     }
 
-                    bool sonuc1 = _kesimTamamlanmisService.TablodanKesimTamamlanmisEkleme(olusturan, kesimId, carpan, tarih, saat, kesilenLot);
+                    int kesimTamamlanmisId = _kesimTamamlanmisService.TablodanKesimTamamlanmisEkleme(
+                        olusturan,
+                        kesimId,
+                        carpan,
+                        kesilenLot,
+                        malzemeEn,
+                        malzemeBoy
+                    );
 
-                    if (!sonuc1)
-                        throw new Exception("Kayıt işlemi sırasında hata oluştu.");
+                    if (kesimTamamlanmisId <= 0)
+                        throw new Exception("Kayıt işlemi sırasında KesimTamamlanmisId alınamadı.");
+
+                    foreach (var yanUrun in yanUrunDetaylari)
+                    {
+                        bool yanUrunKayitBasarili = _kesimTamamlanmisService.YanUrunDetayEkleme(
+                            kesimTamamlanmisId,
+                            yanUrun.En,
+                            yanUrun.Boy,
+                            yanUrun.Adet
+                        );
+                        if (!yanUrunKayitBasarili)
+                            throw new Exception($"Yan ürün detayı ({yanUrun.En}x{yanUrun.Boy} - {yanUrun.Adet} adet) kaydedilemedi.");
+                    }
+
 
                     int kullaniciId = _kullaniciService.GetKullaniciIdByKullaniciAdi(_kullaniciAdi.lblSistemKullaniciMetinAl());
                     _kullaniciHareketleriService.LogEkle(kullaniciId, "KesimPlaniKesildi", "Kesim Yap",
@@ -285,8 +327,7 @@ namespace CEKA_APP.UsrControl
                 }
 
                 MessageBox.Show("Kesim başarıyla tamamlandı.", "Başarılı!", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                _kesimListesiPaketService.VerileriYenile(dataGridKesimListesi);
-                tabloDuzenle();
+
                 VerileriYukle();
             }
             catch (Exception ex)
